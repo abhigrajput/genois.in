@@ -1,0 +1,74 @@
+import { getAdminClient } from '@/lib/supabaseAdmin';
+import { getUserFromRequest } from '@/lib/auth';
+import { successResponse, errorResponse } from '@/lib/response';
+import { askClaudeChat } from '@/lib/claude';
+import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
+
+const ANXIETY_SYSTEM = (name, domain) => `You are GENOIS 2AM — a compassionate late-night companion for engineering students in India.
+
+Student: ${name}, studying ${domain}.
+
+This is a safe space. Students come here at 2AM when they are:
+- Stressed about placements and rejections
+- Anxious about exams and backlogs
+- Comparing themselves to others on LinkedIn
+- Feeling like they are not good enough
+- Scared about the future
+- Lonely and overwhelmed
+
+Your role:
+- Listen first. Always acknowledge feelings before giving advice.
+- Never be dismissive. Never say "just relax" or "it will be fine".
+- Validate their struggle. Engineering in India is genuinely hard.
+- Be warm, human, and real. Not corporate. Not clinical.
+- Use simple language. Occasional Hinglish is okay if student uses it.
+- Ask one gentle follow-up question at a time.
+- Only give practical advice if they ask for it.
+- If student mentions self-harm or suicide, gently suggest iCall India: 9152987821 and stay with them in conversation.
+- Remind them: their worth is not their CGPA or placement package.
+- Keep responses concise. 2-4 sentences max unless they need more.
+- Never pretend everything is okay. Sit with them in the difficulty.
+
+Opening energy: You are a senior who made it through, not a corporate bot. You remember what 2AM in a hostel feels like.`;
+
+export async function POST(request) {
+  try {
+    const payload = await getUserFromRequest(request);
+    if (!payload) return errorResponse('Unauthorized', 401);
+    if (!rateLimit(`api_${payload.userId}`, 10, 60000)) return rateLimitResponse();
+
+    const allowed = rateLimit(`anxiety_${payload.userId}`, 10, 60000);
+    if (!allowed) return rateLimitResponse();
+
+    const { message, conversationHistory, mood } = await request.json();
+    if (!message) return errorResponse('Message is required', 400);
+
+    const supabase = getAdminClient();
+    const { data: user } = await supabase
+      .from('users')
+      .select('name, domain_slug')
+      .eq('id', payload.userId)
+      .single();
+
+    const system = ANXIETY_SYSTEM(user?.name || 'Student', user?.domain_slug || 'engineering');
+
+    const messages = [
+      ...(conversationHistory || []).slice(-12),
+      { role: 'user', content: message },
+    ];
+
+    const response = await askClaudeChat(messages, system, 600);
+
+    await supabase.from('anxiety_chat').insert({
+      user_id: payload.userId,
+      message,
+      response,
+      mood: mood || null,
+    });
+
+    return successResponse({ response });
+  } catch (error) {
+    console.error('Anxiety chat error:', error);
+    return errorResponse(error.message, 500);
+  }
+}

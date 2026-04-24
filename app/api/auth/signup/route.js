@@ -1,0 +1,131 @@
+import bcrypt from 'bcryptjs';
+import { Resend } from 'resend';
+import { getAdminClient } from '@/lib/supabaseAdmin';
+import { generateToken } from '@/lib/auth';
+import { successResponse, errorResponse } from '@/lib/response';
+
+export async function POST(request) {
+  try {
+    const body = await request.json();
+    const { name, email, password, college, year, domainSlug, level, learningSpeed } = body;
+
+    if (!name || !email || !password) {
+      return errorResponse('Name, email and password are required', 400);
+    }
+    if (password.length < 8) {
+      return errorResponse('Password must be at least 8 characters', 400);
+    }
+
+    const supabase = getAdminClient();
+
+    const { data: existing } = await supabase
+      .from('users')
+      .select('id')
+      .eq('email', email.toLowerCase())
+      .single();
+
+    if (existing) {
+      return errorResponse('Email already registered', 409);
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    const trialStart = new Date();
+    const trialEnd = new Date();
+    trialEnd.setDate(trialEnd.getDate() + parseInt(process.env.TRIAL_DAYS || '30'));
+
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .insert({
+        name,
+        email: email.toLowerCase(),
+        password_hash: passwordHash,
+        college: college || null,
+        year: year || '1st Year',
+        domain_slug: domainSlug || 'fullstack',
+        level: level || 'beginner',
+        learning_speed: learningSpeed || 'normal',
+        plan: 'trial',
+        trial_start: trialStart.toISOString(),
+        trial_end: trialEnd.toISOString(),
+      })
+      .select()
+      .single();
+
+    if (userError) throw new Error(userError.message);
+
+    const verificationToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    await supabase.from('users').update({ verification_token: verificationToken }).eq('id', user.id);
+
+    const verifyUrl = 'https://genois.in/api/auth/verify-email?token=' + verificationToken;
+
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    const { data: emailData, error: emailError } = await resend.emails.send({
+      from: 'GENOIS <noreply@genois.in>',
+      to: user.email,
+      subject: '✅ Verify your GENOIS email',
+      html: `<div style="background:#020812;color:#e8f4ff;font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 24px;border-radius:12px;"><div style="font-size:28px;font-weight:800;margin-bottom:8px;"><span style="color:#00f0ff">GEN</span><span style="color:#e8f4ff">OIS</span></div><div style="height:2px;background:linear-gradient(90deg,#00f0ff,transparent);margin-bottom:32px;"></div><h1 style="font-size:22px;font-weight:800;color:#e8f4ff;margin-bottom:12px;">Verify your email</h1><p style="color:#8a9ab0;font-size:15px;line-height:1.7;margin-bottom:24px;">Welcome to GENOIS! Click the button below to verify your email and activate your account.</p><a href="${verifyUrl}" style="display:block;text-align:center;padding:14px 32px;background:linear-gradient(135deg,#00f0ff,#7b5cff);color:#020812;text-decoration:none;border-radius:10px;font-weight:800;font-size:16px;margin-bottom:24px;">Verify My Email →</a><p style="color:#5a7a9a;font-size:13px;">If you did not sign up for GENOIS ignore this email.</p><div style="margin-top:40px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.1);color:#3a4a5a;font-size:12px;">GENOIS · Career OS for Engineers · genois.in</div></div>`,
+    });
+    if (emailError) {
+      console.error('Verification email error:', JSON.stringify(emailError));
+    }
+
+    // Handle referral code if provided
+    const refCode = body.referralCode || body.ref;
+    if (refCode) {
+      const { data: referrer } = await supabase
+        .from('users')
+        .select('id, referral_count, bonus_days, trial_end')
+        .eq('referral_code', refCode.toUpperCase())
+        .single();
+
+      if (referrer && referrer.id !== user.id) {
+        // Create referral record
+        await supabase.from('referrals').insert({
+          referrer_id: referrer.id,
+          referred_id: user.id,
+          referral_code: refCode.toUpperCase(),
+          status: 'completed',
+          reward_given: true,
+        });
+
+        // Give referrer +30 bonus days
+        const newTrialEnd = new Date(referrer.trial_end || new Date());
+        newTrialEnd.setDate(newTrialEnd.getDate() + 30);
+        await supabase.from('users').update({
+          referral_count: (referrer.referral_count || 0) + 1,
+          bonus_days: (referrer.bonus_days || 0) + 30,
+          trial_end: newTrialEnd.toISOString(),
+        }).eq('id', referrer.id);
+
+        // Give new user +30 bonus days too
+        const newUserTrialEnd = new Date(user.trial_end || new Date());
+        newUserTrialEnd.setDate(newUserTrialEnd.getDate() + 30);
+        await supabase.from('users').update({
+          referred_by: refCode.toUpperCase(),
+          trial_end: newUserTrialEnd.toISOString(),
+        }).eq('id', user.id);
+      }
+    }
+    await supabase.from('scores').insert({ user_id: user.id });
+    await supabase.from('progress').insert({
+      user_id: user.id,
+      last_active_date: new Date().toISOString(),
+      streak: 1,
+    });
+    await supabase.from('skill_identity').insert({ user_id: user.id });
+    await supabase.from('trials').insert({
+      user_id: user.id,
+      start_date: trialStart.toISOString(),
+      end_date: trialEnd.toISOString(),
+      is_active: true,
+    });
+
+    const token = await generateToken(user.id);
+    const { password_hash: _, ...safeUser } = user;
+
+    return successResponse({ user: safeUser, token }, 'Account created successfully', 201);
+  } catch (error) {
+    console.error('Signup error:', error);
+    return errorResponse(error.message || 'Signup failed', 500);
+  }
+}

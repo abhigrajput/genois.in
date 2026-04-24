@@ -1,0 +1,47 @@
+import { getAdminClient } from '@/lib/supabaseAdmin';
+import { getUserFromRequest } from '@/lib/auth';
+import { successResponse, errorResponse } from '@/lib/response';
+
+export async function GET(request) {
+  try {
+    const payload = await getUserFromRequest(request);
+    if (!payload) return errorResponse('Unauthorized', 401);
+
+    const { searchParams } = new URL(request.url);
+    const mode = searchParams.get('mode');
+    const page = parseInt(searchParams.get('page') || '1');
+
+    const supabase = getAdminClient();
+    let query = supabase
+      .from('chat_history').select('*')
+      .eq('user_id', payload.userId)
+      .order('created_at', { ascending: false })
+      .range((page - 1) * 20, page * 20 - 1);
+
+    if (mode) query = query.eq('mode', mode);
+    const { data } = await query;
+
+    return successResponse({ messages: data || [], page });
+  } catch (error) {
+    return errorResponse(error.message, 500);
+  }
+}
+
+export async function DELETE(request) {
+  try {
+    const payload = await getUserFromRequest(request);
+    if (!payload) return errorResponse('Unauthorized', 401);
+
+    const { searchParams } = new URL(request.url);
+    const mode = searchParams.get('mode');
+
+    const supabase = getAdminClient();
+    let query = supabase.from('chat_history').delete().eq('user_id', payload.userId);
+    if (mode) query = query.eq('mode', mode);
+    await query;
+
+    return successResponse({ cleared: true });
+  } catch (error) {
+    return errorResponse(error.message, 500);
+  }
+}
