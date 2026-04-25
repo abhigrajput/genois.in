@@ -1,14 +1,18 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import PublicNav from '@/components/PublicNav';
-import PublicPageSidebar from '@/components/PublicPageSidebar';
+import PublicPageWrapper from '@/components/PublicPageWrapper';
 
 export default function CollegeWarPage() {
   const [colleges, setColleges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [lastUpdated, setLastUpdated] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setIsLoggedIn(!!localStorage.getItem('genois_token'));
+  }, []);
 
   useEffect(() => {
     fetch('/api/college-war')
@@ -28,32 +32,31 @@ export default function CollegeWarPage() {
   const top = filtered[0];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#020812', color: '#e8f4ff', fontFamily: 'Outfit,sans-serif' }}>
-      <PublicNav />
-      <PublicPageSidebar currentPath="/college-war" />
-      <style>{`@media(min-width:900px){.main-with-sidebar{margin-left:240px}}`}</style>
-
-      <main className="main-with-sidebar" style={{ position: 'relative', zIndex: 1, maxWidth: 900, margin: '0 auto', padding: '40px 20px' }}>
-        <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(0,240,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,0.015) 1px,transparent 1px)', backgroundSize: '56px 56px' }} />
+    <PublicPageWrapper>
+      <div style={{ minHeight: '100vh', background: '#020812', color: '#e8f4ff', fontFamily: 'Outfit,sans-serif' }}>
+        <main style={{ position: 'relative', zIndex: 1, maxWidth: 900, margin: '0 auto', padding: '40px 20px' }}>
+          <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(0,240,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,0.015) 1px,transparent 1px)', backgroundSize: '56px 56px' }} />
 
         <button onClick={() => { if (window.history.length > 1) window.history.back(); else window.location.href = '/dashboard'; }} style={{ background: 'transparent', border: '1px solid rgba(0,240,255,0.2)', color: '#00f0ff', cursor: 'pointer', padding: '8px 16px', borderRadius: 8, fontSize: 13, fontFamily: 'Syne,sans-serif', fontWeight: 600, marginBottom: 20 }}>
           ← Back
         </button>
 
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24, padding: '12px 16px', background: 'rgba(255,255,255,0.02)', borderRadius: 10, border: '1px solid rgba(0,240,255,0.08)' }}>
-          <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', alignSelf: 'center', marginRight: 4 }}>QUICK ACCESS:</span>
-          {[
-            { href: '/dashboard', label: '📊 Dashboard' },
-            { href: '/roadmap', label: '🗺️ Roadmap' },
-            { href: '/anxiety', label: '🌙 2AM Chat' },
-            { href: '/shame-board', label: '😴 Shame Board' },
-            { href: '/graveyard', label: '☠️ Graveyard' },
-          ].map(l => (
-            <a key={l.href} href={l.href} style={{ padding: '5px 12px', borderRadius: 20, background: 'rgba(0,240,255,0.06)', color: '#00f0ff', textDecoration: 'none', fontSize: 12, fontFamily: 'Syne,sans-serif', fontWeight: 600 }}>
-              {l.label}
-            </a>
-          ))}
-        </div>
+        {isLoggedIn && (
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24, padding: '12px 16px', background: 'rgba(255,255,255,0.02)', borderRadius: 10, border: '1px solid rgba(0,240,255,0.08)' }}>
+            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', alignSelf: 'center', marginRight: 4 }}>QUICK ACCESS:</span>
+            {[
+              { href: '/dashboard', label: '📊 Dashboard' },
+              { href: '/roadmap', label: '🗺️ Roadmap' },
+              { href: '/anxiety', label: '🌙 2AM Chat' },
+              { href: '/shame-board', label: '😴 Shame Board' },
+              { href: '/graveyard', label: '☠️ Graveyard' },
+            ].map(l => (
+              <a key={l.href} href={l.href} style={{ padding: '5px 12px', borderRadius: 20, background: 'rgba(0,240,255,0.06)', color: '#00f0ff', textDecoration: 'none', fontSize: 12, fontFamily: 'Syne,sans-serif', fontWeight: 600 }}>
+                {l.label}
+              </a>
+            ))}
+          </div>
+        )}
 
         {/* HEADER */}
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
@@ -164,5 +167,6 @@ export default function CollegeWarPage() {
 
       </main>
     </div>
+    </PublicPageWrapper>
   );
 }

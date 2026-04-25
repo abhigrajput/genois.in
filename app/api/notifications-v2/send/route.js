@@ -3,13 +3,14 @@ import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { pickMessage } from '@/lib/notificationMessages';
 import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 
 export async function POST(request) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
+    if (!rateLimit(`notif_send_${payload.userId}`, 10, 3600000)) return rateLimitResponse();
     const { type = 'morning' } = await request.json();
     const supabase = getAdminClient();
 

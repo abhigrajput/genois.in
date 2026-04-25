@@ -3,6 +3,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { APTITUDE_CATEGORIES } from '@/lib/aptitudeConfig';
+import { getCached, setCached, buildCacheKey } from '@/lib/aiCache';
 
 async function callClaude(prompt) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -58,11 +59,30 @@ Format:
 
 Make sure all 10 questions are included and JSON is valid.`;
 
+    const cacheKey = buildCacheKey('aptitude', category, topic, difficulty);
+    const cached = await getCached(cacheKey);
+    if (cached) {
+      const supabase = getAdminClient();
+      const { data: session } = await supabase
+        .from('aptitude_sessions')
+        .insert({
+          user_id: payload.userId,
+          category,
+          topic,
+          questions: cached,
+          total_questions: cached.length,
+        })
+        .select()
+        .single();
+      return successResponse({ session, questions: cached, topicName: topicData.name, categoryLabel: catData.label, fromCache: true });
+    }
+
     const text = await callClaude(prompt);
     let questions = [];
     try {
       questions = JSON.parse(text.replace(/```json|```/g, '').trim());
       if (!Array.isArray(questions) || questions.length < 5) throw new Error('Not enough questions generated');
+      setCached(cacheKey, questions, 48);
     } catch {
       return errorResponse('Failed to generate questions. Try again.', 500);
     }

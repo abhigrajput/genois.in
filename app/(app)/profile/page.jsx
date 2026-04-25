@@ -4,157 +4,210 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import useAuthStore from '@/store/authStore';
 import { authAPI } from '@/lib/api';
+import { useToken, apiFetch } from '@/lib/useApi';
 
 const DOMAINS = [
-  {slug:'fullstack',label:'Full Stack',icon:'⬡'},{slug:'dsa',label:'DSA',icon:'◈'},
-  {slug:'ml',label:'Machine Learning',icon:'◉'},{slug:'ai',label:'AI',icon:'◎'},
-  {slug:'ds',label:'Data Science',icon:'◇'},{slug:'cybersec',label:'Cybersecurity',icon:'◆'},
-  {slug:'cloud',label:'Cloud',icon:'○'},{slug:'mobile',label:'Mobile',icon:'▣'},
-  {slug:'devops',label:'DevOps',icon:'▷'},{slug:'sysdesign',label:'System Design',icon:'▦'},
+  {slug:'fullstack',label:'Full Stack'},{slug:'dsa',label:'DSA'},
+  {slug:'ml',label:'Machine Learning'},{slug:'ai',label:'AI'},
+  {slug:'ds',label:'Data Science'},{slug:'cybersec',label:'Cybersecurity'},
+  {slug:'cloud',label:'Cloud'},{slug:'mobile',label:'Mobile'},
+  {slug:'devops',label:'DevOps'},{slug:'sysdesign',label:'System Design'},
 ];
+
+
 
 export default function ProfilePage() {
   const router = useRouter();
   const { user, score, progress, updateUser, logout } = useAuthStore();
+  const { token } = useToken();
+
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState({ name: user?.name||'', college: user?.college||'', year: user?.year||'1st Year' });
+  const [form, setForm] = useState({ name: user?.name||'', college: user?.college||'', year: user?.year||'' });
   const [showDomainModal, setShowDomainModal] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const saveProfile = async () => {
+
+
+  async function saveProfile() {
     setLoading(true);
     try {
       const res = await authAPI.updateProfile(form);
       updateUser(res.data.user);
       setEditing(false);
       toast.success('Profile updated!');
-    } catch { toast.error('Update failed'); } finally { setLoading(false); }
-  };
+    } catch (e) { toast.error('Update failed'); }
+    setLoading(false);
+  }
 
-  const changeDomain = async (slug) => {
+  async function changeDomain(slug) {
     setLoading(true);
     try {
       await authAPI.changeDomain(slug);
       updateUser({ domain_slug: slug });
       setShowDomainModal(false);
       toast.success('Domain changed!');
-    } catch { toast.error('Failed'); } finally { setLoading(false); }
-  };
+    } catch { toast.error('Failed'); }
+    setLoading(false);
+  }
 
-  const resetProgress = async () => {
+  async function resetProgress() {
     setLoading(true);
     try {
       await authAPI.resetProgress();
       setShowResetModal(false);
       toast.success('Progress reset!');
       router.push('/dashboard');
-    } catch { toast.error('Failed'); } finally { setLoading(false); }
-  };
+    } catch { toast.error('Failed'); }
+    setLoading(false);
+  }
+
+
+
+  function signOut() {
+    logout();
+    document.cookie = 'genois_token=; path=/; max-age=0';
+    localStorage.clear();
+    router.push('/login');
+  }
+
+  const cardStyle = { background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24, marginBottom: 16 };
+  const inpStyle = { width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.12)', background: 'rgba(255,255,255,0.02)', color: '#e8f4ff', fontSize: 14, outline: 'none', fontFamily: 'Outfit,sans-serif', boxSizing: 'border-box' };
+  const btnSecondary = { padding: '9px 18px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', background: 'transparent', color: '#00f0ff', cursor: 'pointer', fontSize: 13, fontFamily: 'Syne,sans-serif', fontWeight: 600 };
 
   return (
-    <div className="max-w-2xl space-y-5">
-      <h1 className="text-2xl font-bold">Profile</h1>
-      <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.12)', borderRadius: 14, padding: 20, marginBottom: 20 }}>
-        <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 10 }}>YOUR PUBLIC PROFILE</div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
-          <div>
-            <div style={{ fontSize: 14, color: '#e8f4ff', fontWeight: 600, marginBottom: 4 }}>
-              genois.in/u/{user?.name?.toLowerCase().replace(/\s+/g, '-')}
-            </div>
-            <div style={{ fontSize: 12, color: '#5a7a9a' }}>
-              Share this link on LinkedIn and WhatsApp. Recruiters can verify your skills.
-            </div>
+    <div style={{ fontFamily: 'Outfit,sans-serif', width: '100%', paddingBottom: 60 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 16, alignItems: 'start' }}>
+        
+        {/* PUBLIC PROFILE - full width */}
+        <div style={{ gridColumn: '1 / -1', background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 20 }}>
+          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 8 }}>YOUR PUBLIC PROFILE</div>
+          <div style={{ fontSize: 14, color: '#00f0ff', marginBottom: 14 }}>
+            genois.in/u/{user?.name?.toLowerCase().replace(/\s+/g,'-') || 'you'}
           </div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={() => { navigator.clipboard.writeText('https://genois.in/u/' + encodeURIComponent(user?.name || '')); toast.success('Profile link copied!'); }} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', background: 'transparent', color: '#00f0ff', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600 }}>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button onClick={() => { navigator.clipboard.writeText('https://genois.in/u/'+(user?.name?.toLowerCase().replace(/\s+/g,'-')||'')); toast.success('Copied!'); }} style={btnSecondary}>
               Copy Link
             </button>
-            <a href={'/u/' + encodeURIComponent(user?.name || '')} target="_blank" rel="noreferrer" style={{ padding: '8px 16px', borderRadius: 8, border: 'none', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', textDecoration: 'none', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700 }}>
-              View →
+            <a href={'/u/'+(user?.name?.toLowerCase().replace(/\s+/g,'-')||'')} target="_blank" rel="noreferrer"
+              style={{ padding: '9px 18px', borderRadius: 8, border: 'none', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', textDecoration: 'none', fontSize: 13, fontFamily: 'Syne,sans-serif', fontWeight: 700 }}>
+              View Profile
             </a>
           </div>
         </div>
-      </div>
-      <div className="card">
-        <div className="flex items-center gap-4 mb-5">
-          <div className="w-14 h-14 rounded-full bg-primary/15 flex items-center justify-center text-xl font-bold text-primary">
-            {(user?.name||'G').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}
-          </div>
-          <div className="flex-1">
-            {editing ? <input className="input font-semibold" value={form.name} onChange={e=>setForm(f=>({...f,name:e.target.value}))} /> : <div className="font-semibold text-lg">{user?.name}</div>}
-            <div className="text-sm text-gray-400">{user?.email}</div>
-          </div>
-          <button onClick={editing ? saveProfile : () => setEditing(true)} disabled={loading} className={editing ? 'btn-primary' : 'btn-secondary'}>
-            {editing ? (loading ? 'Saving...' : 'Save') : 'Edit'}
-          </button>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            { label:'College', value: editing ? <input className="input text-sm py-1" value={form.college} onChange={e=>setForm(f=>({...f,college:e.target.value}))} /> : user?.college },
-            { label:'Year', value: user?.year },
-            { label:'Domain', value: user?.domain_slug?.toUpperCase() },
-            { label:'Plan', value: <span className="badge badge-primary capitalize">{user?.plan}</span> },
-          ].map(row => (
-            <div key={row.label} className="py-2 border-b border-gray-50">
-              <div className="text-xs text-gray-400 mb-1">{row.label}</div>
-              <div className="text-sm font-medium">{row.value || '-'}</div>
+
+        {/* PROFILE INFO */}
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 700, color: '#020812', fontFamily: 'Syne,sans-serif', flexShrink: 0 }}>
+                {(user?.name||'A')[0].toUpperCase()}
+              </div>
+              <div>
+                <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: '#e8f4ff' }}>{user?.name || 'Student'}</div>
+                <div style={{ fontSize: 13, color: '#5a7a9a' }}>{user?.email}</div>
+              </div>
             </div>
-          ))}
-        </div>
-      </div>
-      <div className="card">
-        <h2 className="section-title mb-3">Performance</h2>
-        <div className="grid grid-cols-3 gap-3">
-          {[
-            { label:'Total Score', value: score?.total_score||0, color:'#7F77DD' },
-            { label:'Current Day', value: progress?.current_day||1, color:'#1D9E75' },
-            { label:'Streak', value:`${progress?.streak||0}d`, color:'#BA7517' },
-          ].map(s => (
-            <div key={s.label} className="text-center p-3 rounded-xl" style={{background:s.color+'0f'}}>
-              <div className="text-xl font-bold" style={{color:s.color}}>{s.value}</div>
-              <div className="text-xs text-gray-400 mt-0.5">{s.label}</div>
+            <button onClick={() => { setEditing(!editing); setForm({ name: user?.name||'', college: user?.college||'', year: user?.year||'' }); }}
+              style={btnSecondary}>
+              {editing ? 'Cancel' : 'Edit'}
+            </button>
+          </div>
+
+          {editing ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {[{key:'name',label:'NAME'},{key:'college',label:'COLLEGE'},{key:'year',label:'YEAR'}].map(f => (
+                <div key={f.key}>
+                  <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', marginBottom: 6 }}>{f.label}</div>
+                  <input value={form[f.key]} onChange={e => setForm(p => ({...p, [f.key]: e.target.value}))} style={inpStyle} />
+                </div>
+              ))}
+              <button onClick={saveProfile} disabled={loading}
+                style={{ padding: 12, borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700 }}>
+                {loading ? 'Saving...' : 'Save Changes'}
+              </button>
             </div>
-          ))}
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              {[
+                {label:'COLLEGE', value: user?.college},
+                {label:'YEAR', value: user?.year},
+                {label:'DOMAIN', value: user?.domain_slug?.toUpperCase()},
+                {label:'PLAN', value: (user?.subscription_plan||user?.plan||'spectator').toUpperCase()},
+              ].map((item,i) => (
+                <div key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: 10 }}>
+                  <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', marginBottom: 4 }}>{item.label}</div>
+                  <div style={{ fontSize: 14, color: '#e8f4ff', fontWeight: 600 }}>{item.value || 'Not set'}</div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      </div>
-      <div className="card">
-        <h2 className="section-title mb-3">Settings</h2>
-        <div className="flex flex-wrap gap-2">
-          <button onClick={() => setShowDomainModal(true)} className="btn-secondary text-sm">Change Domain</button>
-          <button onClick={() => setShowResetModal(true)} className="text-sm px-4 py-2 rounded-lg border border-red-200 text-red-500 hover:bg-red-50 transition-all">Reset Progress</button>
-          <button onClick={() => { logout(); router.push('/login'); }} className="btn-secondary text-sm">Sign Out</button>
+
+        {/* PERFORMANCE */}
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24 }}>
+          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#e8f4ff', marginBottom: 16 }}>Performance</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
+            {[
+              {label:'Total Score', value: score?.total_score||score||0, color:'#7b5cff'},
+              {label:'Current Day', value: progress?.current_day||0, color:'#1D9E75'},
+              {label:'Streak', value: (progress?.streak||0)+'d', color:'#EF9F27'},
+            ].map((s,i) => (
+              <div key={i} style={{ background: s.color+'15', borderRadius: 10, padding: 16, textAlign: 'center' }}>
+                <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: s.color }}>{s.value}</div>
+                <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', marginTop: 4 }}>{s.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
+
+        {/* SETTINGS - full width */}
+        <div style={{ gridColumn: '1 / -1', background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24 }}>
+          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#e8f4ff', marginBottom: 16 }}>Settings</div>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <button onClick={() => setShowDomainModal(true)} style={btnSecondary}>Change Domain</button>
+            <button onClick={() => setShowResetModal(true)} style={{ ...btnSecondary, border: '1px solid rgba(255,45,120,0.3)', color: '#ff2d78' }}>Reset Progress</button>
+            <button onClick={signOut} style={{ ...btnSecondary, border: '1px solid rgba(255,255,255,0.08)', color: '#5a7a9a' }}>Sign Out</button>
+          </div>
+        </div>
+
       </div>
+
+
+
+      {/* Domain Modal */}
       {showDomainModal && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
-          <div className="card max-w-sm w-full">
-            <h3 className="font-bold mb-1">Change Domain</h3>
-            <p className="text-xs text-gray-400 mb-4">Resets roadmap to Day 1. Score is kept.</p>
-            <div className="grid grid-cols-2 gap-2 mb-4">
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: 16 }}>
+          <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 14, padding: 24, maxWidth: 360, width: '100%' }}>
+            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#e8f4ff', marginBottom: 4 }}>Change Domain</div>
+            <div style={{ fontSize: 12, color: '#5a7a9a', marginBottom: 16 }}>Resets roadmap to Day 1. Score is kept.</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
               {DOMAINS.map(d => (
                 <button key={d.slug} onClick={() => changeDomain(d.slug)} disabled={loading}
-                  className={`p-2.5 rounded-xl border text-left text-xs transition-all ${user?.domain_slug===d.slug ? 'border-primary bg-primary/5' : 'border-gray-100 hover:border-gray-200'}`}>
-                  {d.icon} {d.label}
+                  style={{ padding: '10px 12px', borderRadius: 10, border: user?.domain_slug === d.slug ? '1px solid rgba(0,240,255,0.4)' : '1px solid rgba(255,255,255,0.06)', background: user?.domain_slug === d.slug ? 'rgba(0,240,255,0.08)' : 'transparent', color: '#e8f4ff', cursor: 'pointer', textAlign: 'left', fontSize: 13 }}>
+                  {d.label}
                 </button>
               ))}
             </div>
-            <button onClick={() => setShowDomainModal(false)} className="btn-secondary w-full justify-center">Cancel</button>
+            <button onClick={() => setShowDomainModal(false)} style={{ ...btnSecondary, width: '100%', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.08)', color: '#5a7a9a' }}>Cancel</button>
           </div>
         </div>
       )}
+
+      {/* Reset Modal */}
       {showResetModal && (
-        <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4">
-          <div className="card max-w-sm w-full">
-            <h3 className="font-bold text-red-600 mb-2">Reset All Progress?</h3>
-            <p className="text-sm text-gray-500 mb-4">Deletes all scores, tasks, tests. Cannot be undone.</p>
-            <div className="flex gap-2">
-              <button onClick={() => setShowResetModal(false)} className="btn-secondary flex-1 justify-center">Cancel</button>
-              <button onClick={resetProgress} disabled={loading} className="btn-danger flex-1 justify-center">{loading ? 'Resetting...' : 'Reset'}</button>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: 16 }}>
+          <div style={{ background: '#070f1f', border: '1px solid rgba(255,45,120,0.2)', borderRadius: 14, padding: 24, maxWidth: 340, width: '100%' }}>
+            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#ff2d78', marginBottom: 8 }}>Reset All Progress?</div>
+            <div style={{ fontSize: 13, color: '#5a7a9a', marginBottom: 20 }}>Deletes all scores, tasks and tests. Cannot be undone.</div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button onClick={() => setShowResetModal(false)} style={{ flex: 1, padding: 10, borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600 }}>Cancel</button>
+              <button onClick={resetProgress} disabled={loading} style={{ flex: 1, padding: 10, borderRadius: 8, border: 'none', background: '#ff2d78', color: '#fff', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700 }}>{loading ? 'Resetting...' : 'Reset'}</button>
             </div>
           </div>
         </div>
       )}
+
     </div>
   );
 }

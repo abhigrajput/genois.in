@@ -1,5 +1,6 @@
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
+import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import Anthropic from '@anthropic-ai/sdk';
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -8,6 +9,7 @@ export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
+    if (!rateLimit(`project_mentor_${payload.userId}`, 5, 60000)) return rateLimitResponse();
 
     const { message, projectTitle, projectDescription, techStack, currentStep, history } = await request.json();
 

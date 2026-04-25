@@ -118,6 +118,18 @@ const PLANS = [
 
 export default function SubscriptionPage() {
   const { user, updateUser } = useAuthStore();
+
+  const PLAN_RANK = { spectator: 0, trial: 0, free: 0, basic: 1, player: 1, pro: 2, performer: 2, elite: 3, dominator: 3 };
+  const getCurrentRank = () => PLAN_RANK[(status?.plan || user?.plan || 'spectator').toLowerCase()] ?? 0;
+
+  const getButtonState = (planSlug) => {
+    const targetRank = PLAN_RANK[planSlug.toLowerCase()] ?? 0;
+    const currentRank = getCurrentRank();
+    
+    if (targetRank === currentRank) return { label: 'Current Plan', disabled: true, isCurrent: true };
+    if (targetRank < currentRank) return { label: 'Lower Plan', disabled: true, isCurrent: false };
+    return { label: 'Upgrade →', disabled: false, isCurrent: false };
+  };
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [upgradeModal, setUpgradeModal] = useState(null);
@@ -238,34 +250,33 @@ export default function SubscriptionPage() {
             </div>
 
             {/* CTA button */}
-            {(p.id === 'free') ? (
-              user?.plan === 'trial' || user?.plan === 'free' ? (
-                <div style={{ textAlign: 'center', fontSize: 12, color: '#1D9E75', padding: '10px 0', fontWeight: 600 }}>✓ Your current plan</div>
-              ) : (
-                <div style={{ textAlign: 'center', fontSize: 12, color: '#5a7a9a', padding: '10px 0' }}>{p.cta}</div>
-              )
-            ) : user?.plan === p.id ? (
-              <div style={{ textAlign: 'center', fontSize: 12, color: '#1D9E75', padding: '10px 0', fontWeight: 600 }}>✓ You have this plan</div>
-            ) : (
-              <button
-                onClick={() => setUpgradeModal(p.id)}
-                style={{
-                  padding: '12px 20px',
-                  borderRadius: 10,
-                  border: p.featured ? 'none' : '1px solid rgba(255,255,255,0.1)',
-                  cursor: 'pointer',
-                  background: p.featured ? 'linear-gradient(135deg,#00f0ff,#7b5cff)' : 'rgba(255,255,255,0.04)',
-                  color: p.featured ? '#020812' : '#c8d8e8',
-                  fontFamily: 'Syne,sans-serif',
-                  fontSize: 14,
-                  fontWeight: 700,
-                  width: '100%',
-                  transition: 'opacity 0.2s',
-                }}
-              >
-                {p.cta}
-              </button>
-            )}
+            {(() => {
+              const state = getButtonState(p.id);
+              return (
+                <button
+                  onClick={() => !state.disabled && setUpgradeModal(p.id)}
+                  disabled={state.disabled}
+                  style={{
+                    width: '100%',
+                    padding: '14px',
+                    borderRadius: 12,
+                    border: 'none',
+                    cursor: state.disabled ? 'not-allowed' : 'pointer',
+                    background: state.isCurrent 
+                      ? 'linear-gradient(135deg,#00f0ff,#7b5cff)' 
+                      : state.disabled 
+                        ? 'rgba(255,255,255,0.05)' 
+                        : 'linear-gradient(135deg,#EF9F27,#D85A30)',
+                    color: state.disabled && !state.isCurrent ? '#5a7a9a' : '#020812',
+                    fontFamily: 'Syne,sans-serif',
+                    fontSize: 14,
+                    fontWeight: 700,
+                  }}
+                >
+                  {state.label}
+                </button>
+              );
+            })()}
           </div>
         ))}
       </div>

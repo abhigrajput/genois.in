@@ -1,18 +1,19 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
 export default function PublicPageSidebar({ currentPath }) {
-  const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [checked, setChecked] = useState(false);
   const [open, setOpen] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem('genois_token');
     setIsLoggedIn(!!token);
+    setChecked(true);
   }, []);
 
+  if (!checked) return null;
   if (!isLoggedIn) return null;
 
   const NAV_GROUPS = [
@@ -50,8 +51,7 @@ export default function PublicPageSidebar({ currentPath }) {
 
   return (
     <aside style={{ position: 'fixed', top: 56, left: 0, bottom: 0, width: 240, background: 'rgba(7,15,31,0.96)', borderRight: '1px solid rgba(0,240,255,0.08)', overflowY: 'auto', zIndex: 90, padding: '16px 0' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 16px 12px' }}>
-        <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 2 }}>QUICK NAV</div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', padding: '0 16px 12px' }}>
         <button onClick={() => setOpen(false)} style={{ background: 'transparent', border: 'none', color: '#5a7a9a', cursor: 'pointer', fontSize: 14 }}>✕</button>
       </div>
       {NAV_GROUPS.map(g => (

@@ -1,4 +1,5 @@
 import { getAdminClient } from '@/lib/supabaseAdmin';
+import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 
 export async function POST(request) {
@@ -7,6 +8,9 @@ export async function POST(request) {
     
     if (!auctionId || !bidAmount || !recruiterCompany) {
       return errorResponse('Missing required fields', 400);
+    }
+    if (!recruiterEmail || !recruiterEmail.includes('@')) {
+      return errorResponse('Valid recruiter email is required', 400);
     }
     
     const supabase = getAdminClient();

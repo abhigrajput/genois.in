@@ -1,6 +1,7 @@
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getCompanyFromRequest } from '@/lib/companyAuth';
 import { successResponse, errorResponse } from '@/lib/response';
+import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 
 async function callClaude(prompt) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -58,6 +59,7 @@ export async function POST(request) {
   try {
     const company = await getCompanyFromRequest(request);
     if (!company) return errorResponse('Unauthorized', 401);
+    if (!rateLimit(`company_challenges_${company.companyId}`, 5, 60000)) return rateLimitResponse();
 
     const { title, description, domain, difficulty, deadline } = await request.json();
     if (!title || !description) return errorResponse('Title and description required', 400);

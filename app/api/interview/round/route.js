@@ -3,6 +3,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { COMPANY_TYPES, ROUND_CONFIG } from '@/lib/interviewConfig';
+import { getCached, setCached, buildCacheKey } from '@/lib/aiCache';
 
 async function callClaude(prompt, maxTokens = 3000) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -114,11 +115,29 @@ Return ONLY valid JSON array with exactly ${roundConfig.questionCount} questions
 ]`;
     }
 
+    const cacheKey = buildCacheKey('interview', session.company_type, currentRound.type);
+    const cachedQuestions = await getCached(cacheKey);
+    if (cachedQuestions) {
+      const updatedRounds = [...rounds];
+      updatedRounds[roundIndex] = { ...currentRound, questions: cachedQuestions, status: 'in_progress' };
+      await supabase.from('interview_sessions').update({ rounds: updatedRounds }).eq('id', sessionId);
+      return successResponse({
+        round: updatedRounds[roundIndex],
+        roundIndex,
+        totalRounds: rounds.length,
+        roundConfig,
+        companyConfig,
+        companyName: session.company_name,
+        fromCache: true,
+      });
+    }
+
     const text = await callClaude(prompt);
     let questions = [];
     try {
       questions = JSON.parse(text.replace(/```json|```/g, '').trim());
       if (!Array.isArray(questions)) throw new Error('Invalid');
+      setCached(cacheKey, questions, 72);
     } catch {
       return errorResponse('Failed to generate questions. Try again.', 500);
     }

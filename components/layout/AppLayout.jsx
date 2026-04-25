@@ -230,8 +230,8 @@ export default function AppLayout({ children }) {
           background: 'rgba(6,15,30,0.98)',
           borderRight: '1px solid rgba(0,240,255,0.1)',
           backdropFilter: 'blur(20px)',
-          overflowY: 'auto',
-          height: isMobile ? '100%' : 'auto',
+          overflowY: 'hidden',
+          height: '100%',
         }}
       >
         <div style={{padding:'20px 16px 12px'}}>
@@ -260,7 +260,7 @@ export default function AppLayout({ children }) {
           </div>
         </div>
 
-        <nav style={{flex:1,padding:'0 8px'}}>
+        <nav style={{flex:1,padding:'0 8px',overflowY:'auto'}}>
           {NAV_GROUPS.map((group, gi) => (
             <div key={gi} style={{ marginBottom: 8 }}>
               <div style={{
@@ -295,10 +295,15 @@ export default function AppLayout({ children }) {
           ))}
         </nav>
 
+        <a href="/feedback" style={{ display:'flex', alignItems:'center', gap:10, padding:'10px 16px', margin:'0 8px 4px', borderRadius:10, background:'rgba(29,158,117,0.08)', border:'1px solid rgba(29,158,117,0.2)', color:'#1D9E75', textDecoration:'none', fontSize:13, fontFamily:'Syne,sans-serif', fontWeight:600 }}>
+          <span style={{ fontSize:16 }}>&#128172;</span>
+          Send Feedback
+        </a>
+
         <div style={{padding:'12px 16px',borderTop:'1px solid rgba(0,240,255,0.08)'}}>
           <div style={{fontFamily:'Outfit,sans-serif',fontSize:13,fontWeight:500,color:'#e8f4ff',marginBottom:2}}>{user?.name}</div>
           <div style={{fontFamily:'JetBrains Mono,monospace',fontSize:10,color:'#5a7a9a',marginBottom:10}}>{user?.email}</div>
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:6}}>
             <span style={{fontFamily:'JetBrains Mono,monospace',fontSize:11,color:'#EF9F27',background:'rgba(186,117,23,0.12)',padding:'2px 8px',borderRadius:20}}>🔥 {streak}</span>
             <span style={{fontFamily:'JetBrains Mono,monospace',fontSize:11,color:'#00f0ff',background:'rgba(0,240,255,0.08)',padding:'2px 8px',borderRadius:20}}>{totalScore} pts</span>
             <button onClick={() => { logout(); router.push('/login'); }} style={{fontFamily:'JetBrains Mono,monospace',fontSize:10,color:'#5a7a9a',background:'transparent',border:'none',cursor:'pointer'}}>out</button>

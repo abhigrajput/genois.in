@@ -6,3 +6,11 @@ node_modules/
 *.log
 *.ps1
 .DS_Store
+
+.vercel
+
+.env.local
+.env*.local
+node_modules
+.next
+.vercel

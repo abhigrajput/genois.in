@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { createPortal } from 'react-dom';
 
 export default function NotificationBell({ token }) {
   const router = useRouter();
@@ -94,23 +95,22 @@ export default function NotificationBell({ token }) {
         )}
       </button>
 
-      {open && (
+      {open && typeof document !== 'undefined' && createPortal(
         <div style={{
-          position: 'absolute',
-          top: 'calc(100% + 8px)',
-          right: 0,
-          width: 360,
-          maxHeight: 480,
-          background: 'rgba(7,15,31,1)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
+          position: 'fixed',
+          top: 60,
+          right: 8,
+          width: 320,
+          maxHeight: 500,
+          background: '#070f1f',
           border: '1px solid rgba(0,240,255,0.25)',
           borderRadius: 12,
-          boxShadow: '0 12px 40px rgba(0,0,0,0.7)',
-          zIndex: 99999,
+          boxShadow: '0 16px 48px rgba(0,0,0,0.9)',
+          zIndex: 999999,
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
+          opacity: 1,
         }}>
           <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700, color: '#e8f4ff' }}>Notifications</div>
@@ -145,7 +145,8 @@ export default function NotificationBell({ token }) {
               View all & Settings →
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

@@ -1,6 +1,8 @@
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
+import { getCached, setCached, buildCacheKey } from '@/lib/aiCache';
+import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 
 async function callClaude(prompt) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -24,6 +26,7 @@ export async function GET(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
+    if (!rateLimit(`aptitude_daily_${payload.userId}`, 10, 60000)) return rateLimitResponse();
 
     const today = new Date().toISOString().split('T')[0];
     const prompt = `Generate exactly 3 daily aptitude questions — 1 quantitative, 1 logical reasoning, 1 verbal ability.
@@ -42,10 +45,15 @@ Return ONLY valid JSON array of exactly 3 questions:
   }
 ]`;
 
+    const cacheKey = buildCacheKey('daily_aptitude', today);
+    const cached = await getCached(cacheKey);
+    if (cached) return successResponse({ questions: cached, date: today, fromCache: true });
+
     const text = await callClaude(prompt);
     let questions = [];
     try {
       questions = JSON.parse(text.replace(/```json|```/g, '').trim());
+      setCached(cacheKey, questions, 24);
     } catch {
       return errorResponse('Failed to generate daily questions', 500);
     }

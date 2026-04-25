@@ -7,7 +7,6 @@ export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    console.log('RAZORPAY KEY ID:', process.env.RAZORPAY_KEY_ID?.substring(0,10));
 
     const {
       razorpay_order_id,
@@ -30,6 +29,11 @@ export async function POST(request) {
 
     const supabase = getAdminClient();
 
+    // Map amount to plan name
+    const PLAN_MAP = { 99: 'player', 199: 'performer', 499: 'dominator' };
+    const paidAmount = Math.round(amount / 100);
+    const namedPlan = PLAN_MAP[paidAmount] || 'player';
+
     // Calculate subscription end date
     const endDate = new Date();
     if (plan === 'annual') {
@@ -38,9 +42,14 @@ export async function POST(request) {
       endDate.setMonth(endDate.getMonth() + 1);
     }
 
-    // Activate premium on user
+    // Activate plan on user
+    const planLower = (namedPlan || plan || 'spectator').toLowerCase();
     await supabase.from('users')
-      .update({ plan: 'premium' })
+      .update({
+        plan: planLower,
+        subscription_plan: planLower,
+        plan_expires_at: endDate.toISOString(),
+      })
       .eq('id', payload.userId);
 
     // Upsert subscription record

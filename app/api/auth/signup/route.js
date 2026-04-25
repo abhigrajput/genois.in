@@ -3,17 +3,29 @@ import { Resend } from 'resend';
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { generateToken } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
+import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 
 export async function POST(request) {
   try {
     const body = await request.json();
     const { name, email, password, college, year, domainSlug, level, learningSpeed } = body;
 
+    if (!rateLimit(`signup_${request.headers.get('x-forwarded-for') || 'unknown'}`, 5, 3600000)) return rateLimitResponse();
+
     if (!name || !email || !password) {
       return errorResponse('Name, email and password are required', 400);
     }
+    if (!email.includes('@') || email.length > 255) {
+      return errorResponse('Invalid email address', 400);
+    }
+    if (name.trim().length < 2 || name.length > 100) {
+      return errorResponse('Name must be 2-100 characters', 400);
+    }
     if (password.length < 8) {
       return errorResponse('Password must be at least 8 characters', 400);
+    }
+    if (password.length > 255) {
+      return errorResponse('Password too long', 400);
     }
 
     const supabase = getAdminClient();
@@ -44,9 +56,9 @@ export async function POST(request) {
         domain_slug: domainSlug || 'fullstack',
         level: level || 'beginner',
         learning_speed: learningSpeed || 'normal',
-        plan: 'trial',
-        trial_start: trialStart.toISOString(),
-        trial_end: trialEnd.toISOString(),
+        subscription_plan: 'spectator',
+        is_on_trial: true,
+        trial_ends_at: trialEnd.toISOString(),
       })
       .select()
       .single();

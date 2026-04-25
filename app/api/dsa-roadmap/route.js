@@ -1,7 +1,7 @@
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
-import { DSA_CURRICULUM } from '@/lib/dsaCurriculum';
+import { DSA_LEVELS } from '@/lib/dsaCurriculumLevels';
 
 export async function GET(request) {
   try {
@@ -23,12 +23,16 @@ export async function GET(request) {
     const completedDays = (tasks || []).filter(t => t.completed_at).map(t => t.day_number);
     const currentDay = progress?.current_day || 1;
 
+    const userLevel = progress?.level || 'beginner';
+    const curriculum = DSA_LEVELS[userLevel] || DSA_LEVELS.beginner;
+    const currentDayData = curriculum.find(d => d.day === currentDay);
+
     return successResponse({
       progress: progress || { current_day: 1, language: 'cpp' },
       completedDays,
       currentDay,
-      totalDays: DSA_CURRICULUM.length,
-      currentDayData: DSA_CURRICULUM.find(d => d.day === currentDay),
+      totalDays: curriculum.length,
+      currentDayData,
     });
   } catch (error) {
     return errorResponse(error.message, 500);

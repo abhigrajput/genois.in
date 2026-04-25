@@ -2,6 +2,8 @@
 import { useState, useRef, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { mentorAPI } from '@/lib/api';
+import PermissionGate from '@/components/PermissionGate';
+import { usePermission } from '@/lib/usePermission';
 
 const MODES = [
   { value:'explain', label:'Explain Concept' },
@@ -20,6 +22,7 @@ const QUICK = {
 };
 
 export default function MentorPage() {
+  const { userPlan } = usePermission();
   const [mode, setMode] = useState('explain');
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
@@ -45,6 +48,7 @@ export default function MentorPage() {
   }
 
   return (
+    <PermissionGate feature="ai_mentor">
     <div className="w-full flex flex-col" style={{ maxWidth: 1600, margin: '0 auto', height:'calc(100vh - 120px)' }}>
       <div className="mb-4 flex-shrink-0">
         <h1 className="text-2xl font-bold mb-3">AI Mentor</h1>
@@ -97,5 +101,6 @@ export default function MentorPage() {
         <button onClick={() => send()} disabled={loading || !input.trim()} className="btn-primary px-5">Send</button>
       </div>
     </div>
+    </PermissionGate>
   );
 }

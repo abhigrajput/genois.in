@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import TrialBanner from '@/components/TrialBanner';
 import toast from 'react-hot-toast';
 import useAuthStore from '@/store/authStore';
 import { analyticsAPI } from '@/lib/api';
@@ -111,8 +112,11 @@ export default function DashboardPage() {
     { label:'JOB READY',    value: jobReadyPct,                  color:'#D85A30', suffix:'%' },
   ];
 
+  const isAdmin = user?.email?.toLowerCase().trim() === 'abhigrajput5@gmail.com';
+
   return (
     <div style={{ width: '100%', maxWidth: 1600, margin: '0 auto', display:'flex', flexDirection:'column', gap:20 }}>
+      <TrialBanner />
       {/* Heading */}
       <div>
         <h1 style={{ fontFamily:'Syne,sans-serif', fontSize:26, fontWeight:800, color:'#e8f4ff', margin:0, lineHeight:1.2 }}>
@@ -121,6 +125,11 @@ export default function DashboardPage() {
         <p style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, color:'#5a7a9a', marginTop:6, letterSpacing:0.5, marginBottom:12 }}>
           DAY {progress?.currentDay || 1} · {completedCount}/6 TASKS DONE TODAY
         </p>
+        {isAdmin && (
+          <a href="/admin" style={{ display: 'inline-block', padding: '8px 16px', borderRadius: 10, background: 'linear-gradient(135deg,rgba(0,240,255,0.1),rgba(123,92,255,0.05))', border: '1px solid rgba(0,240,255,0.3)', color: '#00f0ff', textDecoration: 'none', fontSize: 13, fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, marginBottom: 16 }}>
+            ⚙️ Admin Dashboard →
+          </a>
+        )}
         <div style={{ display: 'flex', gap: 8 }}>
           {user?.weeklyBadge === 'hire_ready' && (
             <div style={{

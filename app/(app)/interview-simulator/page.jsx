@@ -2,9 +2,12 @@
 import { useState, useEffect } from 'react';
 import { useToken, apiFetch } from '@/lib/useApi';
 import toast from 'react-hot-toast';
+import PermissionGate from '@/components/PermissionGate';
+import { usePermission } from '@/lib/usePermission';
 
 export default function InterviewSimulatorPage() {
   const { token, ready } = useToken();
+  const { userPlan } = usePermission();
   const [phase, setPhase] = useState('select');
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -277,6 +280,7 @@ export default function InterviewSimulatorPage() {
   const types = data?.companyTypes || {};
 
   return (
+    <PermissionGate feature="interview_simulator">
     <div style={{ fontFamily: 'Outfit,sans-serif', width: '100%' }}>
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 26, fontWeight: 800, color: '#e8f4ff', marginBottom: 4 }}>🎯 Interview Simulator</h1>
@@ -347,5 +351,6 @@ export default function InterviewSimulatorPage() {
         </div>
       )}
     </div>
+    </PermissionGate>
   );
 }

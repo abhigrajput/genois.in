@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import useAuthStore from '@/store/authStore';
 import { api } from '@/lib/api';
 
-export default function RazorpayButton({ plan, label, onSuccess, className }) {
+export default function RazorpayButton({ plan, amount: propAmount, label, onSuccess, className }) {
   const [loading, setLoading] = useState(false);
   const { user, updateUser } = useAuthStore();
 
@@ -22,8 +22,14 @@ export default function RazorpayButton({ plan, label, onSuccess, className }) {
   const handlePayment = async () => {
     setLoading(true);
     try {
+      let finalPlan = plan;
+      let finalAmount = propAmount || 0;
+      if (plan === 'basic' || plan === 'player') { finalPlan = 'player'; finalAmount = 99; }
+      else if (plan === 'pro' || plan === 'performer') { finalPlan = 'performer'; finalAmount = 199; }
+      else if (plan === 'elite' || plan === 'dominator') { finalPlan = 'dominator'; finalAmount = 499; }
+
       // Step 1: Create Razorpay order on server
-      const orderRes = await api.post('/api/payment/create-order', { plan });
+      const orderRes = await api.post('/api/payment/create-order', { plan: finalPlan, amount: finalAmount });
       const { orderId, amount, currency, keyId } = orderRes.data;
 
       // Step 2: Load Razorpay checkout script
@@ -57,7 +63,7 @@ export default function RazorpayButton({ plan, label, onSuccess, className }) {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
-              plan,
+              plan: finalPlan,
               amount,
             });
             if (verifyRes.data.verified) {

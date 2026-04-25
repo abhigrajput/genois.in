@@ -15,6 +15,9 @@ export async function POST(request) {
     if (!email || !password) {
       return errorResponse('Email and password are required', 400);
     }
+    if (!email.includes('@') || email.length > 255 || password.length > 255) {
+      return errorResponse('Invalid credentials format', 400);
+    }
 
     const supabase = getAdminClient();
 
@@ -91,7 +94,11 @@ export async function POST(request) {
     const { password_hash: _, ...safeUser } = user;
 
     return successResponse({
-      user: safeUser,
+      user: {
+        ...safeUser,
+        plan: user.subscription_plan || user.plan || 'spectator',
+        planExpiresAt: user.plan_expires_at || null,
+      },
       token,
       progress,
       score,

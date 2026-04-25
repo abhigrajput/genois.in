@@ -24,6 +24,9 @@ export default function LoginPage() {
       // Save token to localStorage explicitly
       if (typeof window !== 'undefined') {
         localStorage.setItem('genois_token', token);
+        localStorage.setItem('genois_plan', user?.plan || 'spectator');
+        // Set cookie for middleware auth check
+        document.cookie = `genois_token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
       }
       
       // Save to Zustand store
@@ -31,8 +34,10 @@ export default function LoginPage() {
       
       toast.success('Welcome back, ' + user.name.split(' ')[0] + '!');
       
-      // Force hard navigation to dashboard
-      window.location.href = '/dashboard';
+      // Redirect to original destination if redirected from protected route
+      const params = new URLSearchParams(window.location.search);
+      const redirect = params.get('redirect') || '/dashboard';
+      window.location.href = redirect;
     } catch (err) {
       setError(err.message || 'Invalid email or password');
     } finally {

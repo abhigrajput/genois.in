@@ -2,242 +2,277 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
+const S = { background:'#020812', color:'#e8f4ff', fontFamily:'Outfit,sans-serif', minHeight:'100vh' };
+const card = { background:'#070f1f', border:'1px solid rgba(0,240,255,0.08)', borderRadius:12, padding:20 };
+const mono = { fontFamily:'JetBrains Mono,monospace' };
+
 export default function AdminPage() {
   const router = useRouter();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState('overview');
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState('all');
-  const [sortBy, setSortBy] = useState('joined');
-  const [eliminating, setEliminating] = useState(false);
-  const [elimResult, setElimResult] = useState(null);
-  const [sendingEmail, setSendingEmail] = useState(null);
-
-  async function sendEmails(type) {
-    if (!confirm('Send ' + type + ' emails to all students?')) return;
-    setSendingEmail(type);
-    try {
-      const t = localStorage.getItem('genois_token');
-      const r = await fetch('/api/emails/send-daily', {
-        method: 'POST',
-        headers: { Authorization: 'Bearer ' + t, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type }),
-      });
-      const d = await r.json();
-      alert('Sent: ' + d.data?.sent + ' | Failed: ' + d.data?.failed);
-    } catch (e) {
-      alert('Error: ' + e.message);
-    }
-    setSendingEmail(null);
-  }
-
-  async function runElimination() {
-    if (!confirm('Run weekly elimination? This will update badges for ALL students.')) return;
-    setEliminating(true);
-    try {
-      const t = localStorage.getItem('genois_token');
-      const r = await fetch('/api/admin/elimination', {
-        method: 'POST',
-        headers: { Authorization: 'Bearer ' + t },
-      });
-      const d = await r.json();
-      setElimResult(d.data);
-      alert(`Done! Hire-Ready: ${d.data.hireReady} | Not Ready: ${d.data.notReady}`);
-    } catch (e) {
-      alert('Error: ' + e.message);
-    }
-    setEliminating(false);
-  }
+  const [userDetail, setUserDetail] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const t = localStorage.getItem('genois_token');
-    if (!t) { router.push('/login'); return; }
-    fetch('/api/admin/stats', {
-      headers: { Authorization: 'Bearer ' + t }
-    }).then(r => r.json()).then(d => {
-      if (!d.success) { router.push('/dashboard'); return; }
-      setData(d.data);
-      setLoading(false);
-    }).catch(() => router.push('/dashboard'));
+    const token = localStorage.getItem('genois_token');
+    if (!token) { router.push('/login'); return; }
+    fetch('/api/admin', { headers: { Authorization: 'Bearer ' + token } })
+      .then(r => r.json())
+      .then(d => { if (!d.success) setError(d.message || 'Unauthorized'); else setData(d.data); })
+      .catch(e => setError(e.message))
+      .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return (
-    <div style={{ minHeight: '100vh', background: '#020812', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#00f0ff', fontFamily: 'Syne,sans-serif', fontSize: 18 }}>
-      Loading admin panel...
-    </div>
+  async function loadUser(userId) {
+    const token = localStorage.getItem('genois_token');
+    const r = await fetch(`/api/admin/user?userId=${userId}`, { headers: { Authorization: 'Bearer ' + token } });
+    const d = await r.json();
+    setUserDetail(d.data);
+    setTab('user_detail');
+  }
+
+  if (loading) return <div style={{...S, display:'flex', alignItems:'center', justifyContent:'center', color:'#00f0ff', ...mono}}>Loading admin data...</div>;
+  if (error) return <div style={{...S, display:'flex', alignItems:'center', justifyContent:'center', color:'#ff2d78', fontFamily:'Syne,sans-serif', fontSize:20}}>{error}</div>;
+
+  const filtered = (data?.allUsers || []).filter(u =>
+    !search || u.name?.toLowerCase().includes(search.toLowerCase()) || u.email?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const filtered = (data?.users || [])
-    .filter(u => {
-      const q = search.toLowerCase();
-      const matchSearch = !q || u.name?.toLowerCase().includes(q) || u.email?.toLowerCase().includes(q) || u.college?.toLowerCase().includes(q);
-      const matchFilter =
-        filter === 'all' ? true :
-        filter === 'active' ? u.isActiveToday :
-        filter === 'inactive' ? u.isInactive :
-        filter === 'expiring' ? u.isTrialExpiring :
-        filter === 'paid' ? (u.plan !== 'trial' && u.plan !== 'free') :
-        true;
-      return matchSearch && matchFilter;
-    })
-    .sort((a, b) => {
-      if (sortBy === 'score') return b.totalScore - a.totalScore;
-      if (sortBy === 'streak') return b.streak - a.streak;
-      if (sortBy === 'day') return b.currentDay - a.currentDay;
-      return new Date(b.joinedAt) - new Date(a.joinedAt);
-    });
-
-  const s = data?.stats || {};
-  const card = { background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 20 };
+  const TABS = [
+    {key:'overview',label:'📊 Overview'},
+    {key:'users',label:'👥 Users'},
+    {key:'top',label:'🏆 Top Students'},
+    {key:'inactive',label:'😴 Inactive'},
+    {key:'revenue',label:'💰 Revenue'},
+  ];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#020812', color: '#e8f4ff', fontFamily: 'Outfit,sans-serif', padding: 24 }}>
-      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
+    <div style={S}>
+      {/* Header */}
+      <div style={{background:'#070f1f', borderBottom:'1px solid rgba(0,240,255,0.1)', padding:'14px 24px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, flexWrap:'wrap'}}>
+        <div style={{fontFamily:'Syne,sans-serif', fontSize:20, fontWeight:800, color:'#00f0ff'}}>⚙️ GENOIS Admin</div>
+        <div style={{fontSize:12, color:'#5a7a9a', ...mono}}>{data?.overview?.totalUsers} users · ₹{(data?.overview?.totalRevenue||0).toLocaleString()} revenue</div>
+        <button onClick={() => router.push('/dashboard')} style={{background:'transparent', border:'1px solid rgba(0,240,255,0.2)', color:'#00f0ff', cursor:'pointer', padding:'6px 14px', borderRadius:8, fontSize:12}}>← Dashboard</button>
+      </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
+      {/* Tabs */}
+      <div style={{display:'flex', gap:8, padding:'14px 24px', flexWrap:'wrap', borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
+        {TABS.map(t => (
+          <button key={t.key} onClick={() => setTab(t.key)} style={{padding:'7px 16px', borderRadius:20, border:'none', cursor:'pointer', background:tab===t.key?'#00f0ff':'rgba(255,255,255,0.05)', color:tab===t.key?'#020812':'#5a7a9a', fontFamily:'Syne,sans-serif', fontSize:13, fontWeight:600}}>
+            {t.label}
+          </button>
+        ))}
+        {userDetail && <button onClick={() => setTab('user_detail')} style={{padding:'7px 16px', borderRadius:20, border:'none', cursor:'pointer', background:tab==='user_detail'?'#EF9F27':'rgba(255,255,255,0.05)', color:tab==='user_detail'?'#020812':'#5a7a9a', fontFamily:'Syne,sans-serif', fontSize:13, fontWeight:600}}>👤 User Detail</button>}
+      </div>
+
+      <div style={{padding:'24px', maxWidth:1400, margin:'0 auto'}}>
+
+        {/* OVERVIEW */}
+        {tab === 'overview' && (
           <div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 28, fontWeight: 800, marginBottom: 4 }}>
-              <span style={{ color: '#00f0ff' }}>GEN</span><span style={{ color: '#e8f4ff' }}>OIS</span>
-              <span style={{ color: '#5a7a9a', fontSize: 14, fontWeight: 400, marginLeft: 12, fontFamily: 'JetBrains Mono,monospace' }}>ADMIN</span>
+            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))', gap:12, marginBottom:24}}>
+              {[
+                {label:'Total Users', value:data?.overview?.totalUsers, color:'#00f0ff'},
+                {label:'Active Today', value:data?.overview?.activeToday, color:'#1D9E75'},
+                {label:'New This Week', value:data?.overview?.newThisWeek, color:'#7b5cff'},
+                {label:'Avg Score', value:(data?.overview?.avgScore||0)+' pts', color:'#EF9F27'},
+                {label:'Active Streaks', value:data?.overview?.activeStreaks, color:'#ff2d78'},
+                {label:'Revenue (30d)', value:'₹'+(data?.overview?.totalRevenue||0).toLocaleString(), color:'#1D9E75'},
+                {label:'Aptitude Sessions', value:data?.overview?.aptitudeAttempts, color:'#378ADD'},
+                {label:'Interviews', value:data?.overview?.interviewAttempts, color:'#D85A30'},
+              ].map(s => (
+                <div key={s.label} style={{...card, textAlign:'center', border:`1px solid ${s.color}20`}}>
+                  <div style={{fontFamily:'Syne,sans-serif', fontSize:22, fontWeight:800, color:s.color}}>{s.value}</div>
+                  <div style={{fontSize:10, color:'#5a7a9a', marginTop:4, ...mono}}>{s.label}</div>
+                </div>
+              ))}
             </div>
-            <div style={{ color: '#5a7a9a', fontSize: 13 }}>Founder dashboard — only you can see this</div>
-          </div>
-          <div style={{ display: 'flex', gap: 12 }}>
-            <button
-              onClick={runElimination}
-              disabled={eliminating}
-              style={{
-                padding: '8px 16px',
-                borderRadius: 8,
-                border: 'none',
-                background: eliminating ? 'rgba(255,45,120,0.2)' : 'linear-gradient(135deg,#ff2d78,#EF9F27)',
-                color: '#fff',
-                cursor: eliminating ? 'not-allowed' : 'pointer',
-                fontFamily: 'Syne,sans-serif',
-                fontSize: 13,
-                fontWeight: 700,
-              }}>
-              {eliminating ? 'Running...' : '⚡ Run Weekly Elimination'}
-            </button>
-            <button onClick={() => sendEmails('daily_digest')} disabled={sendingEmail === 'daily_digest'} style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: 'rgba(0,240,255,0.12)', color: '#00f0ff', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 12, fontWeight: 700 }}>
-              {sendingEmail === 'daily_digest' ? 'Sending...' : '📧 Daily Digest'}
-            </button>
-            <button onClick={() => sendEmails('streak_break')} disabled={sendingEmail === 'streak_break'} style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: 'rgba(255,45,120,0.1)', color: '#ff2d78', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 12, fontWeight: 700 }}>
-              {sendingEmail === 'streak_break' ? 'Sending...' : '🔥 Streak Break'}
-            </button>
-            <button onClick={() => sendEmails('trial_expiry')} disabled={sendingEmail === 'trial_expiry'} style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: 'rgba(239,159,39,0.1)', color: '#EF9F27', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 12, fontWeight: 700 }}>
-              {sendingEmail === 'trial_expiry' ? 'Sending...' : '⚠️ Trial Expiry'}
-            </button>
-            <button onClick={() => window.open('/correlation', '_blank')} style={{ padding: '8px 14px', borderRadius: 8, border: 'none', background: 'rgba(0,240,255,0.1)', color: '#00f0ff', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 12, fontWeight: 700 }}>
-              📈 Correlation Data
-            </button>
-            <button onClick={() => router.push('/dashboard')} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', background: 'transparent', color: '#00f0ff', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 13 }}>
-              Back to App
-            </button>
-          </div>
-        </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))', gap: 12, marginBottom: 28 }}>
-          {[
-            { label: 'Total Students', value: s.totalUsers || 0, color: '#00f0ff' },
-            { label: 'Active Today', value: s.activeToday || 0, color: '#1D9E75' },
-            { label: 'Inactive 7d+', value: s.inactiveUsers || 0, color: '#ff2d78' },
-            { label: 'On Trial', value: s.trialUsers || 0, color: '#EF9F27' },
-            { label: 'Paid Users', value: s.paidUsers || 0, color: '#7b5cff' },
-            { label: 'Trial Expiring', value: s.expiringTrials || 0, color: '#D85A30' },
-          ].map(st => (
-            <div key={st.label} style={{ ...card, textAlign: 'center' }}>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 32, fontWeight: 800, color: st.color }}>{st.value}</div>
-              <div style={{ fontSize: 12, color: '#5a7a9a', marginTop: 4 }}>{st.label}</div>
-            </div>
-          ))}
-        </div>
-
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 16, alignItems: 'center' }}>
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name email college..." style={{ flex: 1, minWidth: 200, padding: '9px 14px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8f4ff', fontSize: 13, outline: 'none' }} />
-          <select value={filter} onChange={e => setFilter(e.target.value)} style={{ padding: '9px 14px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.15)', background: '#070f1f', color: '#e8f4ff', fontSize: 13, outline: 'none' }}>
-            <option value="all">All Students</option>
-            <option value="active">Active Today</option>
-            <option value="inactive">Inactive 7d+</option>
-            <option value="expiring">Trial Expiring</option>
-            <option value="paid">Paid Users</option>
-          </select>
-          <select value={sortBy} onChange={e => setSortBy(e.target.value)} style={{ padding: '9px 14px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.15)', background: '#070f1f', color: '#e8f4ff', fontSize: 13, outline: 'none' }}>
-            <option value="joined">Latest Joined</option>
-            <option value="score">Highest Score</option>
-            <option value="streak">Longest Streak</option>
-            <option value="day">Furthest Day</option>
-          </select>
-          <div style={{ fontSize: 13, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>{filtered.length} students</div>
-        </div>
-
-        <div style={{ ...card, padding: 0, overflow: 'hidden' }}>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid rgba(0,240,255,0.1)' }}>
-                  {['Student','College','Domain','Plan','Day','Streak','Score','Last Active','Trial Left','Status'].map(h => (
-                    <th key={h} style={{ padding: '12px 16px', textAlign: 'left', color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', fontSize: 10, letterSpacing: 1, whiteSpace: 'nowrap' }}>{h.toUpperCase()}</th>
-                  ))}
-                  <th style={{ padding: '12px 16px', textAlign: 'left', color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', fontSize: 10, letterSpacing: 1, whiteSpace: 'nowrap' }}>BADGE</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((u, i) => (
-                  <tr key={u.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)', background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.01)' }}>
-                    <td style={{ padding: '12px 16px', whiteSpace: 'nowrap' }}>
-                      <div style={{ fontWeight: 600, color: '#e8f4ff' }}>{u.name}</div>
-                      <div style={{ fontSize: 11, color: '#5a7a9a', marginTop: 1 }}>{u.email}</div>
-                    </td>
-                    <td style={{ padding: '12px 16px', color: '#8a9ab0', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{u.college || '—'}</td>
-                    <td style={{ padding: '12px 16px' }}>
-                      <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: 11, background: 'rgba(0,240,255,0.08)', color: '#00f0ff', fontFamily: 'JetBrains Mono,monospace' }}>{u.domain}</span>
-                    </td>
-                    <td style={{ padding: '12px 16px' }}>
-                      <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: 11, background: u.plan === 'pro' ? 'rgba(0,240,255,0.1)' : u.plan === 'elite' ? 'rgba(123,92,255,0.1)' : 'rgba(255,255,255,0.05)', color: u.plan === 'pro' ? '#00f0ff' : u.plan === 'elite' ? '#7b5cff' : '#5a7a9a' }}>{u.plan}</span>
-                    </td>
-                    <td style={{ padding: '12px 16px', color: '#e8f4ff', fontFamily: 'JetBrains Mono,monospace', textAlign: 'center' }}>{u.currentDay}</td>
-                    <td style={{ padding: '12px 16px', color: '#EF9F27', fontFamily: 'JetBrains Mono,monospace', textAlign: 'center' }}>🔥{u.streak}</td>
-                    <td style={{ padding: '12px 16px', color: '#7b5cff', fontFamily: 'Syne,sans-serif', fontWeight: 700, textAlign: 'center' }}>{u.totalScore}</td>
-                    <td style={{ padding: '12px 16px', color: '#5a7a9a', fontSize: 12, whiteSpace: 'nowrap' }}>
-                      {u.isActiveToday ? <span style={{ color: '#1D9E75' }}>Today</span> : u.lastActive || '—'}
-                    </td>
-                    <td style={{ padding: '12px 16px', textAlign: 'center' }}>
-                      {u.trialDaysLeft !== null ? (
-                        <span style={{ fontSize: 12, color: u.isTrialExpired ? '#ff2d78' : u.isTrialExpiring ? '#EF9F27' : '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>
-                          {u.isTrialExpired ? 'EXPIRED' : u.trialDaysLeft + 'd'}
-                        </span>
-                      ) : '—'}
-                    </td>
-                    <td style={{ padding: '12px 16px' }}>
-                      <span style={{ padding: '3px 10px', borderRadius: 20, fontSize: 11, fontFamily: 'JetBrains Mono,monospace', background: u.isActiveToday ? 'rgba(29,158,117,0.15)' : u.isInactive ? 'rgba(255,45,120,0.1)' : 'rgba(255,255,255,0.05)', color: u.isActiveToday ? '#1D9E75' : u.isInactive ? '#ff2d78' : '#5a7a9a' }}>
-                        {u.isActiveToday ? 'ACTIVE' : u.isInactive ? 'INACTIVE' : 'IDLE'}
-                      </span>
-                    </td>
-                    <td style={{ padding: '12px 16px' }}>
-                      {u.weeklyBadge === 'hire_ready' && (
-                        <span style={{ padding: '3px 10px', borderRadius: 20, fontSize: 10, fontFamily: 'JetBrains Mono,monospace', background: 'rgba(29,158,117,0.15)', color: '#1D9E75', border: '1px solid rgba(29,158,117,0.3)' }}>
-                          ✓ HIRE-READY
-                        </span>
-                      )}
-                      {u.weeklyBadge === 'not_ready' && (
-                        <span style={{ padding: '3px 10px', borderRadius: 20, fontSize: 10, fontFamily: 'JetBrains Mono,monospace', background: 'rgba(255,45,120,0.1)', color: '#ff2d78', border: '1px solid rgba(255,45,120,0.2)' }}>
-                          ✗ NOT READY
-                        </span>
-                      )}
-                      {!u.weeklyBadge && (
-                        <span style={{ color: '#3a4a5a', fontSize: 11, fontFamily: 'JetBrains Mono,monospace' }}>—</span>
-                      )}
-                    </td>
-                  </tr>
+            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:16}}>
+              <div style={card}>
+                <div style={{...mono, fontSize:10, color:'#00f0ff', letterSpacing:2, marginBottom:14}}>PLAN BREAKDOWN</div>
+                {Object.entries(data?.planBreakdown||{}).sort((a,b)=>b[1]-a[1]).map(([plan,count]) => (
+                  <div key={plan} style={{display:'flex', justifyContent:'space-between', padding:'8px 0', borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
+                    <span style={{fontSize:13, color:'#c8d8e8', textTransform:'capitalize'}}>{plan}</span>
+                    <span style={{fontSize:13, fontWeight:700, color:'#00f0ff', fontFamily:'Syne,sans-serif'}}>{count}</span>
+                  </div>
                 ))}
-              </tbody>
-            </table>
-            {filtered.length === 0 && (
-              <div style={{ padding: 48, textAlign: 'center', color: '#5a7a9a' }}>No students found</div>
-            )}
+              </div>
+
+              <div style={{...card, border:'1px solid rgba(123,92,255,0.1)'}}>
+                <div style={{...mono, fontSize:10, color:'#7b5cff', letterSpacing:2, marginBottom:14}}>DOMAIN BREAKDOWN</div>
+                {Object.entries(data?.domainBreakdown||{}).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([d,c]) => (
+                  <div key={d} style={{display:'flex', justifyContent:'space-between', padding:'7px 0', borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
+                    <span style={{fontSize:12, color:'#c8d8e8', textTransform:'capitalize'}}>{d}</span>
+                    <span style={{fontSize:12, fontWeight:700, color:'#7b5cff'}}>{c}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{...card, border:'1px solid rgba(29,158,117,0.1)'}}>
+                <div style={{...mono, fontSize:10, color:'#1D9E75', letterSpacing:2, marginBottom:14}}>RECENT SIGNUPS</div>
+                {(data?.recentUsers||[]).slice(0,8).map((u,i) => (
+                  <div key={i} style={{display:'flex', justifyContent:'space-between', padding:'7px 0', borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
+                    <span style={{fontSize:12, color:'#c8d8e8'}}>{u.name||'Unknown'}</span>
+                    <span style={{fontSize:11, color:'#5a7a9a', ...mono}}>{new Date(u.created_at).toLocaleDateString('en-IN')}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* USERS */}
+        {tab === 'users' && (
+          <div>
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name or email..." style={{width:'100%', padding:'11px 16px', borderRadius:10, border:'1px solid rgba(0,240,255,0.15)', background:'#070f1f', color:'#e8f4ff', fontSize:14, outline:'none', marginBottom:16, boxSizing:'border-box'}} />
+            <div style={{...card, padding:0, overflow:'hidden'}}>
+              <div style={{display:'grid', gridTemplateColumns:'2fr 2.5fr 1fr 1fr 1fr 1fr', padding:'10px 16px', borderBottom:'1px solid rgba(255,255,255,0.06)', ...mono, fontSize:10, color:'#5a7a9a', letterSpacing:1}}>
+                <span>NAME</span><span>EMAIL</span><span>PLAN</span><span>SCORE</span><span>DAY</span><span>🔥</span>
+              </div>
+              {filtered.slice(0,60).map((u,i) => (
+                <div key={i} onClick={() => loadUser(u.id)} style={{display:'grid', gridTemplateColumns:'2fr 2.5fr 1fr 1fr 1fr 1fr', padding:'11px 16px', borderBottom:'1px solid rgba(255,255,255,0.02)', cursor:'pointer', background:i%2===0?'transparent':'rgba(255,255,255,0.01)'}}>
+                  <span style={{fontSize:13, color:'#e8f4ff', fontWeight:600}}>{u.name||'—'}</span>
+                  <span style={{fontSize:11, color:'#5a7a9a', ...mono}}>{u.email}</span>
+                  <span style={{fontSize:11, color:'#00f0ff', ...mono, textTransform:'uppercase'}}>{u.subscription_plan||u.plan||'free'}</span>
+                  <span style={{fontSize:12, color:'#EF9F27', fontWeight:700}}>{u.score}</span>
+                  <span style={{fontSize:12, color:'#7b5cff'}}>{u.currentDay}</span>
+                  <span style={{fontSize:12, color:'#ff2d78'}}>{u.streak}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* TOP STUDENTS */}
+        {tab === 'top' && (
+          <div>
+            <div style={{...mono, fontSize:11, color:'#5a7a9a', letterSpacing:2, marginBottom:14}}>TOP 20 STUDENTS BY SCORE</div>
+            <div style={{display:'flex', flexDirection:'column', gap:8}}>
+              {(data?.topStudents||[]).map((u,i) => (
+                <div key={i} onClick={() => loadUser(u.id)} style={{...card, border:`1px solid ${i<3?'rgba(239,159,39,0.2)':'rgba(255,255,255,0.04)'}`, display:'flex', alignItems:'center', gap:14, cursor:'pointer', flexWrap:'wrap'}}>
+                  <div style={{width:32, height:32, borderRadius:8, background:i===0?'#EF9F27':i===1?'#888':i===2?'#D85A30':'rgba(255,255,255,0.05)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Syne,sans-serif', fontSize:14, fontWeight:700, color:i<3?'#020812':'#5a7a9a', flexShrink:0}}>{i+1}</div>
+                  <div style={{flex:1, minWidth:140}}>
+                    <div style={{fontSize:14, fontWeight:600, color:'#e8f4ff'}}>{u.name}</div>
+                    <div style={{fontSize:11, color:'#5a7a9a'}}>{u.email} · {u.subscription_plan||'free'}</div>
+                  </div>
+                  <div style={{textAlign:'right'}}>
+                    <div style={{fontFamily:'Syne,sans-serif', fontSize:18, fontWeight:800, color:'#EF9F27'}}>{u.score} pts</div>
+                    <div style={{fontSize:11, color:'#5a7a9a', ...mono}}>Day {u.currentDay} · {u.streak}🔥</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* INACTIVE */}
+        {tab === 'inactive' && (
+          <div>
+            <div style={{...mono, fontSize:11, color:'#ff2d78', letterSpacing:2, marginBottom:14}}>INACTIVE USERS — 7+ DAYS</div>
+            <div style={{display:'flex', flexDirection:'column', gap:8}}>
+              {(data?.inactiveUsers||[]).map((u,i) => (
+                <div key={i} onClick={() => loadUser(u.id)} style={{...card, border:'1px solid rgba(255,45,120,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:10, cursor:'pointer'}}>
+                  <div>
+                    <div style={{fontSize:13, fontWeight:600, color:'#e8f4ff'}}>{u.name||'Unknown'}</div>
+                    <div style={{fontSize:11, color:'#5a7a9a'}}>{u.email}</div>
+                  </div>
+                  <div style={{textAlign:'right'}}>
+                    <div style={{fontSize:11, color:'#ff2d78', ...mono}}>Last: {u.lastActive ? new Date(u.lastActive).toLocaleDateString('en-IN') : 'Never'}</div>
+                    <div style={{fontSize:11, color:'#5a7a9a'}}>Score: {u.score} · Day {u.currentDay}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* REVENUE */}
+        {tab === 'revenue' && (
+          <div>
+            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))', gap:12, marginBottom:20}}>
+              {[
+                {label:'Total Revenue', value:'₹'+(data?.overview?.totalRevenue||0).toLocaleString(), color:'#1D9E75'},
+                {label:'Paid Users', value:Object.entries(data?.planBreakdown||{}).filter(([k])=>k!=='spectator'&&k!=='free').reduce((s,[,v])=>s+v,0), color:'#00f0ff'},
+              ].map(s => (
+                <div key={s.label} style={{...card, textAlign:'center', border:`1px solid ${s.color}20`}}>
+                  <div style={{fontFamily:'Syne,sans-serif', fontSize:28, fontWeight:800, color:s.color}}>{s.value}</div>
+                  <div style={{fontSize:11, color:'#5a7a9a', marginTop:4, ...mono}}>{s.label}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{...card, padding:0, overflow:'hidden'}}>
+              <div style={{padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.04)', ...mono, fontSize:10, color:'#1D9E75', letterSpacing:2}}>RECENT SUBSCRIPTIONS</div>
+              {(data?.recentPayments||[]).length===0
+                ? <div style={{padding:32, textAlign:'center', color:'#5a7a9a', fontSize:13}}>No payments yet</div>
+                : (data?.recentPayments||[]).map((p,i) => (
+                  <div key={i} style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.02)', flexWrap:'wrap', gap:8}}>
+                    <div>
+                      <div style={{fontSize:13, color:'#e8f4ff', textTransform:'capitalize'}}>{p.plan||'Unknown'}</div>
+                      <div style={{fontSize:11, color:'#5a7a9a', ...mono}}>{p.updated_at ? new Date(p.updated_at).toLocaleDateString('en-IN') : '—'}</div>
+                    </div>
+                    <div style={{fontFamily:'Syne,sans-serif', fontSize:16, fontWeight:700, color:'#1D9E75'}}>₹{p.amount||0}</div>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+        )}
+
+        {/* USER DETAIL */}
+        {tab === 'user_detail' && userDetail && (
+          <div>
+            <button onClick={() => setTab('users')} style={{background:'transparent', border:'none', color:'#00f0ff', cursor:'pointer', fontSize:13, fontFamily:'Syne,sans-serif', fontWeight:600, marginBottom:16}}>← Back to Users</button>
+            <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:16}}>
+              <div style={{...card, border:'1px solid rgba(0,240,255,0.1)'}}>
+                <div style={{...mono, fontSize:10, color:'#00f0ff', letterSpacing:2, marginBottom:14}}>STUDENT PROFILE</div>
+                {[
+                  ['Name', userDetail.user?.name],
+                  ['Email', userDetail.user?.email],
+                  ['Domain', userDetail.user?.domain_slug],
+                  ['Plan', userDetail.user?.subscription_plan||userDetail.user?.plan||'spectator'],
+                  ['Score', (userDetail.score?.total_score||0)+' pts'],
+                  ['Day', 'Day '+(userDetail.progress?.current_day||0)],
+                  ['Streak', (userDetail.progress?.streak||0)+' days 🔥'],
+                  ['Joined', userDetail.user?.created_at ? new Date(userDetail.user.created_at).toLocaleDateString('en-IN') : '—'],
+                ].map(([label,val]) => (
+                  <div key={label} style={{display:'flex', justifyContent:'space-between', padding:'8px 0', borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
+                    <span style={{fontSize:12, color:'#5a7a9a', ...mono}}>{label}</span>
+                    <span style={{fontSize:12, color:'#e8f4ff', fontWeight:600}}>{val||'N/A'}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div style={{...card, border:'1px solid rgba(239,159,39,0.1)'}}>
+                <div style={{...mono, fontSize:10, color:'#EF9F27', letterSpacing:2, marginBottom:14}}>APTITUDE HISTORY</div>
+                {!userDetail.aptitudeSessions?.length
+                  ? <div style={{color:'#5a7a9a', fontSize:13}}>No sessions yet</div>
+                  : userDetail.aptitudeSessions.map((s,i) => (
+                    <div key={i} style={{display:'flex', justifyContent:'space-between', padding:'6px 0', borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
+                      <span style={{fontSize:12, color:'#c8d8e8'}}>{s.topic||'Session'}</span>
+                      <span style={{fontSize:12, color:'#EF9F27', fontWeight:700}}>{s.score}%</span>
+                    </div>
+                  ))
+                }
+              </div>
+
+              <div style={{...card, border:'1px solid rgba(255,45,120,0.1)'}}>
+                <div style={{...mono, fontSize:10, color:'#ff2d78', letterSpacing:2, marginBottom:14}}>INTERVIEW HISTORY</div>
+                {!userDetail.interviewSessions?.length
+                  ? <div style={{color:'#5a7a9a', fontSize:13}}>No interviews yet</div>
+                  : userDetail.interviewSessions.map((s,i) => (
+                    <div key={i} style={{display:'flex', justifyContent:'space-between', padding:'6px 0', borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
+                      <span style={{fontSize:12, color:'#c8d8e8'}}>{s.company_name||'Unknown'}</span>
+                      <span style={{fontSize:12, color:s.verdict==='SELECTED'?'#1D9E75':'#ff2d78', fontWeight:700}}>{s.verdict||'Incomplete'}</span>
+                    </div>
+                  ))
+                }
+              </div>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

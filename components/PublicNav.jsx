@@ -78,8 +78,8 @@ export default function PublicNav() {
         </div>
 
         {isLoggedIn ? (
-          <Link href="/dashboard" style={{ padding: '7px 16px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', color: '#00f0ff', textDecoration: 'none', fontSize: 13, fontFamily: 'Syne,sans-serif', fontWeight: 600 }}>
-            Dashboard →
+          <Link href="/dashboard" style={{ padding: '7px 14px', borderRadius: 8, background: 'rgba(0,240,255,0.1)', color: '#00f0ff', textDecoration: 'none', fontSize: 13, fontFamily: 'Syne,sans-serif', fontWeight: 600 }}>
+            Dashboard
           </Link>
         ) : (
           <>
@@ -120,8 +120,8 @@ export default function PublicNav() {
             </Link>
           ))}
           {isLoggedIn ? (
-            <Link href="/dashboard" onClick={() => setMenuOpen(false)} style={{ padding: '11px 14px', borderRadius: 8, background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', textDecoration: 'none', fontSize: 15, fontFamily: 'Syne,sans-serif', fontWeight: 700, textAlign: 'center' }}>
-              Dashboard →
+            <Link href="/dashboard" onClick={() => setMenuOpen(false)} style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(0,240,255,0.1)', color: '#00f0ff', textDecoration: 'none', fontSize: 15, fontFamily: 'Syne,sans-serif', fontWeight: 600, textAlign: 'center' }}>
+              Dashboard
             </Link>
           ) : (
             <>

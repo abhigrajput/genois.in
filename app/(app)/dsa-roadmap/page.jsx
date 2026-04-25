@@ -1,15 +1,24 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useToken, apiFetch } from '@/lib/useApi';
-import { DSA_CURRICULUM } from '@/lib/dsaCurriculum';
+import { DSA_LEVELS } from '@/lib/dsaCurriculumLevels';
 import toast from 'react-hot-toast';
+import PermissionGate from '@/components/PermissionGate';
+import { usePermission } from '@/lib/usePermission';
 
 export default function DSARoadmapPage() {
   const { token, ready } = useToken();
+  const { userPlan } = usePermission();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [viewDay, setViewDay] = useState(null);
   const [taskState, setTaskState] = useState({});
+
+  const [phase, setPhase] = useState('check');
+  const [diagnostic, setDiagnostic] = useState(null);
+  const [theoryAnswers, setTheoryAnswers] = useState({});
+  const [codingAnswers, setCodingAnswers] = useState({});
+  const [diagnosticStep, setDiagnosticStep] = useState(0);
 
   useEffect(() => {
     if (!ready || !token) return;
@@ -21,6 +30,13 @@ export default function DSARoadmapPage() {
       const r = await apiFetch('/api/dsa-roadmap', token);
       setData(r.data);
       setViewDay(r.data.currentDay);
+      if (!r.data.progress?.level) {
+        const diagR = await apiFetch('/api/dsa-roadmap/diagnostic', token);
+        setDiagnostic(diagR.data);
+        setPhase('diagnostic');
+      } else {
+        setPhase('roadmap');
+      }
       setLoading(false);
     } catch { setLoading(false); }
   }
@@ -46,7 +62,64 @@ export default function DSARoadmapPage() {
     } catch (e) { toast.error(e.message); }
   }
 
-  if (loading) return <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center' }}>Loading DSA roadmap...</div>;
+  async function submitDiagnostic() {
+    setLoading(true);
+    try {
+      const r = await apiFetch('/api/dsa-roadmap/diagnostic', token, 'POST', {
+        theoryAnswers: Object.values(theoryAnswers),
+        codingAnswers: Object.values(codingAnswers),
+      });
+      toast.success(r.data.message);
+      load();
+    } catch (e) {
+      toast.error(e.message);
+      setLoading(false);
+    }
+  }
+
+  if (loading || phase === 'check') return <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center' }}>Loading DSA roadmap...</div>;
+
+  if (phase === 'diagnostic') {
+    if (!diagnostic) return null;
+    const totalTheory = diagnostic.theoryQuestions.length;
+    const totalCoding = diagnostic.codingQuestions.length;
+    return (
+      <div style={{ maxWidth: 640, margin: '0 auto', fontFamily: 'Outfit,sans-serif' }}>
+        <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 20 }}>Diagnostic Test</h1>
+        {diagnosticStep < totalTheory ? (
+          <div>
+            <p style={{ color: '#5a7a9a', marginBottom: 10 }}>Theory Question {diagnosticStep + 1} of {totalTheory}</p>
+            <div style={{ fontSize: 18, color: '#e8f4ff', marginBottom: 20 }}>{diagnostic.theoryQuestions[diagnosticStep].question}</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {diagnostic.theoryQuestions[diagnosticStep].options.map((opt, i) => (
+                <button key={i} onClick={() => {
+                  setTheoryAnswers({ ...theoryAnswers, [diagnosticStep]: opt });
+                  setDiagnosticStep(diagnosticStep + 1);
+                }} style={{ padding: 14, borderRadius: 8, background: '#070f1f', border: '1px solid rgba(0,240,255,0.2)', color: '#e8f4ff', textAlign: 'left', cursor: 'pointer' }}>{opt}</button>
+              ))}
+            </div>
+          </div>
+        ) : diagnosticStep < totalTheory + totalCoding ? (
+          <div>
+            <p style={{ color: '#5a7a9a', marginBottom: 10 }}>Coding Question {diagnosticStep - totalTheory + 1} of {totalCoding}</p>
+            <div style={{ fontSize: 18, color: '#e8f4ff', marginBottom: 20 }}>{diagnostic.codingQuestions[diagnosticStep - totalTheory].problem}</div>
+            <textarea 
+              value={codingAnswers[diagnosticStep - totalTheory] || ''}
+              onChange={(e) => setCodingAnswers({ ...codingAnswers, [diagnosticStep - totalTheory]: e.target.value })}
+              style={{ width: '100%', height: 150, background: '#070f1f', border: '1px solid rgba(0,240,255,0.2)', color: '#e8f4ff', padding: 14, borderRadius: 8, marginBottom: 20 }}
+              placeholder="Write your logic/code here..."
+            />
+            <button onClick={() => setDiagnosticStep(diagnosticStep + 1)} style={{ padding: '12px 24px', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer' }}>Next</button>
+          </div>
+        ) : (
+          <div style={{ textAlign: 'center' }}>
+            <h2 style={{ color: '#e8f4ff', marginBottom: 20 }}>Test Complete</h2>
+            <button onClick={submitDiagnostic} style={{ padding: '14px 32px', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', border: 'none', borderRadius: 12, fontWeight: 700, cursor: 'pointer', fontSize: 16 }}>Submit & Get Level</button>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   if (!data?.progress || data.progress.current_day === 0) {
     return (
@@ -63,7 +136,8 @@ export default function DSARoadmapPage() {
     );
   }
 
-  const dayData = DSA_CURRICULUM.find(d => d.day === viewDay) || DSA_CURRICULUM[0];
+  const curriculum = DSA_LEVELS[data?.progress?.level || 'beginner'] || DSA_LEVELS.beginner;
+  const dayData = curriculum.find(d => d.day === viewDay) || curriculum[0];
   const isCompleted = data.completedDays?.includes(viewDay);
   const isCurrentOrPast = viewDay <= data.currentDay;
   const diffColor = dayData.difficulty === 'easy' ? '#1D9E75' : dayData.difficulty === 'medium' ? '#EF9F27' : '#ff2d78';
@@ -77,6 +151,7 @@ export default function DSARoadmapPage() {
   ];
 
   return (
+    <PermissionGate feature="dsa_roadmap">
     <div style={{ fontFamily: 'Outfit,sans-serif', width: '100%' }}>
       <div style={{ marginBottom: 20 }}>
         <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 4 }}>📘 DSA Roadmap</h1>
@@ -100,7 +175,7 @@ export default function DSARoadmapPage() {
             <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: '#e8f4ff' }}>{dayData.topic}</div>
           </div>
           <span style={{ fontSize: 10, padding: '3px 10px', borderRadius: 20, background: `${diffColor}15`, color: diffColor, fontFamily: 'JetBrains Mono,monospace', alignSelf: 'flex-start' }}>
-            {dayData.difficulty.toUpperCase()}
+            {(dayData?.difficulty || 'easy').toUpperCase()}
           </span>
         </div>
 
@@ -139,7 +214,7 @@ export default function DSARoadmapPage() {
 
       <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#5a7a9a', letterSpacing: 2, marginBottom: 10 }}>ALL 90 DAYS</div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(48px,1fr))', gap: 4 }}>
-        {DSA_CURRICULUM.map(d => {
+        {curriculum.map(d => {
           const isDone = data.completedDays?.includes(d.day);
           const isCurrent = d.day === data.currentDay;
           const isLocked = d.day > data.currentDay;
@@ -151,5 +226,6 @@ export default function DSARoadmapPage() {
         })}
       </div>
     </div>
+    </PermissionGate>
   );
 }

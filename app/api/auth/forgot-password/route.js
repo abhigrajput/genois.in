@@ -3,16 +3,15 @@ import { successResponse, errorResponse } from '@/lib/response';
 import { Resend } from 'resend';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 function generateToken() {
   return Math.random().toString(36).substring(2) + Date.now().toString(36) + Math.random().toString(36).substring(2);
 }
 
 export async function POST(request) {
+  const resend = new Resend(process.env.RESEND_API_KEY);
   try {
     const ip = request.headers.get('x-forwarded-for') || 'unknown';
-    if (!rateLimit('forgot_' + ip, 5, 60000)) return rateLimitResponse();
+    if (!rateLimit('forgot_' + ip, 3, 3600000)) return rateLimitResponse();
 
     const { email } = await request.json();
     if (!email) return errorResponse('Email required', 400);
