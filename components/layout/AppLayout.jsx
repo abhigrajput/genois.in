@@ -12,6 +12,7 @@ const NAV_GROUPS = [
     label: 'MAIN',
     items: [
       { href:'/dashboard', label:'Dashboard', icon:'▦', color:'#7F77DD' },
+      { href:'/streak-rewards', label:'Streak Rewards', icon:'🔥', color:'#EF9F27' },
       { href:'/roadmap', label:'Daily Roadmap', icon:'◈', color:'#1D9E75' },
       { href:'/custom-roadmap', label:'Custom Roadmap', icon:'🗺️', color:'#1D9E75' },
     ]
@@ -62,6 +63,7 @@ const NAV_GROUPS = [
   {
     label: 'CAREER',
     items: [
+      { href:'/companies', label:'Company Prep', icon:'🎯', color:'#00f0ff' },
       { href:'/mock-interview', label:'Mock Interview', icon:'🎤', color:'#1D9E75' },
       { href:'/challenges', label:'Company Challenges', icon:'🏢', color:'#378ADD' },
       { href:'/prep-packs', label:'Company Prep', icon:'📦', color:'#378ADD' },
@@ -85,6 +87,7 @@ const NAV_GROUPS = [
     label: 'ACCOUNT',
     items: [
       { href:'/subscription', label:'Subscription', icon:'⭐', color:'#EF9F27' },
+      { href:'/referral', label:'Refer & Earn', icon:'🎁', color:'#1D9E75' },
       { href:'/legend', label:'Legend Access', icon:'👑', color:'#7b5cff' },
     ]
   },

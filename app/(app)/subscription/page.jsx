@@ -119,8 +119,27 @@ const PLANS = [
 export default function SubscriptionPage() {
   const { user, updateUser } = useAuthStore();
 
-  const PLAN_RANK = { spectator: 0, trial: 0, free: 0, basic: 1, player: 1, pro: 2, performer: 2, elite: 3, dominator: 3 };
-  const getCurrentRank = () => PLAN_RANK[(status?.plan || user?.plan || 'spectator').toLowerCase()] ?? 0;
+  const [currentPlan, setCurrentPlan] = useState('spectator');
+  const [status, setStatus] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [upgradeModal, setUpgradeModal] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('genois_token');
+    if (!token) return;
+    
+    fetch('/api/user/me', { headers: { Authorization: 'Bearer ' + token } })
+      .then(r => r.json())
+      .then(d => {
+        const plan = (d.data?.user?.subscription_plan || 'spectator').toLowerCase();
+        setCurrentPlan(plan);
+        console.log('Current plan loaded:', plan);
+      })
+      .catch(() => {});
+  }, []);
+
+  const PLAN_RANK = { spectator: 0, trial: 0, free: 0, basic: 1, player: 1, pro: 2, performer: 2, elite: 3, dominator: 3, premium: 1 };
+  const getCurrentRank = () => PLAN_RANK[(currentPlan || status?.subscription?.plan || user?.subscription_plan || status?.plan || user?.plan || 'spectator').toLowerCase()] ?? 0;
 
   const getButtonState = (planSlug) => {
     const targetRank = PLAN_RANK[planSlug.toLowerCase()] ?? 0;
@@ -130,9 +149,7 @@ export default function SubscriptionPage() {
     if (targetRank < currentRank) return { label: 'Lower Plan', disabled: true, isCurrent: false };
     return { label: 'Upgrade →', disabled: false, isCurrent: false };
   };
-  const [status, setStatus] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [upgradeModal, setUpgradeModal] = useState(null);
+
 
   useEffect(() => {
     subscriptionAPI.getStatus()

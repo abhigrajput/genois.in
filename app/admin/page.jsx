@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 const S = { background:'#020812', color:'#e8f4ff', fontFamily:'Outfit,sans-serif', minHeight:'100vh' };
 const card = { background:'#070f1f', border:'1px solid rgba(0,240,255,0.08)', borderRadius:12, padding:20 };
@@ -31,6 +32,47 @@ export default function AdminPage() {
     const d = await r.json();
     setUserDetail(d.data);
     setTab('user_detail');
+  }
+
+  async function extendTrial(userId, days) {
+    const token = localStorage.getItem('genois_token');
+    const r = await fetch('/api/admin/trial', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ userId, action: 'extend', days })
+    });
+    const d = await r.json();
+    if(d.success) toast.success(d.data?.message || 'Extended trial');
+    else toast.error(d.message || 'Failed');
+    loadUser(userId);
+  }
+
+  async function revokeTrial(userId) {
+    if (!confirm('Revoke trial for this user?')) return;
+    const token = localStorage.getItem('genois_token');
+    const r = await fetch('/api/admin/trial', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ userId, action: 'revoke' })
+    });
+    const d = await r.json();
+    if(d.success) toast.success(d.data?.message || 'Revoked trial');
+    else toast.error(d.message || 'Failed');
+    loadUser(userId);
+  }
+
+  async function setPlan(userId, plan) {
+    if (!plan) return;
+    const token = localStorage.getItem('genois_token');
+    const r = await fetch('/api/admin/trial', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ userId, action: 'set_plan', plan })
+    });
+    const d = await r.json();
+    if(d.success) toast.success(d.data?.message || 'Plan updated');
+    else toast.error(d.message || 'Failed');
+    loadUser(userId);
   }
 
   if (loading) return <div style={{...S, display:'flex', alignItems:'center', justifyContent:'center', color:'#00f0ff', ...mono}}>Loading admin data...</div>;
@@ -243,6 +285,27 @@ export default function AdminPage() {
                     <span style={{fontSize:12, color:'#e8f4ff', fontWeight:600}}>{val||'N/A'}</span>
                   </div>
                 ))}
+                
+                {userDetail.user && (
+                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 16 }}>
+                    <button onClick={() => extendTrial(userDetail.user.id, 30)} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid rgba(29,158,117,0.3)', background: 'rgba(29,158,117,0.1)', color: '#1D9E75', cursor: 'pointer', fontSize: 12 }}>
+                      +30 days trial
+                    </button>
+                    <button onClick={() => extendTrial(userDetail.user.id, 7)} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.3)', background: 'rgba(0,240,255,0.1)', color: '#00f0ff', cursor: 'pointer', fontSize: 12 }}>
+                      +7 days trial
+                    </button>
+                    <button onClick={() => revokeTrial(userDetail.user.id)} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid rgba(255,45,120,0.3)', background: 'rgba(255,45,120,0.1)', color: '#ff2d78', cursor: 'pointer', fontSize: 12 }}>
+                      Revoke trial
+                    </button>
+                    <select onChange={(e) => setPlan(userDetail.user.id, e.target.value)} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)', color: '#e8f4ff', fontSize: 12 }}>
+                      <option value="">Set plan...</option>
+                      <option value="spectator">Spectator (free)</option>
+                      <option value="player">Player (₹99)</option>
+                      <option value="performer">Performer (₹199)</option>
+                      <option value="dominator">Dominator (₹499)</option>
+                    </select>
+                  </div>
+                )}
               </div>
 
               <div style={{...card, border:'1px solid rgba(239,159,39,0.1)'}}>

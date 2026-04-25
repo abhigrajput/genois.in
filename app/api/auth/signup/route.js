@@ -8,7 +8,7 @@ import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { name, email, password, college, year, domainSlug, level, learningSpeed } = body;
+    const { name, email, password, college, year, domainSlug, level, learningSpeed, referralCode } = body;
 
     if (!rateLimit(`signup_${request.headers.get('x-forwarded-for') || 'unknown'}`, 5, 3600000)) return rateLimitResponse();
 
@@ -81,41 +81,28 @@ export async function POST(request) {
       console.error('Verification email error:', JSON.stringify(emailError));
     }
 
-    // Handle referral code if provided
-    const refCode = body.referralCode || body.ref;
-    if (refCode) {
+    if (referralCode) {
       const { data: referrer } = await supabase
         .from('users')
-        .select('id, referral_count, bonus_days, trial_end')
-        .eq('referral_code', refCode.toUpperCase())
+        .select('id, referral_count')
+        .eq('referral_code', referralCode)
         .single();
 
-      if (referrer && referrer.id !== user.id) {
-        // Create referral record
+      if (referrer) {
         await supabase.from('referrals').insert({
           referrer_id: referrer.id,
           referred_id: user.id,
-          referral_code: refCode.toUpperCase(),
-          status: 'completed',
-          reward_given: true,
+          referred_email: email,
+          status: 'pending',
         });
 
-        // Give referrer +30 bonus days
-        const newTrialEnd = new Date(referrer.trial_end || new Date());
-        newTrialEnd.setDate(newTrialEnd.getDate() + 30);
-        await supabase.from('users').update({
-          referral_count: (referrer.referral_count || 0) + 1,
-          bonus_days: (referrer.bonus_days || 0) + 30,
-          trial_end: newTrialEnd.toISOString(),
-        }).eq('id', referrer.id);
-
-        // Give new user +30 bonus days too
-        const newUserTrialEnd = new Date(user.trial_end || new Date());
-        newUserTrialEnd.setDate(newUserTrialEnd.getDate() + 30);
-        await supabase.from('users').update({
-          referred_by: refCode.toUpperCase(),
-          trial_end: newUserTrialEnd.toISOString(),
-        }).eq('id', user.id);
+        await supabase
+          .from('users')
+          .update({ 
+            referred_by_code: referralCode,
+            referral_count: (referrer.referral_count || 0) + 1,
+          })
+          .eq('id', referrer.id);
       }
     }
     await supabase.from('scores').insert({ user_id: user.id });

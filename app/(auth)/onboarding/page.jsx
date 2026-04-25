@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 const DOMAINS = [
@@ -24,6 +24,19 @@ export default function OnboardingPage() {
   const [form, setForm] = useState({ name: '', email: '', password: '', college: '', year: '2' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [referralCode, setReferralCode] = useState('');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ref = params.get('ref');
+    if (ref) {
+      setReferralCode(ref);
+      localStorage.setItem('genois_ref', ref);
+    } else {
+      const stored = localStorage.getItem('genois_ref');
+      if (stored) setReferralCode(stored);
+    }
+  }, []);
 
   async function signup() {
     if (!form.name.trim()) { setError('Enter your name'); return; }
@@ -36,7 +49,7 @@ export default function OnboardingPage() {
       const r = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, domainSlug: selectedDomain }),
+        body: JSON.stringify({ ...form, domainSlug: selectedDomain, referralCode }),
       });
       const d = await r.json();
       if (!d.success) { setError(d.message || 'Signup failed'); setLoading(false); return; }

@@ -1,9 +1,16 @@
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
+import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 
 export const metadata = {
   title: 'GENOIS — Career OS for Engineering Students',
-  description: 'Real skills. Real projects. Real jobs. The learning OS built for engineering students.',
+  description: 'Skill-first career platform for Indian engineering students',
+  manifest: '/manifest.json',
+  themeColor: '#00f0ff',
+  icons: {
+    icon: '/icon-192.svg',
+    apple: '/icon-192.svg',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -28,6 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             error:   { iconTheme: { primary: '#ff2d78', secondary: '#020812' } },
           }}
         />
+        <PWAInstallPrompt />
       </body>
     </html>
   );

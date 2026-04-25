@@ -13,6 +13,23 @@ export default function DSARoadmapPage() {
   const [loading, setLoading] = useState(true);
   const [viewDay, setViewDay] = useState(null);
   const [taskState, setTaskState] = useState({});
+  const [showDailyTest, setShowDailyTest] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
+  const [aiNotes, setAiNotes] = useState('');
+  const [loadingNotes, setLoadingNotes] = useState(false);
+
+  async function loadNotes() {
+    setLoadingNotes(true);
+    setShowNotes(true);
+    try {
+      const r = await apiFetch('/api/dsa-roadmap/notes', token, 'POST', {
+        day: dayData.day,
+        topic: dayData.topic,
+      });
+      setAiNotes(r.data.notes);
+    } catch (e) { setAiNotes('Failed to load notes'); }
+    setLoadingNotes(false);
+  }
 
   const [phase, setPhase] = useState('check');
   const [diagnostic, setDiagnostic] = useState(null);
@@ -145,9 +162,9 @@ export default function DSARoadmapPage() {
   const TASKS = [
     { key: 'video', icon: '📺', label: 'Watch Video', desc: dayData.videoTitle, link: dayData.video, type: 'external' },
     { key: 'resource', icon: '📖', label: 'Read Resource', desc: dayData.resourceTitle, link: dayData.resource, type: 'external' },
-    { key: 'coding', icon: '💻', label: 'Coding Problem', desc: dayData.codingProblem, type: 'internal' },
-    { key: 'test', icon: '📝', label: 'Daily Test', desc: dayData.testTopic, type: 'internal' },
-    { key: 'notes', icon: '📋', label: 'AI Notes', desc: dayData.notesTopic, type: 'internal' },
+    { key: 'coding', icon: '💻', label: 'Coding Problem', desc: dayData.codingProblem, type: 'internal', action: () => window.open(dayData.problemLink || '#', '_blank') },
+    { key: 'test', icon: '📝', label: 'Daily Test', desc: dayData.testTopic, type: 'internal', action: () => setShowDailyTest(true) },
+    { key: 'notes', icon: '📋', label: 'AI Notes', desc: dayData.notesTopic, type: 'internal', action: loadNotes },
   ];
 
   return (
@@ -200,6 +217,11 @@ export default function DSARoadmapPage() {
                     Open →
                   </a>
                 )}
+                {t.action && (
+                  <button onClick={t.action} style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', background: 'transparent', color: '#00f0ff', cursor: 'pointer', fontSize: 11, fontFamily: 'Syne,sans-serif', fontWeight: 600 }}>
+                    Open →
+                  </button>
+                )}
                 {isCurrentOrPast && !done && (
                   <button onClick={() => completeTask(viewDay, t.key)} style={{ padding: '6px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 11, fontWeight: 700 }}>
                     Done ✓
@@ -225,6 +247,37 @@ export default function DSARoadmapPage() {
           );
         })}
       </div>
+
+      {showNotes && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.3)', borderRadius: 16, width: '100%', maxWidth: 700, maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ padding: 20, borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, color: '#e8f4ff', margin: 0 }}>📚 AI Notes — {dayData.topic}</h2>
+              <button onClick={() => setShowNotes(false)} style={{ background: 'transparent', border: 'none', color: '#5a7a9a', fontSize: 24, cursor: 'pointer' }}>×</button>
+            </div>
+            <div style={{ padding: 20, overflowY: 'auto', flex: 1, color: '#c8d8e8', lineHeight: 1.6, whiteSpace: 'pre-wrap', fontFamily: 'Outfit,sans-serif' }}>
+              {loadingNotes ? <div style={{ textAlign: 'center', padding: 40, color: '#00f0ff', animation: 'pulse 1.5s infinite' }}>Generating custom notes...</div> : aiNotes}
+            </div>
+            <div style={{ padding: 16, borderTop: '1px solid rgba(255,255,255,0.1)', textAlign: 'right' }}>
+              <button onClick={() => { setShowNotes(false); completeTask(viewDay, 'notes'); }} style={{ padding: '10px 24px', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer' }}>Mark Done ✓</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDailyTest && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.3)', borderRadius: 16, width: '100%', maxWidth: 600, padding: 32, textAlign: 'center' }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>📝</div>
+            <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, color: '#e8f4ff', marginBottom: 12 }}>Daily Test: {dayData.topic}</h2>
+            <p style={{ color: '#5a7a9a', marginBottom: 24 }}>10 MCQ questions generated by AI to test your understanding.</p>
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+              <button onClick={() => setShowDailyTest(false)} style={{ padding: '12px 24px', background: 'transparent', color: '#5a7a9a', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, fontWeight: 600, cursor: 'pointer' }}>Cancel</button>
+              <button onClick={() => { setShowDailyTest(false); completeTask(viewDay, 'test'); window.open('/tests', '_blank'); }} style={{ padding: '12px 24px', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', border: 'none', borderRadius: 8, fontWeight: 700, cursor: 'pointer' }}>Go to Tests →</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
     </PermissionGate>
   );

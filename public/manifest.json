@@ -1,0 +1,16 @@
+{
+  "name": "GENOIS — Career OS for Engineering Students",
+  "short_name": "GENOIS",
+  "description": "Skill-first career platform for Indian engineering students. Build skills, get placed.",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#020812",
+  "theme_color": "#00f0ff",
+  "icons": [
+    { "src": "/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" },
+    { "src": "/icon-512.svg", "sizes": "512x512", "type": "image/svg+xml" }
+  ],
+  "categories": ["education", "productivity"],
+  "screenshots": []
+}

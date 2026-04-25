@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import TrialBanner from '@/components/TrialBanner';
+import OnboardingTour from '@/components/OnboardingTour';
 import toast from 'react-hot-toast';
 import useAuthStore from '@/store/authStore';
 import { analyticsAPI } from '@/lib/api';
@@ -671,6 +672,7 @@ export default function DashboardPage() {
           </div>
         </div>
       )}
+      <OnboardingTour />
     </div>
   );
 }

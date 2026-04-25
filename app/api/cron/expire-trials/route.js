@@ -11,12 +11,16 @@ export async function GET(request) {
     const supabase = getAdminClient();
     const { data, error } = await supabase
       .from('users')
-      .update({ is_on_trial: false })
+      .update({ 
+        is_on_trial: false,
+        subscription_plan: 'spectator',
+      })
       .eq('is_on_trial', true)
       .lt('trial_ends_at', new Date().toISOString())
-      .select('id');
+      .is('plan_expires_at', null)
+      .select('id, email');
 
-    return successResponse({ expired: data?.length || 0 });
+    return successResponse({ expired: data?.length || 0, users: data });
   } catch (error) {
     return errorResponse(error.message, 500);
   }

@@ -103,7 +103,7 @@ export default function RazorpayButton({ plan, amount: propAmount, label, onSucc
   return (
     <button
       onClick={handlePayment}
-      disabled={loading || user?.plan === 'premium'}
+      disabled={loading}
       className={className || 'btn-primary'}
     >
       {loading ? (
