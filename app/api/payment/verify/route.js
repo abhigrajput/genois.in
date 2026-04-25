@@ -8,19 +8,25 @@ export async function POST(request) {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
 
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return errorResponse('Invalid JSON body', 400);
+    }
     const {
       razorpay_order_id,
       razorpay_payment_id,
       razorpay_signature,
       plan,
       amount,
-    } = await request.json();
+    } = body || {};
 
     // Verify HMAC signature
-    const body = razorpay_order_id + '|' + razorpay_payment_id;
+    const signatureBody = razorpay_order_id + '|' + razorpay_payment_id;
     const expectedSignature = crypto
       .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
-      .update(body)
+      .update(signatureBody)
       .digest('hex');
 
     if (expectedSignature !== razorpay_signature) {

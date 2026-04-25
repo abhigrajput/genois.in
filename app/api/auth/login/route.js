@@ -10,7 +10,13 @@ export async function POST(request) {
     const allowed = rateLimit(`login_${ip}`, 10, 60000);
     if (!allowed) return rateLimitResponse();
 
-    const { email, password } = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return errorResponse('Invalid JSON body', 400);
+    }
+    const { email, password } = body || {};
 
     if (!email || !password) {
       return errorResponse('Email and password are required', 400);

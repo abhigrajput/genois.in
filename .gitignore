@@ -1,49 +1,39 @@
 # Dependencies
-node_modules/
-/.pnp
+node_modules
+.pnp
 .pnp.js
 
-# Testing
-/coverage
+# Build
+.next
+out
+build
+dist
 
-# Next.js
-/.next/
-/out/
-
-# Production
-/build
-
-# Environment variables (NEVER COMMIT)
+# Environment files
 .env
 .env.local
 .env.development.local
-.env.test.local
 .env.production.local
-.env*.local
+.env.test.local
+*.env.local
 
 # Vercel
 .vercel
 
-# Debug
+# Logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# IDE
-.vscode/
-.idea/
-
-# OS
+# Editor
+.vscode
+.idea
 .DS_Store
-Thumbs.db
 
-# Logs
-*.log
+# Testing
+coverage
 
 # Misc
 d.txt
 *.tmp
-debug-*.js
-test-*.js
-sql-*.js
-check-*.js

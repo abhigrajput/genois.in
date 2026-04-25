@@ -1,66 +1,46 @@
 import { getAdminClient } from '@/lib/supabaseAdmin';
-import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
+
+let cachedLeaderboard = null;
+let cacheExpiresAt = 0;
+const CACHE_TTL = 60 * 1000;
 
 export async function GET(request) {
   try {
-    const payload = await getUserFromRequest(request);
-    if (!payload) return errorResponse('Unauthorized', 401);
-
-    const { searchParams } = new URL(request.url);
-    const type = searchParams.get('type') || 'global';
-    const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 50);
+    const now = Date.now();
+    if (cachedLeaderboard && now < cacheExpiresAt) {
+      return successResponse(cachedLeaderboard);
+    }
 
     const supabase = getAdminClient();
-
-    // Get top students by total_score
-    const { data: scores, error } = await supabase
-      .from('scores')
-      .select('user_id, total_score, domain_score')
+    
+    const { data: users, error } = await supabase
+      .from('users')
+      .select('id, name, college, domain_slug, total_score, current_day, streak')
       .order('total_score', { ascending: false })
-      .limit(limit);
+      .limit(100);
 
     if (error) return errorResponse(error.message, 500);
 
-    // Get user info for each score
-    const userIds = (scores || []).map(s => s.user_id);
-    const { data: users } = await supabase
-      .from('users')
-      .select('id, name, college, domain_slug, level, weekly_badge')
-      .in('id', userIds);
+    const leaderboard = (users || []).map((u, i) => ({
+      rank: i + 1,
+      id: u.id,
+      name: u.name,
+      college: u.college,
+      domain: u.domain_slug,
+      score: u.total_score || 0,
+      day: u.current_day || 0,
+      streak: u.streak || 0,
+    }));
 
-    const { data: progresses } = await supabase
-      .from('progress')
-      .select('user_id, streak, current_day')
-      .in('user_id', userIds);
+    const result = { leaderboard, total: leaderboard.length };
+    
+    cachedLeaderboard = result;
+    cacheExpiresAt = now + CACHE_TTL;
 
-    const userMap = Object.fromEntries((users || []).map(u => [u.id, u]));
-    const progressMap = Object.fromEntries((progresses || []).map(p => [p.user_id, p]));
-
-    const leaderboard = (scores || []).map((s, idx) => {
-      const user = userMap[s.user_id] || {};
-      const prog = progressMap[s.user_id] || {};
-      return {
-        rank: idx + 1,
-        userId: s.user_id,
-        name: user.name || 'Anonymous',
-        domainSlug: user.domain_slug || '',
-        totalScore: s.total_score || 0,
-        streak: prog.streak || 0,
-        currentDay: prog.current_day || 1,
-        weeklyBadge: user.weekly_badge || null,
-      };
-    });
-
-    // Find current user's rank
-    let myRank = null;
-    if (payload.userId) {
-      const myIndex = leaderboard.findIndex(e => e.userId === payload.userId);
-      myRank = myIndex >= 0 ? myIndex + 1 : null;
-    }
-
-    return successResponse({ leaderboard, myRank, type, total: leaderboard.length });
+    return successResponse(result);
   } catch (error) {
+    if (cachedLeaderboard) return successResponse(cachedLeaderboard);
     return errorResponse(error.message, 500);
   }
 }

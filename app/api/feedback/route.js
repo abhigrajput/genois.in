@@ -6,7 +6,13 @@ import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
-    const { type, subject, message, email } = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return errorResponse('Invalid JSON body', 400);
+    }
+    const { type, subject, message, email } = body || {};
 
     if (!rateLimit(`feedback_${payload?.userId || request.headers.get('x-forwarded-for') || 'unknown'}`, 5, 3600000)) return rateLimitResponse();
 

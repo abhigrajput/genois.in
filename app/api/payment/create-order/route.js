@@ -9,7 +9,13 @@ export async function POST(request) {
     if (!payload) return errorResponse('Unauthorized', 401);
     if (!rateLimit(`payment_${payload.userId}`, 5, 60000)) return rateLimitResponse();
 
-    const { amount, plan } = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return errorResponse('Invalid JSON body', 400);
+    }
+    const { amount, plan } = body || {};
     if (!amount || amount < 1) return errorResponse('Invalid amount', 400);
     if (!plan) return errorResponse('Plan is required', 400);
 

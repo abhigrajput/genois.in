@@ -7,8 +7,13 @@ import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 
 export async function POST(request) {
   try {
-    const body = await request.json();
-    const { name, email, password, college, year, domainSlug, level, learningSpeed, referralCode } = body;
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return errorResponse('Invalid JSON body', 400);
+    }
+    const { name, email, password, college, year, domainSlug, level, learningSpeed, referralCode } = body || {};
 
     if (!rateLimit(`signup_${request.headers.get('x-forwarded-for') || 'unknown'}`, 5, 3600000)) return rateLimitResponse();
 

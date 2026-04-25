@@ -40,7 +40,13 @@ export async function POST(request) {
     const allowed = rateLimit(`anxiety_${payload.userId}`, 10, 60000);
     if (!allowed) return rateLimitResponse();
 
-    const { message, conversationHistory, mood } = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return errorResponse('Invalid JSON body', 400);
+    }
+    const { message, conversationHistory, mood } = body || {};
     if (!message) return errorResponse('Message is required', 400);
 
     const supabase = getAdminClient();

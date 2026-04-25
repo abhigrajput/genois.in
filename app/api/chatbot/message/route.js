@@ -34,7 +34,13 @@ export async function POST(request) {
     const allowed = rateLimit(`chat_${payload.userId}`, 15, 60000);
     if (!allowed) return rateLimitResponse();
 
-    const { message, mode, conversationHistory } = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return errorResponse('Invalid JSON body', 400);
+    }
+    const { message, mode, conversationHistory } = body || {};
     if (!message) return errorResponse('Message is required', 400);
 
     const validModes = ['general', 'coding', 'domain', 'project', 'career'];
