@@ -22,10 +22,7 @@ export default function DSARoadmapPage() {
     setLoadingNotes(true);
     setShowNotes(true);
     try {
-      const r = await apiFetch('/api/dsa-roadmap/notes', token, 'POST', {
-        day: dayData.day,
-        topic: dayData.topic,
-      });
+      const r = await apiFetch(`/api/dsa-roadmap/notes?day=${dayData.day}`, token);
       setAiNotes(r.data.notes);
     } catch (e) { setAiNotes('Failed to load notes'); }
     setLoadingNotes(false);

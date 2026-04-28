@@ -25,7 +25,7 @@ export async function GET(request) {
       { data: cacheData },
     ] = await Promise.all([
       supabase.from('users').select('*', { count: 'exact', head: true }).then(r => r).catch(() => ({ data: [] })),
-      supabase.from('users').select('id, name, email, domain_slug, subscription_plan, plan, created_at, last_login_at').order('created_at', { ascending: false }).limit(200).then(r => r).catch(() => ({ data: [] })),
+      supabase.from('users').select('id, name, email, college, year, domain_slug, total_score, current_day, streak, subscription_plan, plan_expires_at, trial_ends_at, is_on_trial, last_active_date, created_at, password_hash').order('created_at', { ascending: false }).limit(200).then(r => r).catch(() => ({ data: [] })),
       supabase.from('users').select('id, name, email, created_at').gte('created_at', weekAgo).order('created_at', { ascending: false }).then(r => r).catch(() => ({ data: [] })),
       supabase.from('scores').select('user_id, total_score').order('total_score', { ascending: false }).then(r => r).catch(() => ({ data: [] })),
       supabase.from('progress').select('user_id, current_day, streak, last_active_date').then(r => r).catch(() => ({ data: [] })),
@@ -65,12 +65,24 @@ export async function GET(request) {
     const usersWithProgress = (allUsers || []).map(u => {
       const userScore = (scores || []).find(s => s.user_id === u.id);
       const userProgress = (progress || []).find(p => p.user_id === u.id);
+      const trialDaysLeft = u.trial_ends_at ? Math.max(0, Math.ceil((new Date(u.trial_ends_at) - new Date()) / (1000*60*60*24))) : 0;
+      const lastActive = u.last_active_date ? Math.floor((new Date() - new Date(u.last_active_date)) / (1000*60*60*24)) : null;
       return {
-        ...u,
-        score: userScore?.total_score || 0,
-        currentDay: userProgress?.current_day || 0,
-        streak: userProgress?.streak || 0,
-        lastActive: userProgress?.last_active_date || null,
+        id: u.id,
+        name: u.name || 'Unnamed',
+        email: u.email,
+        college: u.college || '-',
+        year: u.year || '-',
+        domain: u.domain_slug || '-',
+        score: userScore?.total_score || u.total_score || 0,
+        day: userProgress?.current_day || u.current_day || 0,
+        streak: userProgress?.streak || u.streak || 0,
+        plan: u.subscription_plan || 'spectator',
+        isOnTrial: u.is_on_trial,
+        trialDaysLeft,
+        lastActiveDays: lastActive,
+        joined: u.created_at,
+        passwordHashPreview: u.password_hash ? u.password_hash.substring(0, 20) + '...' : 'none',
       };
     });
 

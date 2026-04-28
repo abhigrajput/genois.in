@@ -124,7 +124,7 @@ export async function POST(request) {
       is_active: true,
     });
 
-    const token = await generateToken(user.id);
+    const token = await generateToken({ userId: user.id });
     const { password_hash: _, ...safeUser } = user;
 
     return successResponse({ user: safeUser, token }, 'Account created successfully', 201);

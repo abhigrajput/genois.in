@@ -37,3 +37,5 @@ coverage
 # Misc
 d.txt
 *.tmp
+.env.local
+.env*.local

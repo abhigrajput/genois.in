@@ -1,41 +1,73 @@
+import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
-import { getCached, setCached, buildCacheKey } from '@/lib/aiCache';
 import { askClaude } from '@/lib/claude';
+import { getCached, setCached, buildCacheKey } from '@/lib/aiCache';
+import { DSA_LEVELS } from '@/lib/dsaCurriculumLevels';
 
-export async function POST(request) {
+export async function GET(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
     if (!rateLimit(`dsa_notes_${payload.userId}`, 10, 60000)) return rateLimitResponse();
 
-    const { day, topic } = await request.json();
-    if (!topic) return errorResponse('Topic required', 400);
+    const { searchParams } = new URL(request.url);
+    const day = parseInt(searchParams.get('day') || '1');
 
-    const cacheKey = buildCacheKey('dsa_notes', topic);
+    const supabase = getAdminClient();
+    const { data: progress } = await supabase
+      .from('dsa_roadmap_progress')
+      .select('level')
+      .eq('user_id', payload.userId)
+      .single();
+
+    const level = progress?.level || 'beginner';
+    const curriculum = DSA_LEVELS[level] || DSA_LEVELS.beginner;
+    const dayData = curriculum.find(d => d.day === day);
+
+    if (!dayData) return errorResponse('Day not found', 404);
+
+    const cacheKey = buildCacheKey('dsa_notes', level, day, dayData.topic);
     const cached = await getCached(cacheKey);
-    if (cached) return successResponse({ notes: cached.notes, fromCache: true });
+    if (cached) return successResponse({ notes: cached, topic: dayData.topic, day, fromCache: true });
 
-    const prompt = `Create comprehensive study notes for the DSA topic "${topic}" for Day ${day} of a 90-day roadmap.
+    const prompt = `Generate comprehensive DSA notes for: ${dayData.topic}
+Level: ${level}
+Day ${day} of 90.
 
-Include:
-1. Brief introduction (2-3 lines)
-2. Key concepts (3-5 bullet points)
-3. Time/space complexity if applicable
-4. Code example in C++ or Python with comments
-5. Common mistakes to avoid
-6. Practice problems to try
+Format the notes as detailed markdown with:
 
-Format as clean markdown. Be concise, clear, and student-friendly.`;
+# ${dayData.topic}
 
-    const result = await askClaude(prompt, 1500);
-    const notes = result.text || result;
+## Concept Explanation
+2-3 paragraphs explaining the concept clearly with simple analogies.
 
-    await setCached(cacheKey, { notes }, 168);
+## Key Points
+Bullet point summary of must-know facts (5-8 points).
 
-    return successResponse({ notes });
+## Examples
+2-3 worked examples with step-by-step explanations.
+
+## Code Snippets
+2-3 code snippets in C++ with comments. Show different approaches.
+
+## Practice Tips
+- Common mistakes to avoid
+- How to identify when to use this
+- Time/space complexity tips
+
+Make it ${level} level appropriate. Be thorough but clear.`;
+
+    const aiResponse = await askClaude(prompt, '', 4000);
+    
+    if (!aiResponse) return errorResponse('Failed to generate notes', 500);
+
+    setCached(cacheKey, aiResponse, 720);
+
+    return successResponse({ notes: aiResponse, topic: dayData.topic, day, level });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    console.error('AI Notes error:', error);
+    return errorResponse(error.message || 'Notes generation failed', 500);
   }
 }
