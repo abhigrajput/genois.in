@@ -32,6 +32,6 @@ export async function POST(request) {
 
     return successResponse({}, 'Progress reset successfully');
   } catch (error) {
-    return errorResponse(error.message || 'Reset failed', 500);
+    return errorResponse('Internal server error', 500);
   }
 }

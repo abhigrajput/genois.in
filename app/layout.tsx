@@ -1,6 +1,8 @@
 import './globals.css';
 import { Toaster } from 'react-hot-toast';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
+import GoogleAnalytics from '@/components/GoogleAnalytics';
+import SessionProviderWrapper from '@/components/SessionProviderWrapper';
 
 export const metadata = {
   title: 'GENOIS — Career OS for Engineering Students',
@@ -17,8 +19,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        {children}
-        <Toaster
+        <GoogleAnalytics />
+        <SessionProviderWrapper>
+          {children}
+          <Toaster
           position="top-right"
           toastOptions={{
             duration: 3500,
@@ -36,6 +40,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
         <PWAInstallPrompt />
+        </SessionProviderWrapper>
       </body>
     </html>
   );

@@ -29,38 +29,6 @@ export default function LegendPage() {
       .catch(() => setLoading(false));
   }, [ready, token]);
 
-  async function buyLegend() {
-    setBuying(true);
-    try {
-      const orderRes = await apiFetch('/api/payment/create-order', token, 'POST', {
-        planId: 'legend',
-        amount: 999,
-        description: 'GENOIS Legend Access',
-      });
-
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: 99900,
-        currency: 'INR',
-        name: 'GENOIS',
-        description: 'Legend Access — You earned this',
-        order_id: orderRes.data?.orderId,
-        handler: async (response) => {
-          toast.success('Welcome to Legend! 👑');
-          router.push('/dashboard');
-        },
-        prefill: { name: '', email: '' },
-        theme: { color: '#7b5cff' },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (e) {
-      toast.error('Payment failed. Try again.');
-    }
-    setBuying(false);
-  }
-
   if (loading) return (
     <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center', fontFamily: 'JetBrains Mono,monospace' }}>
       Checking eligibility...
@@ -210,27 +178,24 @@ export default function LegendPage() {
           <div style={{ fontSize: 12, color: '#3a4a5a', fontFamily: 'JetBrains Mono,monospace' }}>Only available to students with 1500+ GENOIS score</div>
         </div>
 
-        <button
-          onClick={buyLegend}
-          disabled={buying || data?.isLegend}
-          style={{
-            width: '100%', padding: '16px', borderRadius: 12, border: 'none',
-            cursor: data?.isLegend ? 'default' : 'pointer',
-            background: data?.isLegend
-              ? 'rgba(29,158,117,0.2)'
-              : buying
-              ? 'rgba(123,92,255,0.3)'
-              : 'linear-gradient(135deg,#7b5cff,#00f0ff)',
-            color: data?.isLegend ? '#1D9E75' : '#020812',
-            fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 800,
-            boxShadow: data?.isLegend ? 'none' : '0 0 30px rgba(123,92,255,0.3)',
-          }}>
-          {data?.isLegend
-            ? '✓ You are a Legend'
-            : buying
-            ? 'Processing...'
-            : 'Unlock Legend Access — ₹999/month →'}
-        </button>
+        {data?.isLegend ? (
+          <button
+            disabled={true}
+            style={{
+              width: '100%', padding: '16px', borderRadius: 12, border: 'none',
+              cursor: 'default',
+              background: 'rgba(29,158,117,0.2)',
+              color: '#1D9E75',
+              fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 800,
+              boxShadow: 'none',
+            }}>
+            ✓ You are a Legend
+          </button>
+        ) : (
+          <div style={{ padding: '12px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)', color: '#3a4a5a', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700, textAlign: 'center' }}>
+            🔧 Coming Soon
+          </div>
+        )}
       </div>
 
       <p style={{ textAlign: 'center', color: '#3a4a5a', fontSize: 12, fontFamily: 'JetBrains Mono,monospace' }}>

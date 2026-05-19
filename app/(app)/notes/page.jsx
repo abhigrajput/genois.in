@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useToken, apiFetch } from '@/lib/useApi';
 import toast from 'react-hot-toast';
 
@@ -7,224 +7,177 @@ export default function NotesPage() {
   const { token, ready } = useToken();
   const [notes, setNotes] = useState([]);
   const [selected, setSelected] = useState(null);
-  const [noteType, setNoteType] = useState('theory');
-  const [generating, setGenerating] = useState(false);
-  const [daily, setDaily] = useState(null);
-  const [isMobile, setIsMobile] = useState(false);
-  const [showContent, setShowContent] = useState(false);
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
-  }, []);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const saveTimer = useRef(null);
 
   useEffect(() => {
     if (!ready || !token) return;
-    apiFetch('/api/notes', token).then(r => setNotes(r.data.notes || [])).catch(console.error);
-    apiFetch('/api/roadmap/daily', token).then(r => setDaily(r.data)).catch(console.error);
+    loadNotes();
   }, [ready, token]);
 
-  async function generate() {
-    if (!token || !daily?.roadmapItem?.id) { toast.error('Wait for roadmap to load'); return; }
-    setGenerating(true);
+  async function loadNotes() {
     try {
-      const res = await apiFetch('/api/notes/generate', token, 'POST', { roadmapId: daily.roadmapItem.id, noteType });
-      const updated = await apiFetch('/api/notes', token);
-      setNotes(updated.data.notes || []);
-      setSelected(res.data.note);
-      if (isMobile) setShowContent(true);
-      toast.success('Notes generated!');
-    } catch (err) { toast.error(err.message); }
-    finally { setGenerating(false); }
+      const r = await apiFetch('/api/notes', token);
+      setNotes(r.data?.notes || []);
+      if (r.data?.notes?.length > 0) {
+        selectNote(r.data.notes[0]);
+      }
+    } catch (e) {
+      toast.error('Failed to load notes');
+    }
+    setLoading(false);
   }
 
-  function selectNote(n) {
-    setSelected(n);
-    if (isMobile) setShowContent(true);
+  function selectNote(note) {
+    setSelected(note);
+    setTitle(note.title);
+    setContent(note.content || '');
   }
 
-  if (!ready) return (
-    <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center', fontFamily: 'JetBrains Mono,monospace' }}>
-      Loading...
+  async function createNote() {
+    setCreating(true);
+    try {
+      const r = await apiFetch('/api/notes', token, 'POST', {
+        title: 'Untitled Note',
+        content: '',
+      });
+      const newNote = r.data?.note;
+      setNotes(prev => [newNote, ...prev]);
+      selectNote(newNote);
+      toast.success('New note created');
+    } catch (e) {
+      toast.error(e.message);
+    }
+    setCreating(false);
+  }
+
+  async function saveNote() {
+    if (!selected) return;
+    setSaving(true);
+    try {
+      const r = await apiFetch(`/api/notes/${selected.id}`, token, 'PUT', { title, content });
+      const updated = r.data?.note;
+      setNotes(prev => prev.map(n => n.id === selected.id ? updated : n));
+      setSelected(updated);
+    } catch (e) {
+      toast.error('Failed to save');
+    }
+    setSaving(false);
+  }
+
+  async function deleteNote(noteId) {
+    try {
+      await apiFetch(`/api/notes/${noteId}`, token, 'DELETE');
+      const remaining = notes.filter(n => n.id !== noteId);
+      setNotes(remaining);
+      if (selected?.id === noteId) {
+        if (remaining.length > 0) selectNote(remaining[0]);
+        else { setSelected(null); setTitle(''); setContent(''); }
+      }
+      toast.success('Note deleted');
+    } catch (e) {
+      toast.error(e.message);
+    }
+  }
+
+  function handleTitleChange(val) {
+    setTitle(val);
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(saveNote, 2000);
+  }
+
+  function handleContentChange(val) {
+    setContent(val);
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(saveNote, 2000);
+  }
+
+  if (loading) return (
+    <div style={{ padding: 60, textAlign: 'center', color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>
+      Loading notes...
     </div>
   );
 
   return (
-    <div style={{ width: '100%', maxWidth: 1600, margin: '0 auto', fontFamily: 'Outfit,sans-serif' }}>
+    <div style={{ fontFamily: 'Outfit,sans-serif', width: '100%', height: 'calc(100vh - 80px)', display: 'flex', gap: 0, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(0,240,255,0.08)' }}>
 
-      {/* HEADER */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 4 }}>
-        {isMobile && showContent && (
-          <button
-            onClick={() => setShowContent(false)}
-            style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#00f0ff', fontSize: 20, padding: 0 }}>
-            ←
+      {/* SIDEBAR */}
+      <div style={{ width: 260, flexShrink: 0, background: '#070f1f', borderRight: '1px solid rgba(0,240,255,0.08)', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: '16px 14px', borderBottom: '1px solid rgba(0,240,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700, color: '#e8f4ff' }}>📒 My Notes</div>
+          <button onClick={createNote} disabled={creating} style={{ padding: '6px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 12, fontWeight: 700 }}>
+            {creating ? '...' : '+ New'}
           </button>
-        )}
-        <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', margin: 0 }}>
-          {isMobile && showContent && selected ? selected.topic : 'AI Notes'}
-        </h1>
+        </div>
+
+        <div style={{ flex: 1, overflowY: 'auto' }}>
+          {notes.length === 0 ? (
+            <div style={{ padding: 20, textAlign: 'center', color: '#3a4a5a', fontSize: 13 }}>
+              No notes yet. Click + New to start.
+            </div>
+          ) : (
+            notes.map(note => (
+              <div key={note.id} onClick={() => selectNote(note)} style={{ padding: '12px 14px', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.03)', background: selected?.id === note.id ? 'rgba(0,240,255,0.06)' : 'transparent', borderLeft: selected?.id === note.id ? '2px solid #00f0ff' : '2px solid transparent', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600, color: selected?.id === note.id ? '#00f0ff' : '#e8f4ff', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {note.title || 'Untitled'}
+                  </div>
+                  <div style={{ fontSize: 11, color: '#3a4a5a', fontFamily: 'JetBrains Mono,monospace' }}>
+                    {new Date(note.updated_at).toLocaleDateString()}
+                  </div>
+                </div>
+                <button onClick={e => { e.stopPropagation(); deleteNote(note.id); }} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#3a4a5a', fontSize: 14, padding: '2px 4px', flexShrink: 0, opacity: 0.5 }}>
+                  🗑
+                </button>
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
-      <p style={{ color: '#5a7a9a', fontSize: 13, marginBottom: 20 }}>
-        {daily ? `Topic: ${daily.roadmapItem?.topic}` : 'Loading...'}
-      </p>
-
-      {/* NOTE TYPE SELECTOR + GENERATE — hide on mobile when viewing content */}
-      {(!isMobile || !showContent) && (
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20, alignItems: 'center' }}>
-          {['theory', 'coding', 'full', 'revision'].map(t => (
-            <button key={t} onClick={() => setNoteType(t)} style={{
-              padding: '8px 16px', borderRadius: 20, border: 'none', cursor: 'pointer',
-              fontFamily: 'Syne,sans-serif', fontSize: 12, fontWeight: 600, textTransform: 'capitalize',
-              background: noteType === t ? '#00f0ff' : 'rgba(255,255,255,0.05)',
-              color: noteType === t ? '#020812' : '#5a7a9a',
-            }}>{t}</button>
-          ))}
-          <button onClick={generate} disabled={generating} style={{
-            padding: '8px 20px', borderRadius: 20, border: 'none', cursor: 'pointer',
-            fontFamily: 'Syne,sans-serif', fontSize: 12, fontWeight: 700,
-            background: generating ? 'rgba(123,92,255,0.3)' : 'linear-gradient(135deg,#00f0ff,#7b5cff)',
-            color: generating ? '#5a7a9a' : '#020812',
-          }}>
-            {generating ? 'Generating...' : '+ Generate Notes'}
-          </button>
-        </div>
-      )}
-
-      {/* MOBILE LAYOUT */}
-      {isMobile ? (
-        showContent && selected ? (
-          // CONTENT VIEW on mobile
-          <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 20 }}>
-            <div style={{ marginBottom: 14 }}>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#e8f4ff', marginBottom: 6 }}>
-                {selected.topic}
+      {/* EDITOR */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#020812' }}>
+        {selected ? (
+          <>
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid rgba(0,240,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+              <input value={title} onChange={e => handleTitleChange(e.target.value)} placeholder="Note title..." style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: '#e8f4ff' }} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: saving ? '#EF9F27' : '#3a4a5a' }}>
+                  {saving ? 'Saving...' : 'Auto-saved'}
+                </span>
+                <button onClick={saveNote} style={{ padding: '6px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'rgba(0,240,255,0.1)', color: '#00f0ff', fontFamily: 'Syne,sans-serif', fontSize: 12, fontWeight: 600 }}>
+                  Save
+                </button>
               </div>
-              <span style={{
-                fontSize: 11, padding: '3px 12px', borderRadius: 20,
-                background: 'rgba(0,240,255,0.08)', color: '#00f0ff',
-                fontFamily: 'JetBrains Mono,monospace', textTransform: 'capitalize',
-              }}>{selected.type} Notes</span>
             </div>
-            <div style={{
-              color: '#e8f4ff',
-              background: '#0a1628',
-              border: '1px solid rgba(0,240,255,0.06)',
-              borderRadius: 10,
-              padding: 16,
-              whiteSpace: 'pre-wrap',
-              lineHeight: 1.9,
-              fontSize: 14,
-              fontFamily: 'Outfit,sans-serif',
-            }}>
-              {selected.content}
+            <textarea value={content} onChange={e => handleContentChange(e.target.value)} placeholder="Start typing your notes here...&#10;&#10;Tips:&#10;• Use this to save key concepts&#10;• Write down important formulas&#10;• Note your daily learnings" style={{ flex: 1, padding: '20px', background: 'transparent', border: 'none', outline: 'none', resize: 'none', color: '#e8f4ff', fontFamily: 'Outfit,sans-serif', fontSize: 14, lineHeight: 1.8 }} />
+            <div style={{ padding: '8px 20px', borderTop: '1px solid rgba(255,255,255,0.04)', display: 'flex', gap: 16 }}>
+              <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#3a4a5a' }}>
+                {content.length} characters
+              </span>
+              <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#3a4a5a' }}>
+                {content.split('\n').length} lines
+              </span>
+              <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#3a4a5a' }}>
+                {content.split(' ').filter(w => w).length} words
+              </span>
             </div>
-          </div>
+          </>
         ) : (
-          // LIST VIEW on mobile
-          <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 12 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 10 }}>
-              SAVED NOTES
-            </div>
-            {notes.length === 0 ? (
-              <div style={{ color: '#5a7a9a', fontSize: 13, textAlign: 'center', padding: '40px 0' }}>
-                No notes yet.<br />Generate your first one above.
-              </div>
-            ) : (
-              notes.map((n, i) => (
-                <div key={i} onClick={() => selectNote(n)} style={{
-                  padding: '14px 12px',
-                  borderRadius: 10,
-                  cursor: 'pointer',
-                  marginBottom: 8,
-                  background: 'rgba(255,255,255,0.02)',
-                  border: '1px solid rgba(0,240,255,0.08)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}>
-                  <div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: '#e8f4ff', marginBottom: 4 }}>{n.topic}</div>
-                    <span style={{
-                      fontSize: 10, padding: '2px 8px', borderRadius: 20,
-                      background: 'rgba(0,240,255,0.08)', color: '#00f0ff',
-                      fontFamily: 'JetBrains Mono,monospace', textTransform: 'capitalize',
-                    }}>{n.type}</span>
-                  </div>
-                  <span style={{ color: '#5a7a9a', fontSize: 18 }}>›</span>
-                </div>
-              ))
-            )}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, color: '#3a4a5a' }}>
+            <div style={{ fontSize: 48 }}>📒</div>
+            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: '#5a7a9a' }}>No note selected</div>
+            <div style={{ fontSize: 13, color: '#3a4a5a' }}>Create a new note or select one from the list</div>
+            <button onClick={createNote} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700 }}>
+              + Create First Note
+            </button>
           </div>
-        )
-      ) : (
-        // DESKTOP LAYOUT — side by side
-        <div style={{ display: 'grid', gridTemplateColumns: '300px 1fr', gap: 16 }}>
-          <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 12 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 10 }}>
-              SAVED NOTES
-            </div>
-            {notes.length === 0 ? (
-              <div style={{ color: '#5a7a9a', fontSize: 12, textAlign: 'center', padding: '20px 0' }}>
-                No notes yet.<br />Generate your first one.
-              </div>
-            ) : (
-              notes.map((n, i) => (
-                <div key={i} onClick={() => setSelected(n)} style={{
-                  padding: '10px 12px', borderRadius: 8, cursor: 'pointer', marginBottom: 6,
-                  background: selected?.id === n.id ? 'rgba(0,240,255,0.08)' : 'transparent',
-                  border: `1px solid ${selected?.id === n.id ? 'rgba(0,240,255,0.3)' : 'transparent'}`,
-                }}>
-                  <div style={{ fontSize: 13, fontWeight: 500, color: '#e8f4ff', marginBottom: 4 }}>{n.topic}</div>
-                  <span style={{
-                    fontSize: 10, padding: '2px 8px', borderRadius: 20,
-                    background: 'rgba(0,240,255,0.08)', color: '#00f0ff',
-                    fontFamily: 'JetBrains Mono,monospace', textTransform: 'capitalize',
-                  }}>{n.type}</span>
-                </div>
-              ))
-            )}
-          </div>
-
-          <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 24, minHeight: 400 }}>
-            {!selected ? (
-              <div style={{ textAlign: 'center', paddingTop: 60 }}>
-                <div style={{ fontSize: 48, marginBottom: 12 }}>≡</div>
-                <div style={{ color: '#e8f4ff', fontSize: 15, fontWeight: 600, marginBottom: 6 }}>Select a note to read</div>
-                <div style={{ color: '#5a7a9a', fontSize: 13 }}>Or generate a new one above</div>
-              </div>
-            ) : (
-              <>
-                <div style={{ marginBottom: 16 }}>
-                  <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: '#e8f4ff', marginBottom: 6 }}>{selected.topic}</div>
-                  <span style={{
-                    fontSize: 11, padding: '3px 12px', borderRadius: 20,
-                    background: 'rgba(0,240,255,0.08)', color: '#00f0ff',
-                    fontFamily: 'JetBrains Mono,monospace', textTransform: 'capitalize',
-                  }}>{selected.type} Notes</span>
-                </div>
-                <div style={{
-                  color: '#e8f4ff',
-                  background: '#0a1628',
-                  border: '1px solid rgba(0,240,255,0.06)',
-                  borderRadius: 10,
-                  padding: 20,
-                  whiteSpace: 'pre-wrap',
-                  lineHeight: 1.9,
-                  fontSize: 14,
-                  fontFamily: 'Outfit,sans-serif',
-                  minHeight: 280,
-                }}>
-                  {selected.content}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

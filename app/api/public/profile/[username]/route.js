@@ -24,7 +24,7 @@ export async function GET(request, context) {
 
     return await buildProfile(user, supabase);
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 

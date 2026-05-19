@@ -27,7 +27,7 @@ export async function GET(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`interview_${payload.userId}`, 5, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`interview_${payload.userId}`, 5, 60000)) return rateLimitResponse();
 
     const { searchParams } = new URL(request.url);
     const sessionId = searchParams.get('sessionId');
@@ -155,7 +155,7 @@ Return ONLY valid JSON array with exactly ${roundConfig.questionCount} questions
       companyName: session.company_name,
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -278,6 +278,6 @@ Return ONLY valid JSON:
       nextRoundIndex: roundIndex + 1,
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

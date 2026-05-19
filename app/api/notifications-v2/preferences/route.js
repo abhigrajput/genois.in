@@ -22,7 +22,7 @@ export async function GET(request) {
       evening_time: '19:00',
     } });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -46,6 +46,6 @@ export async function POST(request) {
 
     return successResponse({ success: true });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

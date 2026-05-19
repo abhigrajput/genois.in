@@ -1,5 +1,7 @@
 import { getAdminClient } from '@/lib/supabaseAdmin';
+import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
+import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -10,6 +12,10 @@ const CACHE_TTL = 60 * 1000;
 
 export async function GET(request) {
   try {
+    const payload = await getUserFromRequest(request);
+    if (!payload) return errorResponse('Unauthorized', 401);
+    if (!await rateLimit(`leaderboard_${payload.userId}`, 10, 60000)) return rateLimitResponse();
+
     const now = Date.now();
     if (cachedLeaderboard && now < cacheExpiresAt) {
       return successResponse(cachedLeaderboard);
@@ -51,6 +57,6 @@ export async function GET(request) {
   } catch (error) {
     console.error('Leaderboard exception:', error);
     if (cachedLeaderboard) return successResponse(cachedLeaderboard);
-    return errorResponse(error.message || 'Leaderboard failed', 500);
+    return errorResponse('Internal server error', 500);
   }
 }

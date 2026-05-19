@@ -18,7 +18,7 @@ export async function GET(request) {
     const unread = notifs?.filter(n => !n.read).length || 0;
     return successResponse({ notifications: notifs || [], unread });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -43,6 +43,6 @@ export async function POST(request) {
     }
     return successResponse({ success: true });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

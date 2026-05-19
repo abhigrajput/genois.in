@@ -23,6 +23,6 @@ export async function GET(request) {
 
     return successResponse({ graph: data || [], days });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

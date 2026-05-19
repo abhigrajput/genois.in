@@ -20,6 +20,6 @@ export async function GET(request, { params }) {
       discussions: discussionsRes.data || [],
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

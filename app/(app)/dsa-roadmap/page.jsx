@@ -1,14 +1,16 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useToken, apiFetch } from '@/lib/useApi';
 import { DSA_LEVELS } from '@/lib/dsaCurriculumLevels';
 import toast from 'react-hot-toast';
 import PermissionGate from '@/components/PermissionGate';
 import { usePermission } from '@/lib/usePermission';
+import { useRouter } from 'next/navigation';
 
 export default function DSARoadmapPage() {
   const { token, ready } = useToken();
   const { userPlan } = usePermission();
+  const router = useRouter();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [viewDay, setViewDay] = useState(null);
@@ -17,6 +19,10 @@ export default function DSARoadmapPage() {
   const [showNotes, setShowNotes] = useState(false);
   const [aiNotes, setAiNotes] = useState('');
   const [loadingNotes, setLoadingNotes] = useState(false);
+  // Dynamic video URL state — keyed by topic to avoid redundant fetches
+  const [videoUrl, setVideoUrl] = useState(null);
+  const [videoLoading, setVideoLoading] = useState(false);
+  const videoCacheRef = useRef({});
 
   async function loadNotes() {
     setLoadingNotes(true);
@@ -39,15 +45,39 @@ export default function DSARoadmapPage() {
     load();
   }, [ready, token]);
 
+  // Fetch video URL whenever the viewed day changes
+  useEffect(() => {
+    if (!data) return;
+    const curriculum = DSA_LEVELS[data?.progress?.level || 'beginner'] || DSA_LEVELS.beginner;
+    const dayObj = curriculum.find(d => d.day === viewDay) || curriculum[0];
+    if (!dayObj) return;
+    const cacheKey = dayObj.topic;
+    if (videoCacheRef.current[cacheKey]) {
+      setVideoUrl(videoCacheRef.current[cacheKey]);
+      return;
+    }
+    setVideoUrl(null);
+    setVideoLoading(true);
+    fetch(`/api/dsa-video?topic=${encodeURIComponent(dayObj.topic)}`)
+      .then(r => r.json())
+      .then(res => {
+        const url = res.url || null;
+        videoCacheRef.current[cacheKey] = url;
+        setVideoUrl(url);
+      })
+      .catch(() => setVideoUrl(null))
+      .finally(() => setVideoLoading(false));
+  }, [viewDay, data]);
+
   async function load() {
     try {
       const r = await apiFetch('/api/dsa-roadmap', token);
       setData(r.data);
       setViewDay(r.data.currentDay);
       if (!r.data.progress?.level) {
-        const diagR = await apiFetch('/api/dsa-roadmap/diagnostic', token);
-        setDiagnostic(diagR.data);
-        setPhase('diagnostic');
+        // No diagnostic result — redirect to the new diagnostic page
+        router.replace('/dsa-diagnostic');
+        return;
       } else {
         setPhase('roadmap');
       }
@@ -157,9 +187,19 @@ export default function DSARoadmapPage() {
   const diffColor = dayData.difficulty === 'easy' ? '#1D9E75' : dayData.difficulty === 'medium' ? '#EF9F27' : '#ff2d78';
 
   const TASKS = [
-    { key: 'video', icon: '📺', label: 'Watch Video', desc: dayData.videoTitle, link: dayData.video, type: 'external' },
+    {
+      key: 'video',
+      icon: '📺',
+      label: 'Watch Video',
+      desc: videoLoading
+        ? 'Finding the best video for this topic...'
+        : (dayData.videoTitle || dayData.topic),
+      link: videoUrl || undefined,
+      type: 'external',
+      loading: videoLoading,
+    },
     { key: 'resource', icon: '📖', label: 'Read Resource', desc: dayData.resourceTitle, link: dayData.resource, type: 'external' },
-    { key: 'coding', icon: '💻', label: 'Coding Problem', desc: dayData.codingProblem, type: 'internal', action: () => window.open(dayData.problemLink || '#', '_blank') },
+    { key: 'coding', icon: '💻', label: 'Coding Problem (C++)', desc: dayData.codingProblem, stlNote: 'Solve this in C++. Focus on STL: vector, map, set, pair, priority_queue, stack, queue.', type: 'internal', action: () => window.open(dayData.problemLink || '#', '_blank') },
     { key: 'test', icon: '📝', label: 'Daily Test', desc: dayData.testTopic, type: 'internal', action: () => setShowDailyTest(true) },
     { key: 'notes', icon: '📋', label: 'AI Notes', desc: dayData.notesTopic, type: 'internal', action: loadNotes },
   ];
@@ -167,9 +207,14 @@ export default function DSARoadmapPage() {
   return (
     <PermissionGate feature="dsa_roadmap">
     <div style={{ fontFamily: 'Outfit,sans-serif', width: '100%' }}>
-      <div style={{ marginBottom: 20 }}>
-        <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 4 }}>📘 DSA Roadmap</h1>
-        <p style={{ color: '#5a7a9a', fontSize: 13 }}>Day {data.currentDay} of 90 · {data.completedDays?.length || 0} days completed</p>
+      <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+        <div>
+          <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 4 }}>📘 DSA Roadmap</h1>
+          <p style={{ color: '#5a7a9a', fontSize: 13 }}>Day {data.currentDay} of 90 · {data.completedDays?.length || 0} days completed</p>
+        </div>
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, padding: '4px 12px', borderRadius: 20, background: 'rgba(123,92,255,0.12)', border: '1px solid rgba(123,92,255,0.3)', fontSize: 11, fontFamily: 'JetBrains Mono,monospace', color: '#7b5cff', letterSpacing: 1, userSelect: 'none', flexShrink: 0 }}>
+          ⚡ C++
+        </span>
       </div>
 
       <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 16, marginBottom: 20 }}>
@@ -207,9 +252,23 @@ export default function DSARoadmapPage() {
                 <div style={{ fontSize: 24, flexShrink: 0 }}>{t.icon}</div>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: '#e8f4ff', marginBottom: 3 }}>{t.label}</div>
-                  <div style={{ fontSize: 12, color: '#8a9ab0', lineHeight: 1.5 }}>{t.desc}</div>
+                  {t.loading ? (
+                    <div style={{ height: 12, width: 180, borderRadius: 6, background: 'linear-gradient(90deg,rgba(0,240,255,0.08) 25%,rgba(0,240,255,0.18) 50%,rgba(0,240,255,0.08) 75%)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite' }} />
+                  ) : (
+                    <>
+                      <div style={{ fontSize: 12, color: '#8a9ab0', lineHeight: 1.5 }}>{t.desc}</div>
+                      {t.stlNote && (
+                        <div style={{ marginTop: 5, fontSize: 11, color: '#7b5cff', fontFamily: 'JetBrains Mono,monospace', background: 'rgba(123,92,255,0.06)', borderRadius: 6, padding: '4px 8px', display: 'inline-block' }}>
+                          ⚡ {t.stlNote}
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
-                {t.link && (
+                {t.loading && (
+                  <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>searching...</span>
+                )}
+                {!t.loading && t.link && (
                   <a href={t.link} target="_blank" rel="noreferrer" style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', background: 'transparent', color: '#00f0ff', textDecoration: 'none', fontSize: 11, fontFamily: 'Syne,sans-serif', fontWeight: 600 }}>
                     Open →
                   </a>

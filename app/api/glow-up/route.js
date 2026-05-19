@@ -90,6 +90,6 @@ export async function GET(request) {
       isEligible,
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

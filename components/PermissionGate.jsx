@@ -32,9 +32,9 @@ export default function PermissionGate({ feature, children }) {
       <div style={{ fontSize: 13, color: '#8a9ab0', marginBottom: 20, lineHeight: 1.6 }}>
         {message}
       </div>
-      <button onClick={() => router.push('/subscription')} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#EF9F27,#D85A30)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700 }}>
-        Upgrade Plan →
-      </button>
+      <div style={{ padding: '10px 20px', borderRadius: 10, border: '1px solid rgba(239,159,39,0.2)', background: 'rgba(239,159,39,0.05)', color: '#EF9F27', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600, textAlign: 'center' }}>
+        🔧 Paid plans coming soon — trial gives full access
+      </div>
     </div>
   );
 }

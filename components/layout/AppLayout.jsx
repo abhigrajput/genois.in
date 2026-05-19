@@ -24,6 +24,7 @@ const NAV_GROUPS = [
       { href:'/coding', label:'Coding', icon:'{}', color:'#1D9E75' },
       { href:'/projects', label:'Projects', icon:'◆', color:'#BA7517' },
       { href:'/notes', label:'AI Notes', icon:'≡', color:'#378ADD' },
+      { href:'/notes', label:'Notes', icon:'📒', color:'#378ADD' },
       { href:'/aptitude', label:'Aptitude', icon:'🧠', color:'#7b5cff' },
       { href:'/dsa-guide', label:'DSA Guide', icon:'📘', color:'#378ADD' },
       { href:'/dsa-roadmap', label:'DSA Roadmap', icon:'📘', color:'#7F77DD' },
@@ -45,8 +46,6 @@ const NAV_GROUPS = [
       { href:'/rival', label:'Your Rival', icon:'🎯', color:'#ff2d78' },
       { href:'/college-war', label:'College War', icon:'⚔️', color:'#EF9F27' },
       { href:'/confessions', label:'Confession Wall', icon:'🤫', color:'#7b5cff' },
-      { href:'/shame-board', label:'Shame Board', icon:'😴', color:'#ff2d78' },
-      { href:'/graveyard', label:'Graveyard', icon:'☠️', color:'#ff2d78' },
     ]
   },
   {
@@ -79,6 +78,7 @@ const NAV_GROUPS = [
       { href:'/analytics', label:'Analytics', icon:'◇', color:'#7F77DD' },
       { href:'/skill-levels', label:'Skill Levels', icon:'📊', color:'#EF9F27' },
       { href:'/skills', label:'Mastery Trials', icon:'⚒️', color:'#D85A30' },
+      { href:'/badge', label:'Skill Badges', icon:'🎖️', color:'#EF9F27' },
       { href:'/outcomes', label:'Outcomes', icon:'📊', color:'#1D9E75' },
       { href:'/profile', label:'Profile', icon:'▣', color:'#5a7a9a' },
     ]

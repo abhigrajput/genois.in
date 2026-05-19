@@ -9,7 +9,7 @@ export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`project_mentor_${payload.userId}`, 5, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`project_mentor_${payload.userId}`, 5, 60000)) return rateLimitResponse();
 
     const { message, projectTitle, projectDescription, techStack, currentStep, history } = await request.json();
 
@@ -46,6 +46,6 @@ If student seems frustrated: be extra encouraging`;
     const reply = response.content[0]?.text || 'Let me think about that...';
     return successResponse({ reply });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

@@ -82,7 +82,7 @@ Easy = 10 pts, Medium = 15 pts, Hard = 20 pts`;
 
     return successResponse({ diagnostic, alreadyTaken: false });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -90,7 +90,7 @@ export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`diagnostic_${payload.userId}`, 3, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`diagnostic_${payload.userId}`, 3, 60000)) return rateLimitResponse();
 
     const { answers } = await request.json();
     const supabase = getAdminClient();
@@ -147,6 +147,6 @@ export async function POST(request) {
       },
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

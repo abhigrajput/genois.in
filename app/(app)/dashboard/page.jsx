@@ -118,6 +118,32 @@ export default function DashboardPage() {
   return (
     <div style={{ width: '100%', maxWidth: 1600, margin: '0 auto', display:'flex', flexDirection:'column', gap:20 }}>
       <TrialBanner />
+
+      {/* Email verification banner */}
+      {user && user.email_verified === false && (
+        <div style={{ background: 'rgba(239,159,39,0.08)', border: '1px solid rgba(239,159,39,0.3)', borderRadius: 12, padding: '14px 20px', marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 20 }}>📧</span>
+            <div>
+              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700, color: '#EF9F27' }}>Verify your email</div>
+              <div style={{ fontSize: 12, color: '#8a9ab0' }}>Check your inbox and verify to confirm your account</div>
+            </div>
+          </div>
+          <button
+            onClick={async () => {
+              try {
+                await apiFetch('/api/auth/resend-verification', token, 'POST', {});
+                toast.success('Verification email sent! Check your inbox.');
+              } catch (e) {
+                toast.error(e.message);
+              }
+            }}
+            style={{ padding: '8px 16px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#EF9F27,#D85A30)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700, flexShrink: 0 }}
+          >
+            Resend Email →
+          </button>
+        </div>
+      )}
       {/* Heading */}
       <div>
         <h1 style={{ fontFamily:'Syne,sans-serif', fontSize:26, fontWeight:800, color:'#e8f4ff', margin:0, lineHeight:1.2 }}>
@@ -599,23 +625,19 @@ export default function DashboardPage() {
           </div>
 
           {/* Trial banner */}
-          {(user?.plan === 'trial') && (
-            <div style={{
-              padding:'12px 14px', borderRadius:10, marginTop:4,
-              background:'rgba(0,240,255,0.05)', border:'1px solid rgba(0,240,255,0.15)',
-              display:'flex', alignItems:'center', justifyContent:'space-between',
-            }}>
-              <div>
-                <div style={{ fontFamily:'Syne,sans-serif', fontSize:12, fontWeight:600, color:'#00f0ff' }}>Free Trial Active</div>
-                <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#5a7a9a', marginTop:2 }}>
-                  {trial?.daysLeft ?? 14} days left
+              <div style={{
+                padding:'10px 14px', borderRadius:10, marginTop:4,
+                background:'rgba(0,240,255,0.05)', border:'1px solid rgba(0,240,255,0.15)',
+                display:'flex', alignItems:'center', justifyContent:'space-between',
+              }}>
+                <div>
+                  <div style={{ fontFamily:'Syne,sans-serif', fontSize:12, fontWeight:600, color:'#00f0ff' }}>Free Trial Active</div>
+                  <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#5a7a9a', marginTop:2 }}>
+                    {trial?.daysLeft ?? 14} days left
+                  </div>
                 </div>
+                <div style={{ fontSize:11, color:'#5a7a9a', fontFamily:'JetBrains Mono,monospace' }}>All features unlocked</div>
               </div>
-              <Link href="/subscription" className="btn-primary" style={{ fontSize:12, padding:'6px 14px' }}>
-                Upgrade
-              </Link>
-            </div>
-          )}
           {user?.plan === 'premium' && (
             <div style={{
               padding:'10px 14px', borderRadius:10, marginTop:4,

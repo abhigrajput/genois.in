@@ -47,7 +47,7 @@ export async function GET(request, context) {
 
     return successResponse({ roadmap, currentDayData, tasks: tasks || [] });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -117,7 +117,7 @@ export async function POST(request, context) {
     }
 
     if (action === 'generate_test') {
-      if (!rateLimit(`custom_test_${payload.userId}`, 5, 60000)) return rateLimitResponse();
+      if (!await rateLimit(`custom_test_${payload.userId}`, 5, 60000)) return rateLimitResponse();
 
       const currentDayData = roadmap.roadmap_data[roadmap.current_day - 1];
       const prompt = `Generate 5 multiple choice questions about "${currentDayData?.topic}" for an engineering student.
@@ -136,7 +136,7 @@ Return ONLY valid JSON array:
     }
 
     if (action === 'generate_notes') {
-      if (!rateLimit(`custom_notes_${payload.userId}`, 5, 60000)) return rateLimitResponse();
+      if (!await rateLimit(`custom_notes_${payload.userId}`, 5, 60000)) return rateLimitResponse();
 
       const currentDayData = roadmap.roadmap_data[roadmap.current_day - 1];
       const prompt = `Generate concise study notes for "${currentDayData?.topic}".
@@ -150,6 +150,6 @@ Return plain text only.`;
 
     return errorResponse('Invalid action', 400);
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

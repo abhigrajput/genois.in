@@ -38,6 +38,6 @@ export async function GET(request) {
       roadmap: APTITUDE_ROADMAP,
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

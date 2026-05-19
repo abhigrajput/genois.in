@@ -49,6 +49,6 @@ export async function POST(request) {
 
     return successResponse({ message: 'Contact request sent to student' });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

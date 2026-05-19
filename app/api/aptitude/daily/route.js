@@ -26,7 +26,7 @@ export async function GET(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`aptitude_daily_${payload.userId}`, 10, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`aptitude_daily_${payload.userId}`, 10, 60000)) return rateLimitResponse();
 
     const today = new Date().toISOString().split('T')[0];
     const prompt = `Generate exactly 3 daily aptitude questions — 1 quantitative, 1 logical reasoning, 1 verbal ability.
@@ -60,6 +60,6 @@ Return ONLY valid JSON array of exactly 3 questions:
 
     return successResponse({ questions, date: today });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

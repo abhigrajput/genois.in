@@ -16,6 +16,6 @@ export async function GET(request) {
     const purchased = (purchases || []).map(p => p.company);
     return successResponse({ purchased });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

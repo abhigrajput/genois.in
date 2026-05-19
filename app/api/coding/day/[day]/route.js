@@ -8,7 +8,7 @@ export async function GET(request, { params }) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`api_${payload.userId}`, 30, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`api_${payload.userId}`, 30, 60000)) return rateLimitResponse();
 
     const dayNumber = parseInt(params.day);
     const supabase = getAdminClient();
@@ -99,6 +99,6 @@ Return JSON array with exactly 5 objects:
 
   } catch (error) {
     console.error('Get coding tests error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

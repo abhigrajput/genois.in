@@ -10,7 +10,7 @@ export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`notif_send_${payload.userId}`, 10, 3600000)) return rateLimitResponse();
+    if (!await rateLimit(`notif_send_${payload.userId}`, 10, 3600000)) return rateLimitResponse();
     const { type = 'morning' } = await request.json();
     const supabase = getAdminClient();
 
@@ -57,6 +57,6 @@ export async function POST(request) {
 
     return successResponse({ notification: notif });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

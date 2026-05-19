@@ -96,7 +96,7 @@ export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`api_${payload.userId}`, 10, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`api_${payload.userId}`, 10, 60000)) return rateLimitResponse();
 
     const allowed = rateLimit(`mentor_${payload.userId}`, 10, 60000);
     if (!allowed) return rateLimitResponse();
@@ -141,6 +141,6 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error('Mentor error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

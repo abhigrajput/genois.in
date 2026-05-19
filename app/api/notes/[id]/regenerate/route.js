@@ -30,6 +30,6 @@ export async function POST(request, { params }) {
     const result = await genRes.json();
     return successResponse({ note: result.data?.note, isNew: true });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

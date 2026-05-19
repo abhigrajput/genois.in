@@ -7,7 +7,7 @@ export async function POST(request, context) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`api_${payload.userId}`, 20, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`api_${payload.userId}`, 20, 60000)) return rateLimitResponse();
 
     // Next.js 15 requires awaiting params
     const params = await context.params;
@@ -91,6 +91,6 @@ export async function POST(request, context) {
     });
   } catch (error) {
     console.error('Project step error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

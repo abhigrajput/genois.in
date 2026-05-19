@@ -183,16 +183,9 @@ export default function PricingPage() {
               <div style={{ fontSize: 13, color: '#5a7a9a', marginBottom: 6 }}>{plan.period}</div>
               <div style={{ fontSize: 13, color: '#5a7a9a', fontStyle: 'italic', marginBottom: 20, lineHeight: 1.5 }}>{plan.tagline}</div>
 
-              <Link href={plan.ctaLink} style={{
-                display: 'block', textAlign: 'center',
-                padding: '12px', borderRadius: 10,
-                background: plan.featured ? 'linear-gradient(135deg,#00f0ff,#7b5cff)' : `linear-gradient(135deg,${plan.color}cc,${plan.color}88)`,
-                color: '#020812', textDecoration: 'none',
-                fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700,
-                marginBottom: 24,
-              }}>
-                {plan.cta}
-              </Link>
+              <div style={{ padding: '12px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)', color: '#3a4a5a', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700, textAlign: 'center', marginBottom: 24 }}>
+                🔧 Coming Soon
+              </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {plan.features.map((f, i) => (

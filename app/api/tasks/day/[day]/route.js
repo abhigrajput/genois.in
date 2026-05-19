@@ -31,6 +31,6 @@ export async function GET(request, { params }) {
       dayScore: (tasks || []).reduce((a, t) => a + (t.score || 0), 0),
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

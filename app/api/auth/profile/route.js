@@ -46,7 +46,7 @@ export async function GET(request) {
       strongTopics: strongTopics || [],
     });
   } catch (error) {
-    return errorResponse(error.message || 'Failed to get profile', 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -78,6 +78,6 @@ export async function PUT(request) {
     const { password_hash: _, ...safeUser } = user;
     return successResponse({ user: safeUser }, 'Profile updated');
   } catch (error) {
-    return errorResponse(error.message || 'Update failed', 500);
+    return errorResponse('Internal server error', 500);
   }
 }

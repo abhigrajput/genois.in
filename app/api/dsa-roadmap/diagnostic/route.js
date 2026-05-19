@@ -1,6 +1,7 @@
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
+import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { DIAGNOSTIC_THEORY, DIAGNOSTIC_CODING } from '@/lib/dsaCurriculumLevels';
 
 export async function GET(request) {
@@ -27,7 +28,7 @@ export async function GET(request) {
       codingQuestions: DIAGNOSTIC_CODING,
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -35,8 +36,11 @@ export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
+    if (!await rateLimit(`dsa_diag_submit_${payload.userId}`, 2, 3600000)) return rateLimitResponse();
 
-    const { theoryAnswers, codingAnswers } = await request.json();
+    let body;
+    try { body = await request.json(); } catch { return errorResponse('Invalid JSON', 400); }
+    const { theoryAnswers, codingAnswers } = body || {};
     if (!Array.isArray(theoryAnswers) || !Array.isArray(codingAnswers)) {
       return errorResponse('Invalid answers', 400);
     }
@@ -90,6 +94,6 @@ export async function POST(request) {
       message: `You scored ${totalScore}%. Starting at ${level} level. Next retake available in 30 days.`,
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

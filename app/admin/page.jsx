@@ -12,7 +12,7 @@ export default function AdminPage() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('overview');
-  const [search, setSearch] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [userDetail, setUserDetail] = useState(null);
   const [error, setError] = useState(null);
 
@@ -78,9 +78,7 @@ export default function AdminPage() {
   if (loading) return <div style={{...S, display:'flex', alignItems:'center', justifyContent:'center', color:'#00f0ff', ...mono}}>Loading admin data...</div>;
   if (error) return <div style={{...S, display:'flex', alignItems:'center', justifyContent:'center', color:'#ff2d78', fontFamily:'Syne,sans-serif', fontSize:20}}>{error}</div>;
 
-  const filtered = (data?.allUsers || []).filter(u =>
-    !search || u.name?.toLowerCase().includes(search.toLowerCase()) || u.email?.toLowerCase().includes(search.toLowerCase())
-  );
+  // Search query filtered inline below
 
   const TABS = [
     {key:'overview',label:'📊 Overview'},
@@ -95,7 +93,7 @@ export default function AdminPage() {
       {/* Header */}
       <div style={{background:'#070f1f', borderBottom:'1px solid rgba(0,240,255,0.1)', padding:'14px 24px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, flexWrap:'wrap'}}>
         <div style={{fontFamily:'Syne,sans-serif', fontSize:20, fontWeight:800, color:'#00f0ff'}}>⚙️ GENOIS Admin</div>
-        <div style={{fontSize:12, color:'#5a7a9a', ...mono}}>{data?.overview?.totalUsers} users · ₹{(data?.overview?.totalRevenue||0).toLocaleString()} revenue</div>
+        <div style={{fontSize:12, color:'#5a7a9a', ...mono}}>{data?.stats?.totalUsers} users · ₹{(data?.stats?.monthRevenue||0).toLocaleString()} revenue</div>
         <button onClick={() => router.push('/dashboard')} style={{background:'transparent', border:'1px solid rgba(0,240,255,0.2)', color:'#00f0ff', cursor:'pointer', padding:'6px 14px', borderRadius:8, fontSize:12}}>← Dashboard</button>
       </div>
 
@@ -116,14 +114,14 @@ export default function AdminPage() {
           <div>
             <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))', gap:12, marginBottom:24}}>
               {[
-                {label:'Total Users', value:data?.overview?.totalUsers, color:'#00f0ff'},
-                {label:'Active Today', value:data?.overview?.activeToday, color:'#1D9E75'},
-                {label:'New This Week', value:data?.overview?.newThisWeek, color:'#7b5cff'},
-                {label:'Avg Score', value:(data?.overview?.avgScore||0)+' pts', color:'#EF9F27'},
-                {label:'Active Streaks', value:data?.overview?.activeStreaks, color:'#ff2d78'},
-                {label:'Revenue (30d)', value:'₹'+(data?.overview?.totalRevenue||0).toLocaleString(), color:'#1D9E75'},
-                {label:'Aptitude Sessions', value:data?.overview?.aptitudeAttempts, color:'#378ADD'},
-                {label:'Interviews', value:data?.overview?.interviewAttempts, color:'#D85A30'},
+                {label:'Total Users', value:data?.stats?.totalUsers, color:'#00f0ff'},
+                {label:'Active Today', value:data?.stats?.activeToday, color:'#1D9E75'},
+                {label:'New This Week', value:data?.stats?.newThisWeek, color:'#7b5cff'},
+                {label:'Avg Score', value:(data?.stats?.avgScore||0)+' pts', color:'#EF9F27'},
+                {label:'Active Streaks', value:data?.stats?.activeStreaks, color:'#ff2d78'},
+                {label:'Revenue (30d)', value:'₹'+(data?.stats?.monthRevenue||0).toLocaleString(), color:'#1D9E75'},
+                {label:'Aptitude Sessions', value:data?.stats?.aptitudeSessions, color:'#378ADD'},
+                {label:'Interviews', value:data?.stats?.interviewSessions, color:'#D85A30'},
               ].map(s => (
                 <div key={s.label} style={{...card, textAlign:'center', border:`1px solid ${s.color}20`}}>
                   <div style={{fontFamily:'Syne,sans-serif', fontSize:22, fontWeight:800, color:s.color}}>{s.value}</div>
@@ -135,30 +133,35 @@ export default function AdminPage() {
             <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:16}}>
               <div style={card}>
                 <div style={{...mono, fontSize:10, color:'#00f0ff', letterSpacing:2, marginBottom:14}}>PLAN BREAKDOWN</div>
-                {Object.entries(data?.planBreakdown||{}).sort((a,b)=>b[1]-a[1]).map(([plan,count]) => (
-                  <div key={plan} style={{display:'flex', justifyContent:'space-between', padding:'8px 0', borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
-                    <span style={{fontSize:13, color:'#c8d8e8', textTransform:'capitalize'}}>{plan}</span>
-                    <span style={{fontSize:13, fontWeight:700, color:'#00f0ff', fontFamily:'Syne,sans-serif'}}>{count}</span>
+                {Object.entries(data?.planBreakdown || {}).map(([plan, count]) => (
+                  <div key={plan} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                    <span style={{ color: '#e8f4ff', textTransform: 'capitalize' }}>{plan}</span>
+                    <span style={{ color: '#00f0ff', fontFamily: 'JetBrains Mono,monospace', fontWeight: 700 }}>{count}</span>
                   </div>
                 ))}
               </div>
 
               <div style={{...card, border:'1px solid rgba(123,92,255,0.1)'}}>
                 <div style={{...mono, fontSize:10, color:'#7b5cff', letterSpacing:2, marginBottom:14}}>DOMAIN BREAKDOWN</div>
-                {Object.entries(data?.domainBreakdown||{}).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([d,c]) => (
-                  <div key={d} style={{display:'flex', justifyContent:'space-between', padding:'7px 0', borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
-                    <span style={{fontSize:12, color:'#c8d8e8', textTransform:'capitalize'}}>{d}</span>
-                    <span style={{fontSize:12, fontWeight:700, color:'#7b5cff'}}>{c}</span>
+                {Object.entries(data?.domainBreakdown || {}).map(([domain, count]) => (
+                  <div key={domain} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                    <span style={{ color: '#e8f4ff', textTransform: 'uppercase' }}>{domain}</span>
+                    <span style={{ color: '#7b5cff', fontFamily: 'JetBrains Mono,monospace', fontWeight: 700 }}>{count}</span>
                   </div>
                 ))}
               </div>
 
               <div style={{...card, border:'1px solid rgba(29,158,117,0.1)'}}>
                 <div style={{...mono, fontSize:10, color:'#1D9E75', letterSpacing:2, marginBottom:14}}>RECENT SIGNUPS</div>
-                {(data?.recentUsers||[]).slice(0,8).map((u,i) => (
-                  <div key={i} style={{display:'flex', justifyContent:'space-between', padding:'7px 0', borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
-                    <span style={{fontSize:12, color:'#c8d8e8'}}>{u.name||'Unknown'}</span>
-                    <span style={{fontSize:11, color:'#5a7a9a', ...mono}}>{new Date(u.created_at).toLocaleDateString('en-IN')}</span>
+                {(data?.recentSignups || []).map(u => (
+                  <div key={u.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                    <div>
+                      <div style={{ color: '#e8f4ff', fontSize: 13 }}>{u.name}</div>
+                      <div style={{ color: '#5a7a9a', fontSize: 11 }}>{u.email}</div>
+                    </div>
+                    <div style={{ color: '#5a7a9a', fontSize: 11, fontFamily: 'JetBrains Mono,monospace' }}>
+                      {new Date(u.joined).toLocaleDateString()}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -169,35 +172,44 @@ export default function AdminPage() {
         {/* USERS */}
         {tab === 'users' && (
           <div>
-            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search name or email..." style={{width:'100%', padding:'11px 16px', borderRadius:10, border:'1px solid rgba(0,240,255,0.15)', background:'#070f1f', color:'#e8f4ff', fontSize:14, outline:'none', marginBottom:16, boxSizing:'border-box'}} />
-            <div style={{...card, padding:0, overflow:'hidden'}}>
-              {filtered.slice(0,60).map(u => (
-                <div key={u.id} onClick={() => loadUser(u.id)} style={{ padding: 16, borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(0,240,255,0.08)', marginBottom: 12, cursor: 'pointer' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, flexWrap: 'wrap', gap: 12 }}>
-                    <div>
-                      <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#e8f4ff' }}>{u.name}</div>
-                      <div style={{ fontSize: 12, color: '#5a7a9a', marginTop: 2 }}>{u.email}</div>
+            <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search name or email..." style={{width:'100%', padding:'11px 16px', borderRadius:10, border:'1px solid rgba(0,240,255,0.15)', background:'#070f1f', color:'#e8f4ff', fontSize:14, outline:'none', marginBottom:16, boxSizing:'border-box'}} />
+            <div style={{ marginTop: 16 }}>
+              {(data?.allUsers || [])
+                .filter(u => 
+                  !searchQuery || 
+                  u.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  u.email?.toLowerCase().includes(searchQuery.toLowerCase())
+                )
+                .map(u => (
+                  <div key={u.id} onClick={() => loadUser(u.id)} style={{ padding: 16, borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(0,240,255,0.08)', marginBottom: 12, cursor: 'pointer' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, flexWrap: 'wrap', gap: 12 }}>
+                      <div>
+                        <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#e8f4ff' }}>{u.name}</div>
+                        <div style={{ fontSize: 12, color: '#5a7a9a', marginTop: 2 }}>{u.email}</div>
+                      </div>
+                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                        <span style={{ padding: '3px 10px', borderRadius: 12, background: u.plan === 'dominator' ? 'rgba(239,159,39,0.15)' : u.plan === 'performer' ? 'rgba(123,92,255,0.15)' : u.plan === 'player' ? 'rgba(0,240,255,0.15)' : 'rgba(255,255,255,0.06)', color: u.plan === 'dominator' ? '#EF9F27' : u.plan === 'performer' ? '#7b5cff' : u.plan === 'player' ? '#00f0ff' : '#5a7a9a', fontSize: 11, fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, textTransform: 'uppercase' }}>{u.plan}</span>
+                        {u.isOnTrial && u.trialDaysLeft > 0 && <span style={{ padding: '3px 10px', borderRadius: 12, background: 'rgba(29,158,117,0.15)', color: '#1D9E75', fontSize: 11, fontFamily: 'JetBrains Mono,monospace', fontWeight: 700 }}>TRIAL {u.trialDaysLeft}d</span>}
+                      </div>
                     </div>
-                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                      <span style={{ padding: '3px 10px', borderRadius: 12, background: u.plan === 'dominator' ? 'rgba(239,159,39,0.15)' : u.plan === 'performer' ? 'rgba(123,92,255,0.15)' : u.plan === 'player' ? 'rgba(0,240,255,0.15)' : 'rgba(255,255,255,0.06)', color: u.plan === 'dominator' ? '#EF9F27' : u.plan === 'performer' ? '#7b5cff' : u.plan === 'player' ? '#00f0ff' : '#5a7a9a', fontSize: 11, fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, textTransform: 'uppercase' }}>{u.plan}</span>
-                      {u.isOnTrial && <span style={{ padding: '3px 10px', borderRadius: 12, background: 'rgba(29,158,117,0.15)', color: '#1D9E75', fontSize: 11, fontFamily: 'JetBrains Mono,monospace', fontWeight: 700 }}>TRIAL {u.trialDaysLeft}d</span>}
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 10, padding: '12px 0', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>COLLEGE</div><div style={{ fontSize: 13, color: '#e8f4ff' }}>{u.college}</div></div>
+                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>YEAR</div><div style={{ fontSize: 13, color: '#e8f4ff' }}>{u.year}</div></div>
+                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>DOMAIN</div><div style={{ fontSize: 13, color: '#e8f4ff' }}>{u.domain}</div></div>
+                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>SCORE</div><div style={{ fontSize: 13, color: '#7b5cff', fontWeight: 700 }}>{u.score}</div></div>
+                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>DAY</div><div style={{ fontSize: 13, color: '#1D9E75' }}>{u.day}</div></div>
+                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>STREAK</div><div style={{ fontSize: 13, color: '#EF9F27' }}>{u.streak}d</div></div>
+                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>LAST ACTIVE</div><div style={{ fontSize: 13, color: u.lastActiveDays > 7 ? '#ff2d78' : '#e8f4ff' }}>{u.lastActiveDays !== null ? u.lastActiveDays + 'd ago' : 'Never'}</div></div>
+                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>JOINED</div><div style={{ fontSize: 13, color: '#e8f4ff' }}>{new Date(u.joined).toLocaleDateString()}</div></div>
+                    </div>
+                    <div style={{ fontSize: 10, color: '#3a4a5a', fontFamily: 'JetBrains Mono,monospace', marginTop: 8, paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+                      ID: {u.id} · Hash: {u.passwordHashPreview}
                     </div>
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 10, padding: '12px 0', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-                    <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>COLLEGE</div><div style={{ fontSize: 13, color: '#e8f4ff' }}>{u.college}</div></div>
-                    <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>YEAR</div><div style={{ fontSize: 13, color: '#e8f4ff' }}>{u.year}</div></div>
-                    <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>DOMAIN</div><div style={{ fontSize: 13, color: '#e8f4ff' }}>{u.domain}</div></div>
-                    <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>SCORE</div><div style={{ fontSize: 13, color: '#7b5cff', fontWeight: 700 }}>{u.score}</div></div>
-                    <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>DAY</div><div style={{ fontSize: 13, color: '#1D9E75' }}>{u.day}</div></div>
-                    <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>STREAK</div><div style={{ fontSize: 13, color: '#EF9F27' }}>{u.streak}d</div></div>
-                    <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>LAST ACTIVE</div><div style={{ fontSize: 13, color: u.lastActiveDays > 7 ? '#ff2d78' : '#e8f4ff' }}>{u.lastActiveDays !== null ? u.lastActiveDays + 'd ago' : 'Never'}</div></div>
-                    <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>JOINED</div><div style={{ fontSize: 13, color: '#e8f4ff' }}>{new Date(u.joined).toLocaleDateString()}</div></div>
-                  </div>
-                  <div style={{ fontSize: 10, color: '#3a4a5a', fontFamily: 'JetBrains Mono,monospace', marginTop: 8, paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-                    ID: {u.id} · Hash: {u.passwordHashPreview}
-                  </div>
-                </div>
-              ))}
+                ))}
+              {(data?.allUsers || []).length === 0 && (
+                <div style={{ textAlign: 'center', padding: 40, color: '#5a7a9a' }}>No users found</div>
+              )}
             </div>
           </div>
         )}
@@ -216,7 +228,7 @@ export default function AdminPage() {
                   </div>
                   <div style={{textAlign:'right'}}>
                     <div style={{fontFamily:'Syne,sans-serif', fontSize:18, fontWeight:800, color:'#EF9F27'}}>{u.score} pts</div>
-                    <div style={{fontSize:11, color:'#5a7a9a', ...mono}}>Day {u.currentDay} · {u.streak}🔥</div>
+                    <div style={{fontSize:11, color:'#5a7a9a', ...mono}}>Day {u.day} · {u.streak}🔥</div>
                   </div>
                 </div>
               ))}
@@ -236,8 +248,8 @@ export default function AdminPage() {
                     <div style={{fontSize:11, color:'#5a7a9a'}}>{u.email}</div>
                   </div>
                   <div style={{textAlign:'right'}}>
-                    <div style={{fontSize:11, color:'#ff2d78', ...mono}}>Last: {u.lastActive ? new Date(u.lastActive).toLocaleDateString('en-IN') : 'Never'}</div>
-                    <div style={{fontSize:11, color:'#5a7a9a'}}>Score: {u.score} · Day {u.currentDay}</div>
+                    <div style={{fontSize:11, color:'#ff2d78', ...mono}}>Inactive: {u.lastActiveDays !== null ? u.lastActiveDays + 'd' : 'Never'}</div>
+                    <div style={{fontSize:11, color:'#5a7a9a'}}>Score: {u.score} · Day {u.day}</div>
                   </div>
                 </div>
               ))}
@@ -250,7 +262,7 @@ export default function AdminPage() {
           <div>
             <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))', gap:12, marginBottom:20}}>
               {[
-                {label:'Total Revenue', value:'₹'+(data?.overview?.totalRevenue||0).toLocaleString(), color:'#1D9E75'},
+                {label:'Total Revenue', value:'₹'+(data?.stats?.monthRevenue||0).toLocaleString(), color:'#1D9E75'},
                 {label:'Paid Users', value:Object.entries(data?.planBreakdown||{}).filter(([k])=>k!=='spectator'&&k!=='free').reduce((s,[,v])=>s+v,0), color:'#00f0ff'},
               ].map(s => (
                 <div key={s.label} style={{...card, textAlign:'center', border:`1px solid ${s.color}20`}}>

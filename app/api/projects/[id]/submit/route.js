@@ -60,6 +60,6 @@ export async function POST(request, { params }) {
 
     return successResponse({ score, aiFeedback, message: 'Project submitted!' });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

@@ -22,7 +22,7 @@ export async function GET(request) {
       sessions: sessions || [],
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -51,6 +51,6 @@ export async function POST(request) {
 
     return successResponse({ session, config });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

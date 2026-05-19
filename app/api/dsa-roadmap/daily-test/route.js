@@ -10,7 +10,7 @@ export async function GET(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`dsa_test_${payload.userId}`, 5, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`dsa_test_${payload.userId}`, 5, 60000)) return rateLimitResponse();
 
     const { searchParams } = new URL(request.url);
     const day = parseInt(searchParams.get('day') || '1');
@@ -91,7 +91,7 @@ All questions must be specifically about ${dayData.topic}.`;
 
     return successResponse({ test, topic: dayData.topic, day, level });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -139,6 +139,6 @@ export async function POST(request) {
 
     return successResponse({ correct, total: questions.length, score, passed, pointsAwarded: passed ? 25 : 0 });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

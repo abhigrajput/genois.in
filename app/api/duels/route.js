@@ -7,7 +7,7 @@ export async function GET(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`api_${payload.userId}`, 5, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`api_${payload.userId}`, 5, 60000)) return rateLimitResponse();
     const supabase = getAdminClient();
 
     const { data: duels } = await supabase
@@ -36,7 +36,7 @@ export async function GET(request) {
 
     return successResponse({ duels: enriched });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -44,7 +44,7 @@ export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`api_${payload.userId}`, 5, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`api_${payload.userId}`, 5, 60000)) return rateLimitResponse();
     const { opponentEmail } = await request.json();
     const supabase = getAdminClient();
 
@@ -112,6 +112,6 @@ Make questions challenging but fair. Mix easy medium and hard.`;
 
     return successResponse({ duel, opponentName: opponent.name });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

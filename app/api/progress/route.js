@@ -61,6 +61,6 @@ export async function GET(request) {
       jobReadyScore: Math.round(skill?.job_ready_score || 0),
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

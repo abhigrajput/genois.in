@@ -35,7 +35,7 @@ export async function GET(request) {
       allRewards: STREAK_REWARDS,
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -92,6 +92,6 @@ export async function POST(request) {
       pointsAdded: pointsToAdd,
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

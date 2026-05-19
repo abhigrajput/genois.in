@@ -47,7 +47,7 @@ export async function GET(request) {
 
     return successResponse({ mentors: enriched });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -89,6 +89,6 @@ export async function POST(request) {
 
     return successResponse({ message: 'Mentor profile saved' });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

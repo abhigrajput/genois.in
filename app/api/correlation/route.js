@@ -151,6 +151,6 @@ export async function GET(request) {
         : 'Collecting data — report your outcomes to build this graph',
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

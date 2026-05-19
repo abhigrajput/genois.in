@@ -51,7 +51,7 @@ export async function GET(request) {
       total: graveyard.length,
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 

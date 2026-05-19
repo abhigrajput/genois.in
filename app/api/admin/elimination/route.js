@@ -57,7 +57,7 @@ export async function POST(request) {
       cleared,
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -78,6 +78,6 @@ export async function GET(request) {
 
     return successResponse({ hireReady, notReady });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

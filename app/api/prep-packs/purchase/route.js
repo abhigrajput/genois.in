@@ -27,6 +27,6 @@ export async function POST(request) {
 
     return successResponse({ message: 'Pack unlocked successfully' });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

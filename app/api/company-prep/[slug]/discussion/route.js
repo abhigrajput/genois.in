@@ -7,7 +7,7 @@ export async function POST(request, { params }) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`discussion_${payload.userId}`, 10, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`discussion_${payload.userId}`, 10, 60000)) return rateLimitResponse();
 
     const { slug } = await params;
     const { message, parentId } = await request.json();
@@ -26,9 +26,9 @@ export async function POST(request, { params }) {
       .select('*, users(name)')
       .single();
 
-    if (error) return errorResponse(error.message, 500);
+    if (error) return errorResponse('Internal server error', 500);
     return successResponse({ discussion: data });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

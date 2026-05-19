@@ -68,6 +68,6 @@ export async function POST(request) {
 
     return errorResponse('Invalid action', 400);
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

@@ -40,6 +40,6 @@ export async function GET(request) {
       canBeMentor: (myScore?.total_score || 0) >= 500,
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

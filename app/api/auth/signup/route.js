@@ -1,37 +1,49 @@
 import bcrypt from 'bcryptjs';
+import { z } from 'zod';
 import { Resend } from 'resend';
+import crypto from 'crypto';
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { generateToken } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
+import { csrfCheck, checkPasswordStrength } from '@/lib/security';
+
+// FIX 08: Zod schema
+const SignupSchema = z.object({
+  name:          z.string().min(2, 'Name must be at least 2 characters').max(50, 'Name must be at most 50 characters').trim(),
+  email:         z.string().email('Invalid email format').max(255),
+  password:      z.string().min(8, 'Password must be at least 8 characters').max(128, 'Password must be at most 128 characters'),
+  college:       z.string().max(200).optional().nullable(),
+  year:          z.string().max(20).optional().nullable(),
+  domainSlug:    z.string().max(50).optional().nullable(),
+  level:         z.enum(['beginner', 'intermediate', 'advanced']).optional(),
+  learningSpeed: z.enum(['slow', 'normal', 'fast']).optional(),
+  referralCode:  z.string().max(50).optional().nullable(),
+});
 
 export async function POST(request) {
+  // FIX 10: CSRF check
+  const csrf = csrfCheck(request);
+  if (csrf) return csrf;
+
   try {
     let body;
-    try {
-      body = await request.json();
-    } catch {
-      return errorResponse('Invalid JSON body', 400);
-    }
-    const { name, email, password, college, year, domainSlug, level, learningSpeed, referralCode } = body || {};
+    try { body = await request.json(); } catch { return errorResponse('Invalid JSON body', 400); }
 
-    if (!rateLimit(`signup_${request.headers.get('x-forwarded-for') || 'unknown'}`, 5, 3600000)) return rateLimitResponse();
+    // Rate limit by IP
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+    if (!await rateLimit(`signup_${ip}`, 5, 3600000)) return rateLimitResponse(3600);
 
-    if (!name || !email || !password) {
-      return errorResponse('Name, email and password are required', 400);
+    // FIX 08: Zod validation
+    const parsed = SignupSchema.safeParse(body);
+    if (!parsed.success) {
+      return errorResponse(parsed.error.errors[0].message, 400);
     }
-    if (!email.includes('@') || email.length > 255) {
-      return errorResponse('Invalid email address', 400);
-    }
-    if (name.trim().length < 2 || name.length > 100) {
-      return errorResponse('Name must be 2-100 characters', 400);
-    }
-    if (password.length < 8) {
-      return errorResponse('Password must be at least 8 characters', 400);
-    }
-    if (password.length > 255) {
-      return errorResponse('Password too long', 400);
-    }
+    const { name, email, password, college, year, domainSlug, level, learningSpeed, referralCode } = parsed.data;
+
+    // FIX 12: Password strength
+    const pwdError = checkPasswordStrength(password);
+    if (pwdError) return errorResponse(pwdError, 400);
 
     const supabase = getAdminClient();
 
@@ -68,15 +80,20 @@ export async function POST(request) {
       .select()
       .single();
 
-    if (userError) throw new Error(userError.message);
+    if (userError) {
+      // FIX 09: Don't expose DB error message
+      console.error('Signup DB error:', userError);
+      throw new Error('Account creation failed');
+    }
 
-    const verificationToken = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    // FIX: Use crypto.randomBytes for verification token (CSPRNG, not Math.random)
+    const verificationToken = crypto.randomBytes(32).toString('hex');
     await supabase.from('users').update({ verification_token: verificationToken }).eq('id', user.id);
 
     const verifyUrl = 'https://genois.in/api/auth/verify-email?token=' + verificationToken;
 
     const resend = new Resend(process.env.RESEND_API_KEY);
-    const { data: emailData, error: emailError } = await resend.emails.send({
+    const { error: emailError } = await resend.emails.send({
       from: 'GENOIS <noreply@genois.in>',
       to: user.email,
       subject: '✅ Verify your GENOIS email',
@@ -100,16 +117,13 @@ export async function POST(request) {
           referred_email: email,
           status: 'pending',
         });
-
-        await supabase
-          .from('users')
-          .update({ 
-            referred_by_code: referralCode,
-            referral_count: (referrer.referral_count || 0) + 1,
-          })
-          .eq('id', referrer.id);
+        await supabase.from('users').update({
+          referred_by_code: referralCode,
+          referral_count: (referrer.referral_count || 0) + 1,
+        }).eq('id', referrer.id);
       }
     }
+
     await supabase.from('scores').insert({ user_id: user.id });
     await supabase.from('progress').insert({
       user_id: user.id,
@@ -129,7 +143,8 @@ export async function POST(request) {
 
     return successResponse({ user: safeUser, token }, 'Account created successfully', 201);
   } catch (error) {
+    // FIX 09: Sanitize errors
     console.error('Signup error:', error);
-    return errorResponse(error.message || 'Signup failed', 500);
+    return errorResponse('Internal server error', 500);
   }
 }

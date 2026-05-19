@@ -62,6 +62,6 @@ export async function POST(request) {
     return successResponse({ submission, review, points, status });
   } catch (error) {
     console.error('Submit coding error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

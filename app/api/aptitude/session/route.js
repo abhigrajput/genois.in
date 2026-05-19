@@ -27,7 +27,7 @@ export async function GET(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`apt_gen_${payload.userId}`, 5, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`apt_gen_${payload.userId}`, 5, 60000)) return rateLimitResponse();
 
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
@@ -102,7 +102,7 @@ Make sure all 10 questions are included and JSON is valid.`;
 
     return successResponse({ session, questions, topicName: topicData.name, categoryLabel: catData.label });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -206,6 +206,6 @@ export async function POST(request) {
       pointsEarned: percentage >= 70 ? 15 : 0,
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

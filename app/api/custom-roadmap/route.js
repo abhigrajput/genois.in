@@ -35,7 +35,7 @@ export async function GET(request) {
 
     return successResponse({ roadmaps: roadmaps || [] });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -43,7 +43,7 @@ export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`custom_roadmap_${payload.userId}`, 5, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`custom_roadmap_${payload.userId}`, 5, 60000)) return rateLimitResponse();
 
     const { topic, alreadyKnow, goal, days } = await request.json();
     if (!topic || topic.trim().length < 3) return errorResponse('Topic too short', 400);
@@ -110,6 +110,6 @@ Return ONLY valid JSON with no markdown:
 
     return successResponse({ roadmap, roadmapData });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

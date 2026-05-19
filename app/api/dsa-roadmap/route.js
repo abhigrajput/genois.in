@@ -1,7 +1,9 @@
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
+import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { DSA_LEVELS } from '@/lib/dsaCurriculumLevels';
+import { csrfCheck } from '@/lib/security';
 
 export async function GET(request) {
   try {
@@ -35,15 +37,46 @@ export async function GET(request) {
       currentDayData,
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    console.error('DSA roadmap GET error:', error);
+    return errorResponse('Internal server error', 500);
   }
 }
 
 export async function POST(request) {
+  // FIX 10: CSRF check
+  const csrf = csrfCheck(request);
+  if (csrf) return csrf;
+
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    const { action, language, day, taskType } = await request.json();
+    if (!await rateLimit(`dsa_roadmap_post_${payload.userId}`, 30, 60000)) return rateLimitResponse();
+
+    let body;
+    try { body = await request.json(); } catch { return errorResponse('Invalid JSON', 400); }
+    const { action, language, day, taskType } = body || {};
+
+    // Input validation
+    const VALID_ACTIONS = ['start', 'complete_task'];
+    const VALID_LANGUAGES = ['cpp', 'python', 'java', 'javascript'];
+    const VALID_TASK_TYPES = ['video', 'resource', 'coding', 'test', 'notes'];
+
+    if (!action || !VALID_ACTIONS.includes(action)) {
+      return errorResponse('Invalid action. Must be: start | complete_task', 400);
+    }
+    if (language && !VALID_LANGUAGES.includes(language)) {
+      return errorResponse('Invalid language', 400);
+    }
+    if (action === 'complete_task') {
+      const dayNum = parseInt(day);
+      if (!dayNum || dayNum < 1 || dayNum > 90) {
+        return errorResponse('day must be between 1 and 90', 400);
+      }
+      if (!taskType || !VALID_TASK_TYPES.includes(taskType)) {
+        return errorResponse('Invalid taskType. Must be: video | resource | coding | test | notes', 400);
+      }
+    }
+
     const supabase = getAdminClient();
 
     if (action === 'start') {
@@ -97,6 +130,7 @@ export async function POST(request) {
 
     return errorResponse('Unknown action', 400);
   } catch (error) {
-    return errorResponse(error.message, 500);
+    console.error('DSA roadmap POST error:', error);
+    return errorResponse('Internal server error', 500);
   }
 }

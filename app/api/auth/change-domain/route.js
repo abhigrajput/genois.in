@@ -39,6 +39,6 @@ export async function PUT(request) {
 
     return successResponse({ domainSlug }, 'Domain changed successfully');
   } catch (error) {
-    return errorResponse(error.message || 'Failed to change domain', 500);
+    return errorResponse('Internal server error', 500);
   }
 }

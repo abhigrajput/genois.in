@@ -39,3 +39,4 @@ d.txt
 *.tmp
 .env.local
 .env*.local
+.vercel

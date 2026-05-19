@@ -16,6 +16,6 @@ export async function GET(request) {
 
     return successResponse({ projects: data || [] });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

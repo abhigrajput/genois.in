@@ -8,7 +8,7 @@ export async function GET(request, { params }) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`company_ai_${payload.userId}`, 5, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`company_ai_${payload.userId}`, 5, 60000)) return rateLimitResponse();
 
     const { slug } = await params;
     const company = COMPANIES.find(c => c.slug === slug);
@@ -41,6 +41,6 @@ export async function GET(request, { params }) {
     setCached(cacheKey, questions, 168);
     return successResponse({ questions });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

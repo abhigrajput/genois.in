@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { trackSignup } from '@/lib/analytics';
 
 const DOMAINS = [
   { id: 'fullstack', label: 'Full Stack', icon: '⬡', color: '#7F77DD', desc: 'HTML CSS React Node.js' },
@@ -55,6 +56,7 @@ export default function OnboardingPage() {
       if (!d.success) { setError(d.message || 'Signup failed'); setLoading(false); return; }
       localStorage.setItem('genois_token', d.data.token);
       localStorage.setItem('genois_user', JSON.stringify(d.data.user));
+      trackSignup('email');
       router.push('/welcome');
     } catch { setError('Something went wrong. Try again.'); }
     setLoading(false);

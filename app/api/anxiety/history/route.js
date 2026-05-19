@@ -17,7 +17,7 @@ export async function GET(request) {
 
     return successResponse({ messages: data || [] });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -32,6 +32,6 @@ export async function DELETE(request) {
 
     return successResponse({ cleared: true });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

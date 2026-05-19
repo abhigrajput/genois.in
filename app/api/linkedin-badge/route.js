@@ -47,7 +47,7 @@ export async function GET(request) {
       linkedinPostText: `Excited to share that I am now GENOIS Verified! 🏆\n\nGENOIS Score: ${currentScore} pts\nGlobal Rank: #${rank} of ${total} engineering students\nTop ${100 - percentile}% of engineers on GENOIS\n\nGENOIS ranks engineers on real daily performance — daily coding, timed tests, actual projects — not resumes or fake certificates.\n\nCheck out GENOIS: https://genois.in\n\n#GENOIS #Engineering #Skills #Placement #${user?.domain_slug?.toUpperCase()} #Verified`,
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -60,6 +60,6 @@ export async function POST(request) {
     await supabase.from('users').update({ linkedin_url: linkedinUrl }).eq('id', payload.userId);
     return successResponse({ message: 'LinkedIn URL saved' });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

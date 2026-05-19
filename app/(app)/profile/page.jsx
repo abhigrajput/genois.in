@@ -1,10 +1,11 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import useAuthStore from '@/store/authStore';
 import { authAPI } from '@/lib/api';
 import { useToken, apiFetch } from '@/lib/useApi';
+import Link from 'next/link';
 
 const DOMAINS = [
   {slug:'fullstack',label:'Full Stack'},{slug:'dsa',label:'DSA'},
@@ -26,6 +27,14 @@ export default function ProfilePage() {
   const [showDomainModal, setShowDomainModal] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [myBadges, setMyBadges] = useState([]);
+
+  useEffect(() => {
+    if (!token) return;
+    apiFetch('/api/badge/status', token)
+      .then(r => setMyBadges((r.data.badges || []).filter(b => b.status === 'active')))
+      .catch(() => {});
+  }, [token]);
 
 
 
@@ -159,6 +168,32 @@ export default function ProfilePage() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* SKILL BADGES - full width */}
+        <div style={{ gridColumn: '1 / -1', background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24 }}>
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: 14 }}>
+            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#e8f4ff' }}>🎖️ Skill Badges</div>
+            <Link href="/badge" style={{ padding:'7px 14px', borderRadius:8, border:'1px solid rgba(0,240,255,0.2)', background:'transparent', color:'#00f0ff', textDecoration:'none', fontSize:12, fontFamily:'Syne,sans-serif', fontWeight:600 }}>Get Verified →</Link>
+          </div>
+          {myBadges.length === 0 ? (
+            <div style={{ fontSize:13, color:'#5a7a9a' }}>No active badges yet. <Link href="/badge" style={{ color:'#00f0ff' }}>Start a verification test →</Link></div>
+          ) : (
+            <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
+              {myBadges.map(b => {
+                const ICONS = {fullstack:'🌐',dsa:'🧠',cybersecurity:'🔒',aiml:'🤖',devops:'⚙️',android:'📱',datascience:'📊',blockchain:'⛓️',gamedev:'🎮',systemdesign:'🏗️'};
+                const LEVEL_C = {proficient:'#4f9cf9',expert:'#EF9F27',master:'#1D9E75'};
+                const lc = LEVEL_C[b.level] || '#4f9cf9';
+                return (
+                  <div key={b.id} style={{ display:'flex', alignItems:'center', gap:6, padding:'6px 12px', borderRadius:20, background:`${lc}15`, border:`1px solid ${lc}40` }}>
+                    <span style={{ fontSize:14 }}>{ICONS[b.domain] || '🎖️'}</span>
+                    <span style={{ fontSize:12, fontWeight:600, color:lc, fontFamily:'Syne,sans-serif' }}>{b.domain}</span>
+                    <span style={{ fontSize:10, color:'#5a7a9a', fontFamily:'JetBrains Mono,monospace' }}>{b.daysLeft}d</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* SETTINGS - full width */}

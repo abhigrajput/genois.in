@@ -53,8 +53,6 @@ export default function PublicNav() {
               {[
                 { href: '/domain-explorer', icon: '🎯', label: 'Explore Domains', desc: 'Find your career path' },
                 { href: '/college-war', icon: '⚔️', label: 'College War', desc: 'Top colleges ranked' },
-                { href: '/shame-board', icon: '😴', label: 'Shame Board', desc: 'Inactive 3+ days' },
-                { href: '/graveyard', icon: '☠️', label: 'Graveyard', desc: 'Students who quit' },
               ].map(item => (
                 <Link
                   key={item.href}
@@ -106,8 +104,6 @@ export default function PublicNav() {
           {[
             { href: '/domain-explorer', label: '🎯 Explore Domains' },
             { href: '/college-war', label: '⚔️ College War' },
-            { href: '/shame-board', label: '😴 Shame Board' },
-            { href: '/graveyard', label: '☠️ Graveyard' },
           ].map(n => (
             <Link key={n.href} href={n.href} onClick={() => setMenuOpen(false)} style={{ padding: '10px 14px', borderRadius: 8, color: '#8a9ab0', textDecoration: 'none', fontSize: 15, fontFamily: 'Syne,sans-serif', fontWeight: 600, background: 'rgba(255,255,255,0.02)' }}>
               {n.label}

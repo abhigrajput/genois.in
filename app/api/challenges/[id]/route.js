@@ -42,7 +42,7 @@ export async function GET(request, context) {
       myRank: rank,
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -125,6 +125,6 @@ export async function POST(request, context) {
 
     return successResponse({ score: percentage, rank, totalAttempts: allAttempts?.length });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

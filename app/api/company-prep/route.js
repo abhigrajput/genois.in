@@ -5,6 +5,6 @@ export async function GET() {
   try {
     return successResponse({ companies: COMPANIES });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

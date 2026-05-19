@@ -46,6 +46,6 @@ export async function POST(request) {
 
     return successResponse({ message: 'Bid placed successfully!' });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

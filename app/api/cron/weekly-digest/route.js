@@ -132,6 +132,6 @@ export async function GET(request) {
 
     return successResponse({ sent, skipped, total: users?.length || 0 });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

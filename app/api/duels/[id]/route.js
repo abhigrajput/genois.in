@@ -34,7 +34,7 @@ export async function GET(request, context) {
       theyFinished: duel.challenger_id === payload.userId ? duel.opponent_finished : duel.challenger_finished,
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -112,6 +112,6 @@ export async function POST(request, context) {
 
     return errorResponse('Invalid action', 400);
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

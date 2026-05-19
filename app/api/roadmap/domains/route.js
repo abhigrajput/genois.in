@@ -12,6 +12,6 @@ export async function GET() {
     if (error) throw new Error(error.message);
     return successResponse(data);
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

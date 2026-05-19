@@ -112,6 +112,6 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error('Submit test error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

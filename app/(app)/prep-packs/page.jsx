@@ -55,66 +55,6 @@ export default function PrepPacksPage() {
       .catch(() => setLoading(false));
   }, [ready, token]);
 
-  async function buyPack(company) {
-    setBuying(company);
-    try {
-      // Load Razorpay script if not already loaded
-      if (!window.Razorpay) {
-        await new Promise((resolve, reject) => {
-          const script = document.createElement('script');
-          script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-          script.onload = resolve;
-          script.onerror = reject;
-          document.body.appendChild(script);
-        });
-      }
-
-      const orderRes = await apiFetch('/api/payment/create-order', token, 'POST', {
-        planId: `prep_${company}`,
-        amount: 199,
-        description: `${company.toUpperCase()} Prep Pack`,
-      });
-
-      if (!orderRes.data?.orderId) {
-        toast.error('Payment setup failed. Try again.');
-        setBuying(null);
-        return;
-      }
-
-      const options = {
-        key: orderRes.data.keyId,
-        amount: orderRes.data.amount,
-        currency: 'INR',
-        name: 'GENOIS',
-        description: `${company.toUpperCase()} Prep Pack`,
-        order_id: orderRes.data.orderId,
-        handler: async (response) => {
-          try {
-            await apiFetch('/api/prep-packs/purchase', token, 'POST', {
-              company,
-              paymentId: response.razorpay_payment_id,
-              orderId: response.razorpay_order_id,
-            });
-            setPurchased(p => [...p, company]);
-            toast.success(`${company.toUpperCase()} Prep Pack unlocked!`);
-          } catch (e) {
-            toast.error('Payment done but activation failed. Contact support.');
-          }
-        },
-        prefill: { name: '', email: '' },
-        theme: { color: '#00f0ff' },
-      };
-
-      const rzp = new window.Razorpay(options);
-      rzp.on('payment.failed', () => toast.error('Payment failed. Try again.'));
-      rzp.open();
-    } catch (e) {
-      console.error('Payment error:', e);
-      toast.error('Payment failed. Try again.');
-    }
-    setBuying(null);
-  }
-
   async function viewPack(companyId) {
     setSelectedPack(companyId);
     setLoadingContent(true);
@@ -256,12 +196,9 @@ export default function PrepPacksPage() {
                       <div style={{ textAlign: 'center' }}>
                         <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 4 }}>₹199</div>
                         <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', marginBottom: 10 }}>one time</div>
-                        <button
-                          onClick={() => buyPack(c.id)}
-                          disabled={buying === c.id}
-                          style={{ padding: '12px 24px', borderRadius: 10, border: 'none', cursor: 'pointer', background: buying === c.id ? 'rgba(255,255,255,0.1)' : `linear-gradient(135deg,${c.color},${c.color}99)`, color: '#fff', fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700 }}>
-                          {buying === c.id ? 'Processing...' : 'Buy Pack →'}
-                        </button>
+                        <div style={{ padding: '12px 24px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)', color: '#3a4a5a', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700, textAlign: 'center' }}>
+                          🔧 Coming Soon
+                        </div>
                       </div>
                     )}
                   </div>

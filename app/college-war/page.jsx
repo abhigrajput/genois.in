@@ -48,8 +48,6 @@ export default function CollegeWarPage() {
               { href: '/dashboard', label: '📊 Dashboard' },
               { href: '/roadmap', label: '🗺️ Roadmap' },
               { href: '/anxiety', label: '🌙 2AM Chat' },
-              { href: '/shame-board', label: '😴 Shame Board' },
-              { href: '/graveyard', label: '☠️ Graveyard' },
             ].map(l => (
               <a key={l.href} href={l.href} style={{ padding: '5px 12px', borderRadius: 20, background: 'rgba(0,240,255,0.06)', color: '#00f0ff', textDecoration: 'none', fontSize: 12, fontFamily: 'Syne,sans-serif', fontWeight: 600 }}>
                 {l.label}

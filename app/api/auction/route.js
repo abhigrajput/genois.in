@@ -58,7 +58,7 @@ export async function GET(request) {
       myScore
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -108,6 +108,6 @@ export async function POST(request) {
 
     return successResponse({ message: 'You are now listed on the auction block!' });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

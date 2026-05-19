@@ -22,6 +22,6 @@ export async function GET(request) {
 
     return successResponse({ expired: data?.length || 0, users: data });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

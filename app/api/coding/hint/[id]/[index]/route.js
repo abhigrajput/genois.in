@@ -30,6 +30,6 @@ export async function GET(request, { params }) {
 
     return successResponse({ hint, hintIndex, pointsDeducted: 2 });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

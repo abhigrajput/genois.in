@@ -29,7 +29,7 @@ export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`api_${payload.userId}`, 15, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`api_${payload.userId}`, 15, 60000)) return rateLimitResponse();
 
     const allowed = rateLimit(`chat_${payload.userId}`, 15, 60000);
     if (!allowed) return rateLimitResponse();
@@ -74,6 +74,6 @@ export async function POST(request) {
     return successResponse({ response, mode: selectedMode });
   } catch (error) {
     console.error('Chatbot error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

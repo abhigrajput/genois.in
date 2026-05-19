@@ -41,7 +41,7 @@ export async function GET(request) {
 
     return successResponse({ confessions: enriched });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -49,7 +49,7 @@ export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`api_${payload.userId}`, 5, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`api_${payload.userId}`, 5, 60000)) return rateLimitResponse();
 
     const { content } = await request.json();
     if (!content || content.trim().length < 10) {
@@ -79,6 +79,6 @@ export async function POST(request) {
 
     return successResponse({ confession });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

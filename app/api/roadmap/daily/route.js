@@ -45,7 +45,7 @@ export async function GET(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`api_${payload.userId}`, 30, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`api_${payload.userId}`, 30, 60000)) return rateLimitResponse();
 
     const supabase = getAdminClient();
 
@@ -71,7 +71,7 @@ export async function GET(request) {
     // Only advance day if: yesterday was completed (5 tasks) AND today is a new calendar day
     let displayDay = currentDay;
     if (lastCompleted && lastCompleted < today && tasksToday >= 5) {
-      displayDay = Math.min(currentDay + 1, 30);
+      displayDay = Math.min(currentDay + 1, 365);
       const newWeek = Math.ceil(displayDay / 7);
       const newProgressPercent = Math.min(100, Math.round(((displayDay - 1) / 30) * 100));
       await supabase
@@ -130,6 +130,6 @@ export async function GET(request) {
     });
   } catch (error) {
     console.error('Daily roadmap error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

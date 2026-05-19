@@ -8,7 +8,7 @@ export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`api_${payload.userId}`, 3, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`api_${payload.userId}`, 3, 60000)) return rateLimitResponse();
 
     // FIX 2: Weekly gate — only on Mondays, only once per week
     const today = new Date();
@@ -79,6 +79,6 @@ export async function POST(request) {
 
     return successResponse({ testId: test.id, questions: questionsForDb, weekNumber });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

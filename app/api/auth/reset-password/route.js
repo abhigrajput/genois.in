@@ -1,12 +1,38 @@
+import { z } from 'zod';
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { successResponse, errorResponse } from '@/lib/response';
+import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
+import { csrfCheck, checkPasswordStrength } from '@/lib/security';
 import bcrypt from 'bcryptjs';
 
+// FIX 08: Zod schema
+const ResetSchema = z.object({
+  token:    z.string().min(10, 'Token is required').max(200),
+  password: z.string().min(8, 'Password must be at least 8 characters').max(128, 'Password must be at most 128 characters'),
+});
+
 export async function POST(request) {
+  // FIX 10: CSRF check
+  const csrf = csrfCheck(request);
+  if (csrf) return csrf;
+
   try {
-    const { token, password } = await request.json();
-    if (!token || !password) return errorResponse('Token and password required', 400);
-    if (password.length < 6) return errorResponse('Password must be at least 6 characters', 400);
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+    if (!await rateLimit(`reset_pwd_${ip}`, 3, 3600000)) return rateLimitResponse(3600);
+
+    let body;
+    try { body = await request.json(); } catch { return errorResponse('Invalid JSON', 400); }
+
+    // FIX 08: Zod validation
+    const parsed = ResetSchema.safeParse(body);
+    if (!parsed.success) {
+      return errorResponse(parsed.error.errors[0].message, 400);
+    }
+    const { token, password } = parsed.data;
+
+    // FIX 12: Password strength check
+    const pwdError = checkPasswordStrength(password);
+    if (pwdError) return errorResponse(pwdError, 400);
 
     const supabase = getAdminClient();
     const { data: user } = await supabase
@@ -20,7 +46,7 @@ export async function POST(request) {
     const expires = new Date(user.reset_token_expires);
     if (expires < new Date()) return errorResponse('Reset link has expired. Request a new one.', 400);
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     await supabase.from('users').update({
       password_hash: hashedPassword,
@@ -30,6 +56,8 @@ export async function POST(request) {
 
     return successResponse({ message: 'Password reset successfully. You can now login.' });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    // FIX 09: Sanitize errors
+    console.error('Reset password error:', error);
+    return errorResponse('Internal server error', 500);
   }
 }

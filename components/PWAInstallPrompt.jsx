@@ -10,8 +10,11 @@ export default function PWAInstallPrompt() {
       navigator.serviceWorker.register('/sw.js').catch(() => {});
     }
 
-    const dismissed = localStorage.getItem('pwa_dismissed');
-    if (dismissed) return;
+    const dismissedUntil = localStorage.getItem('pwa_dismissed_until');
+    if (dismissedUntil && new Date(dismissedUntil) > new Date()) {
+      setShowPrompt(false);
+      return;
+    }
 
     const handler = (e) => {
       e.preventDefault();
@@ -32,8 +35,10 @@ export default function PWAInstallPrompt() {
   };
 
   const handleDismiss = () => {
+    const thirtyDays = new Date();
+    thirtyDays.setDate(thirtyDays.getDate() + 30);
+    localStorage.setItem('pwa_dismissed_until', thirtyDays.toISOString());
     setShowPrompt(false);
-    localStorage.setItem('pwa_dismissed', '1');
   };
 
   if (!showPrompt) return null;

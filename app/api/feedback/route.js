@@ -14,7 +14,7 @@ export async function POST(request) {
     }
     const { type, subject, message, email } = body || {};
 
-    if (!rateLimit(`feedback_${payload?.userId || request.headers.get('x-forwarded-for') || 'unknown'}`, 5, 3600000)) return rateLimitResponse();
+    if (!await rateLimit(`feedback_${payload?.userId || request.headers.get('x-forwarded-for') || 'unknown'}`, 5, 3600000)) return rateLimitResponse();
 
     if (!message || message.trim().length < 10) {
       return errorResponse('Message must be at least 10 characters', 400);
@@ -69,6 +69,6 @@ export async function POST(request) {
     return successResponse({ sent: true });
   } catch (error) {
     console.error('Feedback error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

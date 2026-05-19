@@ -1,72 +1,75 @@
 import { getAdminClient } from '@/lib/supabaseAdmin';
-import { getAdminFromRequest } from '@/lib/adminAuth';
+import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+async function isAdmin(userId, supabase) {
+  try {
+    const { data: user } = await supabase
+      .from('users')
+      .select('email')
+      .eq('id', userId)
+      .single();
+    if (!user) return false;
+    
+    const { data: admin } = await supabase
+      .from('admin_users')
+      .select('email')
+      .eq('email', user.email)
+      .single();
+    return !!admin;
+  } catch {
+    return false;
+  }
+}
 
 export async function GET(request) {
   try {
-    const admin = await getAdminFromRequest(request);
-    if (!admin) return errorResponse('Unauthorized', 401);
-
+    const payload = await getUserFromRequest(request);
+    if (!payload) return errorResponse('Unauthorized', 401);
+    
     const supabase = getAdminClient();
-    const today = new Date().toISOString().split('T')[0];
-    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-    const monthAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const adminCheck = await isAdmin(payload.userId, supabase);
+    if (!adminCheck) return errorResponse('Forbidden - Admin access required', 403);
 
-    const [
-      { count: totalUsers },
-      { data: allUsers },
-      { data: recentUsers },
-      { data: scores },
-      { data: progress },
-      { data: aptitudeSessions },
-      { data: interviewSessions },
-      { data: payments },
-      { data: subscriptions },
-      { data: cacheData },
-    ] = await Promise.all([
-      supabase.from('users').select('*', { count: 'exact', head: true }).then(r => r).catch(() => ({ data: [] })),
-      supabase.from('users').select('id, name, email, college, year, domain_slug, total_score, current_day, streak, subscription_plan, plan_expires_at, trial_ends_at, is_on_trial, last_active_date, created_at, password_hash').order('created_at', { ascending: false }).limit(200).then(r => r).catch(() => ({ data: [] })),
-      supabase.from('users').select('id, name, email, created_at').gte('created_at', weekAgo).order('created_at', { ascending: false }).then(r => r).catch(() => ({ data: [] })),
-      supabase.from('scores').select('user_id, total_score').order('total_score', { ascending: false }).then(r => r).catch(() => ({ data: [] })),
+    const [usersRes, scoresRes, progressRes, paymentsRes, aptitudeRes, interviewRes, cacheRes] = await Promise.all([
+      supabase.from('users').select('id, name, email, college, year, domain_slug, subscription_plan, plan_expires_at, trial_ends_at, is_on_trial, created_at, password_hash').order('created_at', { ascending: false }).then(r => r).catch(() => ({ data: [] })),
+      supabase.from('scores').select('user_id, total_score').then(r => r).catch(() => ({ data: [] })),
       supabase.from('progress').select('user_id, current_day, streak, last_active_date').then(r => r).catch(() => ({ data: [] })),
-      supabase.from('aptitude_sessions').select('user_id, score, completed, created_at').gte('created_at', monthAgo).then(r => r).catch(() => ({ data: [] })),
-      supabase.from('interview_sessions').select('user_id, overall_score, verdict, completed, started_at').gte('started_at', monthAgo).then(r => r).catch(() => ({ data: [] })),
-      supabase.from('payments').select('user_id, amount, plan, created_at').gte('created_at', monthAgo).order('created_at', { ascending: false }).limit(50).then(r => r).catch(() => ({ data: [] })),
-      supabase.from('subscriptions').select('user_id, plan, status, amount, end_date, updated_at').order('updated_at', { ascending: false }).limit(50).then(r => r).catch(() => ({ data: [] })),
+      supabase.from('payments').select('user_id, amount, plan, created_at').order('created_at', { ascending: false }).then(r => r).catch(() => ({ data: [] })),
+      supabase.from('aptitude_sessions').select('id').then(r => r).catch(() => ({ data: [] })),
+      supabase.from('interview_sessions').select('id').then(r => r).catch(() => ({ data: [] })),
       supabase.from('ai_cache').select('cache_key, hits, expires_at').order('hits', { ascending: false }).limit(20).then(r => r).catch(() => ({ data: [] })),
     ]);
 
-    const todayUsers = (allUsers || []).filter(u =>
-      u.last_login_at && u.last_login_at.startsWith(today)
-    );
+    const users = usersRes.data || [];
+    const scores = scoresRes.data || [];
+    const progress = progressRes.data || [];
+    const payments = paymentsRes.data || [];
 
-    const planBreakdown = (allUsers || []).reduce((acc, u) => {
-      const plan = u.subscription_plan || u.plan || 'spectator';
-      acc[plan] = (acc[plan] || 0) + 1;
-      return acc;
-    }, {});
+    const scoresMap = {};
+    scores.forEach(s => { scoresMap[s.user_id] = s.total_score || 0; });
 
-    const domainBreakdown = (allUsers || []).reduce((acc, u) => {
-      const d = u.domain_slug || 'unknown';
-      acc[d] = (acc[d] || 0) + 1;
-      return acc;
-    }, {});
+    const progressMap = {};
+    progress.forEach(p => { 
+      progressMap[p.user_id] = { 
+        day: p.current_day || 0, 
+        streak: p.streak || 0,
+        lastActive: p.last_active_date,
+      }; 
+    });
 
-    const avgScore = scores?.length
-      ? Math.round(scores.reduce((s, r) => s + (r.total_score || 0), 0) / scores.length)
-      : 0;
-
-    const activeStreaks = (progress || []).filter(p => p.streak > 0).length;
-
-    const totalRevenue = (subscriptions || [])
-      .filter(s => s.status === 'active')
-      .reduce((sum, s) => sum + (s.amount || 0), 0);
-
-    const usersWithProgress = (allUsers || []).map(u => {
-      const userScore = (scores || []).find(s => s.user_id === u.id);
-      const userProgress = (progress || []).find(p => p.user_id === u.id);
-      const trialDaysLeft = u.trial_ends_at ? Math.max(0, Math.ceil((new Date(u.trial_ends_at) - new Date()) / (1000*60*60*24))) : 0;
-      const lastActive = u.last_active_date ? Math.floor((new Date() - new Date(u.last_active_date)) / (1000*60*60*24)) : null;
+    const enrichedUsers = users.map(u => {
+      const trialDaysLeft = u.trial_ends_at 
+        ? Math.max(0, Math.ceil((new Date(u.trial_ends_at) - new Date()) / (1000 * 60 * 60 * 24))) 
+        : 0;
+      const userProgress = progressMap[u.id] || {};
+      const lastActiveDays = userProgress.lastActive 
+        ? Math.floor((new Date() - new Date(userProgress.lastActive)) / (1000 * 60 * 60 * 24)) 
+        : null;
+      
       return {
         id: u.id,
         name: u.name || 'Unnamed',
@@ -74,48 +77,92 @@ export async function GET(request) {
         college: u.college || '-',
         year: u.year || '-',
         domain: u.domain_slug || '-',
-        score: userScore?.total_score || u.total_score || 0,
-        day: userProgress?.current_day || u.current_day || 0,
-        streak: userProgress?.streak || u.streak || 0,
+        score: scoresMap[u.id] || 0,
+        day: userProgress.day || 0,
+        streak: userProgress.streak || 0,
         plan: u.subscription_plan || 'spectator',
-        isOnTrial: u.is_on_trial,
+        isOnTrial: u.is_on_trial || false,
         trialDaysLeft,
-        lastActiveDays: lastActive,
+        lastActiveDays,
         joined: u.created_at,
         passwordHashPreview: u.password_hash ? u.password_hash.substring(0, 20) + '...' : 'none',
       };
     });
 
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const weekAgo = new Date(today);
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const monthAgo = new Date(today);
+    monthAgo.setDate(monthAgo.getDate() - 30);
+
+    const activeToday = enrichedUsers.filter(u => 
+      u.lastActiveDays !== null && u.lastActiveDays === 0
+    ).length;
+    
+    const newThisWeek = enrichedUsers.filter(u => 
+      new Date(u.joined) >= weekAgo
+    ).length;
+    
+    const activeStreaks = enrichedUsers.filter(u => u.streak > 0).length;
+    
+    const totalScore = enrichedUsers.reduce((s, u) => s + u.score, 0);
+    const avgScore = enrichedUsers.length ? Math.round(totalScore / enrichedUsers.length) : 0;
+    
+    const monthRevenue = payments
+      .filter(p => new Date(p.created_at) >= monthAgo)
+      .reduce((s, p) => s + (p.amount || 0), 0);
+
+    const planBreakdown = {};
+    enrichedUsers.forEach(u => {
+      planBreakdown[u.plan] = (planBreakdown[u.plan] || 0) + 1;
+    });
+
+    const domainBreakdown = {};
+    enrichedUsers.forEach(u => {
+      if (u.domain && u.domain !== '-') {
+        domainBreakdown[u.domain] = (domainBreakdown[u.domain] || 0) + 1;
+      }
+    });
+
+    const topStudents = [...enrichedUsers]
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 20);
+
+    const inactiveUsers = enrichedUsers.filter(u => 
+      u.lastActiveDays !== null && u.lastActiveDays > 7
+    );
+
+    const recentSignups = enrichedUsers.slice(0, 10);
+
+    const cacheData = cacheRes.data || [];
+
     return successResponse({
-      overview: {
-        totalUsers: totalUsers || 0,
-        activeToday: todayUsers.length,
-        newThisWeek: recentUsers?.length || 0,
-        avgScore,
+      stats: {
+        totalUsers: enrichedUsers.length,
+        activeToday,
+        newThisWeek,
         activeStreaks,
-        totalRevenue,
-        aptitudeAttempts: aptitudeSessions?.length || 0,
-        interviewAttempts: interviewSessions?.length || 0,
+        avgScore,
+        monthRevenue,
+        aptitudeSessions: aptitudeRes.data?.length || 0,
+        interviewSessions: interviewRes.data?.length || 0,
       },
-      cacheStats: {
-        totalCached: cacheData?.length || 0,
-        totalHits: cacheData?.reduce((s, c) => s + (c.hits || 0), 0) || 0,
-        topCached: cacheData?.slice(0, 5) || [],
-      },
+      allUsers: enrichedUsers,
+      topStudents,
+      inactiveUsers,
+      recentSignups,
       planBreakdown,
       domainBreakdown,
-      recentUsers: recentUsers || [],
-      recentPayments: subscriptions || [],
-      topStudents: usersWithProgress.sort((a, b) => b.score - a.score).slice(0, 20),
-      inactiveUsers: usersWithProgress.filter(u => {
-        if (!u.lastActive) return true;
-        const daysSince = Math.floor((Date.now() - new Date(u.lastActive)) / 86400000);
-        return daysSince > 7;
-      }).slice(0, 30),
-      allUsers: usersWithProgress,
+      payments: payments.slice(0, 50),
+      cacheStats: {
+        totalCached: cacheData.length,
+        totalHits: cacheData.reduce((s, c) => s + (c.hits || 0), 0),
+        topCached: cacheData.slice(0, 5),
+      },
     });
   } catch (error) {
-    console.error('Admin API error:', error);
-    return errorResponse(error.message, 500);
+    console.error('Admin dashboard error:', error);
+    return errorResponse('Internal server error', 500);
   }
 }

@@ -51,7 +51,7 @@ export async function GET(request) {
 
     return successResponse({ challenges: enriched });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -59,7 +59,7 @@ export async function POST(request) {
   try {
     const company = await getCompanyFromRequest(request);
     if (!company) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`company_challenges_${company.companyId}`, 5, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`company_challenges_${company.companyId}`, 5, 60000)) return rateLimitResponse();
 
     const { title, description, domain, difficulty, deadline } = await request.json();
     if (!title || !description) return errorResponse('Title and description required', 400);
@@ -119,6 +119,6 @@ Return ONLY valid JSON array with no markdown:
 
     return successResponse({ challenge });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

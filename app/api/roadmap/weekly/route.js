@@ -49,6 +49,6 @@ export async function GET(request) {
 
     return successResponse({ week: currentWeek, startDay, endDay, days });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

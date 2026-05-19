@@ -41,46 +41,6 @@ export default function MentorsPage() {
     }).catch(() => setLoading(false));
   }, [ready, token]);
 
-  async function bookMentor() {
-    if (!scheduledAt) { toast.error('Select a date and time'); return; }
-    setBooking(true);
-    try {
-      const orderRes = await apiFetch('/api/payment/create-order', token, 'POST', {
-        planId: 'mentor_session',
-        amount: selectedMentor.price,
-        description: `Mentorship with ${selectedMentor.name}`,
-      });
-
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: selectedMentor.price * 100,
-        currency: 'INR',
-        name: 'GENOIS',
-        description: `1 hour mentorship with ${selectedMentor.name}`,
-        order_id: orderRes.data?.orderId,
-        handler: async (response) => {
-          await apiFetch('/api/mentors/book', token, 'POST', {
-            mentorId: selectedMentor.user_id,
-            scheduledAt,
-            notes,
-            paymentId: response.razorpay_payment_id,
-          });
-          toast.success('Session booked! Check your bookings.');
-          setSelectedMentor(null);
-          setScheduledAt('');
-          setNotes('');
-          const b = await apiFetch('/api/mentors/my-bookings', token);
-          setMyData(b.data);
-        },
-        prefill: { name: '', email: '' },
-        theme: { color: '#00f0ff' },
-      };
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-    } catch (e) { toast.error('Payment failed'); }
-    setBooking(false);
-  }
-
   async function saveProfile() {
     if (!bio.trim()) { toast.error('Write a bio'); return; }
     if (expertise.length === 0) { toast.error('Select at least one expertise'); return; }
@@ -205,9 +165,9 @@ export default function MentorsPage() {
                   <button onClick={() => { setSelectedMentor(null); setScheduledAt(''); setNotes(''); }} style={{ flex: 1, padding: '12px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 13 }}>
                     Cancel
                   </button>
-                  <button onClick={bookMentor} disabled={booking} style={{ flex: 2, padding: '12px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700 }}>
-                    {booking ? 'Processing...' : `Pay ₹${selectedMentor.price} & Book →`}
-                  </button>
+                  <div style={{ flex: 2, padding: '12px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)', color: '#3a4a5a', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700, textAlign: 'center' }}>
+                    🔧 Coming Soon
+                  </div>
                 </div>
               </div>
             </div>

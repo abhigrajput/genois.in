@@ -18,7 +18,7 @@ export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`code_${payload.userId}`, 10, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`code_${payload.userId}`, 10, 60000)) return rateLimitResponse();
 
     const { code, language, stdin, expectedOutput } = await request.json();
     if (!code || !language) return errorResponse('Code and language required', 400);
@@ -81,6 +81,6 @@ export async function POST(request) {
       statusDescription: result.status?.description,
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

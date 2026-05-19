@@ -121,7 +121,7 @@ export async function GET(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`skill_gen_${payload.userId}`, 3, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`skill_gen_${payload.userId}`, 3, 60000)) return rateLimitResponse();
 
     const { searchParams } = new URL(request.url);
     const skillSlug = searchParams.get('skill');
@@ -209,7 +209,7 @@ export async function GET(request) {
       pointsReward: LEVEL_CONFIG[level].points,
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -305,6 +305,6 @@ export async function POST(request) {
       allLevelsComplete: verified && level === 3,
     });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

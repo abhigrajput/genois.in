@@ -7,7 +7,7 @@ export async function GET(request, context) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`api_${payload.userId}`, 30, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`api_${payload.userId}`, 30, 60000)) return rateLimitResponse();
 
     const params = await context.params;
     const weekNumber = parseInt(params?.week) || 1;
@@ -73,6 +73,6 @@ export async function GET(request, context) {
     return successResponse({ project, progress });
   } catch (error) {
     console.error('Projects week error:', error);
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }

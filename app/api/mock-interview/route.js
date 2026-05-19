@@ -25,7 +25,7 @@ export async function GET(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`api_${payload.userId}`, 3, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`api_${payload.userId}`, 3, 60000)) return rateLimitResponse();
     const supabase = getAdminClient();
 
     const { data: interviews } = await supabase
@@ -37,7 +37,7 @@ export async function GET(request) {
 
     return successResponse({ interviews: interviews || [] });
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
 
@@ -45,7 +45,7 @@ export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!rateLimit(`api_${payload.userId}`, 3, 60000)) return rateLimitResponse();
+    if (!await rateLimit(`api_${payload.userId}`, 3, 60000)) return rateLimitResponse();
     const { action, interviewId, answer, questionIndex } = await request.json();
     const supabase = getAdminClient();
 
@@ -170,6 +170,6 @@ Return plain text only.`;
 
     return errorResponse('Invalid action', 400);
   } catch (error) {
-    return errorResponse(error.message, 500);
+    return errorResponse('Internal server error', 500);
   }
 }
