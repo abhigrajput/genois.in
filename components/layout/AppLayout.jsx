@@ -28,6 +28,7 @@ const NAV_GROUPS = [
       { href:'/aptitude', label:'Aptitude', icon:'🧠', color:'#7b5cff' },
       { href:'/dsa-guide', label:'DSA Guide', icon:'📘', color:'#378ADD' },
       { href:'/dsa-roadmap', label:'DSA Roadmap', icon:'📘', color:'#7F77DD' },
+      { href:'/dsa-visualizer', label:'DSA Visualizer', icon:'▶', color:'#00f0ff' },
     ]
   },
   {
