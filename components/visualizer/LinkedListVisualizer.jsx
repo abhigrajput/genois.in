@@ -1,5 +1,5 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import CodePanel from './CodePanel';
 
 const CODE = `struct Node {
@@ -44,6 +44,12 @@ export default function LinkedListVisualizer() {
   const [traverseIdx, setTraverseIdx] = useState(-1);
   const [animatingId, setAnimatingId] = useState(null);
   const traverseRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (traverseRef.current) clearInterval(traverseRef.current);
+    };
+  }, []);
 
   const insertHead = () => {
     const val = Math.floor(Math.random() * 90) + 10;

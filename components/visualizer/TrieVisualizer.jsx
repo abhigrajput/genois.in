@@ -97,6 +97,12 @@ export default function TrieVisualizer() {
   const [searchResult, setSearchResult] = useState(null);
   const intervalRef = useRef(null);
 
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
+
   const root = buildTrieTree(words);
   const { positions, totalW } = layoutTrie(root);
   const edges = collectEdges(root, positions);

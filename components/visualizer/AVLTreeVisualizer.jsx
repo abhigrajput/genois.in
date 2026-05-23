@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import CodePanel from './CodePanel';
 import VisualizerControls from './VisualizerControls';
 
@@ -173,8 +173,6 @@ export default function AVLTreeVisualizer() {
       codeLine: 24,
       description: `Starting insertion of value ${key}...`,
     });
-
-    let rotationOccurred = false;
 
     // AVL insert with steps capture
     function insert(node, k) {

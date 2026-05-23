@@ -249,7 +249,7 @@ export default function KnapsackDPVisualizer() {
             </div>
 
             <div style={{ borderTop: '1px solid rgba(0,240,255,0.05)', paddingTop: 10 }}>
-              <div style={{ display: 'flex', justifyBetween: 'center', alignItems: 'center', gap: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8 }}>
                 <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a' }}>CAPACITY (W):</span>
                 <input type="range" min={4} max={10} value={W} onChange={e => setW(Number(e.target.value))} style={{ flex: 1, accentColor: '#00f0ff', cursor: 'pointer' }} />
                 <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 12, color: '#00f0ff', fontWeight: 'bold' }}>{W}</span>

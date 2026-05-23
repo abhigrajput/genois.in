@@ -27,9 +27,8 @@ const SPEEDS = { 1: 1000, 2: 600, 3: 250, 4: 100 };
 
 // --- Tree node helpers ---
 function insertNode(nodes, edges, val) {
-  const id = val;
   if (nodes.length === 0) {
-    return { nodes: [{ id, val, x: 400, y: 60 }], edges: [] };
+    return { nodes: [{ id: 0, val, x: 400, y: 60 }], edges: [] };
   }
   const newNodes = [...nodes];
   const newEdges = [...edges];

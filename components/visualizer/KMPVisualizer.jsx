@@ -60,10 +60,24 @@ export default function KMPVisualizer() {
     const N = text.length;
     const M = pattern.length;
 
+    if (N === 0 || M === 0) {
+      tempSteps.push({
+        phase: 'search',
+        lps: [],
+        textIdx: -1,
+        patIdx: -1,
+        matchesFound: [],
+        offset: 0,
+        codeLine: -1,
+        description: 'Please enter a valid text and pattern to visualize.',
+      });
+      return tempSteps;
+    }
+
     // Phase 1: Compute LPS Array
     const lps = Array(M).fill(0);
     let len = 0;
-    lps[0] = 0;
+    if (M > 0) lps[0] = 0;
     let i = 1;
 
     tempSteps.push({

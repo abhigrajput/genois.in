@@ -74,7 +74,7 @@ function computeExtractSteps(heap) {
 }
 
 // SVG tree positions for heap array
-function heapNodePos(i, total) {
+function heapNodePos(i) {
   const level = Math.floor(Math.log2(i + 1));
   const posInLevel = i - (Math.pow(2, level) - 1);
   const totalInLevel = Math.pow(2, level);
@@ -101,6 +101,7 @@ export default function HeapVisualizer() {
   const [speed, setSpeed] = useState(2);
   const [message, setMessage] = useState('A min-heap. Insert or Extract Min to see heapify animations.');
   const intervalRef = useRef(null);
+  const timeoutRef = useRef(null);
 
   const current = stepIdx >= 0 && stepIdx < steps.length ? steps[stepIdx] : null;
   const displayHeap = current ? current.heap : heap;
@@ -117,27 +118,34 @@ export default function HeapVisualizer() {
     return () => clearInterval(intervalRef.current);
   }, [isPlaying, speed, steps.length]);
 
+  useEffect(() => {
+    return () => clearTimeout(timeoutRef.current);
+  }, []);
+
   const doInsert = () => {
     if (heap.length >= 15) { setMessage('Heap full!'); return; }
     const val = Math.floor(Math.random() * 90) + 5;
     const { steps: s, finalHeap } = computeInsertSteps(heap, val);
+    clearTimeout(timeoutRef.current);
     setSteps(s); setStepIdx(0); setIsPlaying(true);
     setMessage(`Inserting ${val}...`);
-    setTimeout(() => setHeap(finalHeap), s.length * SPEEDS[speed] + 200);
+    timeoutRef.current = setTimeout(() => setHeap(finalHeap), s.length * SPEEDS[speed] + 200);
   };
 
   const doExtract = () => {
     if (heap.length === 0) { setMessage('Heap is empty!'); return; }
     const { steps: s, finalHeap } = computeExtractSteps(heap);
+    clearTimeout(timeoutRef.current);
     setSteps(s); setStepIdx(0); setIsPlaying(true);
     setMessage(`Extracting min: ${heap[0]}...`);
-    setTimeout(() => setHeap(finalHeap), s.length * SPEEDS[speed] + 200);
+    timeoutRef.current = setTimeout(() => setHeap(finalHeap), s.length * SPEEDS[speed] + 200);
   };
 
   const reset = () => {
     setHeap([3, 8, 5, 15, 12, 9]); setSteps([]); setStepIdx(-1); setIsPlaying(false);
     setMessage('A min-heap. Insert or Extract Min to see heapify animations.');
     clearInterval(intervalRef.current);
+    clearTimeout(timeoutRef.current);
   };
 
   const SVG_W = 600, SVG_H = 280;
@@ -186,12 +194,12 @@ export default function HeapVisualizer() {
           {displayHeap.map((_, i) => {
             if (i === 0) return null;
             const parent = Math.floor((i - 1) / 2);
-            const pc = heapNodePos(parent, displayHeap.length);
-            const cc = heapNodePos(i, displayHeap.length);
+            const pc = heapNodePos(parent);
+            const cc = heapNodePos(i);
             return <line key={i} x1={pc.x} y1={pc.y} x2={cc.x} y2={cc.y} stroke="rgba(0,240,255,0.2)" strokeWidth={1.5} />;
           })}
           {displayHeap.map((v, i) => {
-            const { x, y } = heapNodePos(i, displayHeap.length);
+            const { x, y } = heapNodePos(i);
             const color = nodeColor(i, current);
             const isHl = current?.highlight?.includes(i);
             return (
