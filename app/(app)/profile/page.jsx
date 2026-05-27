@@ -9,10 +9,10 @@ import Link from 'next/link';
 
 const DOMAINS = [
   {slug:'fullstack',label:'Full Stack'},{slug:'dsa',label:'DSA'},
-  {slug:'ml',label:'Machine Learning'},{slug:'ai',label:'AI'},
-  {slug:'ds',label:'Data Science'},{slug:'cybersec',label:'Cybersecurity'},
-  {slug:'cloud',label:'Cloud'},{slug:'mobile',label:'Mobile'},
-  {slug:'devops',label:'DevOps'},{slug:'sysdesign',label:'System Design'},
+  {slug:'aiml',label:'Machine Learning'},{slug:'datascience',label:'Data Science'},
+  {slug:'cybersecurity',label:'Cybersecurity'},{slug:'devops',label:'DevOps'},
+  {slug:'android',label:'Mobile'},{slug:'systemdesign',label:'System Design'},
+  {slug:'blockchain',label:'Blockchain'},{slug:'gamedev',label:'Game Dev'},
 ];
 
 
