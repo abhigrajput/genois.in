@@ -97,14 +97,14 @@ const NAV_GROUPS = [
 const DOMAIN_MAP = {
   fullstack:{label:'Full Stack',icon:'⬡',color:'#7F77DD'},
   dsa:{label:'DSA',icon:'◈',color:'#1D9E75'},
-  ml:{label:'Machine Learning',icon:'◉',color:'#D85A30'},
-  ai:{label:'AI',icon:'◎',color:'#BA7517'},
-  ds:{label:'Data Science',icon:'◇',color:'#378ADD'},
-  cybersec:{label:'Cybersecurity',icon:'◆',color:'#D4537E'},
-  cloud:{label:'Cloud',icon:'○',color:'#639922'},
-  mobile:{label:'Mobile',icon:'▣',color:'#E24B4A'},
-  devops:{label:'Devops',icon:'▷',color:'#888780'},
-  sysdesign:{label:'System Design',icon:'▦',color:'#534AB7'},
+  aiml:{label:'AI / ML',icon:'◉',color:'#D85A30'},
+  datascience:{label:'Data Science',icon:'◇',color:'#378ADD'},
+  cybersecurity:{label:'Cybersecurity',icon:'◆',color:'#D4537E'},
+  devops:{label:'DevOps',icon:'○',color:'#639922'},
+  android:{label:'Mobile',icon:'▣',color:'#E24B4A'},
+  systemdesign:{label:'System Design',icon:'▦',color:'#534AB7'},
+  blockchain:{label:'Blockchain',icon:'◎',color:'#BA7517'},
+  gamedev:{label:'Game Dev',icon:'▷',color:'#888780'},
 };
 
 export default function AppLayout({ children }) {
@@ -117,9 +117,25 @@ export default function AppLayout({ children }) {
   const [notifications, setNotifications] = useState([]);
   const [notifOpen, setNotifOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [isAuthor, setIsAuthor] = useState(false);
   const [navToken, setNavToken] = useState(null);
 
   useEffect(() => { setNavToken(localStorage.getItem('genois_token')); }, []);
+
+  useEffect(() => {
+    const t = typeof window !== 'undefined' ? localStorage.getItem('genois_token') : null;
+    if (!t) return;
+    fetch('/api/blog/author', {
+      headers: { Authorization: 'Bearer ' + t }
+    })
+      .then(r => r.json())
+      .then(d => {
+        if (d.data?.isAuthor) {
+          setIsAuthor(true);
+        }
+      })
+      .catch(() => {});
+  }, [isAuthenticated]);
 
   // Detect mobile
   useEffect(() => {
@@ -201,6 +217,20 @@ export default function AppLayout({ children }) {
   const streak = progress?.streak || 0;
   const totalScore = score?.total_score || 0;
 
+  const dynamicNavGroups = NAV_GROUPS.map(group => {
+    if (group.label === 'LEARN') {
+      const items = [...group.items];
+      if (!items.some(item => item.href === '/blog')) {
+        items.push({ href: '/blog', label: 'DSA Blog', icon: '📝', color: '#7b5cff' });
+      }
+      if (isAuthor && !items.some(item => item.href === '/author/dashboard')) {
+        items.push({ href: '/author/dashboard', label: 'Author Studio', icon: '✍️', color: '#ef9f27' });
+      }
+      return { ...group, items };
+    }
+    return group;
+  });
+
   return (
     <div style={{display:'flex',height:'100vh',background:'#020812',overflow:'hidden',position:'relative'}}>
 
@@ -265,7 +295,7 @@ export default function AppLayout({ children }) {
         </div>
 
         <nav style={{flex:1,padding:'0 8px',overflowY:'auto'}}>
-          {NAV_GROUPS.map((group, gi) => (
+          {dynamicNavGroups.map((group, gi) => (
             <div key={gi} style={{ marginBottom: 8 }}>
               <div style={{
                 fontFamily: 'JetBrains Mono,monospace',
