@@ -68,7 +68,7 @@ export async function POST(request) {
     // Async update last_active (fire-and-forget)
     setTimeout(async () => {
       try {
-        await supabase.from('users').update({ last_active_date: new Date().toISOString() }).eq('id', user.id);
+        await supabase.from('progress').update({ last_active_date: new Date().toISOString() }).eq('user_id', user.id);
       } catch {}
     }, 0);
 

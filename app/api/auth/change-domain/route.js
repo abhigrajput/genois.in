@@ -1,44 +1,24 @@
-import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
+import { getAdminClient } from '@/lib/supabaseAdmin';
 import { successResponse, errorResponse } from '@/lib/response';
 
-export async function PUT(request) {
+export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-
-    const { domainSlug } = await request.json();
-    if (!domainSlug) return errorResponse('Domain is required', 400);
-
+    const body = await request.json();
+    const domain = body.domain || body.domainSlug;
+    const validDomains = ['fullstack','dsa','cybersecurity','aiml','devops','android','datascience','blockchain','gamedev','systemdesign'];
+    if (!validDomains.includes(domain)) return errorResponse('Invalid domain', 400);
     const supabase = getAdminClient();
-
-    const { data: domain } = await supabase
-      .from('domains')
-      .select('slug')
-      .eq('slug', domainSlug)
-      .single();
-
-    if (!domain) return errorResponse('Domain not found', 404);
-
-    await supabase
-      .from('users')
-      .update({ domain_slug: domainSlug, updated_at: new Date().toISOString() })
-      .eq('id', payload.userId);
-
-    await supabase
-      .from('progress')
-      .update({
-        current_day: 1,
-        current_week: 1,
-        current_month: 1,
-        day_progress: 0,
-        week_progress: 0,
-        progress_percent: 0,
-      })
-      .eq('user_id', payload.userId);
-
-    return successResponse({ domainSlug }, 'Domain changed successfully');
+    await supabase.from('users').update({ domain_slug: domain }).eq('id', payload.userId);
+    await supabase.from('progress').update({ current_day: 1, streak: 0, tasks_completed_today: 0 }).eq('user_id', payload.userId);
+    await supabase.from('dsa_roadmap_progress').update({ current_day: 1, completed_days: [], diagnostic_taken: false }).eq('user_id', payload.userId);
+    return successResponse({ message: 'Domain changed successfully', domain });
   } catch (error) {
+    console.error(error);
     return errorResponse('Internal server error', 500);
   }
 }
+
+export const PUT = POST;

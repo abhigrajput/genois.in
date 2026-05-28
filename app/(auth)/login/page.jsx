@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
@@ -15,6 +15,16 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState('');
+  const [verified, setVerified] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('verified') === 'true') {
+        setVerified(true);
+      }
+    }
+  }, []);
 
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
@@ -88,6 +98,19 @@ export default function LoginPage() {
             position:'absolute', top:0, left:0, right:0, height:1,
             background:'linear-gradient(90deg,transparent,rgba(0,240,255,0.4),transparent)',
           }}/>
+
+          {verified && (
+            <div style={{
+              background:'rgba(0,240,255,0.06)',
+              border:'1px solid rgba(0,240,255,0.3)',
+              borderRadius:8, padding:'10px 14px',
+              color:'#00f0ff', fontSize:13, marginBottom:16,
+              display:'flex', alignItems:'center', gap:8
+            }}>
+              <span style={{ fontSize: 16 }}>✓</span>
+              <span>Email verified successfully! Please sign in.</span>
+            </div>
+          )}
 
           {error && (
             <div style={{

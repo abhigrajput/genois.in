@@ -29,13 +29,11 @@ export async function GET(request) {
       .from('users')
       .update({
         email_verified: true,
-        email_verify_token: null,
-        email_verify_expires_at: null,
       })
       .eq('id', user.id);
 
     const { NextResponse } = await import('next/server');
-    return NextResponse.redirect(new URL('/dashboard?verified=true', request.url));
+    return NextResponse.redirect(new URL('/login?verified=true', request.url));
   } catch (error) {
     return errorResponse('Internal server error', 500);
   }
