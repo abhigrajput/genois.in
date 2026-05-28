@@ -166,12 +166,15 @@ export default function AVLTreeVisualizer() {
     const tempSteps = [];
     let root = cloneTree(tree);
 
+    let rotationOccurred = false;
+
     tempSteps.push({
       tree: cloneTree(root),
       comparing: [],
       unbalanced: [],
-      codeLine: 24,
+      codeLine: 21,
       description: `Starting insertion of value ${key}...`,
+      status: 'info',
     });
 
     // AVL insert with steps capture
@@ -183,8 +186,9 @@ export default function AVLTreeVisualizer() {
           tree: cloneTree(root),
           comparing: [newNode.id],
           unbalanced: [],
-          codeLine: 24,
+          codeLine: 22,
           description: `Created new leaf node with key ${k}.`,
+          status: 'found',
         });
         return newNode;
       }
@@ -193,8 +197,9 @@ export default function AVLTreeVisualizer() {
         tree: cloneTree(root),
         comparing: [node.id],
         unbalanced: [],
-        codeLine: 25,
+        codeLine: 23,
         description: `Comparing insert key ${k} with node ${node.val}.`,
+        status: 'compare',
       });
 
       if (k < node.val) {
@@ -206,8 +211,9 @@ export default function AVLTreeVisualizer() {
           tree: cloneTree(root),
           comparing: [node.id],
           unbalanced: [],
-          codeLine: 29,
+          codeLine: 27,
           description: `Key ${k} already exists. Terminating insertion.`,
+          status: 'mismatch',
         });
         return node;
       }
@@ -219,8 +225,9 @@ export default function AVLTreeVisualizer() {
         tree: cloneTree(root),
         comparing: [node.id],
         unbalanced: [],
-        codeLine: 31,
+        codeLine: 30,
         description: `Backtracking up path. Node ${node.val} updated height to ${node.height}, Balance Factor = ${balance}.`,
+        status: 'info',
       });
 
       // Left Left Case
@@ -229,8 +236,9 @@ export default function AVLTreeVisualizer() {
           tree: cloneTree(root),
           comparing: [],
           unbalanced: [node.id, node.left.id],
-          codeLine: 35,
+          codeLine: 34,
           description: `Unbalance at node ${node.val} (BF: ${balance})! Left-Left heavy. Performing Right Rotation on ${node.val}.`,
+          status: 'mismatch',
         });
         rotationOccurred = true;
         return rightRotate(node);
@@ -242,8 +250,9 @@ export default function AVLTreeVisualizer() {
           tree: cloneTree(root),
           comparing: [],
           unbalanced: [node.id, node.right.id],
-          codeLine: 38,
+          codeLine: 37,
           description: `Unbalance at node ${node.val} (BF: ${balance})! Right-Right heavy. Performing Left Rotation on ${node.val}.`,
+          status: 'mismatch',
         });
         rotationOccurred = true;
         return leftRotate(node);
@@ -255,16 +264,18 @@ export default function AVLTreeVisualizer() {
           tree: cloneTree(root),
           comparing: [],
           unbalanced: [node.id, node.left.id],
-          codeLine: 41,
+          codeLine: 40,
           description: `Unbalance at node ${node.val} (BF: ${balance})! Left-Right heavy. Performing double Left-Right Rotation. First, Left Rotate on child ${node.left.val}...`,
+          status: 'mismatch',
         });
         node.left = leftRotate(node.left);
         tempSteps.push({
           tree: cloneTree(root),
           comparing: [],
           unbalanced: [node.id, node.left.id],
-          codeLine: 42,
+          codeLine: 41,
           description: `Now, Right Rotate on node ${node.val}...`,
+          status: 'compare',
         });
         rotationOccurred = true;
         return rightRotate(node);
@@ -276,16 +287,18 @@ export default function AVLTreeVisualizer() {
           tree: cloneTree(root),
           comparing: [],
           unbalanced: [node.id, node.right.id],
-          codeLine: 46,
+          codeLine: 45,
           description: `Unbalance at node ${node.val} (BF: ${balance})! Right-Left heavy. Performing double Right-Left Rotation. First, Right Rotate on child ${node.right.val}...`,
+          status: 'mismatch',
         });
         node.right = rightRotate(node.right);
         tempSteps.push({
           tree: cloneTree(root),
           comparing: [],
           unbalanced: [node.id, node.right.id],
-          codeLine: 47,
+          codeLine: 46,
           description: `Now, Left Rotate on node ${node.val}...`,
+          status: 'compare',
         });
         rotationOccurred = true;
         return leftRotate(node);
@@ -323,6 +336,7 @@ export default function AVLTreeVisualizer() {
       unbalanced: [],
       codeLine: -1,
       description: `Completed AVL insert of value ${key}! Tree is completely balanced.`,
+      status: 'sorted',
     });
 
     setSteps(tempSteps);
@@ -383,6 +397,13 @@ export default function AVLTreeVisualizer() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ConceptBox
+        title="What is an AVL Tree?"
+        description="An AVL Tree is a self-balancing BST where the balance factor (height difference between left and right subtrees) of every node is at most 1. After every insert, it checks and fixes imbalances using rotations. Guarantees O(log n) operations always."
+        timeComplexity="O(log n)"
+        spaceComplexity="O(n)"
+      />
+
       {/* Stats row */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
@@ -396,11 +417,6 @@ export default function AVLTreeVisualizer() {
             <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
-      </div>
-
-      {/* Narrative feed */}
-      <div style={{ background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#00f0ff' }}>
-        ▶ {current.description}
       </div>
 
       {/* SVG Canvas */}
@@ -465,6 +481,13 @@ export default function AVLTreeVisualizer() {
           </div>
         )}
       </div>
+
+      <StepExplanation
+        stepNumber={stepIdx >= 0 ? stepIdx + 1 : null}
+        totalSteps={steps.length > 0 ? steps.length : null}
+        explanation={current.description}
+        status={current.status}
+      />
 
       {/* Interface Controls */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 12 }}>

@@ -2,6 +2,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import VisualizerControls from './VisualizerControls';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const SPEEDS = { 1: 1200, 2: 700, 3: 300, 4: 120 };
 
@@ -25,20 +27,49 @@ function computeSteps(arr) {
   for (let i = 0; i < n - 1; i++) {
     let minIdx = i;
     for (let j = i + 1; j < n; j++) {
+      const isNewMin = a[j] < a[minIdx];
       steps.push({
         array: [...a],
         current: i,
         minIdx,
         scanning: j,
         sortedUpto: i,
-        codeLine: a[j] < a[minIdx] ? 3 : 2,
+        codeLine: isNewMin ? 3 : 2,
+        explanation: isNewMin
+          ? `🔍 arr[${j}]=${a[j]} < arr[${minIdx}]=${a[minIdx]} — new minimum found! Updating minIdx from ${minIdx} to ${j}.`
+          : `🔍 Scanning arr[${j}]=${a[j]}. Current minimum is arr[${minIdx}]=${a[minIdx]}. No update needed.`,
+        status: isNewMin ? 'found' : 'compare',
+        activeLine: isNewMin ? 3 : 2,
       });
-      if (a[j] < a[minIdx]) minIdx = j;
+      if (isNewMin) minIdx = j;
     }
+    const prevMin = minIdx;
     let t = a[i]; a[i] = a[minIdx]; a[minIdx] = t;
-    steps.push({ array: [...a], current: -1, minIdx: -1, scanning: -1, sortedUpto: i + 1, swapped: [i, minIdx], codeLine: 6 });
+    steps.push({
+      array: [...a],
+      current: -1,
+      minIdx: -1,
+      scanning: -1,
+      sortedUpto: i + 1,
+      swapped: [i, prevMin],
+      codeLine: 6,
+      explanation: `🔄 Minimum of unsorted portion was arr[${prevMin}]. Swapping it with arr[${i}] to place it at position ${i} — its correct sorted location.`,
+      status: 'sorted',
+      activeLine: 6,
+    });
   }
-  steps.push({ array: [...a], current: -1, minIdx: -1, scanning: -1, sortedUpto: n, codeLine: -1, done: true });
+  steps.push({
+    array: [...a],
+    current: -1,
+    minIdx: -1,
+    scanning: -1,
+    sortedUpto: n,
+    codeLine: -1,
+    done: true,
+    explanation: '✅ Array fully sorted! Selection Sort made exactly n-1 swaps to place each minimum.',
+    status: 'sorted',
+    activeLine: -1,
+  });
   return steps;
 }
 
@@ -82,6 +113,14 @@ export default function SelectionSortVisualizer() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ConceptBox
+        title="What is Selection Sort?"
+        description="Selection Sort finds the minimum element from the unsorted portion and places it at the beginning. It makes exactly n-1 swaps regardless of input, making it useful when write operations are expensive. The array is divided into a sorted left portion and unsorted right portion."
+        timeComplexity="O(n²)"
+        spaceComplexity="O(1)"
+        stable={false}
+      />
+
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
           { label: 'Current Pass', value: current ? Math.min(current.sortedUpto + 1, arr.length) : 1, color: '#00f0ff' },
@@ -105,6 +144,13 @@ export default function SelectionSortVisualizer() {
         ))}
       </div>
 
+      <StepExplanation
+        stepNumber={Math.max(0, stepIdx + 1)}
+        totalSteps={steps.length}
+        explanation={current?.explanation ?? 'Press ▶ Play or ⏭ Step to start the visualization.'}
+        status={current?.status ?? 'default'}
+      />
+
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
         {[['#1d9e75','Sorted'],['#00f0ff','Current Position'],['#ef9f27','Minimum Found'],['#7b5cff','Scanning']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
@@ -124,7 +170,7 @@ export default function SelectionSortVisualizer() {
         onRandomize={() => setArr(generateArray(size))}
         arraySize={size} onArraySizeChange={n => { setSize(n); setArr(generateArray(n)); }}
       />
-      <CodePanel code={CODE} activeLine={current?.codeLine ?? -1} />
+      <CodePanel code={CODE} activeLine={current?.activeLine ?? -1} />
     </div>
   );
 }

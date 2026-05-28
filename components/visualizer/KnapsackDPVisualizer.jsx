@@ -1,6 +1,8 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 import VisualizerControls from './VisualizerControls';
 
 const CODE = `int knapsack(int W, vector<int>& wt, vector<int>& val, int n) {
@@ -46,7 +48,8 @@ export default function KnapsackDPVisualizer() {
       candidates: [],
       traceback: [],
       codeLine: 1,
-      description: 'Initialize DP table filled with zeros.',
+      explanation: 'Initializing DP table of size (n+1) × (W+1) with all zeros. Rows correspond to items, columns to weight capacity.',
+      status: 'info',
     });
 
     for (let i = 1; i <= n; i++) {
@@ -56,19 +59,19 @@ export default function KnapsackDPVisualizer() {
         let include = -1;
         const candidates = [{ r: i - 1, c: w, type: 'exclude', val: exclude }];
 
-        let choice = '';
-        let formula = '';
+        let explanation = '';
+        let status = 'compare';
 
         if (item.wt <= w) {
           include = item.val + dp[i - 1][w - item.wt];
           candidates.push({ r: i - 1, c: w - item.wt, type: 'include', val: include });
           dp[i][w] = Math.max(exclude, include);
-          formula = `max(dp[${i-1}][${w}] (${exclude}), val[${i-1}] (${item.val}) + dp[${i-1}][${w - item.wt}] (${dp[i-1][w - item.wt]}))`;
-          choice = include > exclude ? 'Include' : 'Exclude';
+          explanation = `Item ${i} (wt=${item.wt}, val=${item.val}): dp[${i}][${w}] = max(exclude=${exclude}, include=${include}) = ${dp[i][w]}. ${include > exclude ? 'Including is better!' : 'Excluding is better.'}`;
+          status = 'compare';
         } else {
           dp[i][w] = exclude;
-          formula = `dp[${i-1}][${w}] = ${exclude} (item weight ${item.wt} exceeds capacity ${w})`;
-          choice = 'Exclude (Too Heavy)';
+          explanation = `Item ${i} (weight=${item.wt}) is heavier than current capacity w=${w}. Excluded! dp[${i}][${w}] = dp[${i - 1}][${w}] = ${exclude}.`;
+          status = 'mismatch';
         }
 
         tempSteps.push({
@@ -77,7 +80,8 @@ export default function KnapsackDPVisualizer() {
           candidates,
           traceback: [],
           codeLine: item.wt <= w ? 5 : 7,
-          description: `Cell dp[${i}][${w}]: ${choice}. Formula: ${formula}. Result = ${dp[i][w]}`,
+          explanation,
+          status,
         });
       }
     }
@@ -107,7 +111,8 @@ export default function KnapsackDPVisualizer() {
       traceback: tracebackPath,
       selectedIds,
       codeLine: 11,
-      description: `Completed! Maximum Value: ${dp[n][capacity]}. Selected Items: ${selectedIds.length ? selectedIds.map(id => `Item ${id}`).join(', ') : 'None'}`,
+      explanation: `Knapsack DP completed! Maximum value within capacity ${W} is ${dp[n][capacity]}. Traceback reveals selected items: ${selectedIds.length ? selectedIds.map(id => `Item ${id}`).join(', ') : 'None'}.`,
+      status: 'sorted',
     });
 
     return tempSteps;
@@ -199,6 +204,13 @@ export default function KnapsackDPVisualizer() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ConceptBox
+        title="What is 0/1 Knapsack DP?"
+        description="0/1 Knapsack: given items with weights and values, choose items to maximize total value without exceeding weight capacity. Each item is either included (1) or excluded (0). A 2D DP table where dp[i][w] = max value using first i items with capacity w."
+        timeComplexity="O(n × W)"
+        spaceComplexity="O(n × W)"
+      />
+
       {/* Top statistics panel */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
@@ -212,11 +224,6 @@ export default function KnapsackDPVisualizer() {
             <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
-      </div>
-
-      {/* Description notification */}
-      <div style={{ background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#00f0ff' }}>
-        ▶ {current.description}
       </div>
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
@@ -323,6 +330,13 @@ export default function KnapsackDPVisualizer() {
           </div>
         ))}
       </div>
+
+      <StepExplanation
+        stepNumber={stepIdx >= 0 ? stepIdx + 1 : null}
+        totalSteps={steps.length > 0 ? steps.length : null}
+        explanation={current.explanation}
+        status={current.status}
+      />
 
       {/* Controls */}
       <VisualizerControls

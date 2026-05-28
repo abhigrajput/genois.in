@@ -1,6 +1,8 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const CODE = `// Dijkstra's Algorithm
 void dijkstra(vector<vector<pair<int,int>>>& adj,
@@ -42,25 +44,84 @@ function computeDijkstraSteps(src) {
   const visited = new Array(6).fill(false);
   const pq = [[0, src]]; // [dist, node]
   dist[src] = 0;
-  steps.push({ dist:[...dist], visited:[...visited], current:-1, relaxing:null, codeLine:5, label:`Init: dist[${src}]=0` });
+  steps.push({
+    dist: [...dist],
+    visited: [...visited],
+    current: -1,
+    relaxing: null,
+    codeLine: 6,
+    label: `Init: dist[${src}]=0`,
+    explanation: `Initializing distances. Source node ${src} = 0, all others = ∞.`,
+    status: 'info'
+  });
 
   while (pq.length) {
     pq.sort((a,b)=>a[0]-b[0]);
     const [d, u] = pq.shift();
-    if (visited[u]) { steps.push({ dist:[...dist], visited:[...visited], current:u, relaxing:null, codeLine:9, label:`Skip ${u} (already visited)` }); continue; }
+    if (visited[u]) {
+      steps.push({
+        dist: [...dist],
+        visited: [...visited],
+        current: u,
+        relaxing: null,
+        codeLine: 10,
+        label: `Skip ${u} (already visited)`,
+        explanation: `Node ${u} already finalized with shortest dist=${dist[u]}. Skipping.`,
+        status: 'info'
+      });
+      continue;
+    }
     visited[u] = true;
-    steps.push({ dist:[...dist], visited:[...visited], current:u, relaxing:null, codeLine:9, label:`Process node ${u} (dist=${d})` });
+    steps.push({
+      dist: [...dist],
+      visited: [...visited],
+      current: u,
+      relaxing: null,
+      codeLine: 9,
+      label: `Process node ${u} (dist=${d})`,
+      explanation: `Picking unvisited node with minimum distance: node ${u} with dist=${d}.`,
+      status: 'info'
+    });
 
     for (const {to:v, w} of ADJ[u]) {
-      steps.push({ dist:[...dist], visited:[...visited], current:u, relaxing:{u,v,w}, codeLine:12, label:`Check edge ${u}→${v} (w=${w}): ${dist[u]}+${w} vs ${dist[v]===INF?'∞':dist[v]}` });
+      steps.push({
+        dist: [...dist],
+        visited: [...visited],
+        current: u,
+        relaxing: {u,v,w},
+        codeLine: 12,
+        label: `Check edge ${u}→${v}`,
+        explanation: `Checking edge ${u}→${v} (weight=${w}). dist[${u}]+weight(${w}) = ${dist[u] + w} vs dist[${v}]=${dist[v]===INF?'∞':dist[v]}. No update.`,
+        status: 'compare'
+      });
       if (dist[u] + w < dist[v]) {
+        const oldDist = dist[v];
         dist[v] = dist[u] + w;
         pq.push([dist[v], v]);
-        steps.push({ dist:[...dist], visited:[...visited], current:u, relaxing:{u,v,w}, codeLine:13, label:`Relax! dist[${v}] updated to ${dist[v]}` });
+        steps.push({
+          dist: [...dist],
+          visited: [...visited],
+          current: u,
+          relaxing: {u,v,w},
+          codeLine: 13,
+          label: `Relax! dist[${v}] updated`,
+          explanation: `Relaxing edge ${u}→${v}. dist[${u}]+weight(${w}) = ${dist[v]} < dist[${v}]=${oldDist===INF?'∞':oldDist}. dist[${v}] updated!`,
+          status: 'found'
+        });
       }
     }
   }
-  steps.push({ dist:[...dist], visited:[...visited], current:-1, relaxing:null, codeLine:-1, label:'Dijkstra complete!', done:true });
+  steps.push({
+    dist: [...dist],
+    visited: [...visited],
+    current: -1,
+    relaxing: null,
+    codeLine: -1,
+    label: 'Dijkstra complete!',
+    explanation: "Dijkstra's complete! All shortest distances from source finalized.",
+    status: 'sorted',
+    done: true
+  });
   return steps;
 }
 
@@ -103,6 +164,13 @@ export default function DijkstraVisualizer() {
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <ConceptBox
+        title="What is Dijkstra's Algorithm?"
+        description="Dijkstra's algorithm finds the shortest paths from a source node to all others in a weighted graph with non-negative edges. It uses a priority queue to always process the closest unvisited node first, greedily building shortest paths."
+        timeComplexity="O(E log V)"
+        spaceComplexity="O(V)"
+      />
+
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
           { label:'Source', value:src, color:'#00f0ff' },
@@ -117,10 +185,6 @@ export default function DijkstraVisualizer() {
         ))}
       </div>
 
-      {current?.label && (
-        <div style={{ background:'rgba(0,240,255,0.05)', border:'1px solid rgba(0,240,255,0.15)', borderRadius:8, padding:'8px 14px', fontFamily:'JetBrains Mono,monospace', fontSize:11, color:'#00f0ff' }}>▶ {current.label}</div>
-      )}
-
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
         {/* Graph */}
         <div style={{ flex:2, background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:12, overflow:'hidden', minWidth:280 }}>
@@ -133,7 +197,7 @@ export default function DijkstraVisualizer() {
                 <g key={i}>
                   <line x1={nu.x} y1={nu.y} x2={nv.x} y2={nv.y} stroke={isRelaxing?'#ef9f27':'rgba(0,240,255,0.2)'} strokeWidth={isRelaxing?2.5:1.5} style={{transition:'all 0.3s'}} />
                   <rect x={mid.x-12} y={mid.y-10} width={24} height={18} rx={4} fill={isRelaxing?'rgba(239,159,39,0.2)':'rgba(6,15,30,0.85)'} stroke={isRelaxing?'#ef9f27':'rgba(0,240,255,0.15)'} strokeWidth={1} />
-                  <text x={mid.x} y={mid.y+4} textAnchor="middle" style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, fontWeight:700, fill:isRelaxing?'#ef9f27':'#5a7a9a' }}>{e.w}</text>
+                  <text x={mid.x} y={mid.y+4} textAnchor="middle" style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, fontWeight:700, fill: isRelaxing ? '#ef9f27' : '#5a7a9a' }}>{e.w}</text>
                 </g>
               );
             })}
@@ -163,7 +227,7 @@ export default function DijkstraVisualizer() {
                 <div key={n.id} style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6, padding:'4px 8px', borderRadius:6, background:isCurrent?'rgba(0,240,255,0.08)':isVisited?'rgba(29,158,117,0.05)':'transparent', border:`1px solid ${isCurrent?'rgba(0,240,255,0.2)':isVisited?'rgba(29,158,117,0.15)':'transparent'}`, transition:'all 0.3s' }}>
                   <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:12, color:nodeColor(n.id,current,src), fontWeight:700, minWidth:20 }}>{n.id}</span>
                   <div style={{ flex:1, height:6, borderRadius:3, background:'rgba(0,240,255,0.06)', overflow:'hidden' }}>
-                    <div style={{ height:'100%', borderRadius:3, background:isCurrent?'#00f0ff':isVisited?'#1d9e75':'rgba(0,240,255,0.2)', width:d===INF?'0%':`${Math.min(100,(100/(d+1))*10)}%`, transition:'width 0.4s ease' }} />
+                     <div style={{ height:'100%', borderRadius:3, background:isCurrent?'#00f0ff':isVisited?'#1d9e75':'rgba(0,240,255,0.2)', width:d===INF?'0%':`${Math.min(100,(100/(d+1))*10)}%`, transition:'width 0.4s ease' }} />
                   </div>
                   <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:13, fontWeight:700, color:d===INF?'#2a3a4a':isCurrent?'#00f0ff':isVisited?'#1d9e75':'#e8f4ff', minWidth:24, textAlign:'right' }}>{d===INF?'∞':d}</span>
                 </div>
@@ -172,6 +236,13 @@ export default function DijkstraVisualizer() {
           </div>
         </div>
       </div>
+
+      <StepExplanation
+        stepNumber={stepIdx >= 0 ? stepIdx + 1 : null}
+        totalSteps={steps.length > 0 ? steps.length : null}
+        explanation={current?.explanation}
+        status={current?.status}
+      />
 
       <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
         <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#5a7a9a' }}>SRC</span>

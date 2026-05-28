@@ -2,6 +2,8 @@
 import { useState, useEffect, useRef } from 'react';
 import VisualizerControls from './VisualizerControls';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const SPEEDS = { 1: 1200, 2: 700, 3: 300, 4: 120 };
 
@@ -38,20 +40,76 @@ function computeSteps(arr) {
     const R = a.slice(m + 1, r + 1);
     let i = 0, j = 0, k = l;
     while (i < L.length && j < R.length) {
-      steps.push({ array: [...a], left: [l, m], right: [m + 1, r], merging: k, codeLine: 7 });
+      steps.push({
+        array: [...a],
+        left: [l, m],
+        right: [m + 1, r],
+        merging: k,
+        codeLine: 7,
+        explanation: `🔀 Merging halves [${l}..${m}] and [${m + 1}..${r}]. Comparing L[${i}]=${L[i]} vs R[${j}]=${R[j]}, placing smaller value (${Math.min(L[i], R[j])}) at position ${k}.`,
+        status: 'compare',
+        activeLine: 7,
+      });
       if (L[i] <= R[j]) { a[k++] = L[i++]; }
       else { a[k++] = R[j++]; }
-      steps.push({ array: [...a], left: [l, m], right: [m + 1, r], placed: k - 1, codeLine: 8 });
+      steps.push({
+        array: [...a],
+        left: [l, m],
+        right: [m + 1, r],
+        placed: k - 1,
+        codeLine: 8,
+        explanation: `✅ Placed value ${a[k - 1]} at position ${k - 1} during merge of [${l}..${r}].`,
+        status: 'sorted',
+        activeLine: 8,
+      });
     }
-    while (i < L.length) { a[k++] = L[i++]; steps.push({ array: [...a], left: [l, m], right: [m + 1, r], placed: k - 1, codeLine: 9 }); }
-    while (j < R.length) { a[k++] = R[j++]; steps.push({ array: [...a], left: [l, m], right: [m + 1, r], placed: k - 1, codeLine: 10 }); }
-    steps.push({ array: [...a], merged: [l, r], codeLine: -1 });
+    while (i < L.length) {
+      a[k++] = L[i++];
+      steps.push({
+        array: [...a],
+        left: [l, m],
+        right: [m + 1, r],
+        placed: k - 1,
+        codeLine: 9,
+        explanation: `➡️ Copying remaining left element ${a[k - 1]} to position ${k - 1}.`,
+        status: 'info',
+        activeLine: 9,
+      });
+    }
+    while (j < R.length) {
+      a[k++] = R[j++];
+      steps.push({
+        array: [...a],
+        left: [l, m],
+        right: [m + 1, r],
+        placed: k - 1,
+        codeLine: 10,
+        explanation: `➡️ Copying remaining right element ${a[k - 1]} to position ${k - 1}.`,
+        status: 'info',
+        activeLine: 10,
+      });
+    }
+    steps.push({
+      array: [...a],
+      merged: [l, r],
+      codeLine: -1,
+      explanation: `✅ Merged range [${l}..${r}] into sorted order.`,
+      status: 'sorted',
+      activeLine: -1,
+    });
   }
 
   function mergeSort(a, l, r) {
     if (l < r) {
       const m = Math.floor((l + r) / 2);
-      steps.push({ array: [...a], dividing: [l, m, r], codeLine: 14 });
+      steps.push({
+        array: [...a],
+        dividing: [l, m, r],
+        codeLine: 14,
+        explanation: `✂️ Dividing array [${l}..${r}] into [${l}..${m}] and [${m + 1}..${r}]. Split to conquer — each half will be sorted independently.`,
+        status: 'info',
+        activeLine: 14,
+      });
       mergeSort(a, l, m);
       mergeSort(a, m + 1, r);
       merge(a, l, m, r);
@@ -59,7 +117,14 @@ function computeSteps(arr) {
   }
 
   mergeSort(a, 0, a.length - 1);
-  steps.push({ array: [...a], done: true, codeLine: -1 });
+  steps.push({
+    array: [...a],
+    done: true,
+    codeLine: -1,
+    explanation: '✅ Array fully sorted! Merge Sort guaranteed O(n log n) by divide-and-conquer.',
+    status: 'sorted',
+    activeLine: -1,
+  });
   return steps;
 }
 
@@ -108,6 +173,14 @@ export default function MergeSortVisualizer() {
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <ConceptBox
+        title="What is Merge Sort?"
+        description="Merge Sort uses divide-and-conquer: split the array in half, sort each half recursively, then merge the two sorted halves together. It guarantees O(n log n) in all cases. Extra memory is needed for the merging step, but it is excellent for large datasets and is naturally stable."
+        timeComplexity="O(n log n)"
+        spaceComplexity="O(n)"
+        stable={true}
+      />
+
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
           { label:'Phase', value: current?.dividing ? 'Divide' : current?.merging != null ? 'Merge' : current?.done ? 'Done' : '—', color:'#00f0ff' },
@@ -131,6 +204,13 @@ export default function MergeSortVisualizer() {
         ))}
       </div>
 
+      <StepExplanation
+        stepNumber={Math.max(0, stepIdx + 1)}
+        totalSteps={steps.length}
+        explanation={current?.explanation ?? 'Press ▶ Play or ⏭ Step to start the visualization.'}
+        status={current?.status ?? 'default'}
+      />
+
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
         {[['#378ADD','Left Half'],['#7b5cff','Right Half'],['#00f0ff','Merging'],['#1d9e75','Merged']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
@@ -150,7 +230,7 @@ export default function MergeSortVisualizer() {
         onRandomize={() => setArr(generateArray(size))}
         arraySize={size} onArraySizeChange={n => { setSize(n); setArr(generateArray(n)); }}
       />
-      <CodePanel code={CODE} activeLine={current?.codeLine ?? -1} />
+      <CodePanel code={CODE} activeLine={current?.activeLine ?? -1} />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
 
 const CODE = `#include <queue>
 queue<int> q;
@@ -52,6 +53,13 @@ export default function QueueVisualizer() {
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <ConceptBox
+        title="What is a Queue?"
+        description="A Queue is a First-In-First-Out (FIFO) data structure. Elements are enqueued at the rear and dequeued from the front. Like a waiting line — first person in is first person served. Used in BFS, task scheduling, and print spoolers."
+        timeComplexity="O(1) enqueue/dequeue"
+        spaceComplexity="O(n)"
+      />
+
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
           { label:'Size', value:queue.length, color:'#00f0ff' },

@@ -2,6 +2,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import CodePanel from './CodePanel';
 import VisualizerControls from './VisualizerControls';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const CODE = `void primMST(vector<vector<pair<int, int>>>& adj, int V) {
   priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
@@ -75,8 +77,10 @@ export default function PrimVisualizer() {
       pq: [],
       currU: -1,
       currEdge: null,
-      codeLine: 1,
+      codeLine: 7,
       description: 'Initialize Prim\'s MST from Source Node A (index 0).',
+      explanation: 'Starting Prim\'s algorithm from source node A. Initializing distances to infinity and marking all vertices as unvisited.',
+      status: 'info',
     });
 
     // Push source to PQ (represented here simply by active candidates)
@@ -98,8 +102,10 @@ export default function PrimVisualizer() {
       pq: pq.map(x => ({ ...x })),
       currU: 0,
       currEdge: null,
-      codeLine: 9,
+      codeLine: 16,
       description: 'Marked Node A as visited. Adding all its outgoing edges to the Priority Queue (yellow).',
+      explanation: 'Starting from node A. Adding all its outgoing edges to priority queue: A→B (wt: 4) and A→F (wt: 2).',
+      status: 'info',
     });
 
     while (mstEdges.length < V - 1) {
@@ -127,8 +133,10 @@ export default function PrimVisualizer() {
         pq: pq.map(x => ({ ...x })),
         currU: nextU,
         currEdge: minEdge.edgeId,
-        codeLine: 14,
+        codeLine: 11,
         description: `Popped minimum edge ${VERTICES[minEdge.u].label}-${VERTICES[minEdge.v].label} (Weight: ${minEdge.w}) from PQ. Add edge to MST and visit ${VERTICES[nextU].label}.`,
+        explanation: `Picking minimum edge (${VERTICES[minEdge.u].label},${VERTICES[minEdge.v].label}) with weight ${minEdge.w} from priority queue. Adding node ${VERTICES[nextU].label} to MST. MST weight so far: ${mstEdges.reduce((acc, id) => acc + INITIAL_EDGES.find(e => e.id === id).w, 0)}.`,
+        status: 'found',
       });
 
       // Add outgoing edges of nextU to PQ
@@ -146,8 +154,6 @@ export default function PrimVisualizer() {
           } else {
             pq.push({ u: nextU, v: neighbor, w: e.w, edgeId: e.id, status: 'active' });
           }
-        } else {
-          // forms a cycle if selected, let's mark it discarded or just skip
         }
       });
 
@@ -157,8 +163,10 @@ export default function PrimVisualizer() {
         pq: pq.map(x => ({ ...x })),
         currU: nextU,
         currEdge: null,
-        codeLine: 18,
+        codeLine: 19,
         description: `Adding outgoing edges from Node ${VERTICES[nextU].label} to Priority Queue. Discarding duplicate heavier connections.`,
+        explanation: `Checking outgoing edges of newly visited node ${VERTICES[nextU].label}. Adding new connections to PQ and updating weights to minimize cost.`,
+        status: 'compare',
       });
     }
 
@@ -170,6 +178,8 @@ export default function PrimVisualizer() {
       currEdge: null,
       codeLine: -1,
       description: 'Prim\'s Algorithm complete! Minimum Spanning Tree successfully formed.',
+      explanation: `Prim's MST complete! Successfully connected all 6 nodes using 5 edges. Total MST weight: ${mstEdges.reduce((acc, id) => acc + INITIAL_EDGES.find(e => e.id === id).w, 0)}.`,
+      status: 'sorted',
     });
 
     return tempSteps;
@@ -258,6 +268,13 @@ export default function PrimVisualizer() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ConceptBox
+        title="What is Prim's MST?"
+        description="Prim's algorithm builds a Minimum Spanning Tree by always adding the cheapest edge connecting the current MST to a new vertex. Uses a priority queue. Starting from any node, it greedily expands the MST one edge at a time."
+        timeComplexity="O(E log V)"
+        spaceComplexity="O(V + E)"
+      />
+
       {/* Statistics board */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
@@ -360,6 +377,13 @@ export default function PrimVisualizer() {
           </div>
         </div>
       </div>
+
+      <StepExplanation
+        stepNumber={stepIdx >= 0 ? stepIdx + 1 : undefined}
+        totalSteps={steps.length}
+        explanation={current.explanation}
+        status={current.status}
+      />
 
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>

@@ -2,6 +2,8 @@
 import { useState, useEffect, useRef } from 'react';
 import VisualizerControls from './VisualizerControls';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const SPEEDS = { 1: 1200, 2: 700, 3: 300, 4: 120 };
 
@@ -31,19 +33,56 @@ function computeSteps(arr, target) {
 
   while (left <= right) {
     const mid = Math.floor(left + (right - left) / 2);
-    steps.push({ left, right, mid, eliminated: [], codeLine: 3 });
+    steps.push({
+      left, right, mid,
+      eliminated: [],
+      codeLine: 3,
+      activeLine: 3,
+      status: 'compare',
+      explanation: `📐 Calculating mid = (${left} + ${right}) / 2 = ${mid}. arr[${mid}] = ${arr[mid]}. Comparing with target(${target})...`,
+    });
     if (arr[mid] === target) {
-      steps.push({ left, right, mid, found: true, codeLine: 4 });
+      steps.push({
+        left, right, mid,
+        found: true,
+        codeLine: 4,
+        activeLine: 4,
+        status: 'found',
+        explanation: `🎉 arr[${mid}] = ${arr[mid]} equals target ${target}! Found at index ${mid} after ${steps.length} step(s).`,
+      });
       return steps;
     } else if (arr[mid] < target) {
-      steps.push({ left, right, mid, goRight: true, codeLine: 7, eliminated: Array.from({length: mid - 0 + 1}, (_,i) => i) });
+      steps.push({
+        left, right, mid,
+        goRight: true,
+        codeLine: 7,
+        activeLine: 7,
+        status: 'info',
+        eliminated: Array.from({length: mid - 0 + 1}, (_,i) => i),
+        explanation: `➡️ arr[${mid}]=${arr[mid]} < target(${target}). Target is in the right half. Eliminating indices 0–${mid}, new left = ${mid + 1}.`,
+      });
       left = mid + 1;
     } else {
-      steps.push({ left, right, mid, goLeft: true, codeLine: 9, eliminated: Array.from({length: arr.length - mid}, (_,i) => mid + i) });
+      steps.push({
+        left, right, mid,
+        goLeft: true,
+        codeLine: 9,
+        activeLine: 9,
+        status: 'info',
+        eliminated: Array.from({length: arr.length - mid}, (_,i) => mid + i),
+        explanation: `⬅️ arr[${mid}]=${arr[mid]} > target(${target}). Target is in the left half. Eliminating indices ${mid}–${arr.length - 1}, new right = ${mid - 1}.`,
+      });
       right = mid - 1;
     }
   }
-  steps.push({ left, right, mid: -1, notFound: true, codeLine: 11 });
+  steps.push({
+    left, right, mid: -1,
+    notFound: true,
+    codeLine: 11,
+    activeLine: 11,
+    status: 'mismatch',
+    explanation: `❌ Search space is empty (left=${left} > right=${right}). Target ${target} not found in the array.`,
+  });
   return steps;
 }
 
@@ -112,6 +151,13 @@ export default function BinarySearchVisualizer() {
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <ConceptBox
+        title="What is Binary Search?"
+        description="Binary Search works on sorted arrays by repeatedly halving the search space. Compare the middle element with target — if equal it's found, if target is larger search the right half, if smaller search the left half. Each step eliminates half the remaining elements."
+        timeComplexity="O(log n)"
+        spaceComplexity="O(1)"
+      />
+
       <div style={{ display:'flex', gap:10, alignItems:'center', flexWrap:'wrap' }}>
         <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, color:'#5a7a9a', letterSpacing:1 }}>TARGET</span>
         <input type="number" value={target} onChange={e => setTarget(e.target.value)}
@@ -162,6 +208,13 @@ export default function BinarySearchVisualizer() {
         ))}
       </div>
 
+      <StepExplanation
+        stepNumber={Math.max(0, stepIdx + 1)}
+        totalSteps={steps.length}
+        explanation={current?.explanation ?? 'Press ▶ Play or ⏭ Step to start the visualization.'}
+        status={current?.status ?? 'default'}
+      />
+
       <VisualizerControls
         isPlaying={isPlaying} onPlayPause={() => setIsPlaying(p => !p)}
         onStepForward={() => setStepIdx(p => Math.min(p + 1, steps.length - 1))}
@@ -172,7 +225,7 @@ export default function BinarySearchVisualizer() {
         onRandomize={() => setArr(generateSortedArray(size))}
         arraySize={size} onArraySizeChange={n => { setSize(n); setArr(generateSortedArray(n)); }}
       />
-      <CodePanel code={CODE} activeLine={current?.codeLine ?? -1} />
+      <CodePanel code={CODE} activeLine={current?.activeLine ?? -1} />
     </div>
   );
 }

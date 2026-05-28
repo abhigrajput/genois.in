@@ -1,6 +1,8 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const CODE = `struct TrieNode {
   TrieNode* children[26];
@@ -183,6 +185,13 @@ export default function TrieVisualizer() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ConceptBox
+        title="What is a Trie (Prefix Tree)?"
+        description="A Trie stores strings character by character. Each path from root to a marked end node represents one complete word. Insert and search are O(m) where m = word length — much faster than hash maps for prefix queries. Perfect for autocomplete, spell checkers, and IP routing."
+        timeComplexity="O(m) insert/search"
+        spaceComplexity="O(ALPHABET × n)"
+      />
+
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
           { label: 'Words', value: words.length, color: '#00f0ff' },
@@ -196,12 +205,6 @@ export default function TrieVisualizer() {
           </div>
         ))}
       </div>
-
-      {message && (
-        <div style={{ background: 'rgba(0,240,255,0.05)', border: `1px solid ${searchResult === false ? 'rgba(255,45,120,0.3)' : searchResult ? 'rgba(29,158,117,0.3)' : 'rgba(0,240,255,0.15)'}`, borderRadius: 8, padding: '8px 14px', fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: searchResult === false ? '#ff2d78' : searchResult ? '#1d9e75' : '#00f0ff' }}>
-          ▶ {message}
-        </div>
-      )}
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {/* SVG Trie */}
@@ -250,6 +253,11 @@ export default function TrieVisualizer() {
           </div>
         </div>
       </div>
+
+      <StepExplanation
+        explanation={message}
+        status={searchResult === false ? 'mismatch' : searchResult ? 'found' : 'info'}
+      />
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
         <input value={inputWord} onChange={e => setInputWord(e.target.value)} onKeyDown={e => e.key === 'Enter' && doInsert()} placeholder="Insert word..." style={inp} />

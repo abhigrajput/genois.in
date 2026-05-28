@@ -1,6 +1,8 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 import VisualizerControls from './VisualizerControls';
 
 const CODE = `int lcs(string S1, string S2, int m, int n) {
@@ -40,7 +42,8 @@ export default function LCSVisualizer() {
       traceback: [],
       match: false,
       codeLine: 1,
-      description: 'Initialize (m+1) x (n+1) grid filled with 0s.',
+      explanation: 'Initializing (m+1)×(n+1) DP grid with zeros. Row 0 and column 0 are base cases (empty string).',
+      status: 'info',
     });
 
     for (let i = 1; i <= m; i++) {
@@ -54,7 +57,7 @@ export default function LCSVisualizer() {
           dp[i][j] = dp[i - 1][j - 1] + 1;
           candidates.push({ r: i - 1, c: j - 1, type: 'diagonal' });
           formula = `dp[${i-1}][${j-1}] + 1 = ${dp[i-1][j-1]} + 1 = ${dp[i][j]}`;
-          desc = `Characters Match! '${str1[i-1]}' === '${str2[j-1]}'. Take diagonal value + 1.`;
+          desc = `s1[${i-1}]='${str1[i-1]}' == s2[${j-1}]='${str2[j-1]}'. Characters match! LCS extends! dp[${i}][${j}] = dp[${i-1}][${j-1}]+1 = ${dp[i-1][j-1]+1}. Taking diagonal.`;
         } else {
           const up = dp[i - 1][j];
           const left = dp[i][j - 1];
@@ -62,7 +65,7 @@ export default function LCSVisualizer() {
           candidates.push({ r: i - 1, c: j, type: 'up', val: up });
           candidates.push({ r: i, c: j - 1, type: 'left', val: left });
           formula = `max(dp[${i-1}][${j}] (${up}), dp[${i}][${j-1}] (${left})) = ${dp[i][j]}`;
-          desc = `Characters Mismatch! '${str1[i-1]}' !== '${str2[j-1]}'. Take max of Up and Left.`;
+          desc = `s1[${i-1}]='${str1[i-1]}' != s2[${j-1}]='${str2[j-1]}'. dp[${i}][${j}] = max(dp[${i-1}][${j}]=${up}, dp[${i}][${j-1}]=${left}) = ${dp[i][j]}.`;
         }
 
         tempSteps.push({
@@ -72,7 +75,8 @@ export default function LCSVisualizer() {
           traceback: [],
           match: charMatch,
           codeLine: charMatch ? 5 : 7,
-          description: `Cell dp[${i}][${j}] comparison: ${desc} Formula: ${formula}`,
+          explanation: desc,
+          status: charMatch ? 'found' : 'compare',
         });
       }
     }
@@ -105,7 +109,8 @@ export default function LCSVisualizer() {
       traceback: tracebackPath,
       lcsString: lcsChars.join(''),
       codeLine: 10,
-      description: `Traceback complete! LCS is "${lcsChars.join('')}" (Length: ${dp[m][n]}).`,
+      explanation: `Traceback complete! LCS is "${lcsChars.join('')}" (Length: ${dp[m][n]}). Reconstructing the common characters bottom-up.`,
+      status: 'sorted',
     });
 
     return tempSteps;
@@ -192,6 +197,13 @@ export default function LCSVisualizer() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ConceptBox
+        title="What is Longest Common Subsequence (LCS)?"
+        description="LCS finds the longest sequence of characters that appear in both strings in the same order (not necessarily contiguous). A 2D DP table: if characters match, extend the diagonal value; otherwise take the max of left or top neighbor. Used in diff tools and DNA sequence alignment."
+        timeComplexity="O(m × n)"
+        spaceComplexity="O(m × n)"
+      />
+
       {/* Stats row */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
@@ -205,11 +217,6 @@ export default function LCSVisualizer() {
             <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: s.color, wordBreak: 'break-all' }}>{s.value}</div>
           </div>
         ))}
-      </div>
-
-      {/* Description text */}
-      <div style={{ background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#00f0ff' }}>
-        ▶ {current.description}
       </div>
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
@@ -319,6 +326,13 @@ export default function LCSVisualizer() {
           </div>
         ))}
       </div>
+
+      <StepExplanation
+        stepNumber={stepIdx >= 0 ? stepIdx + 1 : null}
+        totalSteps={steps.length > 0 ? steps.length : null}
+        explanation={current.explanation}
+        status={current.status}
+      />
 
       {/* Controls */}
       <VisualizerControls

@@ -1,6 +1,8 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const CODE = `// Floyd-Warshall All-Pairs Shortest Path
 void floydWarshall(int dist[][V], int V) {
@@ -36,22 +38,41 @@ function computeFloydSteps(mat) {
   for (let k = 0; k < V; k++) {
     for (let i = 0; i < V; i++) {
       for (let j = 0; j < V; j++) {
-        const via = d[i][k] + d[k][j];
-        const updated = via < d[i][j];
+        const valIK = d[i][k];
+        const valKJ = d[k][j];
+        const valIJ = d[i][j];
+        const via = valIK + valKJ;
+        const updated = via < valIJ;
+        
+        const explanation = updated
+          ? `Shorter path found via intermediate node ${k}! dist[${i}][${k}] + dist[${k}][${j}] = ${valIK} + ${valKJ} = ${via} < dist[${i}][${j}] = ${valIJ === INF ? '∞' : valIJ}. Updating to ${via}.`
+          : `Checking path ${i}→${k}→${j}. dist[${i}][${k}] + dist[${k}][${j}] = ${valIK === INF ? '∞' : valIK} + ${valKJ === INF ? '∞' : valKJ} = ${via >= INF ? '∞' : via} which is NOT less than current dist[${i}][${j}] = ${valIJ === INF ? '∞' : valIJ}. Current path is better.`;
+
         if (updated) d[i][j] = via;
         steps.push({
           matrix: d.map(r => [...r]),
           k, i, j,
           updated,
-          codeLine: updated ? 7 : 5,
+          codeLine: updated ? 8 : 6,
           label: updated
-            ? `d[${i}][${j}] updated via k=${k}: ${d[i][k]}+${d[k][j]}=${via}`
+            ? `d[${i}][${j}] updated via k=${k}: ${valIK}+${valKJ}=${via}`
             : `d[${i}][${j}]: no update via k=${k}`,
+          explanation,
+          status: updated ? 'found' : 'compare'
         });
       }
     }
   }
-  steps.push({ matrix: d.map(r=>[...r]), k:-1, i:-1, j:-1, updated:false, done:true, codeLine:-1, label:'Floyd-Warshall complete! All-pairs shortest paths found.' });
+  steps.push({
+    matrix: d.map(r=>[...r]),
+    k:-1, i:-1, j:-1,
+    updated:false,
+    done:true,
+    codeLine:-1,
+    label:'Floyd-Warshall complete! All-pairs shortest paths found.',
+    explanation: 'Floyd-Warshall complete! All-pairs shortest paths computed.',
+    status: 'sorted'
+  });
   return steps;
 }
 
@@ -102,6 +123,13 @@ export default function FloydWarshallVisualizer() {
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <ConceptBox
+        title="What is Floyd-Warshall?"
+        description="Floyd-Warshall finds shortest paths between ALL pairs of nodes in a weighted graph. For each intermediate node k, it checks if routing through k makes any path dist[i][j] shorter. A simple O(V³) triple nested loop that handles negative weights (but not negative cycles)."
+        timeComplexity="O(V³)"
+        spaceComplexity="O(V²)"
+      />
+
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
           { label:'Vertices', value:4, color:'#00f0ff' },
@@ -115,12 +143,6 @@ export default function FloydWarshallVisualizer() {
           </div>
         ))}
       </div>
-
-      {current?.label && (
-        <div style={{ background:current.updated?'rgba(29,158,117,0.08)':'rgba(0,240,255,0.05)', border:`1px solid ${current.updated?'rgba(29,158,117,0.3)':'rgba(0,240,255,0.15)'}`, borderRadius:8, padding:'8px 14px', fontFamily:'JetBrains Mono,monospace', fontSize:11, color:current.updated?'#1d9e75':'#00f0ff' }}>
-          {current.updated ? '✓ ' : '▶ '}{current.label}
-        </div>
-      )}
 
       {/* Distance matrix */}
       <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:12, padding:24, display:'flex', flexDirection:'column', alignItems:'center' }}>
@@ -169,6 +191,13 @@ export default function FloydWarshallVisualizer() {
           <span style={{ color:'#5a7a9a' }}>)</span>
         </div>
       )}
+
+      <StepExplanation
+        stepNumber={stepIdx >= 0 ? stepIdx + 1 : null}
+        totalSteps={steps.length > 0 ? steps.length : null}
+        explanation={current?.explanation}
+        status={current?.status}
+      />
 
       <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
         <button onClick={start} style={btn('#00f0ff')}>▶ Run Floyd-Warshall</button>

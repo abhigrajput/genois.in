@@ -2,6 +2,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import CodePanel from './CodePanel';
 import VisualizerControls from './VisualizerControls';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const CODE = `int fib(int n) {
   if (n <= 1) return n;
@@ -46,7 +48,7 @@ export default function FibonacciDPVisualizer() {
   // Compute states for bottom-up and top-down
   const computeSteps = useCallback((targetN) => {
     const tempSteps = [];
-    
+
     // Bottom-Up DP simulation
     const dp = Array(targetN + 1).fill(null);
     tempSteps.push({
@@ -56,6 +58,9 @@ export default function FibonacciDPVisualizer() {
       mode: 'init',
       codeLine: 1,
       description: 'Initialize DP table.',
+      explanation: 'Initializing DP table with null values. We will fill it bottom-up from dp[0] to dp[n].',
+      status: 'info',
+      activeLine: 1,
     });
 
     dp[0] = 0;
@@ -66,6 +71,9 @@ export default function FibonacciDPVisualizer() {
       mode: 'base',
       codeLine: 3,
       description: 'Set base case dp[0] = 0.',
+      explanation: 'Base case: dp[0] = 0. By definition, the 0th Fibonacci number is 0.',
+      status: 'sorted',
+      activeLine: 3,
     });
 
     if (targetN >= 1) {
@@ -77,6 +85,9 @@ export default function FibonacciDPVisualizer() {
         mode: 'base',
         codeLine: 4,
         description: 'Set base case dp[1] = 1.',
+        explanation: 'Base case: dp[1] = 1. By definition, the 1st Fibonacci number is 1.',
+        status: 'sorted',
+        activeLine: 4,
       });
     }
 
@@ -88,6 +99,9 @@ export default function FibonacciDPVisualizer() {
         mode: 'comparing',
         codeLine: 6,
         description: `Computing dp[${i}] = dp[${i-1}] + dp[${i-2}]`,
+        explanation: `Computing dp[${i}] = dp[${i-1}] + dp[${i-2}] = ${dp[i-1]} + ${dp[i-2]}. Reading from previously solved subproblems.`,
+        status: 'compare',
+        activeLine: 6,
       });
 
       dp[i] = dp[i - 1] + dp[i - 2];
@@ -99,6 +113,9 @@ export default function FibonacciDPVisualizer() {
         mode: 'computed',
         codeLine: 6,
         description: `Calculated dp[${i}] = ${dp[i-1]} + ${dp[i-2]} = ${dp[i]}`,
+        explanation: `dp[${i}] = ${dp[i-1]} + ${dp[i-2]} = ${dp[i]}. Stored in table for future use.`,
+        status: 'sorted',
+        activeLine: 6,
       });
     }
 
@@ -109,6 +126,9 @@ export default function FibonacciDPVisualizer() {
       mode: 'done',
       codeLine: 8,
       description: `Completed! fib(${targetN}) = ${dp[targetN]}`,
+      explanation: `Fibonacci(${targetN}) = ${dp[targetN]}. All subproblems solved bottom-up in ${targetN + 1} steps.`,
+      status: 'sorted',
+      activeLine: 8,
     });
 
     return tempSteps;
@@ -147,6 +167,8 @@ export default function FibonacciDPVisualizer() {
     mode: 'init',
     codeLine: -1,
     description: 'Press Play or Step Forward to visualize bottom-up dynamic programming.',
+    explanation: 'Press ▶ Play or ⏭ Step to start the visualization.',
+    status: 'default',
   };
 
   // Generate recursive tree
@@ -185,6 +207,13 @@ export default function FibonacciDPVisualizer() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ConceptBox
+        title="What is Fibonacci DP?"
+        description="Dynamic Programming solves Fibonacci by storing previously computed values. Without memoization, naive recursion recomputes the same subproblems exponentially. With DP, each fib(i) is computed exactly once by building on fib(i-1) and fib(i-2). Time drops from O(2ⁿ) to O(n)."
+        timeComplexity="O(n) with DP"
+        spaceComplexity="O(n)"
+      />
+
       {/* Stats row */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
@@ -198,11 +227,6 @@ export default function FibonacciDPVisualizer() {
             <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
-      </div>
-
-      {/* Description text */}
-      <div style={{ background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#00f0ff' }}>
-        ▶ {current.description}
       </div>
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
@@ -296,6 +320,13 @@ export default function FibonacciDPVisualizer() {
           </div>
         </div>
       </div>
+
+      <StepExplanation
+        stepNumber={Math.max(0, stepIdx + 1)}
+        totalSteps={steps.length}
+        explanation={current?.explanation ?? 'Press ▶ Play or ⏭ Step to start the visualization.'}
+        status={current?.status ?? 'default'}
+      />
 
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>

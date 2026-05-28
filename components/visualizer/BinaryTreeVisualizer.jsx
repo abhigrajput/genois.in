@@ -1,6 +1,8 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const CODE = `struct TreeNode {
   int val;
@@ -130,6 +132,7 @@ export default function BinaryTreeVisualizer() {
   const [edges, setEdges] = useState([]);
   const [traversalOrder, setTraversalOrder] = useState([]);
   const [currentStep, setCurrentStep] = useState(-1);
+  const [traversalType, setTraversalType] = useState('');
   const [visited, setVisited] = useState(new Set());
   const [isPlaying, setIsPlaying] = useState(false);
   const [speed, setSpeed] = useState(2);
@@ -139,12 +142,39 @@ export default function BinaryTreeVisualizer() {
 
   const laidOut = layoutTree(nodes, edges);
 
+  // Derive step explanation from traversal state
+  const totalSteps = traversalOrder.length;
+  const stepNumber = currentStep >= 0 ? currentStep + 1 : 0;
+  let stepExplanation = 'Insert nodes to build the tree, then run Inorder, Preorder, or Postorder traversal.';
+  let stepStatus = 'default';
+
+  if (traversalOrder.length > 0) {
+    if (currentStep >= 0 && currentStep < traversalOrder.length) {
+      const currentNodeVal = nodes[traversalOrder[currentStep]]?.val;
+      if (traversalType === 'inorder') {
+        stepExplanation = `Inorder (Left → Root → Right): Visiting node ${currentNodeVal}. Inorder traversal of a BST yields sorted order.`;
+        stepStatus = visited.has(traversalOrder[currentStep]) ? 'sorted' : 'compare';
+      } else if (traversalType === 'preorder') {
+        stepExplanation = `Preorder (Root → Left → Right): Visiting node ${currentNodeVal}. Used to copy or serialize a tree.`;
+        stepStatus = visited.has(traversalOrder[currentStep]) ? 'sorted' : 'compare';
+      } else if (traversalType === 'postorder') {
+        stepExplanation = `Postorder (Left → Right → Root): Visiting node ${currentNodeVal}. Useful for deleting a tree or evaluating expressions.`;
+        stepStatus = visited.has(traversalOrder[currentStep]) ? 'sorted' : 'compare';
+      }
+    }
+    if (!isPlaying && currentStep >= traversalOrder.length - 1 && visited.size === traversalOrder.length) {
+      stepExplanation = `Traversal complete! Visited all ${traversalOrder.length} nodes in ${traversalType} order: [${traversalOrder.map(i => nodes[i]?.val).join(' → ')}].`;
+      stepStatus = 'sorted';
+    }
+  }
+
   const doInsert = (val) => {
     const v = parseInt(val);
     if (isNaN(v)) return;
     const { nodes: n, edges: e } = insertNode(nodes, edges, v);
     setNodes(n); setEdges(e);
     setTraversalOrder([]); setCurrentStep(-1); setVisited(new Set());
+    setTraversalType('');
     setMessage(`Inserted ${v}`);
     setNewNodeVal('');
   };
@@ -160,6 +190,7 @@ export default function BinaryTreeVisualizer() {
     setCurrentStep(0);
     setVisited(new Set());
     setIsPlaying(true);
+    setTraversalType(type);
     setMessage(`${type.charAt(0).toUpperCase() + type.slice(1)} traversal: [${order.map(i => nodes[i]?.val).join(' → ')}]`);
   };
 
@@ -184,6 +215,7 @@ export default function BinaryTreeVisualizer() {
   const reset = () => {
     setNodes([]); setEdges([]); setTraversalOrder([]);
     setCurrentStep(-1); setVisited(new Set()); setIsPlaying(false);
+    setTraversalType('');
     setMessage('Insert nodes to build a tree, then run a traversal.');
     clearInterval(intervalRef.current);
   };
@@ -192,6 +224,13 @@ export default function BinaryTreeVisualizer() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ConceptBox
+        title="What is a Binary Tree?"
+        description="A Binary Tree is a hierarchical data structure where each node has at most two children (left and right). It is used as the foundation for BSTs, heaps, and expression trees. Tree traversals (Inorder, Preorder, Postorder) visit nodes in different orders for different purposes."
+        timeComplexity="O(n) traversal"
+        spaceComplexity="O(h) stack"
+      />
+
       {/* Stats */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
@@ -253,6 +292,14 @@ export default function BinaryTreeVisualizer() {
           )}
         </svg>
       </div>
+
+      {/* Step Explanation */}
+      <StepExplanation
+        stepNumber={stepNumber}
+        totalSteps={totalSteps}
+        explanation={stepExplanation}
+        status={stepStatus}
+      />
 
       {/* Traversal result */}
       {traversalOrder.length > 0 && (

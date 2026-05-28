@@ -1,6 +1,8 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const CODE = `struct TreeNode {
   int val;
@@ -104,6 +106,7 @@ export default function BSTVisualizer() {
   const [message, setMessage] = useState('Insert values to build a BST.');
   const [inputVal, setInputVal] = useState('');
   const [mode, setMode] = useState('insert'); // 'insert' | 'search'
+  const [actionVal, setActionVal] = useState(null);
   const intervalRef = useRef(null);
 
   const laidOut = layoutBST(nodes);
@@ -128,7 +131,7 @@ export default function BSTVisualizer() {
     const v = parseInt(inputVal) || Math.floor(Math.random() * 90) + 10;
     const { nodes: n, path } = bstInsert(nodes, v);
     setNodes(n); setInsertPath(path); setSearchPath([]); setSearchFound(null);
-    setHighlightStep(0); setIsPlaying(true); setMode('insert');
+    setHighlightStep(0); setIsPlaying(true); setMode('insert'); setActionVal(v);
     setMessage(`Inserting ${v}: comparing ${path.map(i => n[i]?.val).join(' → ')}`);
     setInputVal('');
   };
@@ -138,16 +141,66 @@ export default function BSTVisualizer() {
     if (isNaN(v)) { setMessage('Enter a value to search!'); return; }
     const { path, found } = bstSearch(nodes, v);
     setSearchPath(path); setInsertPath([]); setSearchFound(found);
-    setHighlightStep(0); setIsPlaying(true); setMode('search');
+    setHighlightStep(0); setIsPlaying(true); setMode('search'); setActionVal(v);
     setMessage(`Searching ${v}: ${found ? 'Found!' : 'Not found'}`);
     setInputVal('');
   };
 
   const reset = () => {
     setNodes([]); setInsertPath([]); setSearchPath([]); setSearchFound(null);
-    setHighlightStep(-1); setIsPlaying(false);
+    setHighlightStep(-1); setIsPlaying(false); setActionVal(null);
     setMessage('Insert values to build a BST.'); clearInterval(intervalRef.current);
   };
+
+  let currentExplanation = 'Insert values to build a BST, then try searching.';
+  let currentStatus = 'default';
+  let activeLine = -1;
+
+  if (highlightStep >= 0 && highlightStep < activePath.length) {
+    const currNodeId = activePath[highlightStep];
+    const currNode = nodes.find(n => n.id === currNodeId);
+    const isLastStep = highlightStep === activePath.length - 1;
+
+    if (mode === 'insert') {
+      if (isLastStep) {
+        currentExplanation = `Reached empty child! Creating new TreeNode(${actionVal}) and attaching it.`;
+        currentStatus = 'found';
+        activeLine = 8;
+      } else {
+        if (actionVal < currNode.val) {
+          currentExplanation = `val (${actionVal}) < root->val (${currNode.val}). Recursing LEFT into left subtree.`;
+          currentStatus = 'compare';
+          activeLine = 9;
+        } else {
+          currentExplanation = `val (${actionVal}) > root->val (${currNode.val}). Recursing RIGHT into right subtree.`;
+          currentStatus = 'compare';
+          activeLine = 11;
+        }
+      }
+    } else if (mode === 'search') {
+      if (isLastStep) {
+        if (searchFound) {
+          currentExplanation = `Found it! root->val (${currNode.val}) matches search target ${actionVal}.`;
+          currentStatus = 'found';
+          activeLine = 24;
+        } else {
+          currentExplanation = `Checking node ${currNode.val}. Target ${actionVal} is not equal, and child is nullptr. Search failed!`;
+          currentStatus = 'mismatch';
+          activeLine = 23;
+        }
+      } else {
+        if (actionVal < currNode.val) {
+          currentExplanation = `Target ${actionVal} < root->val (${currNode.val}). Recursing LEFT.`;
+          currentStatus = 'compare';
+          activeLine = 25;
+        } else {
+          currentExplanation = `Target ${actionVal} > root->val (${currNode.val}). Recursing RIGHT.`;
+          currentStatus = 'compare';
+          activeLine = 26;
+        }
+      }
+    }
+  }
 
   function nodeColor(id) {
     const stepNode = activePath[highlightStep];
@@ -167,6 +220,13 @@ export default function BSTVisualizer() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ConceptBox
+        title="What is a Binary Search Tree?"
+        description="A BST is a binary tree where each node's left subtree contains only smaller values, and right subtree contains only larger values. This property allows O(log n) search, insert, and delete on balanced trees. Inorder traversal of a BST gives sorted output."
+        timeComplexity="O(log n) avg, O(n) worst"
+        spaceComplexity="O(h) stack"
+      />
+
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
           { label: 'Nodes', value: nodes.length, color: '#00f0ff' },
@@ -180,12 +240,6 @@ export default function BSTVisualizer() {
           </div>
         ))}
       </div>
-
-      {message && (
-        <div style={{ background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#00f0ff' }}>
-          ▶ {message}
-        </div>
-      )}
 
       <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, overflow: 'hidden' }}>
         <svg width="100%" viewBox={`0 0 ${SVG_W} ${SVG_H}`} style={{ display: 'block' }}>
@@ -213,6 +267,13 @@ export default function BSTVisualizer() {
         </svg>
       </div>
 
+      <StepExplanation
+        stepNumber={highlightStep >= 0 ? highlightStep + 1 : null}
+        totalSteps={activePath.length > 0 ? activePath.length : null}
+        explanation={currentExplanation}
+        status={currentStatus}
+      />
+
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
         <input type="number" value={inputVal} onChange={e => setInputVal(e.target.value)} onKeyDown={e => e.key === 'Enter' && doInsert()}
           placeholder="Value..." style={{ background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.2)', borderRadius: 8, padding: '7px 12px', color: '#e8f4ff', fontFamily: 'JetBrains Mono,monospace', fontSize: 13, outline: 'none', width: 100 }} />
@@ -236,7 +297,7 @@ export default function BSTVisualizer() {
           </div>
         ))}
       </div>
-      <CodePanel code={CODE} />
+      <CodePanel code={CODE} activeLine={activeLine} />
     </div>
   );
 }

@@ -1,6 +1,8 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const CODE = `void bfs(vector<vector<int>>& adj, int src, int n) {
   vector<bool> visited(n, false);
@@ -44,19 +46,39 @@ function computeBFSSteps(src) {
   const queue = [];
   visited[src] = true;
   queue.push(src);
-  steps.push({ visited: [...visited], queue: [...queue], current: -1, codeLine: 3 });
+  steps.push({
+    visited: [...visited], queue: [...queue], current: -1, codeLine: 3,
+    explanation: `Initializing BFS from source node ${src}. Adding node ${src} to queue and marking visited.`,
+    status: 'info',
+    activeLine: 3,
+  });
   while (queue.length) {
     const node = queue.shift();
-    steps.push({ visited: [...visited], queue: [...queue], current: node, codeLine: 6 });
+    steps.push({
+      visited: [...visited], queue: [...queue], current: node, codeLine: 6,
+      explanation: `Dequeuing node ${node} from front of queue. Processing its unvisited neighbors.`,
+      status: 'compare',
+      activeLine: 5,
+    });
     for (const nbr of ADJ[node]) {
       if (!visited[nbr]) {
         visited[nbr] = true;
         queue.push(nbr);
-        steps.push({ visited: [...visited], queue: [...queue], current: node, enqueueing: nbr, codeLine: 10 });
+        steps.push({
+          visited: [...visited], queue: [...queue], current: node, enqueueing: nbr, codeLine: 10,
+          explanation: `Node ${nbr} is unvisited! Marking visited and adding to queue. Queue: [${[...queue].join(', ')}]`,
+          status: 'compare',
+          activeLine: 8,
+        });
       }
     }
   }
-  steps.push({ visited: [...visited], queue: [], current: -1, done: true, codeLine: -1 });
+  steps.push({
+    visited: [...visited], queue: [], current: -1, done: true, codeLine: -1,
+    explanation: 'BFS complete! All reachable nodes visited in breadth-first (level-by-level) order.',
+    status: 'sorted',
+    activeLine: -1,
+  });
   return steps;
 }
 
@@ -101,6 +123,13 @@ export default function BFSVisualizer() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ConceptBox
+        title="What is BFS (Breadth-First Search)?"
+        description="Breadth-First Search explores a graph level by level using a queue. It visits all neighbors of the current node before moving deeper. BFS finds the shortest path in unweighted graphs and explores nodes in order of their distance from the source."
+        timeComplexity="O(V + E)"
+        spaceComplexity="O(V)"
+      />
+
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
           { label: 'Source', value: src, color: '#00f0ff' },
@@ -171,6 +200,13 @@ export default function BFSVisualizer() {
           </div>
         </div>
       </div>
+
+      <StepExplanation
+        stepNumber={Math.max(0, stepIdx + 1)}
+        totalSteps={steps.length}
+        explanation={current?.explanation ?? 'Press ▶ Play or ⏭ Step to start the visualization.'}
+        status={current?.status ?? 'default'}
+      />
 
       {/* Controls */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>

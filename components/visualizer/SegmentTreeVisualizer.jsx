@@ -1,6 +1,8 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 import VisualizerControls from './VisualizerControls';
 
 const CODE = `void build(int node, int start, int end) {
@@ -113,8 +115,9 @@ export default function SegmentTreeVisualizer() {
       visited: {},
       sum: 0,
       currNode: null,
-      codeLine: 10,
+      codeLine: 17,
       description: `Starting range query for [${queryL}, ${queryR}]...`,
+      status: 'info',
     });
 
     function runQuery(node, start, end) {
@@ -125,8 +128,9 @@ export default function SegmentTreeVisualizer() {
           visited: { ...visited },
           sum: totalSum,
           currNode: node,
-          codeLine: 11,
+          codeLine: 18,
           description: `Node [${start}-${end}] is completely outside query range [${queryL}, ${queryR}]. Skip.`,
+          status: 'mismatch',
         });
         return;
       }
@@ -139,8 +143,9 @@ export default function SegmentTreeVisualizer() {
           visited: { ...visited },
           sum: totalSum,
           currNode: node,
-          codeLine: 12,
+          codeLine: 19,
           description: `Node [${start}-${end}] is completely inside query range. Adding node value ${treeVals[node]}. Current Sum = ${totalSum}.`,
+          status: 'found',
         });
         return;
       }
@@ -151,8 +156,9 @@ export default function SegmentTreeVisualizer() {
         visited: { ...visited },
         currNode: node,
         sum: totalSum,
-        codeLine: 14,
+        codeLine: 20,
         description: `Node [${start}-${end}] partially overlaps. Split query into left and right children.`,
+        status: 'compare',
       });
 
       const mid = Math.floor((start + end) / 2);
@@ -166,8 +172,9 @@ export default function SegmentTreeVisualizer() {
       visited: { ...visited },
       sum: totalSum,
       currNode: null,
-      codeLine: 15,
+      codeLine: -1,
       description: `Range Query complete! Total sum in range [${queryL}, ${queryR}] is ${totalSum}.`,
+      status: 'sorted',
     });
 
     setSteps(tempSteps);
@@ -185,8 +192,9 @@ export default function SegmentTreeVisualizer() {
       treeVals: { ...currentTree },
       activePath: [],
       currNode: null,
-      codeLine: 18,
-      description: `Starting point update: arr[${updateIdx}] = ${updateVal}`,
+      codeLine: 25,
+      description: `Starting point update: arr[updateIdx] = updateVal`,
+      status: 'info',
     });
 
     // We trace down to find the leaf first, then propagate up
@@ -209,10 +217,11 @@ export default function SegmentTreeVisualizer() {
         treeVals: { ...currentTree },
         activePath: pathNodes.slice(0, i + 1),
         currNode: node,
-        codeLine: isLeaf ? 20 : 25,
+        codeLine: isLeaf ? 26 : 31,
         description: isLeaf
           ? `Reached leaf node [${updateIdx}-${updateIdx}]. Updating value from ${currentTree[node]} to ${updateVal}.`
           : `Traversing down tree to locate index ${updateIdx}. Currently visiting node [${NODE_LAYOUT[node].l}-${NODE_LAYOUT[node].r}].`,
+        status: isLeaf ? 'found' : 'compare',
       });
 
       if (isLeaf) {
@@ -232,8 +241,9 @@ export default function SegmentTreeVisualizer() {
         treeVals: { ...currentTree },
         activePath: pathNodes.slice(0, i + 1),
         currNode: node,
-        codeLine: 28,
+        codeLine: 35,
         description: `Recalculating node [${NODE_LAYOUT[node].l}-${NODE_LAYOUT[node].r}]: left (${currentTree[leftChild]}) + right (${currentTree[rightChild]}) = ${currentTree[node]}. (Was ${prevVal})`,
+        status: 'compare',
       });
     }
 
@@ -244,6 +254,7 @@ export default function SegmentTreeVisualizer() {
       currNode: null,
       codeLine: -1,
       description: `Update complete! Tree root updated to ${currentTree[1]}.`,
+      status: 'sorted',
     });
 
     setSteps(tempSteps);
@@ -330,6 +341,13 @@ export default function SegmentTreeVisualizer() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ConceptBox
+        title="What is a Segment Tree?"
+        description="A Segment Tree is a tree where each node stores a result (sum, min, max) for a range of the array. Enables O(log n) range queries and O(log n) point updates. Each leaf represents one array element; internal nodes combine results from their children ranges."
+        timeComplexity="O(log n) query/update"
+        spaceComplexity="O(n)"
+      />
+
       {/* Top statistic panel */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
@@ -343,11 +361,6 @@ export default function SegmentTreeVisualizer() {
             <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
-      </div>
-
-      {/* Description output */}
-      <div style={{ background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#00f0ff' }}>
-        ▶ {current.description}
       </div>
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
@@ -420,6 +433,13 @@ export default function SegmentTreeVisualizer() {
           </svg>
         </div>
       </div>
+
+      <StepExplanation
+        stepNumber={stepIdx >= 0 ? stepIdx + 1 : null}
+        totalSteps={steps.length > 0 ? steps.length : null}
+        explanation={current.description}
+        status={current.status}
+      />
 
       {/* Controls row */}
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 16 }}>

@@ -2,6 +2,8 @@
 import { useState, useEffect, useRef } from 'react';
 import VisualizerControls from './VisualizerControls';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const SPEEDS = { 1: 1200, 2: 700, 3: 300, 4: 120 };
 
@@ -36,23 +38,73 @@ function computeSteps(arr) {
   function partition(a, low, high) {
     const pivot = a[high];
     let i = low - 1;
-    steps.push({ array: [...a], pivot: high, low, high, i, scanning: low, codeLine: 1 });
+    steps.push({
+      array: [...a],
+      pivot: high,
+      low,
+      high,
+      i,
+      scanning: low,
+      codeLine: 1,
+      explanation: `🎯 Pivot = arr[${high}]=${pivot}. Partitioning subarray [${low}..${high}]: elements < ${pivot} go left, elements > ${pivot} go right.`,
+      status: 'pivot',
+      activeLine: 1,
+    });
     for (let j = low; j < high; j++) {
-      steps.push({ array: [...a], pivot: high, low, high, i, scanning: j, codeLine: 3 });
+      steps.push({
+        array: [...a],
+        pivot: high,
+        low,
+        high,
+        i,
+        scanning: j,
+        codeLine: 3,
+        explanation: `🔍 Scanning arr[${j}]=${a[j]}. Pivot=${pivot}. ${a[j] < pivot ? `${a[j]} < ${pivot} — will swap to left partition.` : `${a[j]} >= ${pivot} — stays in right partition.`}`,
+        status: a[j] < pivot ? 'compare' : 'mismatch',
+        activeLine: 3,
+      });
       if (a[j] < pivot) {
         i++;
         let t = a[i]; a[i] = a[j]; a[j] = t;
-        steps.push({ array: [...a], pivot: high, low, high, i, scanning: j, swapped: [i, j], codeLine: 6 });
+        steps.push({
+          array: [...a],
+          pivot: high,
+          low,
+          high,
+          i,
+          scanning: j,
+          swapped: [i, j],
+          codeLine: 6,
+          explanation: `🔄 arr[${j}]=${a[i]} < pivot=${pivot}. Swapping arr[${i}] and arr[${j}] to grow the left partition (≤ pivot region).`,
+          status: 'compare',
+          activeLine: 6,
+        });
       }
     }
     let t = a[i + 1]; a[i + 1] = a[high]; a[high] = t;
-    steps.push({ array: [...a], pivotPlaced: i + 1, low, high, codeLine: 9 });
+    steps.push({
+      array: [...a],
+      pivotPlaced: i + 1,
+      low,
+      high,
+      codeLine: 9,
+      explanation: `✅ Pivot ${pivot} placed at its correct position ${i + 1}. All elements left of ${i + 1} are < ${pivot}, all right are > ${pivot}.`,
+      status: 'sorted',
+      activeLine: 9,
+    });
     return i + 1;
   }
 
   function quickSort(a, l, h) {
     if (l < h) {
-      steps.push({ array: [...a], subarray: [l, h], codeLine: 13 });
+      steps.push({
+        array: [...a],
+        subarray: [l, h],
+        codeLine: 13,
+        explanation: `📐 Processing subarray [${l}..${h}]. Will pick pivot from arr[${h}]=${a[h]} and partition.`,
+        status: 'info',
+        activeLine: 13,
+      });
       const pi = partition(a, l, h);
       quickSort(a, l, pi - 1);
       quickSort(a, pi + 1, h);
@@ -60,7 +112,14 @@ function computeSteps(arr) {
   }
 
   quickSort(a, 0, a.length - 1);
-  steps.push({ array: [...a], done: true, codeLine: -1 });
+  steps.push({
+    array: [...a],
+    done: true,
+    codeLine: -1,
+    explanation: '✅ Array fully sorted! Quick Sort placed every pivot at its correct position via partitioning.',
+    status: 'sorted',
+    activeLine: -1,
+  });
   return steps;
 }
 
@@ -108,6 +167,14 @@ export default function QuickSortVisualizer() {
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <ConceptBox
+        title="What is Quick Sort?"
+        description="Quick Sort picks a pivot element, partitions the array into elements smaller and larger than the pivot, then recursively sorts each partition. Average case is O(n log n) but worst case O(n²) on sorted arrays. Cache-friendly and in-place, making it fast in practice."
+        timeComplexity="O(n log n) avg"
+        spaceComplexity="O(log n)"
+        stable={false}
+      />
+
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
           { label:'Pivot Value', value: current?.pivot != null && !current.done ? displayArr[current.pivot] : '-', color:'#ef9f27' },
@@ -136,6 +203,13 @@ export default function QuickSortVisualizer() {
         ))}
       </div>
 
+      <StepExplanation
+        stepNumber={Math.max(0, stepIdx + 1)}
+        totalSteps={steps.length}
+        explanation={current?.explanation ?? 'Press ▶ Play or ⏭ Step to start the visualization.'}
+        status={current?.status ?? 'default'}
+      />
+
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
         {[['#ef9f27','Pivot'],['#7b5cff','≤ Pivot'],['#378ADD','Scanning'],['#00f0ff','Swapping'],['#1d9e75','Placed']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
@@ -155,7 +229,7 @@ export default function QuickSortVisualizer() {
         onRandomize={() => setArr(generateArray(size))}
         arraySize={size} onArraySizeChange={n => { setSize(n); setArr(generateArray(n)); }}
       />
-      <CodePanel code={CODE} activeLine={current?.codeLine ?? -1} />
+      <CodePanel code={CODE} activeLine={current?.activeLine ?? -1} />
     </div>
   );
 }

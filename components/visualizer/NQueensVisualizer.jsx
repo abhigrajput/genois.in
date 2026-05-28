@@ -2,6 +2,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import CodePanel from './CodePanel';
 import VisualizerControls from './VisualizerControls';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const CODE = `bool isSafe(vector<int>& board, int row, int col) {
   for (int i = 0; i < row; i++) {
@@ -49,8 +51,9 @@ export default function NQueensVisualizer() {
       curr: null,
       threats: [],
       status: 'init',
-      codeLine: 10,
-      description: `Starting backtracking search on ${size}x${size} chessboard...`,
+      codeLine: 14,
+      description: `Starting N-Queens backtracking on a ${size}×${size} board. Trying to place ${size} non-attacking queens.`,
+      explanation: `Starting N-Queens backtracking on a ${size}×${size} board. Trying to place ${size} non-attacking queens.`,
     });
 
     function isSafe(row, col) {
@@ -74,8 +77,9 @@ export default function NQueensVisualizer() {
           curr: null,
           threats: [],
           status: 'success',
-          codeLine: 12,
+          codeLine: 11,
           description: `✓ Solution Found! Saved to solution library. Total solutions: ${completedSolutions.length}.`,
+          explanation: `🎉 Solution found! Queens placed at columns: [${board.join(', ')}]. Total solutions found: ${completedSolutions.length}.`,
         });
         return;
       }
@@ -89,6 +93,7 @@ export default function NQueensVisualizer() {
           status: 'checking',
           codeLine: 15,
           description: `Testing placement at row ${row}, col ${col}.`,
+          explanation: `Trying queen at row ${row}, col ${col}. Checking for column, row, and diagonal conflicts.`,
         });
 
         const threats = isSafe(row, col);
@@ -100,8 +105,9 @@ export default function NQueensVisualizer() {
             curr: { r: row, c: col },
             threats: [],
             status: 'placed',
-            codeLine: 17,
+            codeLine: 16,
             description: `Safe! Placed Queen at row ${row}, col ${col}. Advancing to next row.`,
+            explanation: `Placing queen at row ${row}, col ${col}. Checking: no conflict in column, diagonal, or anti-diagonal.`,
           });
 
           solve(row + 1);
@@ -113,8 +119,9 @@ export default function NQueensVisualizer() {
             curr: { r: row, c: col },
             threats: [],
             status: 'backtrack',
-            codeLine: 19,
+            codeLine: 18,
             description: `Backtracking: Removing Queen at row ${row}, col ${col} to search other options.`,
+            explanation: `No valid column in row ${row}. Removing queen from row ${row}, trying next column in row ${row - 1}.`,
           });
         } else {
           // Conflict step
@@ -123,8 +130,9 @@ export default function NQueensVisualizer() {
             curr: { r: row, c: col },
             threats: threats,
             status: 'conflict',
-            codeLine: 4,
+            codeLine: 3,
             description: `Conflict! Cannot place Queen at row ${row}, col ${col}. Threatened by Queen at row ${threats[0].r}, col ${threats[0].c} (${threats[0].type}).`,
+            explanation: `Conflict at (${row}, ${col})! Queen at (${threats[0].r}, ${threats[0].c}) attacks this cell via ${threats[0].type}. Backtracking.`,
           });
         }
       }
@@ -139,6 +147,7 @@ export default function NQueensVisualizer() {
       status: 'done',
       codeLine: -1,
       description: `Backtracking search completed! Found ${completedSolutions.length} solutions total.`,
+      explanation: `Search complete! Found ${completedSolutions.length} valid solutions for ${size}-Queens problem.`,
     });
 
     return { tempSteps, completedSolutions };
@@ -225,6 +234,13 @@ export default function NQueensVisualizer() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ConceptBox
+        title="What is N-Queens Backtracking?"
+        description="N-Queens places N queens on an N×N chessboard so no two queens attack each other (no shared row, column, or diagonal). Backtracking tries placing a queen in each column of the current row — if a conflict is detected, it backtracks and tries the next option. Finds ALL valid arrangements."
+        timeComplexity="O(N!)"
+        spaceComplexity="O(N)"
+      />
+
       {/* Top statistics */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
@@ -350,6 +366,21 @@ export default function NQueensVisualizer() {
           </div>
         </div>
       </div>
+
+      <StepExplanation
+        stepNumber={stepIdx >= 0 ? stepIdx + 1 : undefined}
+        totalSteps={steps.length}
+        explanation={current.explanation}
+        status={
+          current.status === 'init' ? 'info' :
+          current.status === 'checking' ? 'compare' :
+          current.status === 'placed' ? 'found' :
+          current.status === 'backtrack' ? 'mismatch' :
+          current.status === 'conflict' ? 'mismatch' :
+          current.status === 'success' ? 'sorted' :
+          current.status === 'done' ? 'sorted' : 'default'
+        }
+      />
 
       {/* Board configuration panel */}
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 12 }}>

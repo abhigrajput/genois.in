@@ -1,6 +1,8 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const CODE = `void dfs(vector<vector<int>>& adj, int node,
          vector<bool>& visited) {
@@ -11,10 +13,7 @@ const CODE = `void dfs(vector<vector<int>>& adj, int node,
       dfs(adj, nbr, visited);
     }
   }
-}
-
-// Call: vector<bool> vis(n,false);
-//       dfs(adj, src, vis);`;
+}`;
 
 const SPEEDS = { 1: 1000, 2: 600, 3: 280, 4: 120 };
 
@@ -35,18 +34,49 @@ function computeDFSSteps(src) {
   function dfs(node) {
     visited[node] = true;
     stack.push(node);
-    steps.push({ visited: [...visited], stack: [...stack], current: node, codeLine: 2 });
+    steps.push({
+      visited: [...visited],
+      stack: [...stack],
+      current: node,
+      codeLine: 2,
+      explanation: `Visiting node ${node}. Push to call stack. Stack depth: ${stack.length}.`,
+      status: 'compare'
+    });
     for (const nbr of ADJ[node]) {
+      steps.push({
+        visited: [...visited],
+        stack: [...stack],
+        current: node,
+        checking: nbr,
+        codeLine: 5,
+        explanation: `Checking neighbor ${nbr}. Is it visited? ${visited[nbr] ? 'Yes, skip.' : 'No, recurse into it.'}`,
+        status: visited[nbr] ? 'info' : 'compare'
+      });
       if (!visited[nbr]) {
-        steps.push({ visited: [...visited], stack: [...stack], current: node, checking: nbr, codeLine: 5 });
         dfs(nbr);
         stack.pop();
-        steps.push({ visited: [...visited], stack: [...stack], current: node, returning: true, codeLine: 6 });
+        steps.push({
+          visited: [...visited],
+          stack: [...stack],
+          current: node,
+          returning: true,
+          codeLine: 6,
+          explanation: `No unvisited neighbors from ${nbr}. Backtracking. Pop from call stack.`,
+          status: 'mismatch'
+        });
       }
     }
   }
   dfs(src);
-  steps.push({ visited: [...visited], stack: [], current: -1, done: true, codeLine: -1 });
+  steps.push({
+    visited: [...visited],
+    stack: [],
+    current: -1,
+    done: true,
+    codeLine: -1,
+    explanation: 'DFS complete! All nodes explored depth-first.',
+    status: 'sorted'
+  });
   return steps;
 }
 
@@ -91,6 +121,13 @@ export default function DFSVisualizer() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ConceptBox
+        title="What is DFS (Depth-First Search)?"
+        description="Depth-First Search explores as far as possible along each branch before backtracking. Uses a call stack (recursion). DFS is used for cycle detection, topological sort, finding connected components, and maze solving."
+        timeComplexity="O(V + E)"
+        spaceComplexity="O(V)"
+      />
+
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
           { label: 'Source', value: src, color: '#00f0ff' },
@@ -153,6 +190,13 @@ export default function DFSVisualizer() {
           </div>
         </div>
       </div>
+
+      <StepExplanation
+        stepNumber={stepIdx >= 0 ? stepIdx + 1 : null}
+        totalSteps={steps.length > 0 ? steps.length : null}
+        explanation={current?.explanation}
+        status={current?.status}
+      />
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
         <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a' }}>SRC</span>

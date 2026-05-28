@@ -1,6 +1,7 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
 
 const CODE = `struct Node {
   int val;
@@ -103,6 +104,13 @@ export default function LinkedListVisualizer() {
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <ConceptBox
+        title="What is a Linked List?"
+        description="A Linked List is a chain of nodes where each node holds data and a pointer to the next node. Unlike arrays, nodes are not stored contiguously in memory. Insertions at head/tail are O(1) but searching requires O(n) traversal. Building block for stacks, queues, and graphs."
+        timeComplexity="O(n) search, O(1) insert head"
+        spaceComplexity="O(n)"
+      />
+
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
           { label:'Size', value:nodes.length, color:'#00f0ff' },

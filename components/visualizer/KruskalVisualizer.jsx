@@ -2,6 +2,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import CodePanel from './CodePanel';
 import VisualizerControls from './VisualizerControls';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const CODE = `struct Edge {
   int src, dest, weight;
@@ -81,13 +83,27 @@ export default function KruskalVisualizer() {
     // Init state
     SORTED_EDGES.forEach(e => { edgeStates[e.id] = 'pending'; });
 
+    function getDisjointSetsCount(parentArr) {
+      const roots = new Set();
+      for (let i = 0; i < 6; i++) {
+        let root = i;
+        while (parentArr[root] !== root) {
+          root = parentArr[root];
+        }
+        roots.add(root);
+      }
+      return roots.size;
+    }
+
     tempSteps.push({
       parent: [...parent],
       mstEdges: [],
       edgeStates: { ...edgeStates },
       currEdgeId: null,
-      codeLine: 29,
+      codeLine: 31,
       description: 'Edges are sorted by weight (displayed in order on the side). Initialize disjoint sets.',
+      explanation: 'Sorted 9 edges by weight. Processing cheapest edges first. Initializing 6 disjoint sets (A to F).',
+      status: 'info',
     });
 
     // Helper find
@@ -115,20 +131,23 @@ export default function KruskalVisualizer() {
       const nextStates = { ...edgeStates };
       nextStates[edge.id] = 'active';
 
+      const uRoot = find(edge.u);
+      const vRoot = find(edge.v);
+      const differentSets = uRoot !== vRoot;
+
       tempSteps.push({
         parent: [...parent],
         mstEdges: [...mstEdges],
         edgeStates: { ...nextStates },
         currEdgeId: edge.id,
-        codeLine: 34,
+        codeLine: 37,
         description: `Checking edge ${VERTICES[edge.u].label}-${VERTICES[edge.v].label} (Weight: ${edge.w}). DSU check: find(${VERTICES[edge.u].label}) = ${VERTICES[find(edge.u)].label}, find(${VERTICES[edge.v].label}) = ${VERTICES[find(edge.v)].label}.`,
+        explanation: `Edge (${VERTICES[edge.u].label}, ${VERTICES[edge.v].label}) weight=${edge.w}. find(${VERTICES[edge.u].label})=${VERTICES[find(edge.u)].label}, find(${VERTICES[edge.v].label})=${VERTICES[find(edge.v)].label}. ${differentSets ? 'Different components, safe to add.' : 'Same component, would create cycle, skipping.'}`,
+        status: 'compare',
       });
 
-      const uRoot = find(edge.u);
-      const vRoot = find(edge.v);
-      const differentSets = uRoot !== vRoot;
-
       if (differentSets) {
+        const prevCount = getDisjointSetsCount(parent);
         unite(edge.u, edge.v);
         mstEdges.push(edge.id);
         edgeStates[edge.id] = 'mst';
@@ -138,8 +157,10 @@ export default function KruskalVisualizer() {
           mstEdges: [...mstEdges],
           edgeStates: { ...edgeStates },
           currEdgeId: edge.id,
-          codeLine: 35,
+          codeLine: 39,
           description: `Roots differ! Connecting ${VERTICES[edge.u].label} and ${VERTICES[edge.v].label}. Union successful, edge added to MST.`,
+          explanation: `Added edge (${VERTICES[edge.u].label}, ${VERTICES[edge.v].label}). MST weight: ${mstEdges.reduce((acc, id) => acc + SORTED_EDGES.find(e => e.id === id).w, 0)}. Components reduced from ${prevCount} to ${prevCount - 1}.`,
+          status: 'found',
         });
       } else {
         edgeStates[edge.id] = 'cycle';
@@ -148,8 +169,10 @@ export default function KruskalVisualizer() {
           mstEdges: [...mstEdges],
           edgeStates: { ...edgeStates },
           currEdgeId: edge.id,
-          codeLine: 34,
+          codeLine: 38,
           description: `Same root! Connection would form a cycle. Edge ${VERTICES[edge.u].label}-${VERTICES[edge.v].label} is discarded.`,
+          explanation: `Edge (${VERTICES[edge.u].label}, ${VERTICES[edge.v].label}) weight=${edge.w} forms a cycle (both vertices already in set with root ${VERTICES[uRoot].label}). Skipping this edge to avoid cycles.`,
+          status: 'mismatch',
         });
       }
     }
@@ -161,6 +184,8 @@ export default function KruskalVisualizer() {
       currEdgeId: null,
       codeLine: -1,
       description: 'Kruskal\'s Algorithm complete! Sorted edges fully evaluated and MST formed.',
+      explanation: `Kruskal's MST complete! Added ${mstEdges.length} edges. Final MST weight: ${mstEdges.reduce((acc, id) => acc + SORTED_EDGES.find(e => e.id === id).w, 0)}. All vertices connected in a single component.`,
+      status: 'sorted',
     });
 
     return tempSteps;
@@ -256,6 +281,13 @@ export default function KruskalVisualizer() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ConceptBox
+        title="What is Kruskal's MST?"
+        description="Kruskal's algorithm builds the MST by sorting all edges by weight and adding them one by one, skipping any edge that would create a cycle (detected via Union-Find). It processes globally cheapest edges first, regardless of which vertex they connect."
+        timeComplexity="O(E log E)"
+        spaceComplexity="O(V)"
+      />
+
       {/* Top statistics */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
@@ -383,6 +415,13 @@ export default function KruskalVisualizer() {
           </div>
         </div>
       </div>
+
+      <StepExplanation
+        stepNumber={stepIdx >= 0 ? stepIdx + 1 : undefined}
+        totalSteps={steps.length}
+        explanation={current.explanation}
+        status={current.status}
+      />
 
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>

@@ -1,6 +1,8 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 import VisualizerControls from './VisualizerControls';
 
 const CODE = `void computeLPSArray(string pat, int M, vector<int>& lps) {
@@ -69,7 +71,8 @@ export default function KMPVisualizer() {
         matchesFound: [],
         offset: 0,
         codeLine: -1,
-        description: 'Please enter a valid text and pattern to visualize.',
+        explanation: 'Please enter a valid text and pattern to visualize.',
+        status: 'info',
       });
       return tempSteps;
     }
@@ -85,8 +88,9 @@ export default function KMPVisualizer() {
       lps: [...lps],
       currPatI: 0,
       currPatLen: 0,
-      lpsCodeLine: 3,
-      description: 'Phase 1: Computing LPS (Longest Prefix Suffix) table for pattern. lps[0] is always 0.',
+      lpsCodeLine: 2,
+      explanation: 'Phase 1: Building LPS (failure function) array for the pattern. lps[0] is always 0 by definition.',
+      status: 'info',
     });
 
     while (i < M) {
@@ -100,8 +104,9 @@ export default function KMPVisualizer() {
           currPatI: i,
           currPatLen: prevLen,
           match: true,
-          lpsCodeLine: 6,
-          description: `Characters match! pat[${i}] ('${pattern[i]}') === pat[${prevLen}] ('${pattern[prevLen]}'). Increment suffix length to ${len}. lps[${i}] = ${len}.`,
+          lpsCodeLine: 7,
+          explanation: `pattern[${i}]='${pattern[i]}' matches pattern[${prevLen}]='${pattern[prevLen]}'. lps[${i}] = ${len}.`,
+          status: 'found',
         });
         i++;
       } else {
@@ -115,7 +120,8 @@ export default function KMPVisualizer() {
             currPatLen: oldLen,
             match: false,
             lpsCodeLine: 11,
-            description: `Mismatch! pat[${i}] ('${pattern[i]}') !== pat[${oldLen}] ('${pattern[oldLen]}'). Fall back suffix length to lps[${oldLen-1}] = ${len}.`,
+            explanation: `Mismatch! pattern[${i}]='${pattern[i]}' ≠ pattern[${oldLen}]='${pattern[oldLen]}'. Falling back prefix length to lps[${oldLen-1}] = ${len}.`,
+            status: 'mismatch',
           });
         } else {
           lps[i] = 0;
@@ -126,7 +132,8 @@ export default function KMPVisualizer() {
             currPatLen: 0,
             match: false,
             lpsCodeLine: 13,
-            description: `Mismatch and prefix length is 0. pat[${i}] ('${pattern[i]}') has no prefix match. lps[${i}] = 0.`,
+            explanation: `Mismatch! pattern[${i}]='${pattern[i]}' has no proper prefix that is also a suffix. lps[${i}] = 0.`,
+            status: 'mismatch',
           });
           i++;
         }
@@ -139,7 +146,8 @@ export default function KMPVisualizer() {
       currPatI: -1,
       currPatLen: -1,
       lpsCodeLine: -1,
-      description: `LPS Table construction complete! Table: [${lps.join(', ')}]. Now starting search in Text...`,
+      explanation: `LPS table construction complete! Array values: [${lps.join(', ')}]. Moving to Phase 2 (Text Search).`,
+      status: 'info',
     });
 
     // Phase 2: Search KMP
@@ -158,8 +166,9 @@ export default function KMPVisualizer() {
         match,
         matchesFound: [...matchesFound],
         offset: textIdx - patIdx,
-        codeLine: 29,
-        description: `Comparing txt[${textIdx}] ('${text[textIdx]}') and pat[${patIdx}] ('${pattern[patIdx]}').`,
+        codeLine: 33,
+        explanation: `Checking pattern[${patIdx}]='${pattern[patIdx]}' vs text[${textIdx}]='${text[textIdx]}'.`,
+        status: 'compare',
       });
 
       if (match) {
@@ -177,8 +186,9 @@ export default function KMPVisualizer() {
             match: true,
             matchesFound: [...matchesFound],
             offset: start,
-            codeLine: 34,
-            description: `✓ Match Found! Pattern exists starting at index ${start}.`,
+            codeLine: 38,
+            explanation: `🎉 Pattern found starting at index ${start}! Matched in KMP steps instead of brute force.`,
+            status: 'found',
           });
           patIdx = lps[patIdx - 1];
         }
@@ -195,8 +205,9 @@ export default function KMPVisualizer() {
             match: false,
             matchesFound: [...matchesFound],
             offset: textIdx - oldPatIdx,
-            codeLine: 36,
-            description: `✗ Mismatch! Fall back pattern pointer 'j' from ${oldPatIdx} to lps[${oldPatIdx - 1}] = ${patIdx}. Shift pattern.`,
+            codeLine: 40,
+            explanation: `Mismatch at pattern[${oldPatIdx}]. Using lps[${oldPatIdx-1}]=${patIdx} to skip. No need to recheck!`,
+            status: 'mismatch',
           });
         } else {
           textIdx++;
@@ -208,8 +219,9 @@ export default function KMPVisualizer() {
             match: false,
             matchesFound: [...matchesFound],
             offset: textIdx,
-            codeLine: 37,
-            description: `✗ Mismatch and pattern pointer 'j' is 0. Shift pattern right by incrementing text index 'i' to ${textIdx}.`,
+            codeLine: 41,
+            explanation: `Mismatch and pattern index is 0. Shifting pattern by advancing text pointer i to ${textIdx}.`,
+            status: 'mismatch',
           });
         }
       }
@@ -223,7 +235,8 @@ export default function KMPVisualizer() {
       matchesFound: [...matchesFound],
       offset: N,
       codeLine: -1,
-      description: `KMP Search complete! Found ${matchesFound.length} occurrence(s) at indices: ${matchesFound.length ? matchesFound.join(', ') : 'None'}.`,
+      explanation: `KMP Search complete! Found ${matchesFound.length} occurrences.`,
+      status: 'sorted',
     });
 
     return tempSteps;
@@ -263,7 +276,8 @@ export default function KMPVisualizer() {
     matchesFound: [],
     offset: 0,
     codeLine: -1,
-    description: 'Press Play or Step Forward to run KMP string matching.',
+    explanation: 'Press Play or Step Forward to run KMP string matching.',
+    status: 'info',
   };
 
   const handleInputsChange = (textIn, patIn) => {
@@ -275,6 +289,13 @@ export default function KMPVisualizer() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ConceptBox
+        title="What is KMP String Search?"
+        description="KMP (Knuth-Morris-Pratt) searches for a pattern in text efficiently by precomputing an LPS (Longest Proper Prefix that is also Suffix) array. On mismatch, instead of restarting, KMP uses the LPS table to skip positions it already knows will match. Runs in O(n+m) total."
+        timeComplexity="O(n + m)"
+        spaceComplexity="O(m) for LPS"
+      />
+
       {/* Top stats */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
@@ -288,11 +309,6 @@ export default function KMPVisualizer() {
             <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
-      </div>
-
-      {/* Narrative feed */}
-      <div style={{ background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#00f0ff' }}>
-        ▶ {current.description}
       </div>
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
@@ -431,6 +447,13 @@ export default function KMPVisualizer() {
         ))}
       </div>
 
+      <StepExplanation
+        stepNumber={stepIdx >= 0 ? stepIdx + 1 : null}
+        totalSteps={steps.length > 0 ? steps.length : null}
+        explanation={current.explanation}
+        status={current.status}
+      />
+
       {/* Controls */}
       <VisualizerControls
         isPlaying={isPlaying}
@@ -445,7 +468,7 @@ export default function KMPVisualizer() {
         showArrayControls={false}
       />
 
-      <CodePanel code={CODE} activeLine={current.codeLine} />
+      <CodePanel code={CODE} activeLine={current.phase === 'lps' ? current.lpsCodeLine : current.codeLine} />
     </div>
   );
 }

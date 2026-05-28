@@ -2,6 +2,8 @@
 import { useState, useEffect, useRef } from 'react';
 import VisualizerControls from './VisualizerControls';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const SPEEDS = { 1: 1200, 2: 700, 3: 300, 4: 120 };
 
@@ -28,21 +30,88 @@ function computeSteps(arr) {
   for (let i = 1; i < n; i++) {
     const key = a[i];
     let j = i - 1;
-    steps.push({ array: [...a], key: i, keyVal: key, comparing: [], shifting: [], sortedUpto: i, codeLine: 1, comparisons, shifts });
+    steps.push({
+      array: [...a],
+      key: i,
+      keyVal: key,
+      comparing: [],
+      shifting: [],
+      sortedUpto: i,
+      codeLine: 1,
+      comparisons,
+      shifts,
+      explanation: `🎯 Picking key = arr[${i}] = ${key}. Will insert it into the correct position in the sorted left portion [0..${i - 1}].`,
+      status: 'info',
+      activeLine: 1,
+    });
 
     while (j >= 0 && a[j] > key) {
       comparisons++;
-      steps.push({ array: [...a], key: i, keyVal: key, comparing: [j], shifting: [j], sortedUpto: i, codeLine: 3, comparisons, shifts });
+      steps.push({
+        array: [...a],
+        key: i,
+        keyVal: key,
+        comparing: [j],
+        shifting: [j],
+        sortedUpto: i,
+        codeLine: 3,
+        comparisons,
+        shifts,
+        explanation: `🔍 Comparing arr[${j}]=${a[j]} > key=${key}. Shifting arr[${j}] one position right to make room.`,
+        status: 'compare',
+        activeLine: 3,
+      });
       a[j + 1] = a[j];
       shifts++;
-      steps.push({ array: [...a], key: i, keyVal: key, comparing: [j], shifting: [j + 1], sortedUpto: i, codeLine: 4, comparisons, shifts });
+      steps.push({
+        array: [...a],
+        key: i,
+        keyVal: key,
+        comparing: [j],
+        shifting: [j + 1],
+        sortedUpto: i,
+        codeLine: 4,
+        comparisons,
+        shifts,
+        explanation: `➡️ Shifted arr[${j}]=${a[j + 1]} to position ${j + 1}. Key ${key} still looking for its place.`,
+        status: 'compare',
+        activeLine: 4,
+      });
       j--;
     }
     a[j + 1] = key;
-    steps.push({ array: [...a], key: -1, keyVal: -1, comparing: [], shifting: [], sortedUpto: i + 1, placed: j + 1, codeLine: 7, comparisons, shifts });
+    steps.push({
+      array: [...a],
+      key: -1,
+      keyVal: -1,
+      comparing: [],
+      shifting: [],
+      sortedUpto: i + 1,
+      placed: j + 1,
+      codeLine: 7,
+      comparisons,
+      shifts,
+      explanation: `✅ Inserted key=${key} at position ${j + 1}. The left portion [0..${i}] is now sorted.`,
+      status: 'sorted',
+      activeLine: 7,
+    });
   }
 
-  steps.push({ array: [...a], key: -1, keyVal: -1, comparing: [], shifting: [], sortedUpto: n, codeLine: -1, done: true, comparisons, shifts });
+  steps.push({
+    array: [...a],
+    key: -1,
+    keyVal: -1,
+    comparing: [],
+    shifting: [],
+    sortedUpto: n,
+    codeLine: -1,
+    done: true,
+    comparisons,
+    shifts,
+    explanation: '✅ Array fully sorted! Every element was inserted into its correct position one by one.',
+    status: 'sorted',
+    activeLine: -1,
+  });
   return steps;
 }
 
@@ -86,6 +155,14 @@ export default function InsertionSortVisualizer() {
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <ConceptBox
+        title="What is Insertion Sort?"
+        description="Insertion Sort builds the sorted array one element at a time by inserting each new element into its correct position. Like sorting playing cards in your hand — efficient for small or nearly-sorted arrays. Each iteration picks one element and slides it left until it finds its correct position."
+        timeComplexity="O(n²) worst, O(n) best"
+        spaceComplexity="O(1)"
+        stable={true}
+      />
+
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
           { label:'Key Value', value: current?.keyVal > 0 ? current.keyVal : '-', color:'#ef9f27' },
@@ -111,6 +188,13 @@ export default function InsertionSortVisualizer() {
         ))}
       </div>
 
+      <StepExplanation
+        stepNumber={Math.max(0, stepIdx + 1)}
+        totalSteps={steps.length}
+        explanation={current?.explanation ?? 'Press ▶ Play or ⏭ Step to start the visualization.'}
+        status={current?.status ?? 'default'}
+      />
+
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
         {[['#1d9e75','Sorted'],['#ef9f27','Key Element'],['#378ADD','Shifting'],['#7b5cff','Comparing']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
@@ -130,7 +214,7 @@ export default function InsertionSortVisualizer() {
         onRandomize={() => setArr(generateArray(size))}
         arraySize={size} onArraySizeChange={n => { setSize(n); setArr(generateArray(n)); }}
       />
-      <CodePanel code={CODE} activeLine={current?.codeLine ?? -1} />
+      <CodePanel code={CODE} activeLine={current?.activeLine ?? -1} />
     </div>
   );
 }

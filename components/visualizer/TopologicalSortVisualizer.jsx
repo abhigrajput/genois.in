@@ -1,6 +1,8 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const CODE = `// Topological Sort (DFS-based)
 void dfs(int node, vector<vector<int>>& adj,
@@ -47,23 +49,74 @@ function computeTopoSteps() {
   function dfs(node) {
     visited[node] = true;
     callStack.push(node);
-    steps.push({ visited:[...visited], result:[...result], callStack:[...callStack], current:node, phase:'enter', codeLine:3 });
+    steps.push({
+      visited: [...visited],
+      result: [...result],
+      callStack: [...callStack],
+      current: node,
+      phase: 'enter',
+      codeLine: 3,
+      explanation: `DFS visiting node ${node}. Push to call stack. Stack depth: ${callStack.length}.`,
+      status: 'info',
+    });
     for (const nbr of ADJ[node]) {
       if (!visited[nbr]) {
-        steps.push({ visited:[...visited], result:[...result], callStack:[...callStack], current:node, checking:nbr, phase:'check', codeLine:5 });
+        steps.push({
+          visited: [...visited],
+          result: [...result],
+          callStack: [...callStack],
+          current: node,
+          checking: nbr,
+          phase: 'check',
+          codeLine: 5,
+          explanation: `Checking unvisited neighbor ${nbr} of node ${node}. Recursing in...`,
+          status: 'compare',
+        });
         dfs(nbr);
         callStack.push(node); // restore
+      } else {
+        steps.push({
+          visited: [...visited],
+          result: [...result],
+          callStack: [...callStack],
+          current: node,
+          checking: nbr,
+          phase: 'check',
+          codeLine: 5,
+          explanation: `Checking neighbor ${nbr} of node ${node}. Already visited, skipping.`,
+          status: 'compare',
+        });
       }
     }
     result.unshift(node);
     callStack.pop();
-    steps.push({ visited:[...visited], result:[...result], callStack:[...callStack], current:node, phase:'push', codeLine:8, label:`Push ${node} to result` });
+    steps.push({
+      visited: [...visited],
+      result: [...result],
+      callStack: [...callStack],
+      current: node,
+      phase: 'push',
+      codeLine: 8,
+      explanation: `Node ${node} fully processed. All dependencies done. Pushing ${node} to result stack.`,
+      status: 'found',
+      label: `Push ${node} to result`,
+    });
   }
 
   for (let i = 0; i < 6; i++) {
     if (!visited[i]) dfs(i);
   }
-  steps.push({ visited:[...visited], result:[...result], callStack:[], current:-1, phase:'done', codeLine:-1, label:'Topological sort complete!' });
+  steps.push({
+    visited: [...visited],
+    result: [...result],
+    callStack: [],
+    current: -1,
+    phase: 'done',
+    codeLine: -1,
+    explanation: `Topological order: [${result.join(', ')}]. This is a valid order where each node comes before its dependents.`,
+    status: 'sorted',
+    label: 'Topological sort complete!',
+  });
   return steps;
 }
 
@@ -108,6 +161,13 @@ export default function TopologicalSortVisualizer() {
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <ConceptBox
+        title="What is Topological Sort?"
+        description="Topological Sort orders nodes in a Directed Acyclic Graph (DAG) so every node appears before all nodes it points to. DFS-based: when a node finishes (all descendants processed), it pushes to stack. Used for task scheduling and package dependency resolution."
+        timeComplexity="O(V + E)"
+        spaceComplexity="O(V)"
+      />
+
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
           { label:'Vertices', value:6, color:'#00f0ff' },
@@ -187,6 +247,13 @@ export default function TopologicalSortVisualizer() {
           </div>
         </div>
       </div>
+
+      <StepExplanation
+        stepNumber={stepIdx >= 0 ? stepIdx + 1 : undefined}
+        totalSteps={steps.length}
+        explanation={current?.explanation}
+        status={current?.status}
+      />
 
       <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
         <button onClick={start} style={btn('#00f0ff')}>▶ Run Topo Sort</button>

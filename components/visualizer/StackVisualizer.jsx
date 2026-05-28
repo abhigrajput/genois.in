@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
 
 const CODE = `#include <stack>
 stack<int> st;
@@ -50,6 +51,13 @@ export default function StackVisualizer() {
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <ConceptBox
+        title="What is a Stack?"
+        description="A Stack is a Last-In-First-Out (LIFO) data structure. Elements are pushed onto the top and popped from the top. Think of a stack of plates — you add and remove from the top only. Used in function call management, expression parsing, and undo/redo features."
+        timeComplexity="O(1) push/pop"
+        spaceComplexity="O(n)"
+      />
+
       {/* Stats */}
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[

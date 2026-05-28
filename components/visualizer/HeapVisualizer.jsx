@@ -1,6 +1,8 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const CODE = `// Min-Heap using priority_queue
 priority_queue<int, vector<int>, greater<int>> pq;
@@ -33,18 +35,18 @@ const SPEEDS = { 1: 900, 2: 500, 3: 250, 4: 100 };
 function computeInsertSteps(heap, val) {
   const steps = [];
   const h = [...heap, val];
-  steps.push({ heap: [...h], highlight: [h.length - 1], phase: 'insert', label: `Inserted ${val} at index ${h.length - 1}` });
+  steps.push({ heap: [...h], highlight: [h.length - 1], phase: 'insert', label: `Inserted ${val} at index ${h.length - 1}`, explanation: `Inserted ${val} at the end of the heap (index ${h.length - 1}). Now we bubble up to restore the min-heap property.`, status: 'compare', activeLine: 8 });
   let i = h.length - 1;
   while (i > 0) {
     const parent = Math.floor((i - 1) / 2);
     if (h[parent] > h[i]) {
-      steps.push({ heap: [...h], highlight: [i, parent], phase: 'swap', label: `Swapping ${h[i]} ↔ ${h[parent]} (bubble up)` });
+      steps.push({ heap: [...h], highlight: [i, parent], phase: 'swap', label: `Swapping ${h[i]} ↔ ${h[parent]} (bubble up)`, explanation: `h[${i}]=${h[i]} < h[${parent}]=${h[parent]} (parent). Swap! Child is smaller than parent — violates min-heap property.`, status: 'compare', activeLine: 17 });
       [h[i], h[parent]] = [h[parent], h[i]];
-      steps.push({ heap: [...h], highlight: [parent], phase: 'bubbled', label: `Bubbled up to index ${parent}` });
+      steps.push({ heap: [...h], highlight: [parent], phase: 'bubbled', label: `Bubbled up to index ${parent}`, explanation: `Swapped. Element moved up to index ${parent}. Continuing to check parent...`, status: 'info', activeLine: 19 });
       i = parent;
     } else break;
   }
-  steps.push({ heap: [...h], highlight: [], phase: 'done', label: 'Heap property restored' });
+  steps.push({ heap: [...h], highlight: [], phase: 'done', label: 'Heap property restored', explanation: 'Min-heap property fully restored! Every parent is now smaller than or equal to its children.', status: 'sorted', activeLine: -1 });
   return { steps, finalHeap: h };
 }
 
@@ -52,10 +54,11 @@ function computeExtractSteps(heap) {
   if (heap.length === 0) return { steps: [], finalHeap: [] };
   const steps = [];
   const h = [...heap];
-  steps.push({ heap: [...h], highlight: [0], phase: 'extract', label: `Extracting min: ${h[0]}` });
+  const minVal = h[0];
+  steps.push({ heap: [...h], highlight: [0], phase: 'extract', label: `Extracting min: ${h[0]}`, explanation: `Extracting minimum value ${h[0]} from root. The root always holds the smallest element in a min-heap.`, status: 'found', activeLine: 11 });
   h[0] = h[h.length - 1];
   h.pop();
-  steps.push({ heap: [...h], highlight: [0], phase: 'replace', label: `Moved last element to root` });
+  steps.push({ heap: [...h], highlight: [0], phase: 'replace', label: `Moved last element to root`, explanation: `Moved last element to root position. The heap shape is restored, but heap property may be violated. Now heapify down.`, status: 'compare', activeLine: 12 });
   let i = 0;
   while (true) {
     const l = 2 * i + 1, r = 2 * i + 2;
@@ -63,13 +66,13 @@ function computeExtractSteps(heap) {
     if (l < h.length && h[l] < h[smallest]) smallest = l;
     if (r < h.length && h[r] < h[smallest]) smallest = r;
     if (smallest !== i) {
-      steps.push({ heap: [...h], highlight: [i, smallest], phase: 'swap', label: `Heapify down: swap ${h[i]} ↔ ${h[smallest]}` });
+      steps.push({ heap: [...h], highlight: [i, smallest], phase: 'swap', label: `Heapify down: swap ${h[i]} ↔ ${h[smallest]}`, explanation: `h[${smallest}]=${h[smallest]} is the smaller child. Swapping with parent h[${i}]=${h[i]} to restore heap order.`, status: 'compare', activeLine: 27 });
       [h[i], h[smallest]] = [h[smallest], h[i]];
-      steps.push({ heap: [...h], highlight: [smallest], phase: 'heapified', label: `Moved down to index ${smallest}` });
+      steps.push({ heap: [...h], highlight: [smallest], phase: 'heapified', label: `Moved down to index ${smallest}`, explanation: `Swapped. Element moved down to index ${smallest}. Continuing heapify downward...`, status: 'info', activeLine: 28 });
       i = smallest;
     } else break;
   }
-  steps.push({ heap: [...h], highlight: [], phase: 'done', label: 'Min-Heap property restored' });
+  steps.push({ heap: [...h], highlight: [], phase: 'done', label: 'Min-Heap property restored', explanation: 'Min-Heap property fully restored after extraction! The tree is balanced and ordered correctly.', status: 'sorted', activeLine: -1 });
   return { steps, finalHeap: h };
 }
 
@@ -152,6 +155,12 @@ export default function HeapVisualizer() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ConceptBox
+        title="What is a Heap?"
+        description="A Heap is a complete binary tree satisfying the heap property: in a min-heap, every parent is smaller than its children. Enables O(log n) insert and extract-min. The root always holds the minimum element. Foundation of Priority Queue, Heap Sort, and Dijkstra's algorithm."
+        timeComplexity="O(log n) insert/extract"
+        spaceComplexity="O(n)"
+      />
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
           { label: 'Size', value: heap.length, color: '#00f0ff' },
@@ -212,6 +221,13 @@ export default function HeapVisualizer() {
           })}
         </svg>
       </div>
+
+      <StepExplanation
+        stepNumber={Math.max(0, stepIdx + 1)}
+        totalSteps={steps.length}
+        explanation={current?.explanation ?? 'Press Insert Random or Extract Min to start the heap visualization.'}
+        status={current?.status ?? 'default'}
+      />
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
         <button onClick={doInsert} style={btn('#00f0ff')}>Insert Random</button>

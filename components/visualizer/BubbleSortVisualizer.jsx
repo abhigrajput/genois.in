@@ -2,6 +2,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import VisualizerControls from './VisualizerControls';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const SPEEDS = { 1: 1200, 2: 700, 3: 300, 4: 120 };
 
@@ -34,10 +36,27 @@ function computeSteps(arr) {
         codeLine: swapped ? 3 : 2,
         comparisons: steps.length + 1,
         swaps: steps.filter(s => s.swapped?.length).length + (swapped ? 1 : 0),
+        explanation: swapped
+          ? `🔄 arr[${j}]=${before[j]} > arr[${j + 1}]=${before[j + 1]}, so we SWAP them. ${before[j]} moves right toward its sorted position.`
+          : `🔍 Comparing arr[${j}]=${before[j]} with arr[${j + 1}]=${before[j + 1]}. Since ${before[j]} ≤ ${before[j + 1]}, no swap needed. Larger element is already on the right.`,
+        status: swapped ? 'sorted' : 'compare',
+        activeLine: swapped ? 3 : 2,
       });
     }
   }
-  steps.push({ array: [...a], comparing: [], swapped: [], sortedFrom: 0, codeLine: -1, done: true, comparisons: steps.length, swaps: steps.filter(s => s.swapped?.length).length });
+  steps.push({
+    array: [...a],
+    comparing: [],
+    swapped: [],
+    sortedFrom: 0,
+    codeLine: -1,
+    done: true,
+    comparisons: steps.length,
+    swaps: steps.filter(s => s.swapped?.length).length,
+    explanation: '✅ Array fully sorted! Each element bubbled to its correct position.',
+    status: 'sorted',
+    activeLine: -1,
+  });
   return steps;
 }
 
@@ -86,6 +105,14 @@ export default function BubbleSortVisualizer() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ConceptBox
+        title="What is Bubble Sort?"
+        description="Bubble Sort repeatedly compares adjacent elements and swaps them if they're in the wrong order. After each pass, the largest unsorted element bubbles up to its correct position at the right side of the array. Simple but inefficient for large arrays."
+        timeComplexity="O(n²)"
+        spaceComplexity="O(1)"
+        stable={true}
+      />
+
       {/* Stats */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
@@ -125,6 +152,13 @@ export default function BubbleSortVisualizer() {
         ))}
       </div>
 
+      <StepExplanation
+        stepNumber={Math.max(0, stepIdx + 1)}
+        totalSteps={steps.length}
+        explanation={current?.explanation ?? 'Press ▶ Play or ⏭ Step to start the visualization.'}
+        status={current?.status ?? 'default'}
+      />
+
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {[['#1a2a3a','Unsorted'],['#00f0ff','Comparing'],['#1d9e75','Sorted']].map(([c,l]) => (
@@ -146,7 +180,7 @@ export default function BubbleSortVisualizer() {
         arraySize={size} onArraySizeChange={n => { setSize(n); setArr(generateArray(n)); }}
       />
 
-      <CodePanel code={CODE} activeLine={current?.codeLine ?? -1} />
+      <CodePanel code={CODE} activeLine={current?.activeLine ?? -1} />
     </div>
   );
 }

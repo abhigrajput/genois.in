@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
 
 const CODE = `// Weighted Graph Representations
 int n = 6; // vertices
@@ -88,6 +89,13 @@ export default function GraphVisualizer() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <ConceptBox
+        title="What is a Graph?"
+        description="A Graph is a hierarchical or networked structure containing nodes (vertices) connected by edges. Graphs model computer networks, flight paths, social interactions, and dependency diagrams. Graphs can be directed, undirected, weighted, or unweighted, and form the basis of BFS, DFS, and pathfinding algorithms."
+        timeComplexity="O(V + E)"
+        spaceComplexity="O(V + E)"
+      />
+
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
           { label: 'Vertices', value: nodes.length, color: '#00f0ff' },

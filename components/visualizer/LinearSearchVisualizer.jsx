@@ -2,6 +2,8 @@
 import { useState, useEffect, useRef } from 'react';
 import VisualizerControls from './VisualizerControls';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const SPEEDS = { 1: 1200, 2: 700, 3: 300, 4: 120 };
 
@@ -20,15 +22,43 @@ function generateArray(size) {
 
 function computeSteps(arr, target) {
   const steps = [];
-  for (let i = 0; i < arr.length; i++) {
+  const n = arr.length;
+  for (let i = 0; i < n; i++) {
     if (arr[i] === target) {
-      steps.push({ current: i, found: true, codeLine: 2 });
+      steps.push({
+        current: i,
+        found: true,
+        codeLine: 2,
+        activeLine: 2,
+        status: 'found',
+        explanation: `🎉 Found target ${target} at index ${i} after ${i + 1} comparisons! Linear search complete.`,
+      });
       break;
     }
-    steps.push({ current: i, found: false, notFound: false, codeLine: 2 });
+    steps.push({
+      current: i,
+      found: false,
+      notFound: false,
+      codeLine: 2,
+      activeLine: 2,
+      status: 'compare',
+      explanation: `🔍 Checking arr[${i}]=${arr[i]}. Is ${arr[i]} === target(${target})? No, continue to next element.`,
+    });
   }
   const found = arr.includes(target);
-  steps.push({ current: -1, found: false, done: true, notFound: !found, result: found ? arr.indexOf(target) : -1, codeLine: found ? 3 : 6 });
+  steps.push({
+    current: -1,
+    found: false,
+    done: true,
+    notFound: !found,
+    result: found ? arr.indexOf(target) : -1,
+    codeLine: found ? 3 : 6,
+    activeLine: found ? 3 : 6,
+    status: found ? 'found' : 'mismatch',
+    explanation: found
+      ? `🎉 Target ${target} confirmed at index ${arr.indexOf(target)}. Search complete!`
+      : `❌ Target ${target} not found after checking all ${n} elements. Linear search exhausted.`,
+  });
   return steps;
 }
 
@@ -87,6 +117,13 @@ export default function LinearSearchVisualizer() {
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <ConceptBox
+        title="What is Linear Search?"
+        description="Linear Search checks every element one by one from left to right until the target is found or the array ends. Works on unsorted arrays — no preprocessing needed. Simple to implement but O(n) time makes it slow for large arrays."
+        timeComplexity="O(n)"
+        spaceComplexity="O(1)"
+      />
+
       {/* Target input */}
       <div style={{ display:'flex', gap:10, alignItems:'center', flexWrap:'wrap' }}>
         <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, color:'#5a7a9a', letterSpacing:1 }}>TARGET</span>
@@ -147,6 +184,13 @@ export default function LinearSearchVisualizer() {
         ))}
       </div>
 
+      <StepExplanation
+        stepNumber={Math.max(0, stepIdx + 1)}
+        totalSteps={steps.length}
+        explanation={current?.explanation ?? 'Press ▶ Play or ⏭ Step to start the visualization.'}
+        status={current?.status ?? 'default'}
+      />
+
       <VisualizerControls
         isPlaying={isPlaying} onPlayPause={() => setIsPlaying(p => !p)}
         onStepForward={() => setStepIdx(p => Math.min(p + 1, steps.length - 1))}
@@ -157,7 +201,7 @@ export default function LinearSearchVisualizer() {
         onRandomize={() => setArr(generateArray(size))}
         arraySize={size} onArraySizeChange={n => { setSize(n); setArr(generateArray(n)); }}
       />
-      <CodePanel code={CODE} activeLine={current?.codeLine ?? -1} />
+      <CodePanel code={CODE} activeLine={current?.activeLine ?? -1} />
     </div>
   );
 }

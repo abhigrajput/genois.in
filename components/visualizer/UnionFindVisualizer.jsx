@@ -1,6 +1,8 @@
 'use client';
 import { useState } from 'react';
 import CodePanel from './CodePanel';
+import ConceptBox from './ConceptBox';
+import StepExplanation from './StepExplanation';
 
 const CODE = `// Union-Find with Path Compression + Union by Rank
 int parent[N], rank_[N];
@@ -90,7 +92,9 @@ function computeLayout(parent) {
 export default function UnionFindVisualizer() {
   const [uf, setUf] = useState(initUF());
   const [findPath, setFindPath] = useState([]);
-  const [message, setMessage] = useState('Enter two node IDs to Union, or one to Find.');
+  const [explanation, setExplanation] = useState('Enter two node IDs to Union, or one to Find.');
+  const [status, setStatus] = useState('default');
+  const [activeLine, setActiveLine] = useState(-1);
   const [inputX, setInputX] = useState('');
   const [inputY, setInputY] = useState('');
   const [highlightRoot, setHighlightRoot] = useState(null);
@@ -99,28 +103,60 @@ export default function UnionFindVisualizer() {
 
   const doUnion = () => {
     const x = parseInt(inputX), y = parseInt(inputY);
-    if (isNaN(x)||isNaN(y)||x<0||x>=N||y<0||y>=N) { setMessage('Enter valid node IDs (0–7)'); return; }
+    if (isNaN(x)||isNaN(y)||x<0||x>=N||y<0||y>=N) {
+      setExplanation('Enter valid node IDs (0–7)');
+      setStatus('error');
+      return;
+    }
+    const { root: px } = find(uf.parent, x);
+    const { root: py } = find(uf.parent, y);
     const result = union(uf.parent, uf.rank, x, y);
     setUf({ parent: result.parent, rank: result.rank });
-    setFindPath([]); setHighlightRoot(null);
-    setMessage(result.msg);
-    setInputX(''); setInputY('');
+    setFindPath([]);
+    setHighlightRoot(null);
+    setInputX('');
+    setInputY('');
+
+    if (px === py) {
+      setExplanation(`Union(${x}, ${y}). root(${x})=${px}, root(${y})=${py}. px == py, so they are already in the same set. No change.`);
+      setStatus('mismatch');
+      setActiveLine(20);
+    } else {
+      setExplanation(`Union(${x}, ${y}). root(${x})=${px}, root(${y})=${py}. roots are different, merging sets (connecting root ${py} under root ${px}).`);
+      setStatus('found');
+      setActiveLine(22);
+    }
   };
 
   const doFind = () => {
     const x = parseInt(inputX);
-    if (isNaN(x)||x<0||x>=N) { setMessage('Enter valid node ID (0–7)'); return; }
+    if (isNaN(x)||x<0||x>=N) {
+      setExplanation('Enter valid node ID (0–7)');
+      setStatus('error');
+      return;
+    }
     const { root, path } = find(uf.parent, x);
     // path compress
     const newParent = compress([...uf.parent], path, root);
     setUf(prev => ({ ...prev, parent: newParent }));
     setFindPath(path);
     setHighlightRoot(root);
-    setMessage(`Find(${x}): root=${root}. Path compressed: [${path.join(' → ')}] → all point to ${root}`);
+    setExplanation(`Finding root of ${x}. Path traversed: [${path.join(' → ')}]. Root = ${root}. Applying path compression to point all nodes directly to root.`);
+    setStatus('found');
+    setActiveLine(14);
     setInputX('');
   };
 
-  const reset = () => { setUf(initUF()); setFindPath([]); setHighlightRoot(null); setMessage('Reset. All nodes are separate sets.'); setInputX(''); setInputY(''); };
+  const reset = () => {
+    setUf(initUF());
+    setFindPath([]);
+    setHighlightRoot(null);
+    setExplanation('Reset. All nodes are separate disjoint sets.');
+    setStatus('info');
+    setActiveLine(-1);
+    setInputX('');
+    setInputY('');
+  };
 
   const SVG_W = 700, SVG_H = 240;
   const COLORS = ['#00f0ff','#7b5cff','#1d9e75','#ef9f27','#ff2d78','#378ADD','#e86af3','#f8d748'];
@@ -139,6 +175,13 @@ export default function UnionFindVisualizer() {
 
   return (
     <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+      <ConceptBox
+        title="What is Union-Find (Disjoint Set Union)?"
+        description="Union-Find (DSU) tracks elements partitioned into disjoint sets. Union merges two sets, while Find identifies which set an element belongs to. Path compression flattens the tree during Find, and Union-by-Rank keeps trees shallow, achieving near O(1) amortized operations."
+        timeComplexity="O(α(N)) ≈ O(1)"
+        spaceComplexity="O(N)"
+      />
+
       {/* Parent array */}
       <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:10, padding:'12px 16px' }}>
         <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#5a7a9a', letterSpacing:1, marginBottom:8 }}>PARENT ARRAY</div>
@@ -158,10 +201,6 @@ export default function UnionFindVisualizer() {
           })}
         </div>
       </div>
-
-      {message && (
-        <div style={{ background:'rgba(0,240,255,0.05)', border:'1px solid rgba(0,240,255,0.15)', borderRadius:8, padding:'8px 14px', fontFamily:'JetBrains Mono,monospace', fontSize:11, color:'#00f0ff' }}>▶ {message}</div>
-      )}
 
       {/* Tree SVG */}
       <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:12, overflow:'hidden' }}>
@@ -193,6 +232,11 @@ export default function UnionFindVisualizer() {
         </svg>
       </div>
 
+      <StepExplanation
+        explanation={explanation}
+        status={status}
+      />
+
       <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
         <input type="number" value={inputX} onChange={e=>setInputX(e.target.value)} placeholder="X" style={inputStyle} />
         <input type="number" value={inputY} onChange={e=>setInputY(e.target.value)} placeholder="Y" style={inputStyle} />
@@ -210,7 +254,7 @@ export default function UnionFindVisualizer() {
         ))}
         <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'Outfit,sans-serif' }}>Each color = one connected component</span>
       </div>
-      <CodePanel code={CODE} />
+      <CodePanel code={CODE} activeLine={activeLine} />
     </div>
   );
 }
