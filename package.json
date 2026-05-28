@@ -25,6 +25,7 @@
     "next-auth": "^4.24.14",
     "nodemailer": "^8.0.4",
     "pdfkit": "^0.18.0",
+    "pg": "^8.21.0",
     "razorpay": "^2.9.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
