@@ -22,12 +22,26 @@ export async function GET(request) {
       .select('*')
       .eq('user_id', payload.userId);
 
-    const completedDays = (tasks || []).filter(t => t.completed_at).map(t => t.day_number);
+    const completedDays = (tasks || []).filter(t => t.day_score >= 100).map(t => t.day_number);
     const currentDay = progress?.current_day || 1;
 
     const userLevel = progress?.level || 'beginner';
     const curriculum = DSA_LEVELS[userLevel] || DSA_LEVELS.beginner;
     const currentDayData = curriculum.find(d => d.day === currentDay);
+
+    // Decode tasks_completed for the client
+    const decodedTasks = (tasks || []).map(t => ({
+      ...t,
+      tasks_completed: typeof t.tasks_completed === 'number'
+        ? {
+            video: (t.tasks_completed & 1) !== 0,
+            resource: (t.tasks_completed & 2) !== 0,
+            coding: (t.tasks_completed & 4) !== 0,
+            test: (t.tasks_completed & 8) !== 0,
+            notes: (t.tasks_completed & 16) !== 0
+          }
+        : t.tasks_completed || {}
+    }));
 
     return successResponse({
       progress: progress || { current_day: 1, language: 'cpp' },
@@ -35,6 +49,7 @@ export async function GET(request) {
       currentDay,
       totalDays: curriculum.length,
       currentDayData,
+      tasks: decodedTasks
     });
   } catch (error) {
     console.error('DSA roadmap GET error:', error);
@@ -97,17 +112,41 @@ export async function POST(request) {
         .eq('day_number', day)
         .single();
 
-      const tasksCompleted = existing?.tasks_completed || {};
+      // Decode existing tasks_completed integer/object
+      let tasksCompleted = {};
+      if (existing) {
+        if (typeof existing.tasks_completed === 'number') {
+          tasksCompleted = {
+            video: (existing.tasks_completed & 1) !== 0,
+            resource: (existing.tasks_completed & 2) !== 0,
+            coding: (existing.tasks_completed & 4) !== 0,
+            test: (existing.tasks_completed & 8) !== 0,
+            notes: (existing.tasks_completed & 16) !== 0
+          };
+        } else {
+          tasksCompleted = existing.tasks_completed || {};
+        }
+      }
+
       tasksCompleted[taskType] = true;
 
       const allDone = tasksCompleted.video && tasksCompleted.resource && tasksCompleted.coding && tasksCompleted.test && tasksCompleted.notes;
 
+      // Encode back to bitmask integer
+      let bitmask = 0;
+      if (tasksCompleted.video) bitmask |= 1;
+      if (tasksCompleted.resource) bitmask |= 2;
+      if (tasksCompleted.coding) bitmask |= 4;
+      if (tasksCompleted.test) bitmask |= 8;
+      if (tasksCompleted.notes) bitmask |= 16;
+
+      const scoreValue = Object.values(tasksCompleted).filter(Boolean).length * 20;
+
       await supabase.from('dsa_day_tasks').upsert({
         user_id: payload.userId,
         day_number: day,
-        tasks_completed: tasksCompleted,
-        day_score: Object.keys(tasksCompleted).length * 20,
-        completed_at: allDone ? new Date().toISOString() : null,
+        tasks_completed: bitmask,
+        day_score: scoreValue,
       }, { onConflict: 'user_id,day_number' });
 
       if (allDone) {

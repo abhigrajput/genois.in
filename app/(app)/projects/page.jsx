@@ -1,444 +1,380 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { useToken, apiFetch } from '@/lib/useApi';
+import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import useAuthStore from '@/store/authStore';
 
-const STEP_GUIDE = [
-  {
-    title: 'Setup Your Computer',
-    time: '30 minutes',
-    icon: '💻',
-    color: '#7F77DD',
-    intro: 'Before writing any code, you need to set up your computer properly. This is like preparing your kitchen before cooking.',
-    tasks: [
-      'Download and install VS Code from https://code.visualstudio.com (it is free)',
-      'Open VS Code after installing',
-      'Press Ctrl+Shift+` (backtick key, top left of keyboard) to open the terminal inside VS Code',
-      'The terminal is where you type commands to install things and run your code',
-      'Create a new folder for your project: type "mkdir my-project" and press Enter',
-      'Open that folder: type "cd my-project" and press Enter',
-    ],
-    quiz: [
-      { q: 'What shortcut opens the terminal in VS Code?', options: ['Ctrl+T', 'Ctrl+Shift+`', 'Alt+Enter', 'F12'], ans: 1 },
-      { q: 'What command creates a new folder?', options: ['cd', 'mkdir', 'create', 'new'], ans: 1 },
-    ],
-    tip: 'Think of VS Code as your workshop and the terminal as your toolbox. You need both to build things.',
-  },
-  {
-    title: 'Install and Write Core Code',
-    time: '2 to 3 hours',
-    icon: '⌨️',
-    color: '#1D9E75',
-    intro: 'Now you will install the tools your project needs and write the main code. Do not worry if you make mistakes — every developer makes mistakes.',
-    tasks: [
-      'In the terminal, install required packages (the exact command is shown in your project description above)',
-      'Create your main file: right click in VS Code left panel → New File → name it as per your project',
-      'Write the code ONE function at a time. Do not write everything at once.',
-      'After writing each function, test it: type "python yourfile.py" or "node yourfile.js" to run',
-      'If you see an error, READ the error message carefully — it tells you exactly what is wrong',
-      'Copy the error and search on Google if you do not understand it — this is what every developer does',
-    ],
-    quiz: [
-      { q: 'What should you do after writing each function?', options: ['Delete it', 'Test it immediately', 'Write 10 more functions', 'Ask someone else'], ans: 1 },
-      { q: 'What do you do when you see an error?', options: ['Give up', 'Read the error message carefully', 'Delete the file', 'Restart computer'], ans: 1 },
-    ],
-    tip: 'Real developers spend 70% of time reading errors and fixing them. Errors are not failures — they are instructions.',
-  },
-  {
-    title: 'Test and Fix Everything',
-    time: '1 hour',
-    icon: '🧪',
-    color: '#D85A30',
-    intro: 'Testing means trying to break your own project. If you cannot break it, neither can others. This step makes your project reliable.',
-    tasks: [
-      'Run your project and use every feature you built',
-      'Try entering wrong inputs — what happens? Does it crash or show a helpful message?',
-      'Try the most common mistake users make and see if your code handles it',
-      'Fix every crash or confusing behavior you find',
-      'Ask one friend or family member to try using it — watch where they get confused',
-      'Fix the top 3 issues you find from testing',
-    ],
-    quiz: [
-      { q: 'Why do we test our own project?', options: ['To waste time', 'To find and fix problems before users do', 'Because teacher said so', 'To make it slower'], ans: 1 },
-      { q: 'What is the best way to find confusing parts of your app?', options: ['Read the code', 'Ask someone unfamiliar to use it', 'Add more code', 'Delete features'], ans: 1 },
-    ],
-    tip: 'The best testers are people who have never seen your project before. Their confusion shows you what to improve.',
-  },
-  {
-    title: 'Deploy and Submit',
-    time: '30 minutes',
-    icon: '🚀',
-    color: '#EF9F27',
-    intro: 'Deploying means putting your project on the internet so anyone can access it. This is what makes it a real project you can show in interviews.',
-    tasks: [
-      'Create a free account on GitHub at https://github.com if you do not have one',
-      'In terminal type: git init, then git add ., then git commit -m "my first project"',
-      'Create a new repository on GitHub website and follow the instructions to push your code',
-      'Go to https://vercel.com and sign in with GitHub',
-      'Click New Project, select your repository, click Deploy',
-      'Copy the live URL that Vercel gives you (ends in .vercel.app) and submit it here',
-    ],
-    quiz: [
-      { q: 'What does deploying mean?', options: ['Deleting your project', 'Putting your project on the internet', 'Printing your code', 'Saving to USB'], ans: 1 },
-      { q: 'Which platform gives you a free live URL for your project?', options: ['Google Drive', 'Vercel', 'Notepad', 'Calculator'], ans: 1 },
-    ],
-    tip: 'A live URL is worth 10x more than code on your laptop in interviews. Recruiters want to see it working.',
-  },
-];
+const DOMAIN_PROJECTS = {
+  fullstack: [
+    { week: 4, title: 'Personal Portfolio Website', difficulty: 'beginner', description: 'Build a responsive portfolio with HTML/CSS showing your profile, skills, and contact form', steps: ['Setup VS Code project', 'Create index.html structure', 'Design responsive stylesheet', 'Add contact form with input validations', 'Push code to GitHub', 'Deploy on Vercel/Netlify'] },
+    { week: 8, title: 'JavaScript Quiz App', difficulty: 'beginner', description: 'Build an interactive quiz app with timer, score tracking, and local storage', steps: ['Setup HTML/CSS layout', 'Write quiz questions data', 'Implement timer countdown logic', 'Handle question transitions & grading', 'Store user highscores in LocalStorage'] },
+    { week: 12, title: 'React Todo App with Authentication', difficulty: 'beginner', description: 'Full todo app with React hooks, user auth, and persistent storage', steps: ['Create React app with Vite', 'Build interactive todo components', 'Integrate state management using Hooks', 'Add login/signup forms', 'Connect to Supabase backend'] },
+    { week: 16, title: 'REST API with Node.js', difficulty: 'intermediate', description: 'Build a complete REST API with Express, JWT auth, and PostgreSQL', steps: ['Setup Express server structure', 'Design database schemas', 'Implement JWT token signing middleware', 'Write CRUD handlers for items', 'Test end-to-end with Postman'] },
+    { week: 20, title: 'Full Stack Blog Platform', difficulty: 'intermediate', description: 'Complete blog with React frontend, Node backend, PostgreSQL database', steps: ['Create project workspace directories', 'Build database migrations & seeds', 'Develop Node.js auth & post handlers', 'Construct React feed & editor panels', 'Connect API endpoints to client'] },
+    { week: 24, title: 'E-commerce App with Next.js', difficulty: 'advanced', description: 'Full e-commerce with product listing, cart, payments, and admin panel', steps: ['Initialize Next.js application', 'Design product listing layouts', 'Implement shopping cart state actions', 'Integrate Stripe checkout API', 'Build vendor control dashboard'] },
+    { week: 28, title: 'Real-time Chat Application', difficulty: 'advanced', description: 'Chat app with WebSockets, rooms, message history, and notifications', steps: ['Design client-server socket events', 'Setup Socket.io with Node server', 'Create real-time chat room states', 'Persist messages in database', 'Add browser push notifications'] },
+    { week: 32, title: 'Social Media Platform', difficulty: 'advanced', description: 'Social app with posts, likes, comments, follows, and real-time updates', steps: ['Design relational database tables', 'Build post and media uploading API', 'Create interactive likes & comments', 'Implement user follow mechanics', 'Integrate visual news feed activity'] },
+    { week: 40, title: 'SaaS Application', difficulty: 'expert', description: 'Complete SaaS product with subscriptions, dashboard, and analytics', steps: ['Map core value offering features', 'Build Stripe subscription pricing tiers', 'Construct user analytics dashboard', 'Implement usage limits middleware', 'Add visual usage charts'] },
+    { week: 52, title: 'Portfolio Capstone Project', difficulty: 'expert', description: 'Your best project combining all skills - deploy and present to employers', steps: ['Brainstorm capstone scope & specs', 'Design UI system and schema', 'Develop fullstack features securely', 'Deploy with CI/CD pipelines', 'Create video demo and case study'] }
+  ],
+  dsa: [
+    { week: 4, title: 'Array & String Problem Set', difficulty: 'beginner', description: 'Solve 20 array and string problems on LeetCode, write C++ solutions with explanations', steps: ['Select 10 Easy & 10 Medium problems', 'Implement highly optimized solutions', 'Write space/time complexity analyses', 'Push solution codes to GitHub', 'Create markdown documentation'] },
+    { week: 8, title: 'Linked List Library', difficulty: 'beginner', description: 'Build a complete linked list implementation in C++ with all operations and visualizer', steps: ['Design Node structures in C++', 'Implement Singly & Doubly List classes', 'Write insert, delete, reverse methods', 'Build command-line visualizer', 'Add thorough memory management'] },
+    { week: 12, title: 'Custom Stack & Queue Implementation', difficulty: 'beginner', description: 'Implement stack, queue, and deque from scratch in C++ with all edge cases', steps: ['Design Array and Node backed states', 'Implement push, pop, enqueue, dequeue', 'Write boundary & capacity validations', 'Include sliding window maximum test', 'Publish as reusable headers'] },
+    { week: 16, title: 'Binary Tree Visualizer', difficulty: 'intermediate', description: 'Build a C++ program that builds and visualizes binary trees with all traversals', steps: ['Build tree node representations', 'Write level-order insertion methods', 'Implement DFS & BFS traversal steps', 'Create textual tree printer visual', 'Compile and execute test scenarios'] },
+    { week: 20, title: 'Graph Problem Solver', difficulty: 'intermediate', description: 'Implement BFS, DFS, Dijkstra, and Kruskal in C++ with a graph visualizer', steps: ['Design Adjacency List graph class', 'Implement BFS and DFS search patterns', 'Develop Dijkstra shortest-path logic', 'Write Union-Find Kruskal MST code', 'Generate dot layouts for visualization'] },
+    { week: 24, title: 'DP Problem Collection', difficulty: 'advanced', description: 'Solve 30 DP problems with detailed explanations, time/space analysis in C++', steps: ['Aggregate 30 core DP problem statements', 'Provide recursive top-down solutions', 'Add memoization array structures', 'Implement optimized bottom-up tables', 'Document time & space gains'] },
+    { week: 28, title: 'Competitive Programming Toolkit', difficulty: 'advanced', description: 'Build a C++ template with all common algorithms ready for competitive programming', steps: ['Write fast I/O configuration macros', 'Include custom vector/string helpers', 'Implement modular arithmetic math library', 'Add segment tree template class', 'Verify on standard contest problems'] },
+    { week: 36, title: 'LeetCode 100 Challenge', difficulty: 'expert', description: 'Solve 100 LeetCode problems (easy/medium/hard mix) and document all solutions', steps: ['Formulate a checklist of 100 problems', 'Commit solutions divided by patterns', 'Add exhaustive descriptive comments', 'Outline alternative strategies', 'Track performance benchmarks'] },
+    { week: 44, title: 'Mock Interview Preparation', difficulty: 'expert', description: 'Complete 50 mock interview problems with time constraints and explanations', steps: ['Select 50 popular interview questions', 'Simulate 45-minute solving trials', 'Refine verbal problem explanation notes', 'Write dry-run execution tables', 'Verify edge case optimizations'] },
+    { week: 52, title: 'Complete DSA Portfolio', difficulty: 'expert', description: 'GitHub repo with all solutions, complexity analysis, and study notes', steps: ['Organize repository layout logically', 'Write extensive master README.md', 'Create topical category directories', 'Format code files elegantly', 'Promote portfolio link to LinkedIn'] }
+  ],
+  cybersecurity: [
+    { week: 4, title: 'Network Scanner Tool', difficulty: 'beginner', description: 'Build a Python network scanner using sockets to discover hosts and open ports', steps: ['Import socket and sys modules', 'Setup target IP range parsing', 'Implement multi-threaded port scanner', 'Add timeout and error handling', 'Output scan report nicely'] },
+    { week: 8, title: 'Password Cracker', difficulty: 'beginner', description: 'Build a Python dictionary attack tool for educational purposes', steps: ['Review hash algorithms (SHA256, MD5)', 'Read password dictionary file safely', 'Implement hashing comparison functions', 'Optimize verification throughput', 'Add clear terminal alerts'] }
+  ]
+};
 
-export default function ProjectsPage() {
-  const { token, ready } = useToken();
-  const [project, setProject] = useState(null);
-  const [progress, setProgress] = useState(null);
+export default function ProjectsPortfolioPage() {
+  const { user } = useAuthStore();
+  const domain = user?.domain_slug || 'fullstack';
+  const [currentWeek, setCurrentWeek] = useState(1);
+  const [historyList, setHistoryList] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Submission form states per project
+  const [activeSubmitting, setActiveSubmitting] = useState(null); // project title
+  const [githubUrl, setGithubUrl] = useState('');
+  const [projectNotes, setProjectNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [feedback, setFeedback] = useState(null);
-  const [week, setWeek] = useState(1);
-  const [checked, setChecked] = useState({});
-  const [quizAnswers, setQuizAnswers] = useState({});
-  const [quizSubmitted, setQuizSubmitted] = useState({});
-  const [expandedStep, setExpandedStep] = useState(null);
-  const [chatOpen, setChatOpen] = useState(false);
-  const [chatMessages, setChatMessages] = useState([
-    { role: 'assistant', content: 'Hi! I am your project mentor 🛠️ Ask me anything about your current project. I will guide you step by step without giving you direct answers — so you actually learn.' }
-  ]);
-  const [chatInput, setChatInput] = useState('');
-  const [chatLoading, setChatLoading] = useState(false);
 
   useEffect(() => {
-    if (!ready || !token) return;
-    apiFetch('/api/roadmap/daily', token)
-      .then(r => {
-        const w = r.data?.currentWeek || 1;
-        setWeek(w);
-        return apiFetch('/api/projects/week/' + w, token);
-      })
-      .then(r => {
-        setProject(r.data.project);
-        setProgress(r.data.progress);
-        setExpandedStep(r.data.progress?.current_step || 0);
-      })
-      .catch(err => toast.error('Could not load project: ' + err.message))
-      .finally(() => setLoading(false));
-  }, [ready, token]);
+    fetchHistory();
+  }, []);
 
-  async function completeStep(i) {
-    if (!project || !token) return;
-    const allChecked = STEP_GUIDE[i].tasks.every((_, j) => checked[i + '_' + j]);
-    if (!allChecked) {
-      toast.error('Please tick all tasks before completing this step');
-      return;
-    }
-    const quizDone = quizSubmitted[i];
-    if (!quizDone) {
-      toast.error('Please answer the quiz questions first');
-      return;
-    }
+  const fetchHistory = async () => {
     try {
-      const res = await apiFetch('/api/projects/' + project.id + '/step', token, 'POST', {
-        stepNumber: i,
-        notes: 'Step ' + (i + 1) + ' completed with tasks and quiz',
+      const token = localStorage.getItem('genois_token');
+      // Fetch dynamic current progress first
+      const rRes = await fetch('/api/roadmap/daily', {
+        headers: { 'Authorization': `Bearer ${token}` }
       });
-      setProgress(res.data.progress);
-      setExpandedStep(i + 1);
-      toast.success('Step ' + (i + 1) + ' complete! 🎉');
-    } catch (e) {
-      toast.error(e.message);
-    }
-  }
+      const rData = await rRes.json();
+      if (rData.success) {
+        const currentDay = rData.data?.currentDay || 1;
+        setCurrentWeek(Math.ceil(currentDay / 7));
+      }
 
-  async function submitProject() {
-    if (!project || !token) return;
+      const res = await fetch('/api/projects/history', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (data.success) {
+        setHistoryList(data.data.projects || []);
+      }
+    } catch {
+      toast.error('Failed to load project portfolio data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const submitProject = async (e, project) => {
+    e.preventDefault();
+    if (!githubUrl || !githubUrl.includes('github.com')) {
+      toast.error('Please enter a valid GitHub repository URL');
+      return;
+    }
     setSubmitting(true);
     try {
-      const res = await apiFetch('/api/projects/' + project.id + '/submit', token, 'POST', {});
-      setFeedback(res.data.aiFeedback);
-      toast.success('Project submitted! +30 pts 🎉');
-    } catch (e) {
-      toast.error(e.message);
+      const token = localStorage.getItem('genois_token');
+      const res = await fetch('/api/projects/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          projectTitle: project.title,
+          githubUrl,
+          week: project.week,
+          domain,
+          notes: projectNotes,
+          projectId: project.id || 'p_week_' + project.week // fallback or generated UUID
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(data.message);
+        setActiveSubmitting(null);
+        setGithubUrl('');
+        setProjectNotes('');
+        fetchHistory(); // reload history
+      } else {
+        toast.error(data.message);
+      }
+    } catch {
+      toast.error('Project submission failed');
     } finally {
       setSubmitting(false);
     }
-  }
+  };
 
-  async function sendChatMessage() {
-    if (!chatInput.trim() || chatLoading || !token) return;
-    const userMsg = chatInput.trim();
-    setChatInput('');
-    setChatMessages(prev => [...prev, { role: 'user', content: userMsg }]);
-    setChatLoading(true);
-    try {
-      const res = await fetch('/api/project-mentor', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
-        body: JSON.stringify({
-          message: userMsg,
-          projectTitle: project?.title,
-          projectDescription: project?.description,
-          techStack: project?.tech_stack,
-          currentStep: progress?.current_step || 0,
-          history: chatMessages.slice(-6),
-        }),
-      });
-      const data = await res.json();
-      setChatMessages(prev => [...prev, { role: 'assistant', content: data.data?.reply || 'Let me think about that...' }]);
-    } catch {
-      setChatMessages(prev => [...prev, { role: 'assistant', content: 'Something went wrong. Try again.' }]);
-    } finally {
-      setChatLoading(false);
-    }
-  }
+  const getProjectStatus = (projTitle) => {
+    const record = historyList.find(h => h.projects?.title === projTitle);
+    return record ? record.status : 'not_started';
+  };
 
-  const toggle = (k) => setChecked(p => ({ ...p, [k]: !p[k] }));
+  const getProjectProgress = (projTitle) => {
+    return historyList.find(h => h.projects?.title === projTitle) || null;
+  };
 
-  function submitQuiz(stepIndex) {
-    const step = STEP_GUIDE[stepIndex];
-    let correct = 0;
-    step.quiz.forEach((q, qi) => {
-      if (quizAnswers[stepIndex + '_' + qi] === q.ans) correct++;
-    });
-    setQuizSubmitted(p => ({ ...p, [stepIndex]: { correct, total: step.quiz.length } }));
-    if (correct === step.quiz.length) {
-      toast.success('Perfect score! All answers correct ✅');
-    } else {
-      toast.error(correct + '/' + step.quiz.length + ' correct. Review and try again.');
-    }
-  }
+  const projects = DOMAIN_PROJECTS[domain] || DOMAIN_PROJECTS.fullstack;
 
-  const cur = progress?.current_step || 0;
-  const card = { background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24, marginBottom: 14 };
-
-  if (!ready || loading) return (
-    <div style={{ textAlign: 'center', paddingTop: 80, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>
-      Loading your project...
-    </div>
-  );
-
-  if (!project) return (
-    <div style={{ width: '100%', maxWidth: 1600, margin: '0 auto' }}>
-      <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 16 }}>Projects</h1>
-      <div style={{ ...card, textAlign: 'center', padding: 48 }}>
-        <div style={{ fontSize: 48, marginBottom: 12 }}>◆</div>
-        <div style={{ color: '#e8f4ff', fontSize: 16, fontWeight: 600, marginBottom: 6 }}>No project for Week {week} yet</div>
-        <div style={{ color: '#5a7a9a', fontSize: 13 }}>Go to Daily Roadmap and complete today tasks first</div>
-      </div>
-    </div>
-  );
-
-  const steps = (() => {
-    try {
-      if (Array.isArray(project.steps)) return project.steps;
-      if (typeof project.steps === 'string') return JSON.parse(project.steps);
-    } catch {}
-    return [];
-  })();
+  if (loading) return <div className="text-gray-400 text-sm">Loading projects portfolio...</div>;
 
   return (
-    <div style={{ width: '100%', maxWidth: 1600, margin: '0 auto', fontFamily: 'Outfit,sans-serif' }}>
-      <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 4 }}>Projects</h1>
-      <p style={{ color: '#5a7a9a', fontSize: 13, marginBottom: 20 }}>Week {week} · Build this in VS Code on your computer · Takes 2 weeks</p>
-
-      <div style={{ ...card, borderColor: 'rgba(186,117,23,0.25)', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#BA7517,transparent)' }} />
-        <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#BA7517', letterSpacing: 2, marginBottom: 6 }}>WEEK {week} PROJECT</div>
-        <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 700, color: '#e8f4ff', marginBottom: 6 }}>{project.title}</div>
-        <div style={{ fontSize: 13, color: '#5a7a9a', lineHeight: 1.7, marginBottom: 12 }}>{project.description}</div>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 16 }}>
-          {(project.tech_stack || []).map(t => (
-            <span key={t} style={{ padding: '3px 10px', borderRadius: 20, fontSize: 11, background: 'rgba(0,240,255,0.08)', color: '#00f0ff', border: '1px solid rgba(0,240,255,0.2)', fontFamily: 'JetBrains Mono,monospace' }}>{t}</span>
-          ))}
-        </div>
-
-        {steps.length > 0 && (
-          <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 10, padding: 16 }}>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600, color: '#EF9F27', marginBottom: 10 }}>📋 Project Details from Your Domain</div>
-            {steps.map((step, i) => (
-              <div key={i} style={{ fontSize: 13, color: '#c8d8e8', padding: '6px 0', borderBottom: '1px solid rgba(255,255,255,0.04)', lineHeight: 1.6 }}>
-                <span style={{ color: '#EF9F27', fontFamily: 'JetBrains Mono,monospace', marginRight: 8 }}>{i + 1}.</span>
-                {typeof step === 'string' ? step : JSON.stringify(step)}
-              </div>
-            ))}
-          </div>
-        )}
-
-        <div style={{ marginTop: 16, height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${(cur / 4) * 100}%`, background: 'linear-gradient(90deg,#BA7517,#EF9F27)', borderRadius: 2, transition: 'width 0.5s' }} />
-        </div>
-        <div style={{ fontSize: 11, color: '#5a7a9a', marginTop: 6, fontFamily: 'JetBrains Mono,monospace' }}>{cur}/4 steps done</div>
+    <div className="w-full space-y-6" style={{ fontFamily: 'Outfit,sans-serif' }}>
+      
+      {/* Page Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-dark" style={{ fontFamily: 'Syne,sans-serif' }}>🎓 Career Projects Portfolio</h1>
+        <p className="text-sm text-gray-400 mt-1">Build outstanding, real-world portfolio assets as you progress through your 52-week curriculum.</p>
       </div>
 
-      {STEP_GUIDE.map((step, i) => {
-        const done = i < cur;
-        const active = i === cur;
-        const locked = i > cur;
-        const isExpanded = expandedStep === i;
-        const qDone = quizSubmitted[i];
+      {/* Main Grid Layout */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        
+        {/* Left Column: All Projects Timeline & Accordeon (2/3 width) */}
+        <div className="xl:col-span-2 space-y-4">
+          {projects.map((proj, idx) => {
+            const status = getProjectStatus(proj.title);
+            const isLocked = proj.week > currentWeek + 1;
+            const progressRecord = getProjectProgress(proj.title);
 
-        return (
-          <div key={i} style={{ ...card, borderColor: done ? 'rgba(29,158,117,0.2)' : active ? 'rgba(0,240,255,0.2)' : 'rgba(255,255,255,0.04)', opacity: locked ? 0.4 : 1 }}>
-            <div
-              onClick={() => !locked && setExpandedStep(isExpanded ? null : i)}
-              style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: locked ? 'default' : 'pointer' }}>
-              <div style={{ width: 44, height: 44, borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, background: done ? 'rgba(29,158,117,0.15)' : active ? 'rgba(0,240,255,0.1)' : 'rgba(255,255,255,0.04)', color: done ? '#1D9E75' : active ? '#00f0ff' : '#5a7a9a', border: `2px solid ${done ? '#1D9E75' : active ? '#00f0ff' : 'rgba(255,255,255,0.08)'}` }}>
-                {done ? '✓' : step.icon}
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 600, color: done ? '#1D9E75' : active ? '#e8f4ff' : '#5a7a9a' }}>
-                  Step {i + 1}: {step.title}
-                </div>
-                <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>
-                  {done ? 'COMPLETED ✓' : active ? 'CURRENT · ' + step.time : 'LOCKED'}
-                </div>
-              </div>
-              {!locked && <div style={{ color: '#5a7a9a', fontSize: 18 }}>{isExpanded ? '▲' : '▼'}</div>}
-            </div>
+            // Parse AI feedback if available
+            let feedback = null;
+            if (progressRecord?.ai_feedback) {
+              try {
+                feedback = typeof progressRecord.ai_feedback === 'string'
+                  ? JSON.parse(progressRecord.ai_feedback)
+                  : progressRecord.ai_feedback;
+              } catch (e) {
+                console.error(e);
+              }
+            }
 
-            {isExpanded && !locked && (
-              <div style={{ marginTop: 16 }}>
-                <div style={{ background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 10, padding: 14, marginBottom: 16 }}>
-                  <div style={{ fontSize: 13, color: '#c8d8e8', lineHeight: 1.8 }}>💡 {step.intro}</div>
-                </div>
+            return (
+              <div key={idx} style={{
+                background: '#070f1a',
+                border: isLocked ? '1px solid rgba(255,255,255,0.03)' : '1px solid rgba(0,240,255,0.08)',
+                borderRadius: '16px', padding: '20px', opacity: isLocked ? 0.5 : 1,
+                position: 'relative', overflow: 'hidden', transition: 'all 0.25s'
+              }}>
+                {/* Horizontal flow line for timeline */}
+                <div style={{
+                  position: 'absolute', top: 0, left: 0, width: '4px', height: '100%',
+                  background: isLocked ? 'rgba(255,255,255,0.05)' : status === 'reviewed' ? '#1D9E75' : status === 'submitted' ? '#00f0ff' : 'rgba(0,240,255,0.15)'
+                }} />
 
-                <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600, color: step.color, marginBottom: 10 }}>
-                  ✅ Your Tasks — tick each one as you complete it:
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
-                  {step.tasks.map((task, j) => (
-                    <label key={j} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', cursor: 'pointer', padding: '8px 12px', borderRadius: 8, background: checked[i + '_' + j] ? 'rgba(29,158,117,0.08)' : 'rgba(255,255,255,0.02)', border: `1px solid ${checked[i + '_' + j] ? 'rgba(29,158,117,0.3)' : 'rgba(255,255,255,0.06)'}` }}>
-                      <input type="checkbox" checked={checked[i + '_' + j] || false} onChange={() => toggle(i + '_' + j)} style={{ accentColor: '#00f0ff', marginTop: 3, flexShrink: 0, width: 16, height: 16 }} />
-                      <span style={{ fontSize: 13, color: checked[i + '_' + j] ? '#5a7a9a' : '#c8d8e8', textDecoration: checked[i + '_' + j] ? 'line-through' : 'none', lineHeight: 1.6 }}>{task}</span>
-                    </label>
-                  ))}
-                </div>
-
-                <div style={{ background: 'rgba(123,92,255,0.06)', border: '1px solid rgba(123,92,255,0.2)', borderRadius: 10, padding: 16, marginBottom: 16 }}>
-                  <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600, color: '#7b5cff', marginBottom: 12 }}>
-                    🧠 Quick Check — Answer these before moving on:
+                {/* Title & Badge Row */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', paddingLeft: '12px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '11px', color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', fontWeight: 700 }}>WEEK {proj.week}</span>
+                    <span style={{
+                      background: 'rgba(255,255,255,0.03)', color: '#c8d8e8', fontSize: '10px',
+                      textTransform: 'uppercase', padding: '3px 8px', borderRadius: '4px', fontWeight: 600
+                    }}>{proj.difficulty}</span>
                   </div>
-                  {step.quiz.map((q, qi) => (
-                    <div key={qi} style={{ marginBottom: 14 }}>
-                      <div style={{ fontSize: 13, fontWeight: 500, color: '#e8f4ff', marginBottom: 8 }}>Q{qi + 1}: {q.q}</div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                        {q.options.map((opt, oi) => {
-                          const selected = quizAnswers[i + '_' + qi] === oi;
-                          const isCorrect = qDone && oi === q.ans;
-                          const isWrong = qDone && selected && oi !== q.ans;
-                          return (
-                            <label key={oi} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderRadius: 8, cursor: qDone ? 'default' : 'pointer', background: isCorrect ? 'rgba(29,158,117,0.15)' : isWrong ? 'rgba(255,45,120,0.1)' : selected ? 'rgba(0,240,255,0.08)' : 'rgba(255,255,255,0.02)', border: `1px solid ${isCorrect ? '#1D9E75' : isWrong ? '#ff2d78' : selected ? '#00f0ff' : 'rgba(255,255,255,0.06)'}` }}>
-                              <input type="radio" name={`q_${i}_${qi}`} disabled={!!qDone} checked={selected} onChange={() => setQuizAnswers(p => ({ ...p, [i + '_' + qi]: oi }))} style={{ accentColor: '#00f0ff' }} />
-                              <span style={{ fontSize: 13, color: isCorrect ? '#1D9E75' : isWrong ? '#ff2d78' : '#c8d8e8' }}>{opt}</span>
-                              {isCorrect && <span style={{ marginLeft: 'auto', color: '#1D9E75', fontSize: 12 }}>✓ Correct</span>}
-                              {isWrong && <span style={{ marginLeft: 'auto', color: '#ff2d78', fontSize: 12 }}>✗ Wrong</span>}
-                            </label>
-                          );
-                        })}
-                      </div>
+
+                  {/* Status Badge */}
+                  <div>
+                    {isLocked && <span className="text-gray-500 text-xs font-semibold">🔒 Locked</span>}
+                    {!isLocked && status === 'not_started' && <span className="text-gray-400 text-xs font-semibold">⏳ Not Started</span>}
+                    {!isLocked && status === 'submitted' && <span style={{ color: '#00f0ff', fontSize: '12px', fontWeight: 700 }}>🛸 Under AI Audit</span>}
+                    {!isLocked && status === 'reviewed' && <span style={{ color: '#1D9E75', fontSize: '12px', fontWeight: 700 }}>✅ Audit Completed</span>}
+                  </div>
+                </div>
+
+                {/* Project Details */}
+                <div style={{ paddingLeft: '12px', marginTop: '8px' }}>
+                  <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#e8f4ff', fontFamily: 'Syne,sans-serif' }}>{proj.title}</h2>
+                  <p style={{ fontSize: '13.5px', color: '#8aa2b9', marginTop: '4px', lineHeight: 1.5 }}>{proj.description}</p>
+
+                  {/* Steps Accordion */}
+                  <div style={{ marginTop: '16px' }}>
+                    <div style={{ fontSize: '12px', color: '#5a7a9a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>Implementation steps</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '8px' }}>
+                      {proj.steps.map((st, i) => (
+                        <div key={i} style={{
+                          display: 'flex', gap: '8px', background: 'rgba(255,255,255,0.02)',
+                          padding: '8px 10px', borderRadius: '8px', fontSize: '12px', color: '#b2c8dc',
+                          border: '1px solid rgba(255,255,255,0.02)'
+                        }}>
+                          <span style={{ color: '#00f0ff', fontWeight: 700 }}>{i+1}</span>
+                          <span>{st}</span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                  {!qDone ? (
-                    <button onClick={() => submitQuiz(i)} style={{ padding: '9px 22px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#7b5cff,#00f0ff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700 }}>
-                      Submit Answers
+                  </div>
+
+                  {/* Submit Repository Section */}
+                  {!isLocked && status === 'not_started' && activeSubmitting !== proj.title && (
+                    <button onClick={() => {
+                      setActiveSubmitting(proj.title);
+                      // Assign dynamically generated project UUID or standard ID if exists in db
+                      proj.id = progressRecord?.project_id || 'dummy-uuid-needed';
+                    }} style={{
+                      marginTop: '16px', background: 'linear-gradient(135deg, #00f0ff, #7b5cff)',
+                      color: '#020812', fontWeight: 700, fontSize: '13px', padding: '10px 20px',
+                      borderRadius: '8px', border: 'none', cursor: 'pointer'
+                    }}>
+                      Start Project & Submit Code →
                     </button>
-                  ) : (
-                    <div style={{ fontSize: 13, color: qDone.correct === qDone.total ? '#1D9E75' : '#EF9F27', marginTop: 4 }}>
-                      {qDone.correct === qDone.total ? '✅ All correct! You understood this step.' : `${qDone.correct}/${qDone.total} correct. Review the tasks above and try again if needed.`}
+                  )}
+
+                  {activeSubmitting === proj.title && (
+                    <form onSubmit={(e) => submitProject(e, proj)} style={{
+                      marginTop: '16px', padding: '14px', borderRadius: '12px',
+                      border: '1px solid rgba(0,240,255,0.2)', background: 'rgba(0,0,0,0.15)',
+                      display: 'flex', flexDirection: 'column', gap: '10px'
+                    }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '11px', color: '#5a7a9a', textTransform: 'uppercase', marginBottom: '4px' }}>GitHub Repo URL</label>
+                        <input type="url" required value={githubUrl} onChange={e => setGithubUrl(e.target.value)}
+                          placeholder="https://github.com/yourusername/portfolio"
+                          style={{
+                            width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid rgba(0,240,255,0.15)',
+                            background: 'rgba(255,255,255,0.03)', color: '#e8f4ff', fontSize: '13px', outline: 'none'
+                          }} />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', fontSize: '11px', color: '#5a7a9a', textTransform: 'uppercase', marginBottom: '4px' }}>Submission Notes</label>
+                        <textarea value={projectNotes} onChange={e => setProjectNotes(e.target.value)} rows={2}
+                          placeholder="List technologies used, features implemented..."
+                          style={{
+                            width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid rgba(0,240,255,0.15)',
+                            background: 'rgba(255,255,255,0.03)', color: '#e8f4ff', fontSize: '13px', outline: 'none', resize: 'none'
+                          }} />
+                      </div>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button type="submit" disabled={submitting} style={{
+                          flex: 1, padding: '10px', borderRadius: '6px', border: 'none', fontWeight: 700,
+                          background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', cursor: 'pointer'
+                        }}>{submitting ? 'Submitting...' : 'Submit Repository'}</button>
+                        <button type="button" onClick={() => setActiveSubmitting(null)} style={{
+                          padding: '10px 16px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.15)',
+                          background: 'transparent', color: '#c8d8e8', cursor: 'pointer'
+                        }}>Cancel</button>
+                      </div>
+                    </form>
+                  )}
+
+                  {/* AI feedback view */}
+                  {status === 'reviewed' && feedback && (
+                    <div style={{
+                      marginTop: '16px', padding: '16px', borderRadius: '12px',
+                      border: '1px solid rgba(29,158,117,0.2)', background: 'rgba(29,158,117,0.03)'
+                    }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                        <span style={{ fontSize: '13px', color: '#1D9E75', fontWeight: 700 }}>🎯 Senior AI Audit Report</span>
+                        <span style={{
+                          background: 'rgba(29,158,117,0.15)', color: '#1D9E75', fontSize: '14px',
+                          fontWeight: 800, padding: '3px 10px', borderRadius: '6px'
+                        }}>{feedback.grade} ({feedback.score}/100)</span>
+                      </div>
+                      
+                      <p style={{ fontSize: '13px', color: '#b2c8dc', lineHeight: 1.5, marginBottom: '10px' }}>{feedback.overall_feedback}</p>
+                      
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', fontSize: '12.5px', marginBottom: '10px' }}>
+                        <div>
+                          <div style={{ color: '#1D9E75', fontWeight: 700, marginBottom: '4px' }}>✓ Key Strengths</div>
+                          {feedback.strengths?.map((str, i) => <div key={i}>• {str}</div>)}
+                        </div>
+                        <div>
+                          <div style={{ color: '#ff5c8a', fontWeight: 700, marginBottom: '4px' }}>⚡ Recommendations</div>
+                          {feedback.improvements?.map((imp, i) => <div key={i}>• {imp}</div>)}
+                        </div>
+                      </div>
+
+                      {feedback.encouragement && (
+                        <div style={{
+                          fontStyle: 'italic', fontSize: '12px', color: '#5a7a9a', borderTop: '1px solid rgba(255,255,255,0.05)',
+                          paddingTop: '8px', marginTop: '8px'
+                        }}>
+                          "{feedback.encouragement}"
+                        </div>
+                      )}
                     </div>
                   )}
+
                 </div>
 
-                <div style={{ background: 'rgba(239,159,39,0.06)', border: '1px solid rgba(239,159,39,0.2)', borderRadius: 8, padding: 12, marginBottom: 16 }}>
-                  <span style={{ fontSize: 12, color: '#EF9F27' }}>💡 Pro tip: {step.tip}</span>
-                </div>
-
-                {active && (
-                  <button onClick={() => completeStep(i)} style={{ width: '100%', padding: '13px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700 }}>
-                    ✓ I completed Step {i + 1} — Move to Next
-                  </button>
-                )}
               </div>
-            )}
-          </div>
-        );
-      })}
-
-      {cur >= 4 && !feedback && (
-        <div style={{ ...card, textAlign: 'center', borderColor: 'rgba(29,158,117,0.3)' }}>
-          <div style={{ fontSize: 40, marginBottom: 10 }}>🎉</div>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: '#1D9E75', marginBottom: 6 }}>All steps done!</div>
-          <div style={{ color: '#5a7a9a', fontSize: 13, marginBottom: 20 }}>Submit your project for AI feedback and earn 30 points</div>
-          <button onClick={submitProject} disabled={submitting} style={{ padding: '13px 32px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#1D9E75,#00f0ff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700 }}>
-            {submitting ? 'Claude is reviewing your project...' : 'Submit Project for AI Review →'}
-          </button>
+            );
+          })}
         </div>
-      )}
 
-      {feedback && (
-        <div style={{ ...card, borderColor: 'rgba(29,158,117,0.25)' }}>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, color: '#1D9E75', marginBottom: 12 }}>✓ AI Feedback on Your Project</div>
-          <div style={{ fontSize: 14, color: '#e8f4ff', lineHeight: 1.9 }}>{feedback}</div>
-        </div>
-      )}
-
-      {/* Floating project mentor chat */}
-      <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 100 }}>
-        {chatOpen && (
+        {/* Right Column: VS Code guide & Stats (1/3 width) */}
+        <div className="space-y-6">
+          
+          {/* Portfolio Stats */}
           <div style={{
-            position: 'absolute', bottom: 64, right: 0,
-            width: 320, height: 420,
-            background: '#070f1f',
-            border: '1px solid rgba(0,240,255,0.2)',
-            borderRadius: 16,
-            display: 'flex', flexDirection: 'column',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
-            overflow: 'hidden',
+            background: 'linear-gradient(135deg, #091322, #070f1a)',
+            border: '1px solid rgba(0,240,255,0.12)',
+            borderRadius: '16px', padding: '20px'
           }}>
-            <div style={{ padding: '14px 16px', borderBottom: '1px solid rgba(0,240,255,0.1)', background: 'rgba(0,240,255,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div>
-                <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700, color: '#00f0ff' }}>🛠️ Project Mentor</div>
-                <div style={{ fontSize: 11, color: '#5a7a9a' }}>{project?.title}</div>
+            <h3 style={{
+              fontSize: '13px', fontWeight: 800, color: '#e8f4ff', marginBottom: '16px',
+              fontFamily: 'Syne,sans-serif', textTransform: 'uppercase', letterSpacing: '1px'
+            }}>📊 Portfolio Metrics</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div style={{ background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
+                <div style={{ fontSize: '24px', fontWeight: 800, color: '#00f0ff' }}>
+                  {historyList.filter(h => h.status === 'reviewed').length}
+                </div>
+                <div style={{ fontSize: '11px', color: '#5a7a9a', marginTop: '2px' }}>Audited Projects</div>
               </div>
-              <button onClick={() => setChatOpen(false)} style={{ background: 'transparent', border: 'none', color: '#5a7a9a', cursor: 'pointer', fontSize: 18 }}>✕</button>
-            </div>
-            <div style={{ flex: 1, overflowY: 'auto', padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {chatMessages.map((msg, i) => (
-                <div key={i} style={{
-                  maxWidth: '85%',
-                  alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                  padding: '10px 14px',
-                  borderRadius: msg.role === 'user' ? '12px 12px 4px 12px' : '12px 12px 12px 4px',
-                  background: msg.role === 'user' ? 'linear-gradient(135deg,rgba(0,240,255,0.2),rgba(123,92,255,0.2))' : 'rgba(255,255,255,0.05)',
-                  border: `1px solid ${msg.role === 'user' ? 'rgba(0,240,255,0.3)' : 'rgba(255,255,255,0.08)'}`,
-                  fontSize: 13, color: '#e8f4ff', lineHeight: 1.6,
-                }}>
-                  {msg.content}
+              <div style={{ background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
+                <div style={{ fontSize: '24px', fontWeight: 800, color: '#7b5cff' }}>
+                  {historyList.filter(h => h.status === 'submitted').length}
                 </div>
-              ))}
-              {chatLoading && (
-                <div style={{ alignSelf: 'flex-start', padding: '10px 14px', borderRadius: '12px 12px 12px 4px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', color: '#5a7a9a', fontSize: 13 }}>
-                  Thinking...
-                </div>
-              )}
-            </div>
-            <div style={{ padding: 12, borderTop: '1px solid rgba(0,240,255,0.1)', display: 'flex', gap: 8 }}>
-              <input
-                value={chatInput}
-                onChange={e => setChatInput(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendChatMessage()}
-                placeholder="Ask about your project..."
-                style={{ flex: 1, padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', background: 'rgba(255,255,255,0.03)', color: '#e8f4ff', fontSize: 13, fontFamily: 'Outfit,sans-serif', outline: 'none' }}
-              />
-              <button onClick={sendChatMessage} disabled={chatLoading || !chatInput.trim()} style={{ padding: '10px 16px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontWeight: 700, fontSize: 14 }}>
-                →
-              </button>
+                <div style={{ fontSize: '11px', color: '#5a7a9a', marginTop: '2px' }}>Pending Audit</div>
+              </div>
             </div>
           </div>
-        )}
-        <button
-          onClick={() => setChatOpen(o => !o)}
-          style={{ width: 52, height: 52, borderRadius: '50%', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, boxShadow: '0 4px 20px rgba(0,240,255,0.4)' }}>
-          {chatOpen ? '✕' : '🛠️'}
-        </button>
+
+          {/* VS Code Setup Guide */}
+          <div style={{
+            background: '#070f1a', border: '1px solid rgba(0,240,255,0.08)',
+            borderRadius: '16px', padding: '20px'
+          }}>
+            <h3 style={{
+              fontSize: '13px', fontWeight: 800, color: '#e8f4ff', marginBottom: '12px',
+              fontFamily: 'Syne,sans-serif', textTransform: 'uppercase', letterSpacing: '1px'
+            }}>💻 VS Code Workspace Guide</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '12.5px', color: '#a2b9cd', lineHeight: 1.6 }}>
+              <div>
+                <strong>1. Initialize Workspace</strong>
+                <pre style={{
+                  background: 'rgba(0,0,0,0.3)', padding: '8px', borderRadius: '6px',
+                  fontFamily: 'JetBrains Mono,monospace', fontSize: '11px', color: '#00f0ff', marginTop: '4px'
+                }}>mkdir genois-portfolio && cd genois-portfolio</pre>
+              </div>
+              <div>
+                <strong>2. Create Project directory</strong>
+                <p style={{ marginTop: '2px' }}>Create subfolders for each milestone week to keep your workspace organized.</p>
+              </div>
+              <div>
+                <strong>3. Commit and push regularly</strong>
+                <p style={{ marginTop: '2px' }}>Push to a public GitHub repository. Ensure a clear <code>README.md</code> is present in the root for senior AI evaluations.</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
       </div>
+
     </div>
   );
 }

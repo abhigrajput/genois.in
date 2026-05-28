@@ -2,6 +2,7 @@ import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { successResponse, errorResponse } from '@/lib/response';
+import { generateDayContent } from '@/lib/curriculumGenerator';
 
 const TASK_TYPES = ['video', 'resource', 'coding', 'test', 'notes'];
 const TOTAL_TASKS = 5;
@@ -86,15 +87,85 @@ export async function GET(request) {
         .eq('user_id', payload.userId);
     }
 
-    const { data: roadmapItem, error: roadmapError } = await supabase
+    let { data: roadmapItem, error: roadmapError } = await supabase
       .from('roadmap')
       .select('*')
       .eq('domain_slug', user.domain_slug)
       .eq('day_number', displayDay)
       .single();
 
+    // Get enriched day content from curriculum generator
+    const dayContent = await generateDayContent(user.domain_slug, displayDay, user.level || 'beginner');
+
     if (roadmapError || !roadmapItem) {
-      return errorResponse(`No roadmap found for day ${displayDay} in domain ${user.domain_slug}`, 404);
+      console.log(`Roadmap item for day ${displayDay} in domain ${user.domain_slug} not found. Caching to database...`);
+      
+      const { data: inserted } = await supabase.from('roadmap').insert({
+        domain_slug: user.domain_slug,
+        week_number: Math.ceil(displayDay / 7),
+        day_number: displayDay,
+        topic: dayContent.topic,
+        description: dayContent.description,
+        video_url: dayContent.video_url,
+        resource_url: dayContent.resource_url,
+        article_url: dayContent.article_url,
+        doc_url: dayContent.coding_problem_url,
+        difficulty: dayContent.generated_by === 'static_fallback' ? 'beginner' : (user.level || 'beginner'),
+        estimated_min: dayContent.estimated_minutes || 90
+      }).select().single();
+
+      if (inserted) {
+        roadmapItem = inserted;
+      } else {
+        // Fallback in-memory
+        roadmapItem = {
+          id: 'dummy-roadmap-id-' + displayDay,
+          domain_slug: user.domain_slug,
+          week_number: Math.ceil(displayDay / 7),
+          day_number: displayDay,
+          topic: dayContent.topic,
+          description: dayContent.description,
+          video_url: dayContent.video_url,
+          resource_url: dayContent.resource_url,
+          article_url: dayContent.article_url,
+          doc_url: dayContent.coding_problem_url,
+          difficulty: 'beginner',
+          estimated_min: dayContent.estimated_minutes || 90
+        };
+      }
+    }
+
+    // Upsert project into 'projects' table if project day
+    if (dayContent.is_project_day && dayContent.project) {
+      let { data: dbProj } = await supabase
+        .from('projects')
+        .select('id')
+        .eq('domain_slug', user.domain_slug)
+        .eq('week_number', Math.ceil(displayDay / 7))
+        .eq('title', dayContent.project.title)
+        .maybeSingle();
+
+      if (!dbProj) {
+        const { data: newProj } = await supabase
+          .from('projects')
+          .insert({
+            domain_slug: user.domain_slug,
+            week_number: Math.ceil(displayDay / 7),
+            title: dayContent.project.title,
+            description: dayContent.project.description,
+            difficulty: dayContent.project.difficulty || 'intermediate',
+            steps: dayContent.project.steps || [],
+            tech_stack: dayContent.project.resources || [],
+            resources: dayContent.project.resources || []
+          })
+          .select('id')
+          .single();
+        dbProj = newProj;
+      }
+      
+      if (dbProj) {
+        dayContent.project.id = dbProj.id;
+      }
     }
 
     const tasks = await ensureTasksExist(
@@ -116,6 +187,18 @@ export async function GET(request) {
       .limit(1)
       .single();
 
+    // Query project progress if applicable
+    let projectProgress = null;
+    if (dayContent.is_project_day && dayContent.project?.id) {
+      const { data: prog } = await supabase
+        .from('project_progress')
+        .select('*')
+        .eq('user_id', payload.userId)
+        .eq('project_id', dayContent.project.id)
+        .maybeSingle();
+      projectProgress = prog || null;
+    }
+
     return successResponse({
       roadmapItem,
       tasks,
@@ -125,8 +208,14 @@ export async function GET(request) {
       currentDay: displayDay,
       currentWeek: Math.ceil(displayDay / 7),
       codingTest: codingTest || null,
-      project: null,
-      projectProgress: null,
+      objectives: dayContent.objectives,
+      keyConcepts: dayContent.key_concepts,
+      codingProblem: dayContent.coding_problem,
+      codingProblemUrl: dayContent.coding_problem_url,
+      isProjectDay: dayContent.is_project_day,
+      project: dayContent.project || null,
+      projectProgress,
+      generatedBy: dayContent.generated_by
     });
   } catch (error) {
     console.error('Daily roadmap error:', error);

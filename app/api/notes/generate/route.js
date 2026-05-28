@@ -1,115 +1,92 @@
-import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
+import { getAdminClient } from '@/lib/supabaseAdmin';
 import { successResponse, errorResponse } from '@/lib/response';
 import { askClaude } from '@/lib/claude';
-import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
-
-const NOTE_PROMPTS = {
-  theory: (topic) => `Generate concise study notes for a student learning about "${topic}".
-Format as bullet points only. Maximum 8 bullets.
-Each bullet must be:
-- One sentence maximum
-- Simple English that a 15-year-old can understand
-- No jargon without explanation
-- Start with an emoji that matches the concept
-
-Example format:
-- 🔐 Encryption scrambles your data so only the right person can read it
-- 🔑 A key is a secret code used to lock and unlock encrypted data
-- 🛡️ HTTPS uses encryption to protect websites you visit
-
-Return plain text with bullet points. No markdown headers. No bold text.`,
-
-  coding: (topic) => `Generate concise coding notes for a student learning about "${topic}".
-Format as bullet points only. Maximum 8 bullets.
-Each bullet must be:
-- One sentence maximum with a tiny code snippet if needed
-- Simple English that a 15-year-old can understand
-- Start with an emoji that matches the concept
-
-Example format:
-- 💻 Use console.log("hello") to print text to the screen in JavaScript
-- 🔁 A for loop repeats code — for(let i=0; i<5; i++) runs 5 times
-- ⚠️ Always put a semicolon at the end of each line in JavaScript
-
-Return plain text with bullet points. No markdown headers. No bold text.`,
-
-  full: (topic) => `Generate concise study notes for a student learning about "${topic}".
-Format as bullet points only. Maximum 10 bullets covering both theory and code.
-Each bullet must be:
-- One sentence maximum
-- Simple English that a 15-year-old can understand
-- Start with an emoji that matches the concept
-
-Return plain text with bullet points. No markdown headers. No bold text.`,
-
-  revision: (topic) => `Generate quick revision notes for a student about to take a test on "${topic}".
-Format as bullet points only. Maximum 6 bullets — only the most important facts.
-Each bullet must be:
-- One sentence maximum — something CRITICAL to remember
-- Start with an emoji
-- Simple English
-
-Return plain text with bullet points. No markdown headers. No bold text. These are last-minute reminders only.`,
-};
 
 export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!await rateLimit(`api_${payload.userId}`, 10, 60000)) return rateLimitResponse();
-
-    const allowed = rateLimit(`notes_${payload.userId}`, 10, 60000);
-    if (!allowed) return rateLimitResponse();
-
-    const { roadmapId, noteType } = await request.json();
-    if (!roadmapId || !noteType) {
-      return errorResponse('roadmapId and noteType are required', 400);
-    }
-
+    
+    const body = await request.json();
+    let { topic, day, domain, roadmapId, noteType } = body;
+    
     const supabase = getAdminClient();
 
-    const { data: existing } = await supabase
-      .from('notes')
-      .select('*')
-      .eq('user_id', payload.userId)
-      .eq('roadmap_id', roadmapId)
-      .eq('type', noteType)
-      .single();
-
-    if (existing) {
-      return successResponse({ note: existing, isNew: false });
+    if (roadmapId) {
+      const { data: roadmap } = await supabase.from('roadmap').select('topic, domain_slug, day_number').eq('id', roadmapId).single();
+      if (roadmap) {
+        topic = topic || roadmap.topic;
+        domain = domain || roadmap.domain_slug;
+        day = day || roadmap.day_number;
+      }
     }
 
-    const { data: user } = await supabase
-      .from('users').select('domain_slug, level').eq('id', payload.userId).single();
+    if (!topic) return errorResponse('Topic required', 400);
 
-    const { data: roadmap } = await supabase
-      .from('roadmap').select('topic').eq('id', roadmapId).single();
+    // Check cache first
+    const cacheKey = `notes_${domain || 'dsa'}_day${day || 1}_${topic.substring(0,30)}`;
+    const { data: cached } = await supabase.from('ai_cache').select('response').eq('cache_key', cacheKey).gt('expires_at', new Date().toISOString()).single();
+    if (cached) return successResponse({ notes: cached.response, note: { content: cached.response }, cached: true });
 
-    if (!roadmap) return errorResponse('Roadmap item not found', 404);
+    // Generate with Claude
+    const prompt = `Create comprehensive study notes for a CS student learning "${topic}" in C++.
+Include:
+1. Concept explanation (2-3 paragraphs, simple language)
+2. Key points to remember (5-7 bullet points)
+3. C++ code example with comments
+4. Time & Space complexity
+5. Common mistakes to avoid
+6. Interview tips
 
-    const promptFn = NOTE_PROMPTS[noteType];
-    if (!promptFn) return errorResponse('Invalid note type. Use: theory, coding, full, revision', 400);
+Format with clear headings. Use simple Hinglish-friendly English (Indian student level).`;
 
-    const prompt = promptFn(roadmap.topic);
-    const content = await askClaude(prompt, '', 2000);
+    let notes = '';
+    try {
+      notes = await askClaude(prompt, 800);
+    } catch (e) {
+      // DeepSeek fallback
+      try {
+        const res = await fetch(process.env.DEEPSEEK_BASE_URL + '/chat/completions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + process.env.DEEPSEEK_API_KEY },
+          body: JSON.stringify({ model: 'deepseek-ai/deepseek-r1', messages: [{ role: 'user', content: prompt }], max_tokens: 800 })
+        });
+        const data = await res.json();
+        notes = data.choices?.[0]?.message?.content || '';
+      } catch (e2) {
+        notes = `# ${topic} - Study Notes\n\n## Key Concepts\n${topic} is an important DSA topic.\n\n## C++ Example\n\`\`\`cpp\n// Practice ${topic} in C++\nint main() {\n    // Your code here\n    return 0;\n}\n\`\`\`\n\n## Tips\n- Practice daily\n- Understand time complexity\n- Solve LeetCode problems`;
+      }
+    }
 
-    const { data: note, error } = await supabase.from('notes').insert({
-      user_id: payload.userId,
-      roadmap_id: roadmapId,
-      domain_slug: user.domain_slug,
-      topic: roadmap.topic,
-      type: noteType,
-      content,
-      ai_generated: true,
-    }).select().single();
+    // Cache for 30 days
+    await supabase.from('ai_cache').upsert({ cache_key: cacheKey, response: notes, expires_at: new Date(Date.now() + 30*24*60*60*1000).toISOString(), hits: 1 }, { onConflict: 'cache_key' });
 
-    if (error) throw new Error(error.message);
+    // If it was roadmap daily note generation, let's also insert into the 'notes' table for the user's dashboard notes list
+    if (roadmapId) {
+      try {
+        await supabase.from('notes').upsert({
+          user_id: payload.userId,
+          roadmap_id: roadmapId,
+          domain_slug: domain || 'fullstack',
+          topic: topic,
+          type: noteType || 'theory',
+          content: notes,
+          ai_generated: true,
+        }, { onConflict: 'user_id,roadmap_id,type' });
+      } catch (e) {
+        console.error('Failed to save to user notes table:', e);
+      }
+    }
 
-    return successResponse({ note, isNew: true });
+    // Return format that matches both requirements
+    return successResponse({ 
+      notes, 
+      note: { content: notes },
+      cached: false 
+    });
   } catch (error) {
-    console.error('Generate notes error:', error);
+    console.error('notes/generate error:', error);
     return errorResponse('Internal server error', 500);
   }
 }
