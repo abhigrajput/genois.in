@@ -2,15 +2,23 @@ import { getUserFromRequest } from '@/lib/auth';
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { successResponse, errorResponse } from '@/lib/response';
 import { askClaude } from '@/lib/claude';
+import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
+import { sanitizeForAI } from '@/lib/security';
+
+function normalizeCacheToken(s) {
+  return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '_').slice(0, 40);
+}
 
 export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    
-    const body = await request.json();
-    let { topic, day, domain, roadmapId, noteType } = body;
-    
+    if (!await rateLimit(`notes_gen_${payload.userId}`, 5, 60000)) return rateLimitResponse();
+
+    let body;
+    try { body = await request.json(); } catch { return errorResponse('Invalid JSON body', 400); }
+    let { topic, day, domain, roadmapId, noteType } = body || {};
+
     const supabase = getAdminClient();
 
     if (roadmapId) {
@@ -22,10 +30,14 @@ export async function POST(request) {
       }
     }
 
+    topic = sanitizeForAI(topic, 200);
     if (!topic) return errorResponse('Topic required', 400);
 
-    // Check cache first
-    const cacheKey = `notes_${domain || 'dsa'}_day${day || 1}_${topic.substring(0,30)}`;
+    const dayNum = Number.isFinite(Number(day)) ? Math.max(1, Math.min(365, Number(day))) : 1;
+
+    // Check cache first — normalize the key components so attacker-controlled
+    // topics can't collide with legitimate cache entries.
+    const cacheKey = `notes_${normalizeCacheToken(domain || 'dsa')}_day${dayNum}_${normalizeCacheToken(topic)}`;
     const { data: cached } = await supabase.from('ai_cache').select('response').eq('cache_key', cacheKey).gt('expires_at', new Date().toISOString()).single();
     if (cached) return successResponse({ notes: cached.response, note: { content: cached.response }, cached: true });
 

@@ -1,41 +1,19 @@
 import { getAdminClient } from '@/lib/supabaseAdmin';
-import { getUserFromRequest } from '@/lib/auth';
+import { getAdminFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-async function isAdmin(userId, supabase) {
-  try {
-    const { data: user } = await supabase
-      .from('users')
-      .select('email')
-      .eq('id', userId)
-      .single();
-    if (!user) return false;
-    
-    const { data: admin } = await supabase
-      .from('admin_users')
-      .select('email')
-      .eq('email', user.email)
-      .single();
-    return !!admin;
-  } catch {
-    return false;
-  }
-}
-
 export async function GET(request) {
   try {
-    const payload = await getUserFromRequest(request);
-    if (!payload) return errorResponse('Unauthorized', 401);
-    
+    const admin = await getAdminFromRequest(request);
+    if (!admin) return errorResponse('Forbidden - Admin access required', 403);
+
     const supabase = getAdminClient();
-    const adminCheck = await isAdmin(payload.userId, supabase);
-    if (!adminCheck) return errorResponse('Forbidden - Admin access required', 403);
 
     const [usersRes, scoresRes, progressRes, paymentsRes, aptitudeRes, interviewRes, cacheRes] = await Promise.all([
-      supabase.from('users').select('id, name, email, college, year, domain_slug, subscription_plan, plan_expires_at, trial_ends_at, is_on_trial, created_at, password_hash').order('created_at', { ascending: false }).then(r => r).catch(() => ({ data: [] })),
+      supabase.from('users').select('id, name, email, college, year, domain_slug, subscription_plan, plan_expires_at, trial_ends_at, is_on_trial, created_at').order('created_at', { ascending: false }).then(r => r).catch(() => ({ data: [] })),
       supabase.from('scores').select('user_id, total_score').then(r => r).catch(() => ({ data: [] })),
       supabase.from('progress').select('user_id, current_day, streak, last_active_date').then(r => r).catch(() => ({ data: [] })),
       supabase.from('payments').select('user_id, amount, plan, created_at').order('created_at', { ascending: false }).then(r => r).catch(() => ({ data: [] })),
@@ -85,7 +63,6 @@ export async function GET(request) {
         trialDaysLeft,
         lastActiveDays,
         joined: u.created_at,
-        passwordHashPreview: u.password_hash ? u.password_hash.substring(0, 20) + '...' : 'none',
       };
     });
 

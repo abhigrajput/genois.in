@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { csrfCheck } from '@/lib/security';
 
 const PROTECTED_ROUTES = [
   '/dashboard',
@@ -24,6 +25,22 @@ const PROTECTED_ROUTES = [
   '/subscription',
 ];
 
+// Routes that receive legitimate cross-origin or no-Origin POSTs:
+// - /api/cron/*       — Vercel cron, gated by CRON_SECRET bearer token
+// - /api/auth/        — NextAuth callbacks (Google OAuth redirect, NextAuth's
+//                       own CSRF endpoint); NextAuth has its own CSRF handling.
+// - /api/payment/     — payment webhooks (Razorpay etc.) when re-enabled must
+//                       validate signatures, not rely on Origin.
+const CSRF_EXEMPT_PREFIXES = [
+  '/api/cron/',
+  '/api/auth/',
+  '/api/payment/',
+];
+
+function isCsrfExempt(pathname) {
+  return CSRF_EXEMPT_PREFIXES.some(p => pathname.startsWith(p));
+}
+
 // FIX 04: Allowed admin IPs — extend via ADMIN_IPS env var (comma-separated)
 const ADMIN_IPS = new Set(
   (process.env.ADMIN_IPS || '127.0.0.1,::1')
@@ -35,6 +52,13 @@ const ADMIN_IPS = new Set(
 export function middleware(request) {
   const { pathname } = request.nextUrl;
 
+  // ── CSRF: enforce Origin/Referer match on state-changing API requests ──
+  if (pathname.startsWith('/api/') && !isCsrfExempt(pathname)) {
+    const csrfBlock = csrfCheck(request);
+    if (csrfBlock) return csrfBlock;
+  }
+
+  // ── Auth: redirect unauthenticated users from protected pages to /login ──
   const isProtected = PROTECTED_ROUTES.some(route => pathname.startsWith(route));
   if (!isProtected) return NextResponse.next();
 
@@ -67,6 +91,7 @@ export function middleware(request) {
 
 export const config = {
   matcher: [
+    '/api/:path*',
     '/dashboard/:path*',
     '/notes/:path*',
     '/roadmap/:path*',

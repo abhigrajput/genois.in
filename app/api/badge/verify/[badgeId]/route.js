@@ -15,7 +15,7 @@ export async function GET(request, { params }) {
       .from('user_badges')
       .select(`
         id, domain, score, level, status, earned_at, expires_at,
-        users!inner(name, email)
+        users!inner(name)
       `)
       .eq('id', badgeId)
       .single();

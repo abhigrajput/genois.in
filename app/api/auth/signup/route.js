@@ -6,7 +6,7 @@ import { getAdminClient } from '@/lib/supabaseAdmin';
 import { generateToken } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
-import { csrfCheck, checkPasswordStrength } from '@/lib/security';
+import { csrfCheck, checkPasswordStrength, getClientIp } from '@/lib/security';
 
 // FIX 08: Zod schema
 const SignupSchema = z.object({
@@ -31,13 +31,13 @@ export async function POST(request) {
     try { body = await request.json(); } catch { return errorResponse('Invalid JSON body', 400); }
 
     // Rate limit by IP
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+    const ip = getClientIp(request);
     if (!await rateLimit(`signup_${ip}`, 5, 3600000)) return rateLimitResponse(3600);
 
     // FIX 08: Zod validation
     const parsed = SignupSchema.safeParse(body);
     if (!parsed.success) {
-      return errorResponse(parsed.error.errors[0].message, 400);
+      return errorResponse((parsed.error.issues?.[0]?.message || parsed.error.errors?.[0]?.message || "Validation failed"), 400);
     }
     const { name, email, password, college, year, domainSlug, level, learningSpeed, referralCode } = parsed.data;
 
@@ -84,8 +84,8 @@ export async function POST(request) {
       .single();
 
     if (userError) {
-      console.error('SIGNUP_DB_ERROR:', JSON.stringify(userError, null, 2));
-      return errorResponse(`Account creation failed: ${userError.message}`, 500);
+      console.error('SIGNUP_DB_ERROR:', userError.code || 'unknown');
+      return errorResponse('Account creation failed', 500);
     }
 
     // Use email_verify_token column (actual column name in users table)

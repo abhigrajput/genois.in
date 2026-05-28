@@ -13,10 +13,10 @@ export async function POST(request) {
       const parts = authHeader.split(' ');
       if (parts.length === 2 && parts[0] === 'Bearer') {
         const token = parts[1];
-        const payload = verifyToken(token);
+        const payload = await verifyToken(token);
         if (payload?.exp) {
           // Blacklist until the token's natural expiry
-          blacklistToken(token, payload.exp);
+          await blacklistToken(token, payload.exp);
         }
       }
     }

@@ -1,14 +1,22 @@
 import { fetchDSAVideo } from '@/lib/youtubeSearch';
 import { getAdminClient } from '@/lib/supabaseAdmin';
+import { getUserFromRequest } from '@/lib/auth';
+import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 
 export const runtime = 'nodejs';
 
 export async function GET(request) {
+  const payload = await getUserFromRequest(request);
+  if (!payload) {
+    return Response.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  if (!await rateLimit(`dsa_video_${payload.userId}`, 20, 60000)) return rateLimitResponse();
+
   const { searchParams } = new URL(request.url);
   const topic = searchParams.get('topic');
 
-  if (!topic) {
-    return Response.json({ error: 'topic is required' }, { status: 400 });
+  if (!topic || topic.length > 200) {
+    return Response.json({ error: 'topic is required (max 200 chars)' }, { status: 400 });
   }
 
   const supabase = getAdminClient();

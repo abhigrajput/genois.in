@@ -3,6 +3,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { askClaudeChat } from '@/lib/claude';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
+import { sanitizeChatHistory, sanitizeUserMessage } from '@/lib/security';
 
 function buildChatbotSystem(domain, level, mode) {
   const modeInstructions = {
@@ -29,10 +30,7 @@ export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!await rateLimit(`api_${payload.userId}`, 15, 60000)) return rateLimitResponse();
-
-    const allowed = rateLimit(`chat_${payload.userId}`, 15, 60000);
-    if (!allowed) return rateLimitResponse();
+    if (!await rateLimit(`chat_${payload.userId}`, 15, 60000)) return rateLimitResponse();
 
     let body;
     try {
@@ -41,7 +39,9 @@ export async function POST(request) {
       return errorResponse('Invalid JSON body', 400);
     }
     const { message, mode, conversationHistory } = body || {};
-    if (!message) return errorResponse('Message is required', 400);
+
+    const cleanMessage = sanitizeUserMessage(message, 4000);
+    if (!cleanMessage) return errorResponse('Message is required', 400);
 
     const validModes = ['general', 'coding', 'domain', 'project', 'career'];
     const selectedMode = validModes.includes(mode) ? mode : 'general';
@@ -57,15 +57,15 @@ export async function POST(request) {
     );
 
     const messages = [
-      ...(conversationHistory || []).slice(-8),
-      { role: 'user', content: message },
+      ...sanitizeChatHistory(conversationHistory, 8, 4000),
+      { role: 'user', content: cleanMessage },
     ];
 
     const response = await askClaudeChat(messages, system, 1200);
 
     await supabase.from('chat_history').insert({
       user_id: payload.userId,
-      message,
+      message: cleanMessage,
       response,
       mode: selectedMode,
       domain: user?.domain_slug,

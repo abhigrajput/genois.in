@@ -57,7 +57,20 @@ export async function GET(request) {
       query = query.eq('author_id', authorId);
     }
     if (search) {
-      query = query.or(`title.ilike.%${search}%,excerpt.ilike.%${search}%,content.ilike.%${search}%`);
+      // PostgREST .or() takes a filter expression. We strip characters that
+      // could let attacker-controlled `search` break out of the intended
+      // grouping (`,` `(` `)` `*` `%`) and cap length so a giant string can't
+      // be used to DoS the query parser. The ilike wildcards are reintroduced
+      // around the cleaned value.
+      const cleanSearch = String(search)
+        .slice(0, 100)
+        .replace(/[,()*%]/g, '')
+        .trim();
+      if (cleanSearch) {
+        query = query.or(
+          `title.ilike.%${cleanSearch}%,excerpt.ilike.%${cleanSearch}%,content.ilike.%${cleanSearch}%`
+        );
+      }
     }
 
     // Sort by publish date (published first) or creation date

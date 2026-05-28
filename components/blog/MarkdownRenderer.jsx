@@ -2,27 +2,47 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 
+// Only allow http(s), mailto, or same-origin relative URLs in markdown links.
+// Anything else (javascript:, data:, vbscript:, etc.) is dropped to prevent XSS.
+function isSafeUrl(url) {
+  if (!url) return false;
+  const trimmed = String(url).trim();
+  if (/[\x00-\x1f]/.test(trimmed)) return false; // control chars
+  if (trimmed.startsWith('/') || trimmed.startsWith('#') ||
+      trimmed.startsWith('./') || trimmed.startsWith('../')) {
+    return true;
+  }
+  return /^(https?|mailto):/i.test(trimmed);
+}
+
+function escapeAttr(s) {
+  return String(s).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 function parseInline(text) {
   if (!text) return '';
-  
+
   // Escape HTML tags to protect against XSS, preserving our custom elements later
   let html = text
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
-  
+
   // bold: **text**
   html = html.replace(/\*\*(.*?)\*\*/g, '<strong style="color:#ffffff;font-weight:700;">$1</strong>');
-  
+
   // italic: *text*
   html = html.replace(/\*(.*?)\*/g, '<em style="color:#e8f4ff;font-style:italic;">$1</em>');
-  
+
   // inline code: `code`
   html = html.replace(/`(.*?)`/g, '<code style="background:#161b22;color:#00f0ff;padding:2px 6px;border-radius:4px;font-family:JetBrains Mono,monospace;font-size:13px;border:1px solid rgba(0,240,255,0.15);word-break:break-all;">$1</code>');
-  
-  // links: [text](url)
-  html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noreferrer" style="color:#00f0ff;text-decoration:underline;font-weight:500;transition:opacity 0.15s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">$1</a>');
-  
+
+  // links: [text](url) — URL must pass isSafeUrl, otherwise we render plain text only
+  html = html.replace(/\[(.*?)\]\((.*?)\)/g, (_match, linkText, url) => {
+    if (!isSafeUrl(url)) return linkText;
+    return `<a href="${escapeAttr(url.trim())}" target="_blank" rel="noopener noreferrer" style="color:#00f0ff;text-decoration:underline;font-weight:500;transition:opacity 0.15s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">${linkText}</a>`;
+  });
+
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
 }
 

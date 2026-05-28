@@ -1,10 +1,11 @@
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
+import { getClientIp } from '@/lib/security';
 
 export async function GET(request) {
   try {
-    const ip = request.headers.get('x-forwarded-for') || 'unknown';
+    const ip = getClientIp(request);
     if (!await rateLimit(`verify_email_${ip}`, 5, 3600000)) return rateLimitResponse();
 
     const { searchParams } = new URL(request.url);

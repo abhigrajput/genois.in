@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
-import { csrfCheck, checkPasswordStrength } from '@/lib/security';
+import { csrfCheck, checkPasswordStrength, getClientIp } from '@/lib/security';
 import bcrypt from 'bcryptjs';
 
 // FIX 08: Zod schema
@@ -17,7 +17,7 @@ export async function POST(request) {
   if (csrf) return csrf;
 
   try {
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+    const ip = getClientIp(request);
     if (!await rateLimit(`reset_pwd_${ip}`, 3, 3600000)) return rateLimitResponse(3600);
 
     let body;
@@ -26,7 +26,7 @@ export async function POST(request) {
     // FIX 08: Zod validation
     const parsed = ResetSchema.safeParse(body);
     if (!parsed.success) {
-      return errorResponse(parsed.error.errors[0].message, 400);
+      return errorResponse((parsed.error.issues?.[0]?.message || parsed.error.errors?.[0]?.message || "Validation failed"), 400);
     }
     const { token, password } = parsed.data;
 

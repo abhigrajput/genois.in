@@ -4,7 +4,7 @@ import { getAdminClient } from '@/lib/supabaseAdmin';
 import { successResponse, errorResponse } from '@/lib/response';
 import { Resend } from 'resend';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
-import { csrfCheck } from '@/lib/security';
+import { csrfCheck, getClientIp } from '@/lib/security';
 
 // FIX 08: Zod schema
 const ForgotSchema = z.object({
@@ -31,7 +31,7 @@ export async function POST(request) {
   const SAFE_MESSAGE = 'If this email exists, you will receive a reset link.';
 
   try {
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+    const ip = getClientIp(request);
     if (!await rateLimit('forgot_' + ip, 3, 3600000)) return rateLimitResponse(3600);
 
     let body;
@@ -42,7 +42,7 @@ export async function POST(request) {
     if (!parsed.success) {
       // FIX 11: Delay even on validation failure to prevent timing enumeration
       await new Promise(r => setTimeout(r, RESPONSE_DELAY_MS));
-      return errorResponse(parsed.error.errors[0].message, 400);
+      return errorResponse((parsed.error.issues?.[0]?.message || parsed.error.errors?.[0]?.message || "Validation failed"), 400);
     }
     const { email } = parsed.data;
 

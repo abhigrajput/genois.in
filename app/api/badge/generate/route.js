@@ -83,11 +83,6 @@ async function askDeepSeekBadge(domain, timeoutMs = 25000) {
 // Route handler
 // ---------------------------------------------------------------------------
 export async function GET(request) {
-  // --- ENV diagnostics (visible in Vercel Function logs) ---
-  console.log('ENV CHECK - DEEPSEEK_BASE_URL:', process.env.DEEPSEEK_BASE_URL ? 'SET' : 'MISSING');
-  console.log('ENV CHECK - DEEPSEEK_API_KEY:', process.env.DEEPSEEK_API_KEY ? 'SET' : 'MISSING');
-  console.log('ENV CHECK - ANTHROPIC_API_KEY:', process.env.ANTHROPIC_API_KEY ? 'SET' : 'MISSING');
-
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);

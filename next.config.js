@@ -32,9 +32,12 @@ const nextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=()',
           },
+          // X-XSS-Protection is deprecated and has been removed. Modern browsers
+          // ignore it, and `1; mode=block` has introduced DOM-XSS in some
+          // historical edge cases. Setting to `0` to explicitly disable.
           {
             key: 'X-XSS-Protection',
-            value: '1; mode=block',
+            value: '0',
           },
           // FIX 07: Missing headers
           {

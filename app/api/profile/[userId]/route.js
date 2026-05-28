@@ -1,8 +1,12 @@
 import { getAdminClient } from '@/lib/supabaseAdmin';
+import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 
 export async function GET(request, context) {
   try {
+    const payload = await getUserFromRequest(request);
+    if (!payload) return errorResponse('Unauthorized', 401);
+
     const { userId } = await context.params;
     const supabase = getAdminClient();
 

@@ -1,5 +1,11 @@
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
+
+function generatePassword() {
+  // 24 bytes -> 32-char base64url, drop padding chars to keep it password-friendly
+  return crypto.randomBytes(24).toString('base64url');
+}
 
 async function createDummyAuthor() {
   const supabase = createClient(
@@ -7,7 +13,8 @@ async function createDummyAuthor() {
     process.env.SUPABASE_SERVICE_ROLE_KEY
   );
 
-  const passwordHash = await bcrypt.hash('DSAAuthor@2024', 12);
+  const password = generatePassword();
+  const passwordHash = await bcrypt.hash(password, 12);
   
   // Find or insert into users table
   let { data: user, error: selectError } = await supabase
@@ -113,9 +120,9 @@ async function createDummyAuthor() {
   }
   
   console.log('✅ Dummy author setup complete!');
-  console.log('Credentials:');
-  console.log('Email: dsa.author@genois.in');
-  console.log('Password: DSAAuthor@2024');
+  console.log('Credentials (shown ONCE — save them now, they cannot be recovered):');
+  console.log('  Email:    dsa.author@genois.in');
+  console.log('  Password: ' + password);
 }
 
 createDummyAuthor();

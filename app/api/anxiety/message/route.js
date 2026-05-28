@@ -3,6 +3,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { askClaudeChat } from '@/lib/claude';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
+import { sanitizeChatHistory, sanitizeUserMessage } from '@/lib/security';
 
 const ANXIETY_SYSTEM = (name, domain) => `You are GENOIS 2AM — a compassionate late-night companion for engineering students in India.
 
@@ -35,10 +36,7 @@ export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!await rateLimit(`api_${payload.userId}`, 10, 60000)) return rateLimitResponse();
-
-    const allowed = rateLimit(`anxiety_${payload.userId}`, 10, 60000);
-    if (!allowed) return rateLimitResponse();
+    if (!await rateLimit(`anxiety_${payload.userId}`, 10, 60000)) return rateLimitResponse();
 
     let body;
     try {
@@ -47,7 +45,9 @@ export async function POST(request) {
       return errorResponse('Invalid JSON body', 400);
     }
     const { message, conversationHistory, mood } = body || {};
-    if (!message) return errorResponse('Message is required', 400);
+
+    const cleanMessage = sanitizeUserMessage(message, 4000);
+    if (!cleanMessage) return errorResponse('Message is required', 400);
 
     const supabase = getAdminClient();
     const { data: user } = await supabase
@@ -59,15 +59,15 @@ export async function POST(request) {
     const system = ANXIETY_SYSTEM(user?.name || 'Student', user?.domain_slug || 'engineering');
 
     const messages = [
-      ...(conversationHistory || []).slice(-12),
-      { role: 'user', content: message },
+      ...sanitizeChatHistory(conversationHistory, 12, 4000),
+      { role: 'user', content: cleanMessage },
     ];
 
     const response = await askClaudeChat(messages, system, 600);
 
     await supabase.from('anxiety_chat').insert({
       user_id: payload.userId,
-      message,
+      message: cleanMessage,
       response,
       mood: mood || null,
     });

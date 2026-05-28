@@ -2,10 +2,11 @@ import { getUserFromRequest, generateToken } from '@/lib/auth';
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
+import { getClientIp } from '@/lib/security';
 
 export async function POST(request) {
   try {
-    const ip = request.headers.get('x-forwarded-for') || 'unknown';
+    const ip = getClientIp(request);
     if (!await rateLimit(`refresh_${ip}`, 10, 60000)) return rateLimitResponse();
 
     const payload = await getUserFromRequest(request);

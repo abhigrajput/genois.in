@@ -1,10 +1,10 @@
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { successResponse, errorResponse } from '@/lib/response';
+import { isAuthorizedCron } from '@/lib/security';
 
 export async function GET(request) {
   try {
-    const authHeader = request.headers.get('authorization');
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    if (!isAuthorizedCron(request)) {
       return errorResponse('Unauthorized', 401);
     }
 

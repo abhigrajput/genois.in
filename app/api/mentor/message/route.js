@@ -3,6 +3,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { askClaudeChat } from '@/lib/claude';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
+import { sanitizeChatHistory, sanitizeUserMessage } from '@/lib/security';
 
 const MENTOR_SYSTEMS = {
   explain: (ctx) => `You are GENOIS AI Mentor — a personal tutor for ${ctx.name}.
@@ -96,10 +97,7 @@ export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!await rateLimit(`api_${payload.userId}`, 10, 60000)) return rateLimitResponse();
-
-    const allowed = rateLimit(`mentor_${payload.userId}`, 10, 60000);
-    if (!allowed) return rateLimitResponse();
+    if (!await rateLimit(`mentor_${payload.userId}`, 10, 60000)) return rateLimitResponse();
 
     let body;
     try {
@@ -108,7 +106,9 @@ export async function POST(request) {
       return errorResponse('Invalid JSON body', 400);
     }
     const { message, mode, conversationHistory } = body || {};
-    if (!message) return errorResponse('Message is required', 400);
+
+    const cleanMessage = sanitizeUserMessage(message, 4000);
+    if (!cleanMessage) return errorResponse('Message is required', 400);
 
     const validModes = ['explain', 'coding', 'roadmap', 'project', 'notes'];
     const selectedMode = validModes.includes(mode) ? mode : 'explain';
@@ -119,15 +119,15 @@ export async function POST(request) {
     const system = systemFn(ctx);
 
     const messages = [
-      ...(conversationHistory || []).slice(-10),
-      { role: 'user', content: message },
+      ...sanitizeChatHistory(conversationHistory, 10, 4000),
+      { role: 'user', content: cleanMessage },
     ];
 
     const response = await askClaudeChat(messages, system, 1500);
 
     await supabase.from('mentor_history').insert({
       user_id: payload.userId,
-      message,
+      message: cleanMessage,
       response,
       mode: selectedMode,
       domain: ctx.domain,

@@ -4,7 +4,7 @@ import { getAdminClient } from '@/lib/supabaseAdmin';
 import { generateToken } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse, isLockedOut, recordFailedLogin, clearFailedLogins, lockoutResponse } from '@/lib/rateLimit';
-import { csrfCheck } from '@/lib/security';
+import { csrfCheck, getClientIp } from '@/lib/security';
 
 // FIX 08: Zod schema
 const LoginSchema = z.object({
@@ -17,7 +17,7 @@ export async function POST(request) {
   const csrf = csrfCheck(request);
   if (csrf) return csrf;
 
-  const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+  const ip = getClientIp(request);
 
   // FIX 01: Check IP lockout FIRST (before rate limiter, before any DB query)
   const lockout = await isLockedOut(ip);
@@ -33,7 +33,7 @@ export async function POST(request) {
     // FIX 08: Zod validation
     const parsed = LoginSchema.safeParse(body);
     if (!parsed.success) {
-      return errorResponse(parsed.error.errors[0].message, 400);
+      return errorResponse((parsed.error.issues?.[0]?.message || parsed.error.errors?.[0]?.message || "Validation failed"), 400);
     }
     const { email, password } = parsed.data;
 

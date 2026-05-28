@@ -15,7 +15,7 @@ dist
 .env.development.local
 .env.production.local
 .env.test.local
-*.env.local
+.env*.local
 
 # Vercel
 .vercel
@@ -34,10 +34,14 @@ yarn-error.log*
 # Testing
 coverage
 scratch
+security/reports
+
+# Keys / secrets
+*.pem
+*.key
+*.p12
+tokens.json
 
 # Misc
 d.txt
 *.tmp
-.env.local
-.env*.local
-.vercel
