@@ -4,19 +4,20 @@ import { successResponse, errorResponse } from '@/lib/response';
 
 export async function POST(request, { params }) {
   try {
+    const { id } = await params;
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
 
     const supabase = getAdminClient();
     const { data: note } = await supabase
-      .from('notes').select('*').eq('id', params.id).single();
+      .from('notes').select('*').eq('id', id).single();
 
     if (!note || note.user_id !== payload.userId) {
       return errorResponse('Note not found', 404);
     }
 
     // Delete old note so generate endpoint creates a fresh one
-    await supabase.from('notes').delete().eq('id', params.id);
+    await supabase.from('notes').delete().eq('id', id);
 
     const genRes = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/notes/generate`, {
       method: 'POST',

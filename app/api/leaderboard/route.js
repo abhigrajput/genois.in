@@ -25,9 +25,9 @@ export async function GET(request) {
     
     const { data: users, error } = await supabase
       .from('users')
-      .select('id, name, college, domain_slug, subscription_plan, created_at')
+      .select('id, name, college, domain_slug, subscription_plan, total_score')
       .not('name', 'is', null)
-      .order('created_at', { ascending: false, nullsFirst: false })
+      .order('total_score', { ascending: false, nullsFirst: false })
       .limit(100);
 
     if (error) {
@@ -36,15 +36,26 @@ export async function GET(request) {
       return errorResponse('Failed to load leaderboard: ' + error.message, 500);
     }
 
+    // Batch-fetch progress (day/streak) for the ranked users in a single query
+    const ids = (users || []).map(u => u.id);
+    const progressMap = {};
+    if (ids.length) {
+      const { data: progressRows } = await supabase
+        .from('progress')
+        .select('user_id, current_day, streak')
+        .in('user_id', ids);
+      for (const p of (progressRows || [])) progressMap[p.user_id] = p;
+    }
+
     const leaderboard = (users || []).map((u, i) => ({
       rank: i + 1,
       id: u.id,
       name: u.name || 'Anonymous',
       college: u.college || 'Not set',
       domain: u.domain_slug || 'general',
-      score: 0,
-      day: 0,
-      streak: 0,
+      score: u.total_score || 0,
+      day: progressMap[u.id]?.current_day || 0,
+      streak: progressMap[u.id]?.streak || 0,
       plan: u.subscription_plan || 'spectator',
     }));
 

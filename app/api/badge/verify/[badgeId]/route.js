@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request, { params }) {
   try {
-    const { badgeId } = params;
+    const { badgeId } = await params;
     if (!badgeId) return errorResponse('Badge ID required', 400);
 
     const supabase = getAdminClient();

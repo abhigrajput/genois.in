@@ -8,7 +8,7 @@ export async function POST(request, { params }) {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
 
-    const projectId = params.id;
+    const { id: projectId } = await params;
     const supabase = getAdminClient();
 
     const { data: progress } = await supabase

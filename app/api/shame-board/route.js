@@ -6,47 +6,44 @@ export async function GET(request) {
     const supabase = getAdminClient();
     const threeDaysAgo = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString();
 
-    const { data: users } = await supabase
-      .from('users')
-      .select('id, name, college, domain_slug, created_at')
-      .not('name', 'is', null);
+    // 1 query: progress rows that have been inactive for 3+ days
+    const { data: staleProgress } = await supabase
+      .from('progress')
+      .select('user_id, current_day, streak, last_active_date')
+      .not('last_active_date', 'is', null)
+      .lt('last_active_date', threeDaysAgo);
+
+    const userIds = (staleProgress || []).map(p => p.user_id);
+
+    // 2 batched lookups for the matching users and their scores
+    const [{ data: users }, { data: scores }] = await Promise.all([
+      supabase.from('users').select('id, name, college, domain_slug, created_at').in('id', userIds.length ? userIds : ['00000000-0000-0000-0000-000000000000']).not('name', 'is', null),
+      supabase.from('scores').select('user_id, total_score').in('user_id', userIds.length ? userIds : ['00000000-0000-0000-0000-000000000000']),
+    ]);
+
+    const userMap = {};
+    for (const u of (users || [])) userMap[u.id] = u;
+    const scoreMap = {};
+    for (const s of (scores || [])) scoreMap[s.user_id] = s.total_score;
 
     const results = [];
+    for (const progress of (staleProgress || [])) {
+      const user = userMap[progress.user_id];
+      if (!user) continue; // skips users with null name
+      const lastActiveDate = new Date(progress.last_active_date);
+      const daysSinceActive = Math.floor((Date.now() - lastActiveDate) / (1000 * 60 * 60 * 24));
 
-    for (const user of (users || [])) {
-      const { data: progress } = await supabase
-        .from('progress')
-        .select('current_day, streak, last_active_date, tasks_completed_today')
-        .eq('user_id', user.id)
-        .single();
-
-      const lastActive = progress?.last_active_date;
-      if (!lastActive) continue;
-
-      const lastActiveDate = new Date(lastActive);
-      const threeDaysAgoDate = new Date(threeDaysAgo);
-
-      if (lastActiveDate < threeDaysAgoDate) {
-        const { data: score } = await supabase
-          .from('scores')
-          .select('total_score')
-          .eq('user_id', user.id)
-          .single();
-
-        const daysSinceActive = Math.floor((Date.now() - lastActiveDate) / (1000 * 60 * 60 * 24));
-
-        results.push({
-          name: user.name,
-          college: user.college || 'Unknown College',
-          domain: user.domain_slug,
-          currentDay: progress?.current_day || 1,
-          streak: progress?.streak || 0,
-          score: score?.total_score || 0,
-          lastActive: progress.last_active_date,
-          daysSinceActive,
-          joinedAt: user.created_at,
-        });
-      }
+      results.push({
+        name: user.name,
+        college: user.college || 'Unknown College',
+        domain: user.domain_slug,
+        currentDay: progress.current_day || 1,
+        streak: progress.streak || 0,
+        score: scoreMap[progress.user_id] || 0,
+        lastActive: progress.last_active_date,
+        daysSinceActive,
+        joinedAt: user.created_at,
+      });
     }
 
     results.sort((a, b) => b.daysSinceActive - a.daysSinceActive);

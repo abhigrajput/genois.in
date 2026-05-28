@@ -7,14 +7,15 @@ export async function GET(request, { params }) {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
 
+    const { id, index } = await params;
     const supabase = getAdminClient();
     const { data: test } = await supabase
       .from('coding_tests').select('hints, title')
-      .eq('id', params.id).single();
+      .eq('id', id).single();
 
     if (!test) return errorResponse('Test not found', 404);
 
-    const hintIndex = parseInt(params.index);
+    const hintIndex = parseInt(index);
     const hint = test.hints?.[hintIndex];
     if (!hint) return errorResponse('Hint not found', 404);
 

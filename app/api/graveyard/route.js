@@ -6,42 +6,44 @@ export async function GET(request) {
     const supabase = getAdminClient();
     const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
 
+    // 1 query: progress rows inactive for 14+ days
+    const { data: staleProgress } = await supabase
+      .from('progress')
+      .select('user_id, current_day, streak, last_active_date')
+      .not('last_active_date', 'is', null)
+      .lt('last_active_date', fourteenDaysAgo);
+
+    const userIds = (staleProgress || []).map(p => p.user_id);
+
+    // 1 batched lookup for the matching users
     const { data: users } = await supabase
       .from('users')
       .select('id, name, college, domain_slug, created_at')
+      .in('id', userIds.length ? userIds : ['00000000-0000-0000-0000-000000000000'])
       .not('name', 'is', null);
 
+    const userMap = {};
+    for (const u of (users || [])) userMap[u.id] = u;
+
     const graveyard = [];
+    for (const progress of (staleProgress || [])) {
+      const user = userMap[progress.user_id];
+      if (!user) continue;
+      const lastActiveDate = new Date(progress.last_active_date);
+      const daysSinceActive = Math.floor((Date.now() - lastActiveDate) / (1000 * 60 * 60 * 24));
+      const quitDay = progress.current_day || 1;
 
-    for (const user of (users || [])) {
-      const { data: progress } = await supabase
-        .from('progress')
-        .select('current_day, streak, last_active_date')
-        .eq('user_id', user.id)
-        .single();
-
-      const lastActive = progress?.last_active_date;
-      if (!lastActive) continue;
-
-      const lastActiveDate = new Date(lastActive);
-      const fourteenDaysAgoDate = new Date(fourteenDaysAgo);
-
-      if (lastActiveDate < fourteenDaysAgoDate) {
-        const daysSinceActive = Math.floor((Date.now() - lastActiveDate) / (1000 * 60 * 60 * 24));
-        const quitDay = progress?.current_day || 1;
-
-        graveyard.push({
-          name: user.name,
-          college: user.college || 'Unknown College',
-          domain: user.domain_slug,
-          quitDay,
-          streak: progress?.streak || 0,
-          lastActive: progress.last_active_date,
-          daysSinceActive,
-          joinedAt: user.created_at,
-          epitaph: getEpitaph(quitDay),
-        });
-      }
+      graveyard.push({
+        name: user.name,
+        college: user.college || 'Unknown College',
+        domain: user.domain_slug,
+        quitDay,
+        streak: progress.streak || 0,
+        lastActive: progress.last_active_date,
+        daysSinceActive,
+        joinedAt: user.created_at,
+        epitaph: getEpitaph(quitDay),
+      });
     }
 
     graveyard.sort((a, b) => new Date(b.joinedAt) - new Date(a.joinedAt));

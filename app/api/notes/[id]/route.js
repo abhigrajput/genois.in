@@ -4,6 +4,7 @@ import { successResponse, errorResponse } from '@/lib/response';
 
 export async function PUT(request, { params }) {
   try {
+    const { id } = await params;
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
 
@@ -15,7 +16,7 @@ export async function PUT(request, { params }) {
     const { data: existing } = await supabase
       .from('notes')
       .select('user_id')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (!existing || existing.user_id !== payload.userId) {
@@ -29,7 +30,7 @@ export async function PUT(request, { params }) {
     const { data: note, error } = await supabase
       .from('notes')
       .update(updates)
-      .eq('id', params.id)
+      .eq('id', id)
       .select()
       .single();
 
@@ -42,6 +43,7 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
+    const { id } = await params;
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
 
@@ -49,14 +51,14 @@ export async function DELETE(request, { params }) {
     const { data: existing } = await supabase
       .from('notes')
       .select('user_id')
-      .eq('id', params.id)
+      .eq('id', id)
       .single();
 
     if (!existing || existing.user_id !== payload.userId) {
       return errorResponse('Note not found', 404);
     }
 
-    await supabase.from('notes').delete().eq('id', params.id);
+    await supabase.from('notes').delete().eq('id', id);
     return successResponse({ deleted: true });
   } catch (error) {
     return errorResponse('Internal server error', 500);

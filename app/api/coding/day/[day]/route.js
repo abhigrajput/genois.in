@@ -10,7 +10,8 @@ export async function GET(request, { params }) {
     if (!payload) return errorResponse('Unauthorized', 401);
     if (!await rateLimit(`api_${payload.userId}`, 30, 60000)) return rateLimitResponse();
 
-    const dayNumber = parseInt(params.day);
+    const { day } = await params;
+    const dayNumber = parseInt(day);
     const supabase = getAdminClient();
 
     const { data: user } = await supabase

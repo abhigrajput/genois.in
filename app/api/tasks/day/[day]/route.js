@@ -7,7 +7,8 @@ export async function GET(request, { params }) {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
 
-    const dayNumber = parseInt(params.day);
+    const { day } = await params;
+    const dayNumber = parseInt(day);
     if (isNaN(dayNumber) || dayNumber < 1 || dayNumber > 30) {
       return errorResponse('Invalid day number', 400);
     }
