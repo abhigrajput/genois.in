@@ -1,8 +1,13 @@
 import './globals.css';
+import { Syne, Outfit, JetBrains_Mono } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import SessionProviderWrapper from '@/components/SessionProviderWrapper';
+
+const syne = Syne({ subsets: ['latin'], variable: '--font-syne' });
+const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' });
+const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains' });
 
 export const metadata = {
   title: 'GENOIS — Career OS for Engineering Students',
@@ -20,7 +25,7 @@ export const viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${syne.variable} ${outfit.variable} ${jetbrainsMono.variable}`}>
       <body>
         <GoogleAnalytics />
         <SessionProviderWrapper>

@@ -1,6 +1,5 @@
-'use client';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import LandingNavbar from '@/components/LandingNavbar';
 
 const PURPLE = '#7c3aed';
 const PURPLE_LIGHT = '#8b5cf6';
@@ -130,95 +129,10 @@ const TESTIMONIALS = [
 ];
 
 export default function LandingPage() {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileMenu, setMobileMenu] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
   return (
     <div style={{ background: BG, color: '#e5e7eb', minHeight: '100vh', overflowX: 'hidden' }}>
-      <style jsx global>{`
-        html { scroll-behavior: smooth; }
-        body { background: #0a0a0a !important; }
-        .gen-fade-up { opacity: 0; transform: translateY(24px); animation: gen-fade-up 0.8s ease-out forwards; }
-        @keyframes gen-fade-up { to { opacity: 1; transform: translateY(0); } }
-        .gen-fade-up-d1 { animation-delay: 0.1s; }
-        .gen-fade-up-d2 { animation-delay: 0.2s; }
-        .gen-fade-up-d3 { animation-delay: 0.3s; }
-        .gen-fade-up-d4 { animation-delay: 0.4s; }
-        .gen-glow { transition: all 0.3s ease; }
-        .gen-glow:hover { transform: translateY(-4px); border-color: rgba(124,58,237,0.5) !important; box-shadow: 0 8px 32px rgba(124,58,237,0.25); }
-        .gen-card { transition: all 0.3s ease; }
-        .gen-card:hover { transform: translateY(-3px); border-color: rgba(6,182,212,0.4) !important; box-shadow: 0 8px 28px rgba(6,182,212,0.15); }
-        .gen-marquee { display: flex; gap: 56px; animation: gen-marquee 28s linear infinite; }
-        @keyframes gen-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        @keyframes gen-pulse-glow { 0%,100% { box-shadow: 0 0 40px rgba(124,58,237,0.35); } 50% { box-shadow: 0 0 80px rgba(124,58,237,0.55); } }
-        .gen-cta-pulse { animation: gen-pulse-glow 3s ease-in-out infinite; }
-        .gen-grid-bg {
-          background-image:
-            linear-gradient(rgba(124,58,237,0.06) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(124,58,237,0.06) 1px, transparent 1px);
-          background-size: 60px 60px;
-        }
-        .gen-nav-link { color: #9ca3af; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
-        .gen-nav-link:hover { color: #fff; }
-        .gen-mobile-open { display: flex !important; }
-        @media (max-width: 768px) {
-          .gen-desktop-only { display: none !important; }
-          .gen-hero-h1 { font-size: 36px !important; line-height: 1.1 !important; }
-          .gen-section { padding: 56px 20px !important; }
-          .gen-hero { padding: 80px 20px 56px !important; }
-        }
-      `}</style>
 
-      {/* ───────────── NAVBAR ───────────── */}
-      <nav style={{
-        position: 'sticky', top: 0, zIndex: 100,
-        background: scrolled ? 'rgba(10,10,10,0.85)' : 'transparent',
-        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.08)' : '1px solid transparent',
-        backdropFilter: scrolled ? 'blur(20px)' : 'none',
-        WebkitBackdropFilter: scrolled ? 'blur(20px)' : 'none',
-        transition: 'all 0.25s ease',
-        padding: '14px 28px',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      }}>
-        <Link href="/landing" style={{
-          fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 24, textDecoration: 'none',
-          backgroundImage: `linear-gradient(135deg, ${PURPLE_LIGHT}, ${CYAN})`,
-          WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
-          letterSpacing: 1.5,
-        }}>GENOIS</Link>
-
-        <div className="gen-desktop-only" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-          <a href="#features" className="gen-nav-link">Features</a>
-          <a href="#pricing" className="gen-nav-link">Pricing</a>
-          <Link href="/leaderboard" className="gen-nav-link">Leaderboard</Link>
-          <Link href="/blog" className="gen-nav-link">Blog</Link>
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <Link href="/login" className="gen-nav-link gen-desktop-only" style={{ padding: '8px 14px' }}>Log in</Link>
-          <Link href="/signup" style={{
-            padding: '10px 18px', borderRadius: 10, textDecoration: 'none',
-            backgroundImage: `linear-gradient(135deg, ${PURPLE}, ${PURPLE_LIGHT})`,
-            color: '#fff', fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 13,
-            boxShadow: '0 4px 14px rgba(124,58,237,0.35)',
-          }}>Start Free Trial</Link>
-          <button
-            onClick={() => setMobileMenu(v => !v)}
-            aria-label="Menu"
-            style={{
-              display: 'none', background: 'transparent', border: 'none',
-              color: '#fff', fontSize: 22, cursor: 'pointer',
-            }}
-            className="gen-mobile-menu-btn"
-          >☰</button>
-        </div>
-      </nav>
+      <LandingNavbar />
 
       {/* ───────────── HERO ───────────── */}
       <section className="gen-hero gen-grid-bg" style={{
@@ -239,7 +153,7 @@ export default function LandingPage() {
             display: 'inline-flex', alignItems: 'center', gap: 8,
             padding: '6px 14px', borderRadius: 999,
             background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.3)',
-            color: PURPLE_LIGHT, fontSize: 12, fontWeight: 600, fontFamily: 'Outfit, sans-serif',
+            color: PURPLE_LIGHT, fontSize: 12, fontWeight: 600, fontFamily: 'var(--font-outfit), sans-serif',
             marginBottom: 28,
           }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: CYAN, boxShadow: `0 0 8px ${CYAN}` }} />
@@ -247,7 +161,7 @@ export default function LandingPage() {
           </div>
 
           <h1 className="gen-fade-up gen-fade-up-d1 gen-hero-h1" style={{
-            fontFamily: 'Syne, sans-serif', fontSize: 64, fontWeight: 800,
+            fontFamily: 'var(--font-syne), sans-serif', fontSize: 64, fontWeight: 800,
             lineHeight: 1.05, letterSpacing: -1.5, margin: '0 0 22px',
             color: '#fff',
           }}>
@@ -260,7 +174,7 @@ export default function LandingPage() {
 
           <p className="gen-fade-up gen-fade-up-d2" style={{
             fontSize: 19, lineHeight: 1.6, color: '#9ca3af', maxWidth: 680,
-            margin: '0 auto 40px', fontFamily: 'Outfit, sans-serif',
+            margin: '0 auto 40px', fontFamily: 'var(--font-outfit), sans-serif',
           }}>
             365-day structured roadmap, AI mentor, verified skill badges, and placement prep —
             all in one platform.
@@ -273,7 +187,7 @@ export default function LandingPage() {
             <Link href="/signup" className="gen-cta-pulse" style={{
               padding: '15px 32px', borderRadius: 12, textDecoration: 'none',
               backgroundImage: `linear-gradient(135deg, ${PURPLE}, ${PURPLE_LIGHT})`,
-              color: '#fff', fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 15,
+              color: '#fff', fontFamily: 'var(--font-syne), sans-serif', fontWeight: 700, fontSize: 15,
               display: 'inline-flex', alignItems: 'center', gap: 8,
             }}>
               Start 30-Day Free Trial →
@@ -281,7 +195,7 @@ export default function LandingPage() {
             <a href="#how" style={{
               padding: '15px 32px', borderRadius: 12, textDecoration: 'none',
               background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.12)',
-              color: '#e5e7eb', fontFamily: 'Syne, sans-serif', fontWeight: 600, fontSize: 15,
+              color: '#e5e7eb', fontFamily: 'var(--font-syne), sans-serif', fontWeight: 600, fontSize: 15,
             }}>Watch Demo</a>
           </div>
 
@@ -293,7 +207,7 @@ export default function LandingPage() {
             {STATS.map(s => (
               <div key={s.label} style={{ textAlign: 'center' }}>
                 <div style={{
-                  fontFamily: 'Syne, sans-serif', fontSize: 36, fontWeight: 800,
+                  fontFamily: 'var(--font-syne), sans-serif', fontSize: 36, fontWeight: 800,
                   backgroundImage: `linear-gradient(135deg, ${PURPLE_LIGHT}, ${CYAN})`,
                   WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
                 }}>{s.value}</div>
@@ -314,14 +228,14 @@ export default function LandingPage() {
         background: BG2,
         overflow: 'hidden',
       }}>
-        <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 24, fontFamily: 'Outfit, sans-serif' }}>
+        <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 24, fontFamily: 'var(--font-outfit), sans-serif' }}>
           Trusted by students from
         </div>
         <div style={{ overflow: 'hidden', position: 'relative' }}>
           <div className="gen-marquee">
             {[...COLLEGES, ...COLLEGES].map((c, i) => (
               <div key={i} style={{
-                color: '#9ca3af', fontSize: 16, fontFamily: 'Syne, sans-serif', fontWeight: 600,
+                color: '#9ca3af', fontSize: 16, fontFamily: 'var(--font-syne), sans-serif', fontWeight: 600,
                 whiteSpace: 'nowrap', opacity: 0.7,
               }}>{c}</div>
             ))}
@@ -344,7 +258,7 @@ export default function LandingPage() {
             }}>
               <div style={{
                 position: 'absolute', top: 24, right: 24,
-                fontFamily: 'Syne, sans-serif', fontSize: 56, fontWeight: 800,
+                fontFamily: 'var(--font-syne), sans-serif', fontSize: 56, fontWeight: 800,
                 color: 'rgba(255,255,255,0.04)',
               }}>0{i + 1}</div>
               <div style={{
@@ -355,7 +269,7 @@ export default function LandingPage() {
                 fontSize: 26, color: PURPLE_LIGHT, marginBottom: 20,
               }}>{s.icon}</div>
               <h3 style={{
-                fontFamily: 'Syne, sans-serif', fontSize: 20, fontWeight: 700, color: '#fff',
+                fontFamily: 'var(--font-syne), sans-serif', fontSize: 20, fontWeight: 700, color: '#fff',
                 margin: '0 0 10px',
               }}>{s.title}</h3>
               <p style={{ color: '#9ca3af', fontSize: 14, lineHeight: 1.6, margin: 0 }}>{s.desc}</p>
@@ -388,7 +302,7 @@ export default function LandingPage() {
                   fontSize: 22, color: '#fff', marginBottom: 16,
                 }}>{f.icon}</div>
                 <h3 style={{
-                  fontFamily: 'Syne, sans-serif', fontSize: 17, fontWeight: 700, color: '#fff',
+                  fontFamily: 'var(--font-syne), sans-serif', fontSize: 17, fontWeight: 700, color: '#fff',
                   margin: '0 0 8px',
                 }}>{f.title}</h3>
                 <p style={{ color: '#9ca3af', fontSize: 14, lineHeight: 1.6, margin: 0 }}>{f.desc}</p>
@@ -418,7 +332,7 @@ export default function LandingPage() {
                 fontSize: 22, color: '#fff',
               }}>{d.icon}</div>
               <div>
-                <div style={{ fontFamily: 'Syne, sans-serif', fontSize: 16, fontWeight: 700, color: '#fff' }}>{d.name}</div>
+                <div style={{ fontFamily: 'var(--font-syne), sans-serif', fontSize: 16, fontWeight: 700, color: '#fff' }}>{d.name}</div>
                 <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>{d.days}</div>
               </div>
             </Link>
@@ -456,13 +370,13 @@ export default function LandingPage() {
                     position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)',
                     padding: '4px 12px', borderRadius: 999,
                     background: PURPLE, color: '#fff', fontSize: 11, fontWeight: 700,
-                    fontFamily: 'Syne, sans-serif', letterSpacing: 0.5,
+                    fontFamily: 'var(--font-syne), sans-serif', letterSpacing: 0.5,
                   }}>{p.badge}</div>
                 )}
-                <div style={{ fontFamily: 'Syne, sans-serif', fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 6 }}>{p.name}</div>
+                <div style={{ fontFamily: 'var(--font-syne), sans-serif', fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 6 }}>{p.name}</div>
                 <div style={{ fontSize: 13, color: '#9ca3af', marginBottom: 22, minHeight: 38 }}>{p.desc}</div>
                 <div style={{ marginBottom: 22 }}>
-                  <span style={{ fontFamily: 'Syne, sans-serif', fontSize: 38, fontWeight: 800, color: '#fff' }}>{p.price}</span>
+                  <span style={{ fontFamily: 'var(--font-syne), sans-serif', fontSize: 38, fontWeight: 800, color: '#fff' }}>{p.price}</span>
                   <span style={{ color: '#6b7280', fontSize: 14, marginLeft: 4 }}>{p.cadence}</span>
                 </div>
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px' }}>
@@ -476,7 +390,7 @@ export default function LandingPage() {
                 <Link href="/signup" style={{
                   display: 'block', textAlign: 'center', padding: '12px 18px', borderRadius: 10,
                   background: p.highlight ? `linear-gradient(135deg, ${PURPLE}, ${PURPLE_LIGHT})` : 'rgba(255,255,255,0.06)',
-                  color: '#fff', fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 14,
+                  color: '#fff', fontFamily: 'var(--font-syne), sans-serif', fontWeight: 700, fontSize: 14,
                   border: p.highlight ? 'none' : '1px solid rgba(255,255,255,0.12)',
                   textDecoration: 'none',
                 }}>{p.cta}</Link>
@@ -503,17 +417,17 @@ export default function LandingPage() {
               </div>
               <p style={{
                 color: '#d1d5db', fontSize: 15, lineHeight: 1.6, margin: '0 0 22px',
-                fontFamily: 'Outfit, sans-serif',
-              }}>“{t.quote}”</p>
+                fontFamily: 'var(--font-outfit), sans-serif',
+              }}>"{t.quote}"</p>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{
                   width: 42, height: 42, borderRadius: '50%',
                   background: `linear-gradient(135deg, ${PURPLE}, ${CYAN})`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: 'Syne, sans-serif', fontWeight: 700, color: '#fff', fontSize: 16,
+                  fontFamily: 'var(--font-syne), sans-serif', fontWeight: 700, color: '#fff', fontSize: 16,
                 }}>{t.name[0]}</div>
                 <div>
-                  <div style={{ fontFamily: 'Syne, sans-serif', fontWeight: 700, color: '#fff', fontSize: 14 }}>{t.name}</div>
+                  <div style={{ fontFamily: 'var(--font-syne), sans-serif', fontWeight: 700, color: '#fff', fontSize: 14 }}>{t.name}</div>
                   <div style={{ fontSize: 12, color: '#6b7280', marginTop: 1 }}>{t.college} · {t.domain}</div>
                 </div>
               </div>
@@ -536,7 +450,7 @@ export default function LandingPage() {
           border: `1px solid ${PURPLE}55`,
         }}>
           <h2 style={{
-            fontFamily: 'Syne, sans-serif', fontSize: 40, fontWeight: 800, color: '#fff',
+            fontFamily: 'var(--font-syne), sans-serif', fontSize: 40, fontWeight: 800, color: '#fff',
             margin: '0 0 16px', lineHeight: 1.15,
           }}>
             Start your <span style={{
@@ -551,7 +465,7 @@ export default function LandingPage() {
             display: 'inline-flex', alignItems: 'center', gap: 8,
             padding: '16px 36px', borderRadius: 12, textDecoration: 'none',
             backgroundImage: `linear-gradient(135deg, ${PURPLE}, ${PURPLE_LIGHT})`,
-            color: '#fff', fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 16,
+            color: '#fff', fontFamily: 'var(--font-syne), sans-serif', fontWeight: 700, fontSize: 16,
           }}>Start Free Trial →</Link>
         </div>
       </section>
@@ -567,7 +481,7 @@ export default function LandingPage() {
         }}>
           <div>
             <div style={{
-              fontFamily: 'Syne, sans-serif', fontWeight: 800, fontSize: 22,
+              fontFamily: 'var(--font-syne), sans-serif', fontWeight: 800, fontSize: 22,
               backgroundImage: `linear-gradient(135deg, ${PURPLE_LIGHT}, ${CYAN})`,
               WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
               letterSpacing: 1.5, marginBottom: 12,
@@ -616,10 +530,10 @@ function SectionHeader({ eyebrow, title }) {
         display: 'inline-block', padding: '5px 14px', borderRadius: 999,
         background: 'rgba(6,182,212,0.1)', border: `1px solid ${CYAN}44`,
         color: CYAN, fontSize: 12, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase',
-        marginBottom: 18, fontFamily: 'Outfit, sans-serif',
+        marginBottom: 18, fontFamily: 'var(--font-outfit), sans-serif',
       }}>{eyebrow}</div>
       <h2 style={{
-        fontFamily: 'Syne, sans-serif', fontSize: 40, fontWeight: 800, color: '#fff',
+        fontFamily: 'var(--font-syne), sans-serif', fontSize: 40, fontWeight: 800, color: '#fff',
         margin: 0, lineHeight: 1.1, letterSpacing: -0.5,
       }}>{title}</h2>
     </div>
@@ -630,7 +544,7 @@ function FooterCol({ title, links }) {
   return (
     <div>
       <div style={{
-        fontFamily: 'Syne, sans-serif', fontWeight: 700, fontSize: 13, color: '#fff',
+        fontFamily: 'var(--font-syne), sans-serif', fontWeight: 700, fontSize: 13, color: '#fff',
         marginBottom: 14, letterSpacing: 0.5, textTransform: 'uppercase',
       }}>{title}</div>
       <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
