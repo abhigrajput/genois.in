@@ -42,6 +42,13 @@ async function ensureTasksExist(supabase, userId, dayNumber, roadmapId, domainSl
   return tasks || [];
 }
 
+// A cached roadmap row is usable when it has the topic + video URL.
+// Enrichment fields (objectives etc.) are a bonus — we return what we have
+// and skip the AI call even if only basic fields are cached.
+function isComplete(row) {
+  return !!(row && row.topic && row.video_url);
+}
+
 export async function GET(request) {
   try {
     const payload = await getUserFromRequest(request);
@@ -56,7 +63,7 @@ export async function GET(request) {
       .eq('id', payload.userId)
       .single();
 
-    // FIX 1: Smart day advancement — only advance if yesterday completed all 5
+    // Smart day advancement — only advance if yesterday completed all 5
     const { data: progress } = await supabase
       .from('progress')
       .select('current_day, current_week, progress_percent, tasks_completed_today, last_completed_date, streak')
@@ -67,9 +74,7 @@ export async function GET(request) {
     const lastCompleted = progress?.last_completed_date;
     const tasksToday = progress?.tasks_completed_today || 0;
     const currentDay = progress?.current_day || 1;
-    const currentWeek = progress?.current_week || 1;
 
-    // Only advance day if: yesterday was completed (5 tasks) AND today is a new calendar day
     let displayDay = currentDay;
     if (lastCompleted && lastCompleted < today && tasksToday >= 5) {
       displayDay = Math.min(currentDay + 1, 365);
@@ -87,22 +92,45 @@ export async function GET(request) {
         .eq('user_id', payload.userId);
     }
 
-    let { data: roadmapItem, error: roadmapError } = await supabase
+    const level = user.level || 'beginner';
+    const week = Math.ceil(displayDay / 7);
+
+    // ── 1. Try cache first ─────────────────────────────────────────────────
+    let { data: roadmapItem } = await supabase
       .from('roadmap')
       .select('*')
       .eq('domain_slug', user.domain_slug)
       .eq('day_number', displayDay)
-      .single();
+      .maybeSingle();
 
-    // Get enriched day content from curriculum generator
-    const dayContent = await generateDayContent(user.domain_slug, displayDay, user.level || 'beginner');
+    let dayContent;
+    let cacheHit = false;
 
-    if (roadmapError || !roadmapItem) {
-      console.log(`Roadmap item for day ${displayDay} in domain ${user.domain_slug} not found. Caching to database...`);
-      
-      const { data: inserted } = await supabase.from('roadmap').insert({
+    if (isComplete(roadmapItem)) {
+      // Hydrate dayContent shape from the cached row — no AI call.
+      cacheHit = true;
+      dayContent = {
+        topic: roadmapItem.topic,
+        description: roadmapItem.description,
+        video_url: roadmapItem.video_url,
+        resource_url: roadmapItem.resource_url,
+        article_url: roadmapItem.article_url,
+        coding_problem_url: roadmapItem.coding_problem_url || roadmapItem.doc_url,
+        objectives: roadmapItem.objectives || [],
+        key_concepts: roadmapItem.key_concepts || [],
+        coding_problem: roadmapItem.coding_problem || '',
+        estimated_minutes: roadmapItem.estimated_min || 90,
+        is_project_day: !!roadmapItem.is_project_day,
+        project: roadmapItem.project || null,
+        generated_by: roadmapItem.generated_by || 'cache',
+      };
+    } else {
+      // ── 2. Cache miss — call AI then persist for next time ──────────────
+      dayContent = await generateDayContent(user.domain_slug, displayDay, level);
+
+      const cachePayload = {
         domain_slug: user.domain_slug,
-        week_number: Math.ceil(displayDay / 7),
+        week_number: week,
         day_number: displayDay,
         topic: dayContent.topic,
         description: dayContent.description,
@@ -110,38 +138,61 @@ export async function GET(request) {
         resource_url: dayContent.resource_url,
         article_url: dayContent.article_url,
         doc_url: dayContent.coding_problem_url,
-        difficulty: dayContent.generated_by === 'static_fallback' ? 'beginner' : (user.level || 'beginner'),
-        estimated_min: dayContent.estimated_minutes || 90
-      }).select().single();
+        coding_problem: dayContent.coding_problem || null,
+        coding_problem_url: dayContent.coding_problem_url || null,
+        objectives: dayContent.objectives || null,
+        key_concepts: dayContent.key_concepts || null,
+        is_project_day: !!dayContent.is_project_day,
+        project: dayContent.project || null,
+        generated_by: dayContent.generated_by || null,
+        cached_at: new Date().toISOString(),
+        difficulty: dayContent.generated_by === 'static_fallback' ? 'beginner' : level,
+        estimated_min: dayContent.estimated_minutes || 90,
+      };
 
-      if (inserted) {
-        roadmapItem = inserted;
-      } else {
-        // Fallback in-memory
-        roadmapItem = {
-          id: 'dummy-roadmap-id-' + displayDay,
-          domain_slug: user.domain_slug,
-          week_number: Math.ceil(displayDay / 7),
-          day_number: displayDay,
-          topic: dayContent.topic,
-          description: dayContent.description,
-          video_url: dayContent.video_url,
-          resource_url: dayContent.resource_url,
-          article_url: dayContent.article_url,
-          doc_url: dayContent.coding_problem_url,
-          difficulty: 'beginner',
-          estimated_min: dayContent.estimated_minutes || 90
+      let { data: upserted, error: upsertErr } = await supabase
+        .from('roadmap')
+        .upsert(cachePayload, { onConflict: 'domain_slug,day_number' })
+        .select()
+        .single();
+
+      // If the enrichment migration hasn't been applied yet, fall back to the
+      // legacy column set so we still cache *something* and don't 500 the user.
+      if (upsertErr) {
+        const legacy = {
+          domain_slug: cachePayload.domain_slug,
+          week_number: cachePayload.week_number,
+          day_number: cachePayload.day_number,
+          topic: cachePayload.topic,
+          description: cachePayload.description,
+          video_url: cachePayload.video_url,
+          resource_url: cachePayload.resource_url,
+          article_url: cachePayload.article_url,
+          doc_url: cachePayload.doc_url,
+          difficulty: cachePayload.difficulty,
+          estimated_min: cachePayload.estimated_min,
         };
+        const retry = await supabase
+          .from('roadmap')
+          .upsert(legacy, { onConflict: 'domain_slug,day_number' })
+          .select()
+          .single();
+        upserted = retry.data;
       }
+
+      roadmapItem = upserted || roadmapItem || {
+        id: 'dummy-roadmap-id-' + displayDay,
+        ...cachePayload,
+      };
     }
 
-    // Upsert project into 'projects' table if project day
+    // ── 3. Upsert project into 'projects' table if project day ───────────
     if (dayContent.is_project_day && dayContent.project) {
       let { data: dbProj } = await supabase
         .from('projects')
         .select('id')
         .eq('domain_slug', user.domain_slug)
-        .eq('week_number', Math.ceil(displayDay / 7))
+        .eq('week_number', week)
         .eq('title', dayContent.project.title)
         .maybeSingle();
 
@@ -150,22 +201,20 @@ export async function GET(request) {
           .from('projects')
           .insert({
             domain_slug: user.domain_slug,
-            week_number: Math.ceil(displayDay / 7),
+            week_number: week,
             title: dayContent.project.title,
             description: dayContent.project.description,
             difficulty: dayContent.project.difficulty || 'intermediate',
             steps: dayContent.project.steps || [],
             tech_stack: dayContent.project.resources || [],
-            resources: dayContent.project.resources || []
+            resources: dayContent.project.resources || [],
           })
           .select('id')
           .single();
         dbProj = newProj;
       }
-      
-      if (dbProj) {
-        dayContent.project.id = dbProj.id;
-      }
+
+      if (dbProj) dayContent.project.id = dbProj.id;
     }
 
     const tasks = await ensureTasksExist(
@@ -178,7 +227,7 @@ export async function GET(request) {
     );
 
     const completedCount = tasks.filter(t => t.status === 'completed').length;
-    const isComplete = completedCount >= TOTAL_TASKS;
+    const isCompleteDay = completedCount >= TOTAL_TASKS;
 
     const { data: codingTest } = await supabase
       .from('coding_tests')
@@ -187,7 +236,6 @@ export async function GET(request) {
       .limit(1)
       .single();
 
-    // Query project progress if applicable
     let projectProgress = null;
     if (dayContent.is_project_day && dayContent.project?.id) {
       const { data: prog } = await supabase
@@ -204,9 +252,9 @@ export async function GET(request) {
       tasks,
       completedCount,
       totalTasks: TOTAL_TASKS,
-      isComplete,
+      isComplete: isCompleteDay,
       currentDay: displayDay,
-      currentWeek: Math.ceil(displayDay / 7),
+      currentWeek: week,
       codingTest: codingTest || null,
       objectives: dayContent.objectives,
       keyConcepts: dayContent.key_concepts,
@@ -215,7 +263,8 @@ export async function GET(request) {
       isProjectDay: dayContent.is_project_day,
       project: dayContent.project || null,
       projectProgress,
-      generatedBy: dayContent.generated_by
+      generatedBy: dayContent.generated_by,
+      cacheHit,
     });
   } catch (error) {
     console.error('Daily roadmap error:', error);

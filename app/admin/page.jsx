@@ -18,10 +18,20 @@ export default function AdminPage() {
 
   useEffect(() => {
     const token = localStorage.getItem('genois_token');
-    if (!token) { router.push('/login'); return; }
+    if (!token) { router.push('/login?redirect=/admin'); return; }
     fetch('/api/admin', { headers: { Authorization: 'Bearer ' + token } })
-      .then(r => r.json())
-      .then(d => { if (!d.success) setError(d.message || 'Unauthorized'); else setData(d.data); })
+      .then(async r => {
+        const d = await r.json();
+        if (r.status === 401 || r.status === 403) {
+          // Stale or revoked token — clear and re-login
+          localStorage.removeItem('genois_token');
+          setError('Session expired or insufficient privileges. Please log in as admin.');
+        } else if (!d.success) {
+          setError(d.message || 'Unauthorized');
+        } else {
+          setData(d.data);
+        }
+      })
       .catch(e => setError(e.message))
       .finally(() => setLoading(false));
   }, []);
@@ -76,7 +86,15 @@ export default function AdminPage() {
   }
 
   if (loading) return <div style={{...S, display:'flex', alignItems:'center', justifyContent:'center', color:'#00f0ff', ...mono}}>Loading admin data...</div>;
-  if (error) return <div style={{...S, display:'flex', alignItems:'center', justifyContent:'center', color:'#ff2d78', fontFamily:'Syne,sans-serif', fontSize:20}}>{error}</div>;
+  if (error) return (
+    <div style={{...S, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:20}}>
+      <div style={{color:'#ff2d78', fontFamily:'Syne,sans-serif', fontSize:18, textAlign:'center', maxWidth:480, padding:24}}>{error}</div>
+      <button
+        onClick={() => router.push('/login?redirect=/admin')}
+        style={{padding:'12px 28px', borderRadius:10, background:'#00f0ff', color:'#020812', fontFamily:'Syne,sans-serif', fontWeight:700, fontSize:14, border:'none', cursor:'pointer'}}
+      >Log in as Admin</button>
+    </div>
+  );
 
   // Search query filtered inline below
 
@@ -273,9 +291,9 @@ export default function AdminPage() {
             </div>
             <div style={{...card, padding:0, overflow:'hidden'}}>
               <div style={{padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.04)', ...mono, fontSize:10, color:'#1D9E75', letterSpacing:2}}>RECENT SUBSCRIPTIONS</div>
-              {(data?.recentPayments||[]).length===0
+              {(data?.payments||[]).length===0
                 ? <div style={{padding:32, textAlign:'center', color:'#5a7a9a', fontSize:13}}>No payments yet</div>
-                : (data?.recentPayments||[]).map((p,i) => (
+                : (data?.payments||[]).map((p,i) => (
                   <div key={i} style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.02)', flexWrap:'wrap', gap:8}}>
                     <div>
                       <div style={{fontSize:13, color:'#e8f4ff', textTransform:'capitalize'}}>{p.plan||'Unknown'}</div>

@@ -41,9 +41,14 @@ function isCsrfExempt(pathname) {
   return CSRF_EXEMPT_PREFIXES.some(p => pathname.startsWith(p));
 }
 
-// FIX 04: Allowed admin IPs — extend via ADMIN_IPS env var (comma-separated)
+// Admin route IP allowlist — opt-in. If ADMIN_IPS env var is unset or set to
+// "*", the IP gate is disabled and access is governed entirely by the
+// is_admin / admin_users check inside getAdminFromRequest at the API layer.
+// To re-enable IP allowlisting, set ADMIN_IPS to a comma-separated list.
+const ADMIN_IPS_RAW = process.env.ADMIN_IPS || '';
+const ADMIN_IPS_ENFORCED = ADMIN_IPS_RAW && ADMIN_IPS_RAW.trim() !== '*';
 const ADMIN_IPS = new Set(
-  (process.env.ADMIN_IPS || '127.0.0.1,::1')
+  ADMIN_IPS_RAW
     .split(',')
     .map(ip => ip.trim())
     .filter(Boolean)
@@ -69,8 +74,10 @@ export function middleware(request) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // FIX 04: Admin route — extra IP allowlist gate
-  if (pathname.startsWith('/admin')) {
+  // Admin route — optional IP allowlist gate. The authoritative check happens
+  // inside the /api/admin handler via getAdminFromRequest(); this gate is
+  // belt-and-suspenders, only enforced when ADMIN_IPS is explicitly configured.
+  if (ADMIN_IPS_ENFORCED && pathname.startsWith('/admin')) {
     const ip =
       request.headers.get('x-real-ip') ||
       request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
@@ -78,7 +85,6 @@ export function middleware(request) {
 
     if (!ADMIN_IPS.has(ip)) {
       console.warn(`[Admin] Blocked access from IP: ${ip}`);
-      // Redirect to dashboard instead of 403 to avoid leaking admin existence
       return NextResponse.redirect(new URL('/dashboard', request.url));
     }
   }
