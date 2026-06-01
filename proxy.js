@@ -54,7 +54,7 @@ const ADMIN_IPS = new Set(
     .filter(Boolean)
 );
 
-export function middleware(request) {
+export function proxy(request) {
   const { pathname } = request.nextUrl;
 
   // ── CSRF: enforce Origin/Referer match on state-changing API requests ──
@@ -90,7 +90,7 @@ export function middleware(request) {
   }
 
   // NOTE: Full JWT signature verification + blacklist check happens inside each
-  // API route handler via getUserFromRequest(). Middleware only checks cookie
+  // API route handler via getUserFromRequest(). Proxy only checks cookie
   // presence to avoid Edge Runtime crypto limitations.
   return NextResponse.next();
 }
