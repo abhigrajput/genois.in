@@ -8,11 +8,14 @@ export const metadata = {
   title: 'GENOIS — Career OS for Engineering Students',
   description: 'Skill-first career platform for Indian engineering students',
   manifest: '/manifest.json',
-  themeColor: '#00f0ff',
   icons: {
     icon: '/icon-192.svg',
     apple: '/icon-192.svg',
   },
+};
+
+export const viewport = {
+  themeColor: '#00f0ff',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
