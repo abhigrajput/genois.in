@@ -42,11 +42,18 @@ async function ensureTasksExist(supabase, userId, dayNumber, roadmapId, domainSl
   return tasks || [];
 }
 
-// A cached roadmap row is usable when it has the topic + video URL.
-// Enrichment fields (objectives etc.) are a bonus — we return what we have
-// and skip the AI call even if only basic fields are cached.
+// A cached roadmap row is complete when it has topic, video URL, and at least
+// one objective. Rows that predate the enrichment migration will have
+// objectives = null and will be regenerated once to backfill.
 function isComplete(row) {
-  return !!(row && row.topic && row.video_url);
+  return !!(
+    row &&
+    row.topic &&
+    row.video_url &&
+    row.objectives &&
+    Array.isArray(row.objectives) &&
+    row.objectives.length > 0
+  );
 }
 
 export async function GET(request) {
