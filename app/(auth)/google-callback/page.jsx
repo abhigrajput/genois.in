@@ -1,38 +1,40 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import useAuthStore from '@/store/authStore';
 import { apiFetch } from '@/lib/useApi';
 
-/**
- * Google OAuth Callback Handler
- *
- * NextAuth completes OAuth and redirects here.
- * This page:
- * 1. Reads the NextAuth session (which contains genoisToken from JWT callback)
- * 2. Sets genois_token cookie + localStorage (so middleware sees it)
- * 3. Fetches full user data from /api/user/me
- * 4. Hydrates Zustand auth store
- * 5. Redirects to /dashboard or /onboarding for new users
- */
 export default function GoogleCallbackPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { setAuth } = useAuthStore();
   const [message, setMessage] = useState('Completing sign-in...');
+  // Prevent double-redirect: loading→unauthenticated(transient)→authenticated race
+  const didRedirect = useRef(false);
 
   useEffect(() => {
     if (status === 'loading') return;
+    if (didRedirect.current) return;
 
     if (status === 'unauthenticated') {
+      didRedirect.current = true;
       setMessage('Authentication failed. Redirecting...');
-      setTimeout(() => router.replace('/login?error=OAuthSignIn'), 1500);
+      router.replace('/login?error=OAuthSignIn');
       return;
     }
 
-    if (status === 'authenticated' && session?.genoisToken) {
-      const token = session.genoisToken;
+    if (status === 'authenticated') {
+      const token = session?.genoisToken;
+
+      if (!token) {
+        // JWT callback ran but failed to attach genoisToken (Supabase error etc.)
+        didRedirect.current = true;
+        router.replace('/login?error=OAuthSignIn');
+        return;
+      }
+
+      didRedirect.current = true;
 
       // 1. Set cookie for middleware
       document.cookie = `genois_token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;

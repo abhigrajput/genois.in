@@ -107,11 +107,19 @@ const authOptions = {
       return session;
     },
 
-    // Redirect after sign-in: go to /auth/google-callback which handles cookie + Zustand hydration
+    // Redirect after sign-in: go to /auth/google-callback which handles cookie + Zustand hydration.
+    // Guard: if the resolved destination is the sign-in page itself (default when no callbackUrl
+    // was passed), override to /auth/google-callback to avoid a sign-in → login redirect loop.
     async redirect({ url, baseUrl }) {
-      if (url.startsWith(baseUrl)) return url;
-      if (url.startsWith('/')) return `${baseUrl}${url}`;
-      return `${baseUrl}/auth/google-callback`;
+      const dest = url.startsWith(baseUrl) ? url
+        : url.startsWith('/') ? `${baseUrl}${url}`
+        : `${baseUrl}/auth/google-callback`;
+
+      const loginUrl = `${baseUrl}/login`;
+      if (dest === loginUrl || dest === baseUrl || dest === `${baseUrl}/`) {
+        return `${baseUrl}/auth/google-callback`;
+      }
+      return dest;
     },
   },
 
