@@ -259,6 +259,8 @@ select option { background: #060f1e; color: #e8f4ff; }
 }
 
 /* ─── Landing page utilities ─── */
+.gen-hero-enter { animation: gen-hero-enter 0.6s ease-out; }
+@keyframes gen-hero-enter { from { transform: translateY(16px); } to { transform: translateY(0); } }
 .gen-fade-up { opacity: 0; transform: translateY(24px); animation: gen-fade-up 0.8s ease-out forwards; }
 @keyframes gen-fade-up { to { opacity: 1; transform: translateY(0); } }
 .gen-fade-up-d1 { animation-delay: 0.1s; }

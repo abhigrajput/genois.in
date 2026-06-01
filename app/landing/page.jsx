@@ -160,7 +160,7 @@ export default function LandingPage() {
             Now live · 30-day free trial
           </div>
 
-          <h1 className="gen-fade-up gen-fade-up-d1 gen-hero-h1" style={{
+          <h1 className="gen-hero-enter gen-hero-h1" style={{
             fontFamily: 'var(--font-syne), sans-serif', fontSize: 64, fontWeight: 800,
             lineHeight: 1.05, letterSpacing: -1.5, margin: '0 0 22px',
             color: '#fff',
