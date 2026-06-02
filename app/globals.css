@@ -353,3 +353,93 @@ select option { background: #060f1e; color: #e8f4ff; }
   .gen-steps-grid { grid-template-columns: 1fr; }
   .gen-step-connector { display: none !important; }
 }
+
+/* ─── Matrix green glitch ─── */
+@keyframes gen-glitch-1 {
+  0%, 88%, 100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
+  90% { clip-path: inset(8% 0 58% 0); transform: translate(-3px, 0); color: #00ff41; }
+  92% { clip-path: inset(52% 0 22% 0); transform: translate(3px, 0); }
+  94% { clip-path: inset(82% 0 4% 0); transform: translate(-2px, 0); }
+}
+@keyframes gen-glitch-2 {
+  0%, 88%, 100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
+  91% { clip-path: inset(62% 0 28% 0); transform: translate(4px, 0); color: #00ffff; }
+  93% { clip-path: inset(18% 0 68% 0); transform: translate(-4px, 0); }
+  95% { clip-path: inset(92% 0 1% 0); transform: translate(2px, 0); }
+}
+.gen-glitch { position: relative; display: inline-block; }
+.gen-glitch::before,
+.gen-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: transparent;
+  white-space: nowrap;
+}
+.gen-glitch::before {
+  color: #00ff41;
+  text-shadow: -2px 0 rgba(255,0,102,0.6);
+  animation: gen-glitch-1 7s infinite;
+}
+.gen-glitch::after {
+  color: #00ff41;
+  text-shadow: 2px 0 rgba(0,240,255,0.6);
+  animation: gen-glitch-2 7s infinite;
+  animation-delay: 0.4s;
+}
+
+/* ─── Cursor blink ─── */
+@keyframes gen-cursor-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.gen-blink { animation: gen-cursor-blink 1s step-end infinite; }
+
+/* ─── Score flash (leaderboard) ─── */
+@keyframes gen-flash-anim {
+  0% { color: #00ff41; text-shadow: 0 0 12px rgba(0,255,65,0.8); }
+  100% { color: #fff; text-shadow: none; }
+}
+.gen-score-flash { animation: gen-flash-anim 0.65s ease forwards; }
+
+/* ─── Hero split (matrix) ─── */
+.gen-hero-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 72px;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+@media (max-width: 900px) {
+  .gen-hero-split { grid-template-columns: 1fr; gap: 48px; }
+  .gen-terminal-hide { display: none !important; }
+}
+
+/* ─── Domain picker mobile ─── */
+@media (max-width: 700px) {
+  .gen-domain-split { flex-direction: column !important; }
+  .gen-domain-nav {
+    width: 100% !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(0,255,65,0.1) !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+  }
+}
+
+/* ─── Particle canvas mobile ─── */
+@media (max-width: 767px) {
+  .gen-particle-canvas { display: none !important; }
+}
+
+/* ─── Green neon button glow ─── */
+.gen-cta-green {
+  transition: all 0.2s ease !important;
+}
+.gen-cta-green:hover {
+  box-shadow: 0 0 36px rgba(0,255,65,0.55) !important;
+  transform: translateY(-2px) !important;
+  filter: brightness(1.08);
+}
+
+/* ─── Ticker ─── */
+.gen-ticker { display: flex; gap: 56px; animation: gen-marquee 35s linear infinite; }
