@@ -8,6 +8,44 @@ import { useToken } from '@/lib/useApi'
 import TrialBanner from '@/components/TrialBanner'
 import OnboardingTour from '@/components/OnboardingTour'
 
+function getYouTubeId(url) {
+  if (!url) return null;
+  const patterns = [
+    /youtube\.com\/watch\?v=([^&]+)/,
+    /youtu\.be\/([^?]+)/,
+    /youtube\.com\/embed\/([^?]+)/,
+  ];
+  for (const p of patterns) {
+    const m = url.match(p);
+    if (m) return m[1];
+  }
+  return null;
+}
+
+function YouTubeEmbed({ url, title }) {
+  const videoId = getYouTubeId(url);
+  if (!videoId) return (
+    <a href={url} target="_blank" rel="noopener noreferrer" style={{
+      display: 'inline-flex', alignItems: 'center', gap: 8,
+      padding: '12px 20px', borderRadius: 10, textDecoration: 'none',
+      background: 'rgba(0,255,136,0.1)', border: '1px solid rgba(0,255,136,0.3)',
+      color: '#00ff88', fontFamily: 'Outfit,sans-serif', fontWeight: 600, fontSize: 14,
+    }}>▶ Watch on YouTube →</a>
+  );
+  return (
+    <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(0,255,136,0.15)' }}>
+      <iframe
+        src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&color=white`}
+        title={title || 'Video'}
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+      />
+    </div>
+  );
+}
+
 const G = '#00ff88'
 const G10 = 'rgba(0,255,136,0.1)'
 const G20 = 'rgba(0,255,136,0.2)'
@@ -109,6 +147,7 @@ export default function DashboardPage() {
   const [motiveIdx, setMotiveIdx] = useState(0)
   const [showOutcomePopup, setShowOutcomePopup] = useState(false)
   const [generatingNotes, setGeneratingNotes] = useState(false)
+  const [videoEligible, setVideoEligible] = useState(false)
   const [streakAtRisk, setStreakAtRisk] = useState(false)
   const [githubInput, setGithubInput] = useState('')
   const [calendarData, setCalendarData] = useState([])
@@ -176,6 +215,14 @@ export default function DashboardPage() {
     }
     checkStreak()
   }, [analytics, completedMask, storeProgress])
+
+  // 30-second watch gate
+  useEffect(() => {
+    if (activeTask !== 'video') { setVideoEligible(false); return; }
+    setVideoEligible(false);
+    const timer = setTimeout(() => setVideoEligible(true), 30000);
+    return () => clearTimeout(timer);
+  }, [activeTask]);
 
   // Motivation bar rotation
   useEffect(() => {
@@ -352,14 +399,24 @@ export default function DashboardPage() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {video?.title && <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 600, color: '#e8f4ff' }}>{video.title}</div>}
         {video?.description && <div style={{ fontSize: 12, color: '#6b7a8d', lineHeight: 1.6 }}>{video.description}</div>}
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          {video?.url && (
-            <a href={video.url} target="_blank" rel="noopener noreferrer" style={{ ...btnStyle, background: done ? 'rgba(0,255,136,0.1)' : G, color: done ? G : '#000', textDecoration: 'none' }}>
-              ▶ Open on YouTube
-            </a>
-          )}
-          {!done && <button onClick={() => completeTask('video')} style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${G20}`, background: 'transparent', color: G, cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontWeight: 600, fontSize: 14 }}>✓ Mark Complete</button>}
-        </div>
+        {video?.url
+          ? <YouTubeEmbed url={video.url} title={video.title} />
+          : <div style={{ fontSize: 12, color: '#555' }}>No video available for today.</div>}
+        {!done && (
+          <button
+            onClick={() => videoEligible && completeTask('video')}
+            disabled={!videoEligible}
+            style={{
+              padding: '11px 20px', borderRadius: 8, border: 'none',
+              cursor: videoEligible ? 'pointer' : 'not-allowed',
+              background: videoEligible ? G : 'rgba(255,255,255,0.06)',
+              color: videoEligible ? '#000' : '#555',
+              fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14,
+              transition: 'all 0.4s ease', width: '100%',
+            }}>
+            {videoEligible ? '✓ Mark Video as Watched' : '⏳ Watch 30 seconds to unlock...'}
+          </button>
+        )}
       </div>
     )
 

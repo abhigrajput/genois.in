@@ -46,7 +46,7 @@ const nextConfig = {
           },
           {
             key: 'Cross-Origin-Embedder-Policy',
-            value: 'require-corp',
+            value: 'credentialless',
           },
           {
             key: 'Cross-Origin-Opener-Policy',
@@ -65,7 +65,7 @@ const nextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https: http:",
               "connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://www.google.com https://api.anthropic.com https://integrate.api.nvidia.com https://googleapis.com https://www.googleapis.com https://region1.google-analytics.com https://www.youtube.com https://youtube.com https://youtubei.googleapis.com https://accounts.google.com https://oauth2.googleapis.com https://www.googletagmanager.com https://tagmanager.google.com",
-              "frame-src 'self' https://www.youtube.com https://youtube.com https://accounts.google.com",
+              "frame-src 'self' https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com https://accounts.google.com",
               "frame-ancestors 'none'",
               "base-uri 'self'",
               "form-action 'self'",

@@ -5,6 +5,44 @@ import { roadmapAPI, taskAPI, testAPI, codingAPI, notesAPI } from '@/lib/api';
 import useAuthStore from '@/store/authStore';
 import CodeEditor from '@/components/CodeEditor';
 
+function getYouTubeId(url) {
+  if (!url) return null;
+  const patterns = [
+    /youtube\.com\/watch\?v=([^&]+)/,
+    /youtu\.be\/([^?]+)/,
+    /youtube\.com\/embed\/([^?]+)/,
+  ];
+  for (const p of patterns) {
+    const m = url.match(p);
+    if (m) return m[1];
+  }
+  return null;
+}
+
+function YouTubeEmbed({ url, title }) {
+  const videoId = getYouTubeId(url);
+  if (!videoId) return (
+    <a href={url} target="_blank" rel="noopener noreferrer" style={{
+      display: 'inline-flex', alignItems: 'center', gap: 8,
+      padding: '12px 20px', borderRadius: 10, textDecoration: 'none',
+      background: 'rgba(0,255,136,0.1)', border: '1px solid rgba(0,255,136,0.3)',
+      color: '#00ff88', fontFamily: 'Outfit,sans-serif', fontWeight: 600, fontSize: 14,
+    }}>▶ Watch on YouTube →</a>
+  );
+  return (
+    <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(0,255,136,0.15)' }}>
+      <iframe
+        src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&color=white`}
+        title={title || 'Daily Roadmap Video'}
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+      />
+    </div>
+  );
+}
+
 const STEPS = ['video','resource','coding','test','notes'];
 const STEP_LABELS = { video:'Watch Video', resource:'Read Resource', coding:'Coding Challenge', test:'Daily Test', notes:'AI Notes' };
 
@@ -42,6 +80,8 @@ export default function DailyRoadmapPage() {
   const [note, setNote] = useState(null);
   const [noteLoading, setNoteLoading] = useState(false);
 
+  const [videoEligible, setVideoEligible] = useState(false);
+
   // Project submission states
   const [projectUrl, setProjectUrl] = useState('');
   const [projectNotes, setProjectNotes] = useState('');
@@ -51,6 +91,14 @@ export default function DailyRoadmapPage() {
   useEffect(() => {
     loadDaily();
   }, []);
+
+  // 30-second watch gate: enables "Mark as Watched" after user has had the video visible for 30s
+  useEffect(() => {
+    if (activeStep !== 0) { setVideoEligible(false); return; }
+    setVideoEligible(false);
+    const timer = setTimeout(() => setVideoEligible(true), 30000);
+    return () => clearTimeout(timer);
+  }, [activeStep]);
 
   useEffect(() => {
     if (daily?.projectProgress) {
@@ -368,13 +416,27 @@ export default function DailyRoadmapPage() {
             {activeStep === 0 && (
               <div className="space-y-4">
                 <h3 className="section-title">▶ Watch Video — {roadmapItem?.topic}</h3>
-                <p className="text-sm text-gray-500">Watch the video to learn the theory before coding.</p>
-                {roadmapItem?.video_url && (
-                  <a href={roadmapItem.video_url} target="_blank" rel="noreferrer" className="btn-primary inline-flex">Open on YouTube ↗</a>
+                <p className="text-sm text-gray-500">Watch the full video below. The completion button unlocks after 30 seconds.</p>
+                {roadmapItem?.video_url
+                  ? <YouTubeEmbed url={roadmapItem.video_url} title={roadmapItem?.topic} />
+                  : <p className="text-sm text-gray-400">No video available for this day.</p>}
+                {!isTaskDone('video') ? (
+                  <button
+                    onClick={() => videoEligible && completeTask('video')}
+                    disabled={!videoEligible}
+                    style={{
+                      ...ACTION_BTN_STYLE,
+                      background: videoEligible ? 'linear-gradient(135deg,#00ff88,#00cc66)' : 'rgba(255,255,255,0.07)',
+                      color: videoEligible ? '#000' : '#666',
+                      cursor: videoEligible ? 'pointer' : 'not-allowed',
+                      border: videoEligible ? 'none' : '1px solid rgba(255,255,255,0.1)',
+                      transition: 'all 0.4s ease',
+                    }}>
+                    {videoEligible ? '✓ Mark Video as Watched' : '⏳ Watch at least 30 seconds to mark complete'}
+                  </button>
+                ) : (
+                  <div className="text-success text-sm font-medium">✓ Completed!</div>
                 )}
-                {!isTaskDone('video')
-                  ? <button onClick={() => completeTask('video')} style={ACTION_BTN_STYLE}>✓ Mark as Watched</button>
-                  : <div className="text-success text-sm font-medium">✓ Completed!</div>}
               </div>
             )}
 
