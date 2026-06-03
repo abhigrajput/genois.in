@@ -1,700 +1,833 @@
-'use client';
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import TrialBanner from '@/components/TrialBanner';
-import OnboardingTour from '@/components/OnboardingTour';
-import toast from 'react-hot-toast';
-import useAuthStore from '@/store/authStore';
-import { analyticsAPI } from '@/lib/api';
-import { useToken, apiFetch } from '@/lib/useApi';
-import { getSkillTierData, getNextTier } from '@/lib/skillLevel';
+'use client'
+import { useEffect, useState, useRef, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import toast from 'react-hot-toast'
+import useAuthStore from '@/store/authStore'
+import { useToken } from '@/lib/useApi'
+import TrialBanner from '@/components/TrialBanner'
+import OnboardingTour from '@/components/OnboardingTour'
 
-const TASK_META = {
-  video:    { label:'Watch Video',       icon:'▶', color:'#7b5cff' },
-  resource: { label:'Read Resource',     icon:'📖', color:'#378ADD' },
-  coding:   { label:'Coding Challenge',  icon:'{}', color:'#1D9E75' },
-  test:     { label:'Daily Test',        icon:'✎', color:'#D4537E' },
-  notes:    { label:'AI Notes',          icon:'≡', color:'#378ADD' },
-  project:  { label:'Project Step',      icon:'◆', color:'#BA7517' },
-};
+const G = '#00ff88'
+const G10 = 'rgba(0,255,136,0.1)'
+const G20 = 'rgba(0,255,136,0.2)'
+const AMBER = '#fbbf24'
+const BG = '#050505'
+const BG2 = '#0d0d0d'
+const BG3 = '#111111'
 
-function Ring({ pct, color, size = 68, label }) {
-  const r = (size - 10) / 2;
-  const circ = 2 * Math.PI * r;
+const TASK_BITS = { video: 1, resource: 2, coding: 4, test: 8, notes: 16 }
+const TASK_META = [
+  { type: 'video',    emoji: '📺', label: 'Watch',  bit: 1  },
+  { type: 'resource', emoji: '📖', label: 'Read',   bit: 2  },
+  { type: 'coding',   emoji: '💻', label: 'Code',   bit: 4  },
+  { type: 'test',     emoji: '🧪', label: 'Test',   bit: 8  },
+  { type: 'notes',    emoji: '📝', label: 'Notes',  bit: 16 },
+]
+
+const DIFF_COLORS = { Easy: G, Medium: AMBER, Hard: '#ff4757' }
+
+function DayRing({ day, size = 72 }) {
+  const r = (size - 10) / 2
+  const circ = 2 * Math.PI * r
+  const pct = Math.min(day / 365, 1)
   return (
-    <div style={{ textAlign:'center' }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="7" />
-        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth="7"
+    <div style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
+      <svg width={size} height={size} style={{ display: 'block' }}>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="7" />
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={G} strokeWidth="7"
           strokeLinecap="round" strokeDasharray={circ}
-          strokeDashoffset={circ * (1 - (pct || 0) / 100)}
+          strokeDashoffset={circ * (1 - pct)}
           transform={`rotate(-90 ${size/2} ${size/2})`}
-          style={{ filter:`drop-shadow(0 0 4px ${color}80)`, transition:'stroke-dashoffset 0.8s ease' }} />
-        <text x={size/2} y={size/2 + 5} textAnchor="middle" fontSize="13" fontWeight="700" fill={color}
-          fontFamily="JetBrains Mono, monospace">{pct || 0}%</text>
+          style={{ filter: `drop-shadow(0 0 5px rgba(0,255,136,0.7))`, transition: 'stroke-dashoffset 0.8s ease' }} />
       </svg>
-      {label && <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#5a7a9a', marginTop:4, letterSpacing:0.5 }}>{label}</div>}
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 20, fontWeight: 700, color: G, lineHeight: 1 }}>{day}</span>
+        <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#444', marginTop: 1 }}>/ 365</span>
+      </div>
     </div>
-  );
+  )
+}
+
+function Skel({ h = 60, w = '100%' }) {
+  return <div className="skeleton" style={{ height: h, width: w }} />
+}
+
+function Confetti({ show }) {
+  if (!show) return null
+  const colors = [G, AMBER, '#00ffff', '#ff69b4', '#ffffff', '#7b5cff']
+  const particles = Array.from({ length: 24 }, (_, i) => {
+    const angle = (i / 24) * 360
+    const dist = 80 + (i % 4) * 30
+    const tx = Math.cos((angle * Math.PI) / 180) * dist
+    const ty = Math.sin((angle * Math.PI) / 180) * dist - 60
+    return { i, color: colors[i % colors.length], tx, ty }
+  })
+  return (
+    <div style={{ position: 'fixed', inset: 0, pointerEvents: 'none', zIndex: 9998 }}>
+      <div style={{ position: 'absolute', left: '45%', top: '45%' }}>
+        {particles.map(p => (
+          <div key={p.i} className="confetti-particle" style={{
+            background: p.color, borderRadius: p.i % 2 === 0 ? '50%' : '2px',
+            '--tx': `${p.tx}px`, '--ty': `${p.ty}px`,
+            animationDelay: `${(p.i % 4) * 0.05}s`,
+          }} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function FloatAnim({ items }) {
+  return (
+    <>
+      {items.map(a => (
+        <div key={a.id} className="pts-float" style={{
+          position: 'fixed', bottom: '25%', left: '55%',
+          fontFamily: 'JetBrains Mono,monospace', fontSize: 20, fontWeight: 800,
+          color: G, zIndex: 9999, textShadow: `0 0 12px rgba(0,255,136,0.9)`,
+          transform: 'translateX(-50%)',
+        }}>{a.text}</div>
+      ))}
+    </>
+  )
 }
 
 export default function DashboardPage() {
-  const { user } = useAuthStore();
-  const router = useRouter();
-  const { token, ready } = useToken();
-  const [data, setData] = useState(null);
-  const [rivalData, setRivalData] = useState(null);
-  const [legendData, setLegendData] = useState(null);
-  const [tokenData, setTokenData] = useState(null);
-  const [diagnosticData, setDiagnosticData] = useState(null);
-  const [githubData, setGithubData] = useState(null);
-  const [showOutcomePopup, setShowOutcomePopup] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const { user, progress: storeProgress, score: storeScore } = useAuthStore()
+  const router = useRouter()
+  const { token, ready } = useToken()
+
+  const [loading, setLoading] = useState(true)
+  const [analytics, setAnalytics] = useState(null)
+  const [roadmap, setRoadmap] = useState(null)
+  const [lbData, setLbData] = useState(null)
+  const [activeTask, setActiveTask] = useState('video')
+  const [completedMask, setCompletedMask] = useState(0)
+  const [showConfetti, setShowConfetti] = useState(false)
+  const [floatAnims, setFloatAnims] = useState([])
+  const [motiveIdx, setMotiveIdx] = useState(0)
+  const [showOutcomePopup, setShowOutcomePopup] = useState(false)
+  const [generatingNotes, setGeneratingNotes] = useState(false)
+  const [streakAtRisk, setStreakAtRisk] = useState(false)
+  const [githubInput, setGithubInput] = useState('')
+  const [calendarData, setCalendarData] = useState([])
 
   useEffect(() => {
-    analyticsAPI.getDashboard()
-      .then(res => setData(res.data))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
+    if (user && !user.domain_slug) router.push('/onboarding')
+  }, [user, router])
 
   useEffect(() => {
-    if (!ready || !token) return;
-    apiFetch('/api/enemy', token).then(r => setRivalData(r.data)).catch(() => {});
-    apiFetch('/api/legend', token).then(r => setLegendData(r.data)).catch(() => {});
-    apiFetch('/api/streak-token', token).then(r => setTokenData(r.data)).catch(() => {});
-    apiFetch('/api/diagnostic', token).then(r => setDiagnosticData(r.data)).catch(() => {});
-    apiFetch('/api/github/profile', token).then(r => setGithubData(r.data)).catch(() => {});
-    apiFetch('/api/progress/full', token).then(r => {
-      if ((r.data?.currentDay || 0) >= 7) {
-        const shown = localStorage.getItem('outcome_popup_shown');
-        if (!shown) setTimeout(() => setShowOutcomePopup(true), 3000);
+    if (!ready || !token) return
+    const h = { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }
+
+    Promise.all([
+      fetch('/api/analytics/dashboard', { headers: h }).then(r => r.json()).catch(() => null),
+      fetch('/api/roadmap/daily', { headers: h }).then(r => r.json()).catch(() => null),
+      fetch('/api/leaderboard', { headers: h }).then(r => r.json()).catch(() => null),
+    ]).then(([an, rm, lb]) => {
+      const ad = an?.data || an || {}
+      const rd = rm?.data || rm || {}
+      const ld = lb?.data || lb || {}
+
+      setAnalytics(ad)
+      setRoadmap(rd)
+      setLbData(ld)
+
+      const tasks = ad?.today?.tasks || []
+      const mask = tasks.reduce((m, t) => t.status === 'completed' ? m | (TASK_BITS[t.type] || 0) : m, 0)
+      setCompletedMask(mask)
+
+      const firstInc = TASK_META.find(tm => !(mask & tm.bit))
+      if (firstInc) setActiveTask(firstInc.type)
+
+      const cd = ad?.progress?.currentDay || 0
+      if (cd >= 7 && !localStorage.getItem('outcome_popup_shown')) {
+        setTimeout(() => setShowOutcomePopup(true), 3000)
       }
-    }).catch(() => {});
-  }, [ready, token]);
+    }).finally(() => setLoading(false))
 
-  async function useStreakToken() {
-    try {
-      await apiFetch('/api/streak-token', token, 'POST', { action: 'use_token' });
-      toast.success('Streak saved! Token used. 🛡️');
-      const r = await apiFetch('/api/streak-token', token);
-      setTokenData(r.data);
-    } catch (e) {
-      toast.error(e.message);
+    // Calendar data fetch
+    fetch('/api/progress/full', { headers: h })
+      .then(r => r.json())
+      .then(d => { if (d?.data?.calendarData) setCalendarData(d.data.calendarData) })
+      .catch(() => {})
+  }, [ready, token])
+
+  // Streak at risk detection (after 6 PM IST = 12:30 UTC)
+  useEffect(() => {
+    const checkStreak = () => {
+      const streak = analytics?.progress?.streak || storeProgress?.streak || 0
+      if (streak > 0 && completedMask === 0) {
+        const now = new Date()
+        const istHour = (now.getUTCHours() + 5) % 24 + (now.getUTCMinutes() >= 30 ? 0 : 0)
+        // IST = UTC+5:30
+        const istMins = now.getUTCHours() * 60 + now.getUTCMinutes() + 330
+        if (istMins % (24 * 60) >= 18 * 60) setStreakAtRisk(true)
+      }
     }
+    checkStreak()
+  }, [analytics, completedMask, storeProgress])
+
+  // Motivation bar rotation
+  useEffect(() => {
+    const t = setInterval(() => setMotiveIdx(i => i + 1), 5000)
+    return () => clearInterval(t)
+  }, [])
+
+  const addFloat = useCallback((text) => {
+    const id = Date.now() + Math.random()
+    setFloatAnims(prev => [...prev, { id, text }])
+    setTimeout(() => setFloatAnims(prev => prev.filter(a => a.id !== id)), 1200)
+  }, [])
+
+  const checkAchievements = useCallback((newMask) => {
+    const shown = JSON.parse(localStorage.getItem('genois_achievements') || '{}')
+    const dk = new Date().toDateString()
+    const toStyle = { background: BG2, color: G, border: `1px solid ${G20}`, borderRadius: 10 }
+
+    const prevCount = TASK_META.filter(tm => completedMask & tm.bit).length
+    if (prevCount === 0 && newMask > 0 && !shown[`first_${dk}`]) {
+      toast.success('First task done! 🎯 Keep going', { style: toStyle })
+      shown[`first_${dk}`] = true
+    }
+    if (newMask === 31 && !shown[`all_${dk}`]) {
+      const day = analytics?.progress?.currentDay || 1
+      toast.success(`Day ${day} complete! 🎉 +100 bonus pts`, { style: toStyle, duration: 5000 })
+      shown[`all_${dk}`] = true
+    }
+    const total = analytics?.score?.total_score || 0
+    for (const th of [1000, 5000, 10000]) {
+      if (total < th && total + 20 >= th && !shown[`score_${th}`]) {
+        toast.success(`🏆 ${th.toLocaleString()} pts milestone!`, { style: toStyle })
+        shown[`score_${th}`] = true
+      }
+    }
+    localStorage.setItem('genois_achievements', JSON.stringify(shown))
+  }, [completedMask, analytics])
+
+  const completeTask = useCallback(async (taskType) => {
+    if (!token) return
+    const bit = TASK_BITS[taskType]
+    if (!bit || (completedMask & bit)) return
+    const newMask = completedMask | bit
+    setCompletedMask(newMask)
+    addFloat('+20 pts')
+    const currentDay = analytics?.progress?.currentDay || storeProgress?.current_day || 1
+    try {
+      await fetch('/api/tasks/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({ day: currentDay, taskType }),
+      })
+      checkAchievements(newMask)
+      if (newMask === 31) { setShowConfetti(true); setTimeout(() => setShowConfetti(false), 3000) }
+    } catch {
+      setCompletedMask(completedMask)
+      toast.error('Failed to save progress')
+    }
+  }, [token, completedMask, addFloat, checkAchievements, analytics, storeProgress])
+
+  const generateNotes = useCallback(async () => {
+    if (!token || generatingNotes) return
+    setGeneratingNotes(true)
+    try {
+      await fetch('/api/notes/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({ day: analytics?.progress?.currentDay || 1 }),
+      })
+      toast.success('Notes generated! ✨', { style: { background: BG2, color: G } })
+      // Mark notes as done after generation
+      completeTask('notes')
+    } catch {
+      toast.error('Could not generate notes')
+    } finally {
+      setGeneratingNotes(false)
+    }
+  }, [token, generatingNotes, analytics, completeTask])
+
+  // Derived data
+  const progress = analytics?.progress || {}
+  const score = analytics?.score || {}
+  const today = analytics?.today || {}
+
+  const currentDay = progress?.currentDay || storeProgress?.current_day || 1
+  const streak = progress?.streak || storeProgress?.streak || 0
+  const totalScore = score?.total_score || storeScore?.total_score || 0
+  const myRank = lbData?.myRank || lbData?.userRank || null
+  const percentile = lbData?.percentile || null
+
+  const rm = roadmap || {}
+  const topic = rm?.topic || rm?.title || "Today's Topic"
+  const week = rm?.week || Math.ceil(currentDay / 7)
+  const level = rm?.level || rm?.difficulty || 'Beginner'
+  const isProjectDay = rm?.isProjectDay || false
+  const concepts = rm?.keyConceptss || rm?.keyConcepts || rm?.key_concepts || []
+  const objectives = rm?.objectives || []
+  const video = rm?.video || {}
+  const resource = rm?.resource || {}
+  const coding = rm?.coding || {}
+  const project = rm?.project || {}
+  const notes = rm?.notes || {}
+
+  const doneTasks = TASK_META.filter(tm => completedMask & tm.bit).length
+  const allDone = completedMask === 31
+  const nextTask = TASK_META.find(tm => !(completedMask & tm.bit))
+
+  // Leaderboard slice around user
+  const lb = lbData?.leaderboard || lbData?.users || []
+  const myIdx = lb.findIndex(e => e.rank === myRank || e.isMe)
+  const lbStart = Math.max(0, myIdx < 0 ? 0 : myIdx - 2)
+  const lbSlice = lb.slice(lbStart, lbStart + 5)
+
+  // Week dots (7 days)
+  const weekDays = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
+  const todayDow = new Date().getDay()
+  const weekStart = currentDay - ((todayDow === 0 ? 6 : todayDow - 1))
+
+  // 30-day calendar grid
+  const cal30 = calendarData.length > 0 ? calendarData : Array.from({ length: 30 }, (_, i) => ({
+    date: new Date(Date.now() - (29 - i) * 86400000),
+    done: i >= 30 - streak,
+    isToday: i === 29,
+    count: i >= 30 - streak ? (i % 3 === 0 ? 2 : 1) : 0,
+  }))
+
+  // Motivation messages
+  const nameAbove = lb[Math.max(0, myIdx - 1)]?.name || 'someone'
+  const ptsAhead = lb[Math.max(0, myIdx - 1)]?.score ? lb[Math.max(0, myIdx - 1)].score - totalScore : 0
+  const motives = [
+    `🔥 You've completed ${streak} days in a row — don't stop now!`,
+    `💪 ${5 - doneTasks} more task${5 - doneTasks !== 1 ? 's' : ''} to finish Day ${currentDay}`,
+    myRank ? `🏆 You're rank #${myRank}${ptsAhead > 0 ? ` — ${nameAbove} is ${ptsAhead} pts ahead` : ' — keep climbing!'}` : `🚀 Complete tasks to earn your rank!`,
+    `⚡ You've earned ${totalScore.toLocaleString()} pts total${percentile ? ` — top ${percentile}% of all students` : ''}`,
+    `🎯 You're on Day ${currentDay} of 365 — ${365 - currentDay} days to go!`,
+  ]
+  const currentMotive = motives[motiveIdx % motives.length]
+
+  const isAdmin = user?.email?.toLowerCase().trim() === 'abhigrajput5@gmail.com'
+
+  // ── LOADING SKELETON ──
+  if (loading) return (
+    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <Skel h={90} />
+      <Skel h={52} />
+      <div style={{ display: 'flex', gap: 16 }}>
+        <div style={{ flex: 3, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <Skel h={320} />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+            <Skel h={130} /><Skel h={130} /><Skel h={130} />
+          </div>
+        </div>
+        <div style={{ flex: 2, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <Skel h={120} /><Skel h={100} /><Skel h={100} /><Skel h={130} />
+        </div>
+      </div>
+      <Skel h={52} />
+    </div>
+  )
+
+  // ── ACTIVE TASK CONTENT ──
+  function TaskContent() {
+    const done = !!(completedMask & TASK_BITS[activeTask])
+    const btnStyle = {
+      display: 'inline-flex', alignItems: 'center', gap: 8,
+      padding: '10px 20px', borderRadius: 8, border: 'none', cursor: done ? 'default' : 'pointer',
+      background: done ? 'rgba(0,255,136,0.1)' : G, color: done ? G : '#000',
+      fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14, transition: 'all 0.2s',
+      opacity: done ? 0.7 : 1,
+    }
+
+    if (activeTask === 'video') return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {video?.title && <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 600, color: '#e8f4ff' }}>{video.title}</div>}
+        {video?.description && <div style={{ fontSize: 12, color: '#6b7a8d', lineHeight: 1.6 }}>{video.description}</div>}
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          {video?.url && (
+            <a href={video.url} target="_blank" rel="noopener noreferrer" style={{ ...btnStyle, background: done ? 'rgba(0,255,136,0.1)' : G, color: done ? G : '#000', textDecoration: 'none' }}>
+              ▶ Open on YouTube
+            </a>
+          )}
+          {!done && <button onClick={() => completeTask('video')} style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${G20}`, background: 'transparent', color: G, cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontWeight: 600, fontSize: 14 }}>✓ Mark Complete</button>}
+        </div>
+      </div>
+    )
+
+    if (activeTask === 'resource') return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {resource?.title && <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 600, color: '#e8f4ff' }}>{resource.title}</div>}
+        <div style={{ display: 'flex', gap: 10 }}>
+          {resource?.url && (
+            <a href={resource.url} target="_blank" rel="noopener noreferrer" style={{ ...btnStyle, background: done ? 'rgba(0,255,136,0.1)' : G, color: done ? G : '#000', textDecoration: 'none' }}>
+              📖 Open Resource
+            </a>
+          )}
+          {!done && <button onClick={() => completeTask('resource')} style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${G20}`, background: 'transparent', color: G, cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontWeight: 600, fontSize: 14 }}>✓ Mark Complete</button>}
+        </div>
+      </div>
+    )
+
+    if (activeTask === 'coding') {
+      const diff = coding?.difficulty || 'Medium'
+      return (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            {coding?.title && <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 14, fontWeight: 700, color: G }}>{coding.title}</div>}
+            <span style={{ padding: '2px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: `${DIFF_COLORS[diff]}20`, color: DIFF_COLORS[diff], border: `1px solid ${DIFF_COLORS[diff]}40` }}>{diff}</span>
+          </div>
+          {coding?.description && <div style={{ fontSize: 12, color: '#6b7a8d', lineHeight: 1.6 }}>{coding.description}</div>}
+          {coding?.codeSnippet && (
+            <pre style={{ background: '#0a0a0a', border: `1px solid rgba(0,255,136,0.15)`, borderRadius: 8, padding: '12px 14px', fontSize: 11, color: G, fontFamily: 'JetBrains Mono,monospace', overflow: 'auto', maxHeight: 100, margin: 0 }}>
+              {coding.codeSnippet}
+            </pre>
+          )}
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            {coding?.url && (
+              <a href={coding.url} target="_blank" rel="noopener noreferrer" style={{ ...btnStyle, background: done ? 'rgba(0,255,136,0.1)' : G, color: done ? G : '#000', textDecoration: 'none' }}>
+                💻 Solve Problem →
+              </a>
+            )}
+            {!done && <button onClick={() => completeTask('coding')} style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${G20}`, background: 'transparent', color: G, cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontWeight: 600, fontSize: 14 }}>✓ Mark Complete</button>}
+          </div>
+        </div>
+      )
+    }
+
+    if (activeTask === 'test') return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ fontSize: 13, color: '#6b7a8d' }}>Take today&apos;s test to earn bonus points and test your understanding.</div>
+        <Link href="/tests" style={{ ...btnStyle, background: done ? 'rgba(0,255,136,0.1)' : G, color: done ? G : '#000', textDecoration: 'none', alignSelf: 'flex-start' }}>
+          🧪 Take Today&apos;s Test →
+        </Link>
+      </div>
+    )
+
+    if (activeTask === 'notes') return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        {notes?.content ? (
+          <div style={{ background: '#0a0a0a', border: `1px solid rgba(0,255,136,0.12)`, borderRadius: 8, padding: '12px 14px', fontSize: 12, color: '#aab', lineHeight: 1.7, maxHeight: 140, overflow: 'auto', fontFamily: 'Outfit,sans-serif' }}>
+            {notes.content}
+          </div>
+        ) : (
+          <div style={{ fontSize: 13, color: '#6b7a8d' }}>AI-generated summary notes for today&apos;s topic. Click below to generate.</div>
+        )}
+        {!notes?.content && (
+          <button onClick={generateNotes} disabled={generatingNotes} style={{ ...btnStyle, alignSelf: 'flex-start', opacity: generatingNotes ? 0.6 : 1, cursor: generatingNotes ? 'not-allowed' : 'pointer' }}>
+            {generatingNotes ? '⏳ Generating...' : '✨ Generate Notes'}
+          </button>
+        )}
+        {notes?.content && !done && (
+          <button onClick={() => completeTask('notes')} style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${G20}`, background: 'transparent', color: G, cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontWeight: 600, fontSize: 14, alignSelf: 'flex-start' }}>✓ Mark Complete</button>
+        )}
+      </div>
+    )
+
+    return null
   }
 
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-  const firstName = user?.name?.split(' ')[0] || 'Student';
-
-  if (loading) return (
-    <div style={{ width: '100%', display:'flex', flexDirection:'column', gap:16 }}>
-      {[1,2,3].map(i => (
-        <div key={i} style={{ height:100, borderRadius:14, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(0,240,255,0.06)', animation:'gentlePulse 1.5s infinite' }} />
-      ))}
-    </div>
-  );
-
-  const { score, progress, skill, today, trial, recentActivity } = data || {};
-  const completedCount = today?.tasksCompleted || 0;
-  const progressPct = progress?.progressPercent || 0;
-  const jobReadyPct = skill?.jobReadyScore || 0;
-
-  const daysCompleted = progress?.currentDay || progress?.current_day || 1;
-  const daysRemaining = Math.max(0, 365 - daysCompleted);
-  const masteryPercent = Math.min(100, Math.round((daysCompleted / 365) * 100));
-
-  const STATS = [
-    { label:'TOTAL SCORE',  value: score?.total_score || 0,     color:'#7b5cff', suffix:'pts' },
-    { label:'STREAK',       value: progress?.streak || 0,        color:'#EF9F27', suffix:'d 🔥' },
-    { label:'PROGRESS',     value: progressPct,                  color:'#1D9E75', suffix:'%' },
-    { label:'JOB READY',    value: jobReadyPct,                  color:'#D85A30', suffix:'%' },
-  ];
-
-  const isAdmin = user?.email?.toLowerCase().trim() === 'abhigrajput5@gmail.com';
+  const cardBase = {
+    background: BG2, border: `1px solid rgba(0,255,136,0.12)`, borderRadius: 14,
+    padding: 20, position: 'relative', overflow: 'hidden',
+  }
 
   return (
-    <div style={{ width: '100%', maxWidth: 1600, margin: '0 auto', display:'flex', flexDirection:'column', gap:20 }}>
+    <div style={{ width: '100%', maxWidth: 1400, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: 16 }}>
+      <FloatAnim items={floatAnims} />
+      <Confetti show={showConfetti} />
+
       <TrialBanner />
 
-      {/* Email verification banner */}
-      {user && user.email_verified === false && (
-        <div style={{ background: 'rgba(239,159,39,0.08)', border: '1px solid rgba(239,159,39,0.3)', borderRadius: 12, padding: '14px 20px', marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 20 }}>📧</span>
-            <div>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700, color: '#EF9F27' }}>Verify your email</div>
-              <div style={{ fontSize: 12, color: '#8a9ab0' }}>Check your inbox and verify to confirm your account</div>
-            </div>
+      {/* Email verification */}
+      {user?.email_verified === false && (
+        <div style={{ background: 'rgba(255,50,50,0.08)', border: '1px solid rgba(255,50,50,0.3)', borderRadius: 10, padding: '12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 16 }}>📧</span>
+            <span style={{ fontFamily: 'Outfit,sans-serif', fontSize: 13, color: '#ff6b6b' }}>Please verify your email to unlock all features</span>
           </div>
-          <button
-            onClick={async () => {
-              try {
-                await apiFetch('/api/auth/resend-verification', token, 'POST', {});
-                toast.success('Verification email sent! Check your inbox.');
-              } catch (e) {
-                toast.error(e.message);
-              }
-            }}
-            style={{ padding: '8px 16px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#EF9F27,#D85A30)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700, flexShrink: 0 }}
-          >
-            Resend Email →
+          <button onClick={async () => {
+            try { await fetch('/api/auth/resend-verification', { method: 'POST', headers: { Authorization: 'Bearer ' + token } }); toast.success('Verification email sent!') }
+            catch { toast.error('Failed to send') }
+          }} style={{ padding: '6px 14px', borderRadius: 8, border: 'none', background: '#ff4545', color: '#fff', fontFamily: 'Syne,sans-serif', fontSize: 12, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}>
+            Resend →
           </button>
         </div>
       )}
-      {/* Heading */}
-      <div>
-        <h1 style={{ fontFamily:'Syne,sans-serif', fontSize:26, fontWeight:800, color:'#e8f4ff', margin:0, lineHeight:1.2 }}>
-          {greeting}, <span style={{ color:'#00f0ff' }}>{firstName}</span> 👋
-        </h1>
-        <p style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, color:'#5a7a9a', marginTop:6, letterSpacing:0.5, marginBottom:12 }}>
-          DAY {progress?.currentDay || 1} · {completedCount}/6 TASKS DONE TODAY
-        </p>
-        {isAdmin && (
-          <a href="/admin" style={{ display: 'inline-block', padding: '8px 16px', borderRadius: 10, background: 'linear-gradient(135deg,rgba(0,240,255,0.1),rgba(123,92,255,0.05))', border: '1px solid rgba(0,240,255,0.3)', color: '#00f0ff', textDecoration: 'none', fontSize: 13, fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, marginBottom: 16 }}>
-            ⚙️ Admin Dashboard →
-          </a>
-        )}
-        <div style={{ display: 'flex', gap: 8 }}>
-          {user?.weeklyBadge === 'hire_ready' && (
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '4px 12px',
-              borderRadius: 20,
-              background: 'rgba(29,158,117,0.15)',
-              border: '1px solid rgba(29,158,117,0.4)',
-              color: '#1D9E75',
-              fontSize: 11,
-              fontFamily: 'JetBrains Mono,monospace',
-              fontWeight: 700,
-              letterSpacing: 0.5,
-            }}>
-              ✓ HIRE-READY THIS WEEK
+
+      {/* Streak at risk */}
+      {streakAtRisk && (
+        <div style={{ background: 'rgba(251,191,36,0.07)', border: `1px solid rgba(251,191,36,0.3)`, borderRadius: 10, padding: '10px 20px', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontSize: 18 }}>⚠️</span>
+          <span style={{ fontFamily: 'Outfit,sans-serif', fontSize: 13, color: AMBER }}>Complete at least 1 task to keep your streak alive tonight!</span>
+        </div>
+      )}
+
+      {/* Admin link */}
+      {isAdmin && (
+        <a href="/admin" style={{ display: 'inline-block', padding: '6px 14px', borderRadius: 8, background: 'rgba(0,255,136,0.08)', border: `1px solid ${G20}`, color: G, textDecoration: 'none', fontSize: 12, fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, alignSelf: 'flex-start' }}>⚙️ Admin Dashboard →</a>
+      )}
+
+      {/* DSA Diagnostic banner */}
+      {user?.domain_slug === 'dsa' && analytics?.diagnosticStatus === false && (
+        <div onClick={() => router.push('/diagnostic')} style={{ ...cardBase, cursor: 'pointer', borderColor: `rgba(0,255,136,0.3)` }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+            <div>
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: G, letterSpacing: 2, marginBottom: 4 }}>🎯 RECOMMENDED</div>
+              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, color: '#e8f4ff' }}>Take DSA Diagnostic to get your level →</div>
+              <div style={{ fontSize: 12, color: '#6b7a8d', marginTop: 2 }}>15 questions · 10 min · Sets your personalized track</div>
             </div>
-          )}
-          {user?.weeklyBadge === 'not_ready' && (
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 6,
-              padding: '4px 12px',
-              borderRadius: 20,
-              background: 'rgba(255,45,120,0.1)',
-              border: '1px solid rgba(255,45,120,0.3)',
-              color: '#ff2d78',
-              fontSize: 11,
-              fontFamily: 'JetBrains Mono,monospace',
-              fontWeight: 700,
-              letterSpacing: 0.5,
-            }}>
-              ✗ NOT READY — Grind harder this week
+            <div style={{ padding: '8px 18px', borderRadius: 8, background: G, color: '#000', fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 13 }}>Start Now →</div>
+          </div>
+        </div>
+      )}
+
+      {/* ── HERO STATS BAR ── */}
+      <div className="stats-bar" style={{ background: BG2, borderRadius: 14, border: `1px solid rgba(0,255,136,0.12)`, padding: '16px 24px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+        {/* Day */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <DayRing day={currentDay} size={68} />
+          <div>
+            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 2 }}>CURRENT DAY</div>
+            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#888' }}>{Math.round((currentDay / 365) * 100)}% complete</div>
+          </div>
+        </div>
+
+        {/* Streak */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderLeft: `1px solid rgba(255,255,255,0.06)`, paddingLeft: 16 }}>
+          <div>
+            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 4 }}>STREAK</div>
+            <div className={streak >= 7 ? 'pulse-amber' : ''} style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 28, fontWeight: 800, color: streak > 0 ? AMBER : '#444', lineHeight: 1 }}>
+              {streak > 0 ? `🔥` : ''} {streak > 0 ? `${streak}` : '0'}
             </div>
-          )}
+            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: streak > 0 ? AMBER : '#555', marginTop: 2 }}>
+              {streak === 0 ? 'Start today!' : streak >= 30 ? '🔥🔥 ON FIRE' : 'days'}
+            </div>
+            {streakAtRisk && streak > 0 && doneTasks === 0 && (
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#ff4545', marginTop: 2 }}>⚠️ AT RISK</div>
+            )}
+          </div>
+        </div>
+
+        {/* Score */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderLeft: `1px solid rgba(255,255,255,0.06)`, paddingLeft: 16 }}>
+          <div>
+            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 4 }}>SCORE</div>
+            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 26, fontWeight: 800, color: G, lineHeight: 1 }}>
+              ⚡ {totalScore.toLocaleString()}
+            </div>
+            {doneTasks > 0 && (
+              <div style={{ display: 'inline-block', marginTop: 3, padding: '1px 8px', borderRadius: 20, background: 'rgba(0,255,136,0.12)', border: `1px solid ${G20}`, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G }}>
+                +{doneTasks * 20} today
+              </div>
+            )}
+            {doneTasks === 0 && <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#555', marginTop: 2 }}>0 today</div>}
+          </div>
+        </div>
+
+        {/* Rank */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderLeft: `1px solid rgba(255,255,255,0.06)`, paddingLeft: 16 }}>
+          <div>
+            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 4 }}>RANK</div>
+            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 26, fontWeight: 800, color: '#e8f4ff', lineHeight: 1 }}>
+              🏆 {myRank ? `#${myRank}` : '--'}
+            </div>
+            {percentile && <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, marginTop: 3 }}>Top {100 - percentile}%</div>}
+          </div>
         </div>
       </div>
 
-      {/* Stats row */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 12 }}>
-        {STATS.map(s => (
-          <div key={s.label} className="card" style={{ textAlign:'center', padding:16 }}>
-            <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#5a7a9a', letterSpacing:1, marginBottom:8 }}>{s.label}</div>
-            <div style={{ fontFamily:'Syne,sans-serif', fontSize:24, fontWeight:800, color:s.color, filter:`drop-shadow(0 0 6px ${s.color}50)` }}>
-              {s.value}{s.suffix}
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* ── MAIN 60/40 ── */}
+      <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' }}>
 
-      {(() => {
-        const tier = getSkillTierData(score?.total_score || 0);
-        const next = getNextTier(score?.total_score || 0);
-        return (
-          <div style={{ background: `linear-gradient(135deg,${tier.color}08,transparent)`, border: `1px solid ${tier.color}25`, borderRadius: 14, padding: 20, marginBottom: 16 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: next ? 12 : 0, flexWrap: 'wrap' }}>
-              <div style={{ fontSize: 44 }}>{tier.icon}</div>
-              <div style={{ flex: 1, minWidth: 200 }}>
-                <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: tier.color, letterSpacing: 2, marginBottom: 4 }}>YOU ARE CLASSIFIED AS</div>
-                <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 800, color: tier.color, marginBottom: 4 }}>{tier.label}</div>
-                <div style={{ fontSize: 12, color: '#8a9ab0' }}>{tier.description}</div>
+        {/* LEFT 60% */}
+        <div style={{ flex: '3 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
+
+          {/* TODAY'S MISSION CARD */}
+          <div style={{ ...cardBase, border: `1px solid rgba(0,255,136,0.25)`, boxShadow: '0 0 24px rgba(0,255,136,0.05)' }}>
+            {/* Header */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: G, letterSpacing: 2, fontWeight: 700 }}>TODAY&apos;S MISSION</span>
+                <span style={{ padding: '2px 10px', borderRadius: 20, background: G10, border: `1px solid ${G20}`, fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: G }}>DAY {currentDay}</span>
+              </div>
+              <Link href="/roadmap" style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: G, textDecoration: 'none', border: `1px solid ${G20}`, padding: '3px 10px', borderRadius: 20 }}>
+                Full Roadmap →
+              </Link>
+            </div>
+
+            {/* PROJECT DAY */}
+            {isProjectDay ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 800, color: '#e8f4ff' }}>{project?.title || 'Project Day'}</div>
+                {project?.description && <div style={{ fontSize: 13, color: '#6b7a8d', lineHeight: 1.7 }}>{project.description}</div>}
+                {project?.estimatedHours && (
+                  <span style={{ alignSelf: 'flex-start', padding: '3px 10px', borderRadius: 20, background: 'rgba(251,191,36,0.1)', border: `1px solid rgba(251,191,36,0.3)`, fontSize: 11, color: AMBER, fontFamily: 'JetBrains Mono,monospace' }}>
+                    ~{project.estimatedHours}h estimated
+                  </span>
+                )}
+                {project?.steps?.length > 0 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {project.steps.map((s, i) => (
+                      <div key={i} style={{ display: 'flex', gap: 10, padding: '8px 12px', background: '#0a0a0a', borderRadius: 8, border: '1px solid rgba(255,255,255,0.04)' }}>
+                        <span style={{ color: G, fontSize: 12, fontWeight: 700, fontFamily: 'JetBrains Mono,monospace', flexShrink: 0 }}>{i + 1}.</span>
+                        <span style={{ fontSize: 13, color: '#aab' }}>{s}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                  {project?.githubUrl && (
+                    <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" style={{ padding: '10px 20px', borderRadius: 8, background: G, color: '#000', fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
+                      Submit on GitHub →
+                    </a>
+                  )}
+                  <input value={githubInput} onChange={e => setGithubInput(e.target.value)} placeholder="Your GitHub repo URL..." style={{ flex: 1, minWidth: 200, padding: '10px 14px', borderRadius: 8, border: `1px solid rgba(0,255,136,0.2)`, background: '#0a0a0a', color: '#e8f4ff', fontSize: 13, fontFamily: 'Outfit,sans-serif', outline: 'none' }} />
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Topic header */}
+                <div style={{ marginBottom: 16 }}>
+                  <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 800, color: '#e8f4ff', marginBottom: 8 }}>{topic}</div>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <span style={{ padding: '3px 10px', borderRadius: 20, background: 'rgba(123,92,255,0.1)', border: '1px solid rgba(123,92,255,0.25)', fontSize: 11, color: '#7b5cff', fontFamily: 'JetBrains Mono,monospace' }}>Week {week}</span>
+                    <span style={{ padding: '3px 10px', borderRadius: 20, background: G10, border: `1px solid ${G20}`, fontSize: 11, color: G, fontFamily: 'JetBrains Mono,monospace' }}>{level}</span>
+                  </div>
+                </div>
+
+                {/* Task pills */}
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
+                  {TASK_META.map(tm => {
+                    const isDone = !!(completedMask & tm.bit)
+                    const isActive = activeTask === tm.type
+                    return (
+                      <button key={tm.type} onClick={() => setActiveTask(tm.type)}
+                        className={isDone ? 'task-pill-done' : isActive ? 'task-pill-active' : 'task-pill-pending'}
+                        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 20, fontFamily: 'Outfit,sans-serif', fontSize: 13, fontWeight: 600, border: 'none', transition: 'all 0.2s' }}>
+                        <span>{tm.emoji}</span>
+                        <span>{tm.label}</span>
+                        {isDone && <span style={{ fontSize: 11 }}>✓</span>}
+                      </button>
+                    )
+                  })}
+                </div>
+
+                {/* Active task content */}
+                <div style={{ background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '16px', marginBottom: 16, minHeight: 80 }}>
+                  <TaskContent />
+                </div>
+
+                {/* Progress bar */}
+                <div style={{ marginBottom: 14 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                    <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#6b7a8d' }}>{doneTasks} / 5 tasks done</span>
+                    {allDone && <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: G }}>🎉 ALL DONE</span>}
+                  </div>
+                  <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
+                    <div style={{ height: '100%', width: `${(doneTasks / 5) * 100}%`, background: `linear-gradient(90deg, ${G}, #00cc66)`, borderRadius: 3, transition: 'width 0.5s ease', boxShadow: `0 0 8px rgba(0,255,136,0.4)` }} />
+                  </div>
+                </div>
+
+                {/* CTA button */}
+                <button
+                  onClick={() => { if (allDone) router.push('/roadmap'); else if (nextTask) { setActiveTask(nextTask.type); completeTask(nextTask.type) } }}
+                  className={allDone ? 'pulse-amber' : ''}
+                  style={{ width: '100%', padding: '14px', borderRadius: 10, border: 'none', cursor: 'pointer', background: allDone ? `linear-gradient(135deg, ${AMBER}, #f59e0b)` : G, color: allDone ? '#000' : '#000', fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 800, letterSpacing: 0.5, transition: 'all 0.2s' }}>
+                  {allDone ? '🎉 Day Complete! See Tomorrow →' : `▶ Start ${nextTask?.label || 'Next'} →`}
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* 3 MINI CARDS ROW */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+
+            {/* Week Progress */}
+            <div style={cardBase}>
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 10 }}>WEEK PROGRESS</div>
+              <div style={{ display: 'flex', gap: 6, justifyContent: 'space-between' }}>
+                {weekDays.map((d, i) => {
+                  const dayNum = weekStart + i
+                  const isToday = dayNum === currentDay
+                  const isPast = dayNum < currentDay
+                  const bg = isToday ? G : isPast ? 'rgba(0,255,136,0.4)' : 'rgba(255,255,255,0.04)'
+                  const border = isToday ? `2px solid ${G}` : 'none'
+                  return (
+                    <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+                      <div style={{ width: 28, height: 28, borderRadius: '50%', background: bg, border, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: isToday ? '#000' : isPast ? G : '#444', transition: 'all 0.2s' }}>
+                        {isToday ? '●' : isPast ? '✓' : ''}
+                      </div>
+                      <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, color: isToday ? G : '#444' }}>{d}</span>
+                    </div>
+                  )
+                })}
+              </div>
+              <div style={{ marginTop: 8, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555' }}>
+                Week {week} · Day {currentDay}
               </div>
             </div>
-            {next && (
-              <div style={{ padding: '10px 14px', background: 'rgba(255,255,255,0.02)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-                <div>
-                  <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>NEXT LEVEL</div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: next.color, fontFamily: 'Syne,sans-serif' }}>{next.icon} {next.label}</div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 800, color: '#00f0ff' }}>{next.pointsNeeded} pts</div>
-                  <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>to level up</div>
-                </div>
+
+            {/* Streak Calendar */}
+            <div style={cardBase}>
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 10 }}>30-DAY STREAK</div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 3 }}>
+                {cal30.map((d, i) => {
+                  const isToday = i === 29 || d.isToday
+                  const count = d.count ?? (d.done ? 1 : 0)
+                  const bg = isToday ? G : count >= 3 ? 'rgba(0,255,136,0.7)' : count >= 2 ? 'rgba(0,255,136,0.45)' : count >= 1 ? 'rgba(0,255,136,0.25)' : 'rgba(255,255,255,0.03)'
+                  return (
+                    <div key={i} className="streak-day" style={{ aspectRatio: '1', background: bg, borderRadius: 2, border: isToday ? `1px solid ${G}` : 'none', position: 'relative' }} />
+                  )
+                })}
+              </div>
+              <div style={{ marginTop: 6, display: 'flex', gap: 6, alignItems: 'center' }}>
+                <div style={{ width: 8, height: 8, background: 'rgba(0,255,136,0.25)', borderRadius: 1 }} />
+                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, color: '#555' }}>less</span>
+                <div style={{ width: 8, height: 8, background: G, borderRadius: 1 }} />
+                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, color: '#555' }}>more</span>
+              </div>
+            </div>
+
+            {/* Quick Access */}
+            <div style={cardBase}>
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 10 }}>QUICK ACCESS</div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                {[
+                  { href: '/chatbot', icon: '🤖', label: 'AI Chat' },
+                  { href: '/dsa-visualizer', icon: '📊', label: 'Visualizer' },
+                  { href: '/badge', icon: '🎖️', label: 'Badges' },
+                  { href: '/leaderboard', icon: '🏆', label: 'Leaderboard' },
+                ].map(q => (
+                  <Link key={q.href} href={q.href} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 6px', borderRadius: 8, background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.04)', textDecoration: 'none', transition: 'all 0.2s' }}
+                    onMouseEnter={e => { e.currentTarget.style.background = G10; e.currentTarget.style.borderColor = G20 }}
+                    onMouseLeave={e => { e.currentTarget.style.background = '#0a0a0a'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.04)' }}>
+                    <span style={{ fontSize: 18 }}>{q.icon}</span>
+                    <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#888' }}>{q.label}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT 40% */}
+        <div style={{ flex: '2 1 0', minWidth: 280, display: 'flex', flexDirection: 'column', gap: 12 }}>
+
+          {/* Card 1: Daily Objectives */}
+          <div style={cardBase}>
+            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}>🎯 DAILY OBJECTIVES</div>
+            {objectives.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {objectives.slice(0, 3).map((obj, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                    <div style={{ width: 16, height: 16, borderRadius: 3, border: `1px solid ${G20}`, flexShrink: 0, marginTop: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: G }}>
+                      {allDone ? '✓' : ''}
+                    </div>
+                    <span style={{ fontSize: 12, color: '#9ba8b5', lineHeight: 1.5, fontFamily: 'Outfit,sans-serif' }}>{obj}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {[1,2,3].map(i => <Skel key={i} h={16} />)}
               </div>
             )}
           </div>
-        );
-      })()}
 
-      {diagnosticData && !diagnosticData.alreadyTaken && (
-        <div
-          onClick={() => router.push('/diagnostic')}
-          style={{
-            background: 'linear-gradient(135deg,rgba(0,240,255,0.06),rgba(123,92,255,0.03))',
-            border: '2px solid rgba(0,240,255,0.3)',
-            borderRadius: 14,
-            padding: '16px 20px',
-            marginBottom: 16,
-            cursor: 'pointer',
-            position: 'relative',
-            overflow: 'hidden',
-            animation: 'pulse 2s infinite',
-          }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg,#00f0ff,#7b5cff)' }} />
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-            <div>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 6 }}>
-                🎯 ACTION REQUIRED
+          {/* Card 2: Key Concepts */}
+          <div style={cardBase}>
+            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}>💡 KEY CONCEPTS</div>
+            {concepts.length > 0 ? (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                {concepts.map((c, i) => (
+                  <span key={i} style={{ padding: '4px 10px', borderRadius: 20, border: `1px solid ${G20}`, fontSize: 11, color: G, background: G10, fontFamily: 'Outfit,sans-serif' }}>{c}</span>
+                ))}
               </div>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 800, color: '#e8f4ff', marginBottom: 2 }}>
-                Take your baseline diagnostic test
+            ) : (
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {[80, 100, 70, 90].map(w => <Skel key={w} h={24} w={w} />)}
               </div>
-              <div style={{ fontSize: 12, color: '#5a7a9a' }}>
-                15 questions · 10 minutes · Sets your Day 0 score · One time only
-              </div>
-            </div>
-            <div style={{ padding: '10px 20px', borderRadius: 10, background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700, flexShrink: 0 }}>
-              Start Now →
-            </div>
+            )}
           </div>
-        </div>
-      )}
 
-      {diagnosticData?.alreadyTaken && (
-        <div style={{
-          background: '#070f1f',
-          border: '1px solid rgba(29,158,117,0.2)',
-          borderRadius: 14,
-          padding: '14px 20px',
-          marginBottom: 16,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: 8,
-        }}>
-          <div>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#1D9E75', letterSpacing: 2, marginBottom: 4 }}>
-              ✓ BASELINE RECORDED
-            </div>
-            <div style={{ fontSize: 13, color: '#5a7a9a' }}>
-              Day 0 diagnostic score: <span style={{ color: '#1D9E75', fontWeight: 700 }}>{diagnosticData.diagnostic?.score}%</span> · {diagnosticData.diagnostic?.skill_level}
-            </div>
+          {/* Card 3: Coding Problem */}
+          <div style={cardBase}>
+            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}>🚀 CODING PROBLEM</div>
+            {coding?.title ? (
+              <>
+                <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 13, color: G, marginBottom: 6 }}>{coding.title}</div>
+                {coding.difficulty && (
+                  <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 700, background: `${DIFF_COLORS[coding.difficulty] || AMBER}18`, color: DIFF_COLORS[coding.difficulty] || AMBER, fontFamily: 'JetBrains Mono,monospace', marginBottom: 10, display: 'inline-block' }}>
+                    {coding.difficulty}
+                  </span>
+                )}
+                {coding?.url && (
+                  <div style={{ marginTop: 8 }}>
+                    <a href={coding.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: G, fontFamily: 'Syne,sans-serif', fontWeight: 600, textDecoration: 'none' }}>→ Open Problem</a>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <Skel h={16} w="80%" />
+                <Skel h={14} w="40%" />
+              </div>
+            )}
           </div>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 22, fontWeight: 800, color: '#1D9E75' }}>
-            {diagnosticData.diagnostic?.score}%
-          </div>
-        </div>
-      )}
 
-      <div style={{
-        background: '#070f1f',
-        border: '1px solid rgba(186,117,23,0.2)',
-        borderRadius: 14,
-        padding: 20,
-        marginBottom: 16,
-        position: 'relative',
-        overflow: 'hidden',
-      }}>
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#BA7517,transparent)' }} />
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, flexWrap: 'wrap', gap: 8 }}>
-          <div>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#BA7517', letterSpacing: 2, marginBottom: 4 }}>DOMAIN MASTERY</div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#e8f4ff' }}>
-              {daysRemaining === 0 ? '🏆 You are a Master!' : `${daysRemaining} days until you master ${user?.domain_slug?.toUpperCase()}`}
-            </div>
-          </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 28, fontWeight: 800, color: '#BA7517' }}>{daysRemaining}</div>
-            <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>days left</div>
-          </div>
-        </div>
-        <div style={{ height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden', marginBottom: 8 }}>
-          <div style={{ height: '100%', width: masteryPercent + '%', background: 'linear-gradient(90deg,#BA7517,#EF9F27)', borderRadius: 3, transition: 'width 0.5s' }} />
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>
-          <span>Day {daysCompleted} of 365</span>
-          <span>{masteryPercent}% mastered</span>
-        </div>
-      </div>
-
-      {rivalData && !rivalData.isTopRanked && (
-        <div
-          onClick={() => router.push('/rival')}
-          style={{
-            background: '#070f1f',
-            border: '1px solid rgba(255,45,120,0.2)',
-            borderRadius: 14,
-            padding: '16px 20px',
-            marginBottom: 16,
-            cursor: 'pointer',
-            position: 'relative',
-            overflow: 'hidden',
-            transition: 'border-color 0.2s',
-          }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#ff2d78,transparent)' }} />
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-            <div>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#ff2d78', letterSpacing: 2, marginBottom: 6 }}>
-                🎯 YOUR RIVAL
+          {/* Card 4: Your Rank */}
+          <div style={cardBase}>
+            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}>🏆 YOUR RANK</div>
+            {lbSlice.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {lbSlice.map((entry, i) => {
+                  const isMe = entry.rank === myRank || entry.isMe
+                  return (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 10px', borderRadius: 8, background: isMe ? G10 : 'transparent', border: isMe ? `1px solid ${G20}` : '1px solid transparent', transition: 'all 0.15s' }}>
+                      <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: isMe ? G : '#555', width: 24, textAlign: 'right', flexShrink: 0 }}>#{entry.rank}</span>
+                      <span style={{ flex: 1, fontFamily: 'Outfit,sans-serif', fontSize: 12, color: isMe ? G : '#9ba8b5', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {(entry.name || 'Anonymous').slice(0, 12)}
+                      </span>
+                      <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: isMe ? G : '#6b7a8d', flexShrink: 0 }}>{entry.score?.toLocaleString()}</span>
+                      <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: AMBER, flexShrink: 0 }}>🔥{entry.streak}</span>
+                    </div>
+                  )
+                })}
               </div>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, color: '#e8f4ff', marginBottom: 2 }}>
-                {rivalData.enemy?.name} is {rivalData.enemy?.scoreDiff} pts ahead
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {[1,2,3].map(i => <Skel key={i} h={32} />)}
               </div>
-              <div style={{ fontSize: 12, color: '#5a7a9a' }}>
-                {rivalData.enemy?.college} · Rank #{rivalData.enemy?.rank}
-              </div>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 22, fontWeight: 800, color: '#ff2d78' }}>
-                #{rivalData.myRank}
-              </div>
-              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>your rank</div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {legendData && !legendData.isLegend && (
-        <div
-          onClick={() => router.push('/legend')}
-          style={{
-            background: 'linear-gradient(135deg,rgba(123,92,255,0.06),rgba(0,240,255,0.02))',
-            border: '1px solid rgba(123,92,255,0.2)',
-            borderRadius: 14,
-            padding: '16px 20px',
-            marginBottom: 16,
-            cursor: 'pointer',
-            position: 'relative',
-            overflow: 'hidden',
-          }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#7b5cff,transparent)' }} />
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-            <div>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#7b5cff', letterSpacing: 2, marginBottom: 6 }}>
-                {legendData.isEligible ? '👑 LEGEND UNLOCKED' : '🔒 LEGEND PLAN'}
-              </div>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, color: '#e8f4ff', marginBottom: 2 }}>
-                {legendData.isEligible
-                  ? 'You earned Legend Access. Claim it now.'
-                  : `${legendData.pointsNeeded} pts to unlock Legend Access`}
-              </div>
-              <div style={{ fontSize: 12, color: '#5a7a9a' }}>
-                {legendData.isEligible ? '₹999/month — Direct recruiter introductions' : `${legendData.progressPercent}% of the way there`}
-              </div>
-            </div>
-            <div style={{ textAlign: 'right' }}>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 22, fontWeight: 800, color: '#7b5cff' }}>
-                {legendData.progressPercent}%
-              </div>
-              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>to legend</div>
-            </div>
-          </div>
-          {!legendData.isEligible && (
-            <div style={{ marginTop: 10, height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2 }}>
-              <div style={{ height: '100%', width: `${legendData.progressPercent}%`, background: 'linear-gradient(90deg,#7b5cff,#00f0ff)', borderRadius: 2 }} />
-            </div>
-          )}
-        </div>
-      )}
-
-      {githubData && !githubData.connected && (
-        <div
-          onClick={() => router.push('/github')}
-          style={{
-            background: '#070f1f',
-            border: '1px solid rgba(255,255,255,0.08)',
-            borderRadius: 14,
-            padding: '14px 20px',
-            marginBottom: 16,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 12,
-          }}>
-          <div>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 4 }}>
-              🐙 GITHUB NOT CONNECTED
-            </div>
-            <div style={{ fontSize: 13, color: '#5a7a9a' }}>
-              Connect GitHub to show real code activity to recruiters
-            </div>
-          </div>
-          <div style={{ fontSize: 13, color: '#00f0ff', fontFamily: 'Syne,sans-serif', fontWeight: 600, flexShrink: 0 }}>
-            Connect →
-          </div>
-        </div>
-      )}
-
-      {githubData?.connected && (
-        <div
-          onClick={() => router.push('/github')}
-          style={{
-            background: '#070f1f',
-            border: '1px solid rgba(0,240,255,0.1)',
-            borderRadius: 14,
-            padding: '14px 20px',
-            marginBottom: 16,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 12,
-          }}>
-          <div>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#1D9E75', letterSpacing: 2, marginBottom: 4 }}>
-              🐙 GITHUB CONNECTED
-            </div>
-            <div style={{ fontSize: 13, color: '#5a7a9a' }}>
-              @{githubData.username} · {githubData.repos} repos · ⭐{githubData.stars}
-            </div>
-          </div>
-          <div style={{ fontSize: 13, color: '#00f0ff', fontFamily: 'Syne,sans-serif', fontWeight: 600, flexShrink: 0 }}>
-            View →
-          </div>
-        </div>
-      )}
-
-      {tokenData && (tokenData.tokens > 0 || tokenData.canUseToken) && (
-        <div style={{
-          background: '#070f1f',
-          border: `1px solid ${tokenData.canUseToken ? 'rgba(239,159,39,0.4)' : 'rgba(239,159,39,0.15)'}`,
-          borderRadius: 14,
-          padding: '16px 20px',
-          marginBottom: 16,
-          position: 'relative',
-          overflow: 'hidden',
-        }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#EF9F27,transparent)' }} />
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-            <div>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#EF9F27', letterSpacing: 2, marginBottom: 6 }}>
-                🛡️ STREAK INSURANCE
-              </div>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, color: '#e8f4ff', marginBottom: 2 }}>
-                {tokenData.canUseToken
-                  ? 'Your streak is at risk! Use your token to save it.'
-                  : `${tokenData.tokens} token${tokenData.tokens > 1 ? 's' : ''} available`}
-              </div>
-              <div style={{ fontSize: 12, color: '#5a7a9a' }}>
-                {tokenData.canUseToken
-                  ? 'Token will mark yesterday as completed and save your streak.'
-                  : 'Score 100% on weekly test to earn more tokens.'}
-              </div>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 28, fontWeight: 800, color: '#EF9F27' }}>
-                  {tokenData.tokens}
-                </div>
-                <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>tokens</div>
-              </div>
-              {tokenData.canUseToken && (
-                <button onClick={useStreakToken} style={{ padding: '10px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#EF9F27,#BA7517)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700 }}>
-                  Use Token 🛡️
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Aptitude Card */}
-      <div onClick={() => router.push('/aptitude')} style={{ background: '#070f1f', border: '1px solid rgba(123,92,255,0.15)', borderRadius: 14, padding: '14px 20px', marginBottom: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-        <div>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#7b5cff', letterSpacing: 2, marginBottom: 4 }}>🧠 APTITUDE TRAINING</div>
-          <div style={{ fontSize: 13, color: '#5a7a9a' }}>
-            Quant · Logical · Verbal — Crack TCS Infosys Wipro placement tests
-          </div>
-        </div>
-        <div style={{ fontSize: 13, color: '#7b5cff', fontFamily: 'Syne,sans-serif', fontWeight: 600, flexShrink: 0 }}>Practice →</div>
-      </div>
-
-      <div onClick={() => router.push('/dsa-guide')} style={{ background: '#070f1f', border: '1px solid rgba(55,138,221,0.15)', borderRadius: 14, padding: '14px 20px', marginBottom: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-        <div>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#378ADD', letterSpacing: 2, marginBottom: 4 }}>📘 DSA LANGUAGE GUIDE</div>
-          <div style={{ fontSize: 13, color: '#5a7a9a' }}>
-            Not sure which language for DSA? Take 2-min quiz to find out
-          </div>
-        </div>
-        <div style={{ fontSize: 13, color: '#378ADD', fontFamily: 'Syne,sans-serif', fontWeight: 600, flexShrink: 0 }}>Take Quiz →</div>
-      </div>
-
-      <div onClick={() => router.push('/interview-simulator')} style={{ background: 'linear-gradient(135deg,rgba(255,45,120,0.06),transparent)', border: '1px solid rgba(255,45,120,0.2)', borderRadius: 14, padding: '14px 20px', marginBottom: 16, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-        <div>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#ff2d78', letterSpacing: 2, marginBottom: 4 }}>🎯 INTERVIEW SIMULATOR</div>
-          <div style={{ fontSize: 13, color: '#5a7a9a' }}>
-            Full company-style interviews with 4 rounds. TCS, Google, Razorpay.
-          </div>
-        </div>
-        <div style={{ fontSize: 13, color: '#ff2d78', fontFamily: 'Syne,sans-serif', fontWeight: 600, flexShrink: 0 }}>Practice →</div>
-      </div>
-
-      {/* Main 2-col */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-        {/* Today's flow */}
-        <div className="card">
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
-            <div style={{ fontFamily:'Syne,sans-serif', fontSize:15, fontWeight:700, color:'#e8f4ff' }}>
-              Today&apos;s Flow — Day {progress?.currentDay || 1}
-            </div>
-            <Link href="/roadmap" style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, color:'#00f0ff', textDecoration:'none', border:'1px solid rgba(0,240,255,0.2)', padding:'3px 10px', borderRadius:20 }}>
-              Continue →
+            )}
+            <Link href="/leaderboard" style={{ display: 'block', marginTop: 10, fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: G, textDecoration: 'none', textAlign: 'center' }}>
+              View Full Leaderboard →
             </Link>
           </div>
-
-          <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
-            {Object.entries(TASK_META).map(([type, meta]) => {
-              const task = today?.tasks?.find(t => t.type === type);
-              const done = task?.status === 'completed';
-              return (
-                <div key={type} style={{
-                  display:'flex', alignItems:'center', gap:10, padding:'10px 12px', borderRadius:8,
-                  background: done ? 'rgba(29,158,117,0.06)' : 'rgba(255,255,255,0.02)',
-                  border: `1px solid ${done ? 'rgba(29,158,117,0.15)' : 'rgba(255,255,255,0.05)'}`,
-                  transition:'all 0.2s',
-                }}>
-                  <div style={{
-                    width:28, height:28, borderRadius:'50%', flexShrink:0,
-                    display:'flex', alignItems:'center', justifyContent:'center', fontSize:12,
-                    background: done ? 'rgba(29,158,117,0.15)' : `${meta.color}15`,
-                    border: `1px solid ${done ? 'rgba(29,158,117,0.3)' : meta.color + '30'}`,
-                    color: done ? '#1D9E75' : meta.color,
-                  }}>{done ? '✓' : meta.icon}</div>
-                  <span style={{
-                    flex:1, fontSize:13, fontFamily:'Outfit,sans-serif',
-                    color: done ? '#5a7a9a' : '#d8ecff',
-                    textDecoration: done ? 'line-through' : 'none',
-                  }}>{meta.label}</span>
-                  {done && task?.score > 0 && (
-                    <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, color:'#1D9E75' }}>+{task.score}</span>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Progress bar */}
-          <div style={{ marginTop:14 }}>
-            <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6 }}>
-              <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#5a7a9a' }}>{completedCount}/6 tasks</span>
-              {today?.allDone && <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#1D9E75' }}>🎉 ALL DONE</span>}
-            </div>
-            <div style={{ height:4, background:'rgba(255,255,255,0.06)', borderRadius:2, overflow:'hidden' }}>
-              <div style={{
-                height:'100%', width:`${(completedCount/6)*100}%`,
-                background:'linear-gradient(90deg,#00f0ff,#7b5cff)',
-                borderRadius:2, transition:'width 0.5s ease',
-                boxShadow:'0 0 8px rgba(0,240,255,0.4)',
-              }} />
-            </div>
-          </div>
-        </div>
-
-        {/* Skill panel */}
-        <div className="card">
-          <div style={{ fontFamily:'Syne,sans-serif', fontSize:15, fontWeight:700, color:'#e8f4ff', marginBottom:20 }}>Skill Identity</div>
-          <div style={{ display:'flex', justifyContent:'space-around', marginBottom:20 }}>
-            <Ring pct={progressPct}  color="#7b5cff" label="Progress" />
-            <Ring pct={jobReadyPct}  color="#D85A30" label="Job Ready" />
-            <div style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:8 }}>
-              <div style={{
-                padding:'6px 14px', borderRadius:20, fontFamily:'Syne,sans-serif',
-                fontSize:11, fontWeight:700, textTransform:'capitalize',
-                background: 'rgba(0,240,255,0.08)', color:'#00f0ff',
-                border:'1px solid rgba(0,240,255,0.2)',
-              }}>
-                {(skill?.skillLevel || 'beginner').replace('_',' ')}
-              </div>
-              <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#5a7a9a' }}>Skill Level</div>
-            </div>
-          </div>
-
-          {/* Trial banner */}
-              <div style={{
-                padding:'10px 14px', borderRadius:10, marginTop:4,
-                background:'rgba(0,240,255,0.05)', border:'1px solid rgba(0,240,255,0.15)',
-                display:'flex', alignItems:'center', justifyContent:'space-between',
-              }}>
-                <div>
-                  <div style={{ fontFamily:'Syne,sans-serif', fontSize:12, fontWeight:600, color:'#00f0ff' }}>Free Trial Active</div>
-                  <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#5a7a9a', marginTop:2 }}>
-                    {trial?.daysLeft ?? 14} days left
-                  </div>
-                </div>
-                <div style={{ fontSize:11, color:'#5a7a9a', fontFamily:'JetBrains Mono,monospace' }}>All features unlocked</div>
-              </div>
-          {user?.plan === 'premium' && (
-            <div style={{
-              padding:'10px 14px', borderRadius:10, marginTop:4,
-              background:'rgba(29,158,117,0.06)', border:'1px solid rgba(29,158,117,0.2)',
-              display:'flex', alignItems:'center', gap:8,
-            }}>
-              <span style={{ color:'#1D9E75' }}>✓</span>
-              <span style={{ fontFamily:'Syne,sans-serif', fontSize:12, color:'#1D9E75' }}>Premium Active</span>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* Recent activity */}
-      {recentActivity?.length > 0 && (
-        <div className="card">
-          <div style={{ fontFamily:'Syne,sans-serif', fontSize:15, fontWeight:700, color:'#e8f4ff', marginBottom:14 }}>Recent Activity</div>
-          <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
-            {recentActivity.slice(0, 5).map((e, i) => (
-              <div key={i} style={{ display:'flex', alignItems:'center', gap:12, padding:'8px 0', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
-                <div style={{
-                  width:32, height:32, borderRadius:'50%', flexShrink:0,
-                  background:'rgba(0,240,255,0.08)', border:'1px solid rgba(0,240,255,0.15)',
-                  display:'flex', alignItems:'center', justifyContent:'center',
-                  fontFamily:'JetBrains Mono,monospace', fontSize:11, color:'#00f0ff',
-                }}>+{e.points}</div>
-                <div style={{ flex:1, fontFamily:'Outfit,sans-serif', fontSize:13, color:'#8ab4c8' }}>{e.reason}</div>
-                <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#2a4a5a' }}>
-                  {new Date(e.created_at).toLocaleDateString('en-IN', { day:'2-digit', month:'short' })}
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* ── MOTIVATION BAR ── */}
+      <div style={{ background: BG2, border: `1px solid rgba(0,255,136,0.1)`, borderLeft: `3px solid ${G}`, borderRadius: 10, padding: '14px 20px', overflow: 'hidden' }}>
+        <div key={motiveIdx} style={{ fontFamily: 'Outfit,sans-serif', fontSize: 13, color: '#9ba8b5', animation: 'motive-fade 5s ease-out forwards' }}>
+          {currentMotive}
         </div>
-      )}
+      </div>
+
+      {/* Outcome popup */}
       {showOutcomePopup && (
-        <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1000, background: '#070f1f', border: '1px solid rgba(0,240,255,0.2)', borderRadius: 14, padding: 20, maxWidth: 320, boxShadow: '0 0 40px rgba(0,0,0,0.5)' }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#00f0ff,transparent)', borderRadius: '14px 14px 0 0' }} />
-          <button onClick={() => { setShowOutcomePopup(false); localStorage.setItem('outcome_popup_shown', 'true'); }} style={{ position: 'absolute', top: 10, right: 12, background: 'transparent', border: 'none', color: '#5a7a9a', cursor: 'pointer', fontSize: 16 }}>×</button>
-          <div style={{ fontSize: 24, marginBottom: 8 }}>🎯</div>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, color: '#e8f4ff', marginBottom: 6 }}>
-            Got an interview recently?
-          </div>
-          <div style={{ fontSize: 13, color: '#5a7a9a', lineHeight: 1.6, marginBottom: 14 }}>
-            Help us prove GENOIS works. Takes 30 seconds. Your data helps future students.
-          </div>
+        <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1000, background: BG2, border: `1px solid rgba(0,255,136,0.2)`, borderRadius: 14, padding: 20, maxWidth: 320, boxShadow: '0 0 40px rgba(0,0,0,0.6)' }}>
+          <button onClick={() => { setShowOutcomePopup(false); localStorage.setItem('outcome_popup_shown', 'true') }} style={{ position: 'absolute', top: 10, right: 12, background: 'transparent', border: 'none', color: '#555', cursor: 'pointer', fontSize: 16 }}>×</button>
+          <div style={{ fontSize: 22, marginBottom: 8 }}>🎯</div>
+          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700, color: '#e8f4ff', marginBottom: 6 }}>Got an interview recently?</div>
+          <div style={{ fontSize: 12, color: '#6b7a8d', lineHeight: 1.6, marginBottom: 14 }}>Help us prove GENOIS works. Takes 30 seconds.</div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={() => { setShowOutcomePopup(false); localStorage.setItem('outcome_popup_shown', 'true'); }} style={{ flex: 1, padding: '8px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontSize: 12 }}>
-              Not yet
-            </button>
-            <button onClick={() => { setShowOutcomePopup(false); localStorage.setItem('outcome_popup_shown', 'true'); window.location.href = '/outcomes'; }} style={{ flex: 2, padding: '8px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 12, fontWeight: 700 }}>
-              Yes — Report It →
-            </button>
+            <button onClick={() => { setShowOutcomePopup(false); localStorage.setItem('outcome_popup_shown', 'true') }} style={{ flex: 1, padding: '8px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)', background: 'transparent', color: '#555', cursor: 'pointer', fontSize: 12 }}>Not yet</button>
+            <button onClick={() => { setShowOutcomePopup(false); localStorage.setItem('outcome_popup_shown', 'true'); router.push('/outcomes') }} style={{ flex: 2, padding: '8px', borderRadius: 8, border: 'none', cursor: 'pointer', background: G, color: '#000', fontFamily: 'Syne,sans-serif', fontSize: 12, fontWeight: 700 }}>Yes — Report It →</button>
           </div>
         </div>
       )}
+
       <OnboardingTour />
     </div>
-  );
+  )
 }

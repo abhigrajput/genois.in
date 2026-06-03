@@ -248,6 +248,33 @@ select option { background: #060f1e; color: #e8f4ff; }
   50%     { box-shadow: 0 0 20px rgba(0,240,255,0.8); }
 }
 
+/* ─── Dashboard matrix green ─── */
+.stats-bar { border-bottom: 1px solid rgba(0,255,136,0.15); }
+.task-pill-done { background: rgba(0,255,136,0.15); color: #00ff88; border: 1px solid rgba(0,255,136,0.3); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 20px; font-family: Outfit,sans-serif; font-size: 13px; font-weight: 600; transition: all 0.2s; }
+.task-pill-active { background: #fff; color: #000; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 20px; font-family: Outfit,sans-serif; font-size: 13px; font-weight: 600; transition: all 0.2s; }
+.task-pill-pending { background: rgba(255,255,255,0.04); color: #555; border: 1px solid rgba(255,255,255,0.08); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 20px; font-family: Outfit,sans-serif; font-size: 13px; font-weight: 600; transition: all 0.2s; }
+.task-pill-pending:hover { background: rgba(0,255,136,0.05); border-color: rgba(0,255,136,0.2); color: #00ff88; }
+.pts-float { animation: pts-float 1.2s ease-out forwards; pointer-events: none; }
+@keyframes pts-float { 0% { opacity:1; transform:translateY(0) scale(1.2); } 100% { opacity:0; transform:translateY(-60px) scale(0.8); } }
+.pulse-amber { animation: pulse-amber 2s ease-in-out infinite; }
+@keyframes pulse-amber { 0%,100% { box-shadow: 0 0 0 0 rgba(251,191,36,0); } 50% { box-shadow: 0 0 14px 5px rgba(251,191,36,0.25); } }
+.streak-day { border-radius: 3px; transition: all 0.2s; position: relative; }
+.streak-day:hover { transform: scale(1.4); z-index: 10; }
+.skeleton { background: linear-gradient(90deg, #111 25%, #1a1a1a 50%, #111 75%); background-size: 200% 100%; animation: skeleton-shimmer 1.5s infinite; border-radius: 8px; }
+@keyframes skeleton-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+.sidebar-item-active { border-left: 3px solid #00ff88 !important; background: rgba(0,255,136,0.08) !important; color: #00ff88 !important; }
+@keyframes confetti-particle {
+  0%   { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1); }
+  100% { opacity: 0; transform: translate(var(--tx), var(--ty)) rotate(720deg) scale(0); }
+}
+.confetti-particle {
+  animation: confetti-particle 0.9s ease-out forwards;
+  position: absolute; left: 0; top: 0; width: 8px; height: 8px;
+}
+@keyframes motive-fade { 0% { opacity:0; transform:translateY(6px); } 8%,90% { opacity:1; transform:translateY(0); } 100% { opacity:0; transform:translateY(-4px); } }
+.toast-achievement { position: fixed; top: 20px; right: 20px; z-index: 9999; animation: toast-in 0.3s ease-out; }
+@keyframes toast-in { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
 /* ─── Loading animation ─── */
 @keyframes genois-pulse {
   0%,100% { opacity: 1; transform: scale(1); }
