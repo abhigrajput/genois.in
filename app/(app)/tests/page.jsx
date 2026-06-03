@@ -14,6 +14,8 @@ export default function TestsPage() {
   const [roadmapId, setRoadmapId] = useState(null);
   const [currentDay, setCurrentDay] = useState(1);
   const [scheduleInfo, setScheduleInfo] = useState({ dayOfWeek: 0, date: 1, daysUntilMonday: 0, daysUntilFirst: 0 });
+  const [submitEligible, setSubmitEligible] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(30);
 
   useEffect(() => {
     const t = localStorage.getItem('genois_token');
@@ -38,6 +40,20 @@ export default function TestsPage() {
     fetch('/api/tests/history', { headers: { Authorization: 'Bearer ' + t } })
       .then(r => r.json()).then(d => setHistory(d.data?.tests || [])).catch(() => {});
   }, []);
+
+  // 30-second read gate: counts down from 30 whenever a test loads, resets on new test
+  useEffect(() => {
+    if (!test || result) { setSubmitEligible(false); setTimeLeft(30); return; }
+    setSubmitEligible(false);
+    setTimeLeft(30);
+    const interval = setInterval(() => {
+      setTimeLeft(t => {
+        if (t <= 1) { clearInterval(interval); setSubmitEligible(true); return 0; }
+        return t - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [test, result]);
 
   // Anti-cheat: tab switch detection
   useEffect(() => {
@@ -215,7 +231,19 @@ export default function TestsPage() {
           </div>
           <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
             <button onClick={() => { setTest(null); setActiveType(null); }} style={{ padding: '12px 20px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 13 }}>← Back</button>
-            <button onClick={submitTest} style={{ flex: 1, padding: 13, borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700 }}>Submit Test</button>
+            <button
+              onClick={() => submitEligible && submitTest()}
+              disabled={!submitEligible}
+              style={{
+                flex: 1, padding: 13, borderRadius: 8, border: 'none',
+                cursor: submitEligible ? 'pointer' : 'not-allowed',
+                background: submitEligible ? 'linear-gradient(135deg,#00f0ff,#7b5cff)' : 'rgba(255,255,255,0.07)',
+                color: submitEligible ? '#020812' : '#555',
+                fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700,
+                transition: 'all 0.4s ease',
+              }}>
+              {submitEligible ? 'Submit Test' : `⏳ Read for ${timeLeft}s before submitting`}
+            </button>
           </div>
         </div>
       )}
