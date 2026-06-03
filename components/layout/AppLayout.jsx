@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import useAuthStore from '@/store/authStore';
@@ -355,7 +355,7 @@ export default function AppLayout({ children }) {
           </div>
         </header>
 
-        <main style={{ flex: 1, minWidth: 0, width: '100%', overflowY: 'auto', padding: '24px' }} className="page-fade">
+        <main style={{ flex: 1, minWidth: 0, width: '100%', overflowY: 'auto', padding: isMobile ? '16px 12px' : '24px' }} className="page-fade">
           {children}
         </main>
       </div>

@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState, useRef, useCallback } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
@@ -42,7 +42,7 @@ function DayRing({ day, size = 72 }) {
           style={{ filter: `drop-shadow(0 0 5px rgba(0,255,136,0.7))`, transition: 'stroke-dashoffset 0.8s ease' }} />
       </svg>
       <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 20, fontWeight: 700, color: G, lineHeight: 1 }}>{day}</span>
+        <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: size > 60 ? 20 : 14, fontWeight: 700, color: G, lineHeight: 1 }}>{day}</span>
         <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#444', marginTop: 1 }}>/ 365</span>
       </div>
     </div>
@@ -112,10 +112,18 @@ export default function DashboardPage() {
   const [streakAtRisk, setStreakAtRisk] = useState(false)
   const [githubInput, setGithubInput] = useState('')
   const [calendarData, setCalendarData] = useState([])
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
     if (user && !user.domain_slug) router.push('/onboarding')
   }, [user, router])
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   useEffect(() => {
     if (!ready || !token) return
@@ -311,16 +319,17 @@ export default function DashboardPage() {
   // ── LOADING SKELETON ──
   if (loading) return (
     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <Skel h={90} />
+      <Skel h={isMobile ? 110 : 90} />
       <Skel h={52} />
-      <div style={{ display: 'flex', gap: 16 }}>
-        <div style={{ flex: 3, display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 16 }}>
+        <div style={{ flex: isMobile ? 'none' : 3, display: 'flex', flexDirection: 'column', gap: 12 }}>
           <Skel h={320} />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
-            <Skel h={130} /><Skel h={130} /><Skel h={130} />
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr 1fr', gap: 12 }}>
+            <Skel h={130} />
+            {!isMobile && <><Skel h={130} /><Skel h={130} /></>}
           </div>
         </div>
-        <div style={{ flex: 2, display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ flex: isMobile ? 'none' : 2, display: 'flex', flexDirection: 'column', gap: 12 }}>
           <Skel h={120} /><Skel h={100} /><Skel h={100} /><Skel h={130} />
         </div>
       </div>
@@ -482,10 +491,10 @@ export default function DashboardPage() {
       )}
 
       {/* ── HERO STATS BAR ── */}
-      <div className="stats-bar" style={{ background: BG2, borderRadius: 14, border: `1px solid rgba(0,255,136,0.12)`, padding: '16px 24px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+      <div className="stats-bar" style={{ background: BG2, borderRadius: 14, border: `1px solid rgba(0,255,136,0.12)`, padding: isMobile ? '12px 14px' : '16px 24px', display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: isMobile ? 10 : 16 }}>
         {/* Day */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <DayRing day={currentDay} size={68} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 14 }}>
+          <DayRing day={currentDay} size={isMobile ? 52 : 68} />
           <div>
             <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 2 }}>CURRENT DAY</div>
             <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#888' }}>{Math.round((currentDay / 365) * 100)}% complete</div>
@@ -509,10 +518,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Score */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderLeft: `1px solid rgba(255,255,255,0.06)`, paddingLeft: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderLeft: isMobile ? 'none' : `1px solid rgba(255,255,255,0.06)`, paddingLeft: isMobile ? 0 : 16 }}>
           <div>
             <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 4 }}>SCORE</div>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 26, fontWeight: 800, color: G, lineHeight: 1 }}>
+            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: isMobile ? 20 : 26, fontWeight: 800, color: G, lineHeight: 1 }}>
               ⚡ {totalScore.toLocaleString()}
             </div>
             {doneTasks > 0 && (
@@ -528,7 +537,7 @@ export default function DashboardPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderLeft: `1px solid rgba(255,255,255,0.06)`, paddingLeft: 16 }}>
           <div>
             <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 4 }}>RANK</div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 26, fontWeight: 800, color: '#e8f4ff', lineHeight: 1 }}>
+            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: isMobile ? 20 : 26, fontWeight: 800, color: '#e8f4ff', lineHeight: 1 }}>
               🏆 {myRank ? `#${myRank}` : '--'}
             </div>
             {percentile && <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, marginTop: 3 }}>Top {100 - percentile}%</div>}
@@ -537,10 +546,10 @@ export default function DashboardPage() {
       </div>
 
       {/* ── MAIN 60/40 ── */}
-      <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 16, alignItems: 'flex-start' }}>
 
         {/* LEFT 60% */}
-        <div style={{ flex: '3 1 0', minWidth: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <div style={{ flex: isMobile ? 'none' : '3 1 0', width: isMobile ? '100%' : undefined, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
 
           {/* TODAY'S MISSION CARD */}
           <div style={{ ...cardBase, border: `1px solid rgba(0,255,136,0.25)`, boxShadow: '0 0 24px rgba(0,255,136,0.05)' }}>
@@ -640,7 +649,7 @@ export default function DashboardPage() {
           </div>
 
           {/* 3 MINI CARDS ROW */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: 12 }}>
 
             {/* Week Progress */}
             <div style={cardBase}>
@@ -711,7 +720,7 @@ export default function DashboardPage() {
         </div>
 
         {/* RIGHT 40% */}
-        <div style={{ flex: '2 1 0', minWidth: 280, display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ flex: isMobile ? 'none' : '2 1 0', width: isMobile ? '100%' : undefined, minWidth: isMobile ? 0 : 280, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
           {/* Card 1: Daily Objectives */}
           <div style={cardBase}>
