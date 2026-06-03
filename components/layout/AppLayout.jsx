@@ -7,9 +7,10 @@ import { authAPI } from '@/lib/api';
 import NotificationBell from '@/components/NotificationBell';
 
 const G = '#00ff88';
+const G10 = 'rgba(0,255,136,0.1)';
+const G20 = 'rgba(0,255,136,0.2)';
 const G08 = 'rgba(0,255,136,0.08)';
 const G04 = 'rgba(0,255,136,0.04)';
-const G20 = 'rgba(0,255,136,0.2)';
 const AMBER = '#fbbf24';
 const SB_BG = '#0a0a0a';
 
