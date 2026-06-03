@@ -1,6 +1,7 @@
 import { getUserFromRequest } from '@/lib/auth';
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { successResponse, errorResponse } from '@/lib/response';
+import { updateStreak } from '@/lib/streak';
 
 export async function POST(request) {
   try {
@@ -25,10 +26,11 @@ export async function POST(request) {
       await supabase.from('tasks').insert({ user_id: payload.userId, day_number: dayNumber, type: taskType, domain_slug: 'fullstack', status: completed ? 'completed' : 'pending', completed_at: completed ? new Date().toISOString() : null, score: completed ? 20 : 0 });
     }
 
-    // Update total score if completed
+    // Update total score and streak if completed
     if (completed) {
       const { data: user } = await supabase.from('users').select('total_score').eq('id', payload.userId).single();
       await supabase.from('users').update({ total_score: (user?.total_score || 0) + 20 }).eq('id', payload.userId);
+      await updateStreak(payload.userId);
     }
 
     // Check if all tasks for day are done

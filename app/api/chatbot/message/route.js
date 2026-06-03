@@ -4,6 +4,7 @@ import { successResponse, errorResponse } from '@/lib/response';
 import { askClaudeChat } from '@/lib/claude';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { sanitizeChatHistory, sanitizeUserMessage } from '@/lib/security';
+import { updateStreak, getStreakDay, getStreakDayStart } from '@/lib/streak';
 
 function buildChatbotSystem(domain, level, mode) {
   const modeInstructions = {
@@ -70,6 +71,17 @@ export async function POST(request) {
       mode: selectedMode,
       domain: user?.domain_slug,
     });
+
+    // Trigger streak on 3rd message of the streak day
+    const streakDayStart = getStreakDayStart(getStreakDay());
+    const { count } = await supabase
+      .from('chat_history')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', payload.userId)
+      .gte('created_at', streakDayStart.toISOString());
+    if ((count || 0) >= 3) {
+      await updateStreak(payload.userId);
+    }
 
     return successResponse({ response, mode: selectedMode });
   } catch (error) {
