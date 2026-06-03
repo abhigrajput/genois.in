@@ -16,6 +16,22 @@ export default function CodingPage() {
   const [pageLoading, setPageLoading] = useState(true);
   const [currentDay, setCurrentDay] = useState(1);
   const [hintIndex, setHintIndex] = useState(-1);
+  const [codeEligible, setCodeEligible] = useState(false);
+  const [codeTimeLeft, setCodeTimeLeft] = useState(30);
+
+  // 30-second read gate: resets each time a new problem loads
+  useEffect(() => {
+    if (!codingTest) { setCodeEligible(false); setCodeTimeLeft(30); return; }
+    setCodeEligible(false);
+    setCodeTimeLeft(30);
+    const interval = setInterval(() => {
+      setCodeTimeLeft(t => {
+        if (t <= 1) { clearInterval(interval); setCodeEligible(true); return 0; }
+        return t - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [codingTest]);
 
   useEffect(() => {
     if (!ready || !token) return;
@@ -81,7 +97,7 @@ export default function CodingPage() {
   <div style={{display:'flex',gap:8,marginBottom:16,flexWrap:'wrap'}}>
     {codingTests.map((t,i) => (
       <button key={i}
-        onClick={() => { setCurrentTestIndex(i); setCodingTest(codingTests[i]); setResult(null); setCode('// Write your solution here\n\n'); }}
+        onClick={() => { setCurrentTestIndex(i); setCodingTest(codingTests[i]); setResult(null); setCode('// Write your solution here\n\n'); setCodeEligible(false); setCodeTimeLeft(30); }}
         style={{
           padding:'8px 16px',borderRadius:8,border:'none',cursor:'pointer',
           fontFamily:'Syne,sans-serif',fontSize:12,fontWeight:600,
@@ -136,6 +152,8 @@ export default function CodingPage() {
               expectedOutput={codingTest?.example_output || null}
               onComplete={submitCode}
               isCompleted={!!result}
+              runEligible={codeEligible}
+              runTimeLeft={codeTimeLeft}
             />
           </div>
 

@@ -13,7 +13,7 @@ const STARTERS = {
   c: '#include <stdio.h>\n\nint main() {\n    // Write your solution here\n    return 0;\n}',
 };
 
-export default function CodeEditor({ token, taskDescription, expectedOutput, onComplete, isCompleted }) {
+export default function CodeEditor({ token, taskDescription, expectedOutput, onComplete, isCompleted, runEligible = true, runTimeLeft = 0 }) {
   const [language, setLanguage] = useState('python');
   const [code, setCode] = useState(STARTERS.python);
   const [stdin, setStdin] = useState('');
@@ -130,8 +130,18 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
         </div>
       )}
 
-      <button onClick={runCode} disabled={running || isCompleted} style={{ width: '100%', padding: '13px', borderRadius: 10, border: 'none', cursor: running || isCompleted ? 'not-allowed' : 'pointer', background: isCompleted ? 'rgba(29,158,117,0.2)' : running ? 'rgba(0,240,255,0.15)' : 'linear-gradient(135deg,#00f0ff,#1D9E75)', color: isCompleted ? '#1D9E75' : '#020812', fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700, marginTop: 10 }}>
-        {isCompleted ? '✓ Code Submitted' : running ? '⚙️ Running...' : '▶ Run Code'}
+      <button
+        onClick={() => runEligible && !running && !isCompleted && runCode()}
+        disabled={running || isCompleted || !runEligible}
+        style={{
+          width: '100%', padding: '13px', borderRadius: 10, border: 'none', marginTop: 10,
+          cursor: running || isCompleted || !runEligible ? 'not-allowed' : 'pointer',
+          background: isCompleted ? 'rgba(29,158,117,0.2)' : !runEligible ? 'rgba(255,255,255,0.07)' : running ? 'rgba(0,240,255,0.15)' : 'linear-gradient(135deg,#00f0ff,#1D9E75)',
+          color: isCompleted ? '#1D9E75' : !runEligible ? '#555' : '#020812',
+          fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700,
+          transition: 'all 0.4s ease',
+        }}>
+        {isCompleted ? '✓ Code Submitted' : !runEligible ? `⏳ Read problem for ${runTimeLeft}s before running` : running ? '⚙️ Running...' : '▶ Run Code'}
       </button>
 
       {result && (
