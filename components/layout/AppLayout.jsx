@@ -23,6 +23,7 @@ const PRIMARY_NAV = [
   { group: 'LEARN',    href:'/dsa-roadmap',     label:'DSA Roadmap',   icon:'📊' },
   { group: 'LEARN',    href:'/dsa-visualizer',  label:'Visualizer',    icon:'▶' },
   { group: 'COMPETE',  href:'/leaderboard',     label:'Leaderboard',   icon:'🏆' },
+  { group: 'COMPETE',  href:'/college-war',     label:'College War',   icon:'⚔️' },
   { group: 'COMPETE',  href:'/mentor',          label:'AI Mentor',     icon:'🤖' },
   { group: 'ACCOUNT',  href:'/profile',         label:'Profile',       icon:'👤' },
   { group: 'ACCOUNT',  href:'/subscription',    label:'Subscription',  icon:'💳' },
