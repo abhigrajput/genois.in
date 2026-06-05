@@ -1,4 +1,4 @@
-const CACHE_NAME = 'genois-v1';
+const CACHE_NAME = 'genois-v2';
 const URLS_TO_CACHE = ['/', '/dashboard', '/login'];
 
 self.addEventListener('install', event => {

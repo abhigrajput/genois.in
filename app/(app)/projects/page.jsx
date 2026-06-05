@@ -148,7 +148,7 @@ export default function ProjectsPortfolioPage() {
         <div className="xl:col-span-2 space-y-4">
           {projects.map((proj, idx) => {
             const status = getProjectStatus(proj.title);
-            const isLocked = proj.week > currentWeek + 1;
+            const isLocked = proj.week > Math.max(currentWeek, 4);
             const progressRecord = getProjectProgress(proj.title);
 
             // Parse AI feedback if available

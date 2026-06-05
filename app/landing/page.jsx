@@ -588,7 +588,7 @@ export default function LandingPage() {
       <Divider />
 
       {/* ═══ LEADERBOARD + BAR CHART ═══ */}
-      <section style={{ padding:'100px 28px', background:BG2, borderTop:'1px solid rgba(255,255,255,0.04)', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
+      <section id="leaderboard" style={{ padding:'100px 28px', background:BG2, borderTop:'1px solid rgba(255,255,255,0.04)', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
         <div style={{ maxWidth:1200, margin:'0 auto', display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(380px, 1fr))', gap:60, alignItems:'start' }}>
           <div>
             <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:28, flexWrap:'wrap', gap:12 }}>
@@ -724,7 +724,7 @@ export default function LandingPage() {
             <div style={{ color:'#6b7280', fontSize:13, lineHeight:1.65 }}>The career operating system for engineering students.</div>
           </div>
           {[
-            { title:'Product', links:[{ l:'Domains', h:'#domains' },{ l:'Pricing', h:'#pricing' },{ l:'Leaderboard', h:'/leaderboard' },{ l:'Blog', h:'/blog' }] },
+            { title:'Product', links:[{ l:'Domains', h:'#domains' },{ l:'Pricing', h:'#pricing' },{ l:'Leaderboard', h:'#leaderboard' },{ l:'Blog', h:'/blog' }] },
             { title:'Company', links:[{ l:'About', h:'/blog' },{ l:'Blog', h:'/blog' },{ l:'Privacy', h:'/privacy' },{ l:'Terms', h:'/terms' }] },
             { title:'Connect', links:[{ l:'GitHub', h:'https://github.com' },{ l:'LinkedIn', h:'https://linkedin.com' },{ l:'Twitter', h:'https://twitter.com' },{ l:'Contact', h:'/feedback' }] },
           ].map(col => (

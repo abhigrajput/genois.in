@@ -34,7 +34,7 @@ export default function LandingNavbar() {
       <div className="gen-desktop-only" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
         <a href="#domains" className="gen-nav-link">Domains</a>
         <a href="#pricing" className="gen-nav-link">Pricing</a>
-        <Link href="/leaderboard" className="gen-nav-link">Leaderboard</Link>
+        <a href="#leaderboard" className="gen-nav-link">Leaderboard</a>
         <Link href="/blog" className="gen-nav-link">Blog</Link>
       </div>
 
