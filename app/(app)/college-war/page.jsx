@@ -1,122 +1,150 @@
 'use client';
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import useAuthStore from '@/store/authStore';
+
+const G = '#00ff41';
+const BG = '#000000';
+const BG2 = '#050505';
+const BG3 = '#0a0a0a';
 
 export default function CollegeWarPage() {
-  const [colleges, setColleges] = useState([]);
+  const { user } = useAuthStore();
+  const [peers, setPeers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [lastUpdated, setLastUpdated] = useState('');
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('/api/college-war')
+    if (!user?.college) {
+      setLoading(false);
+      return;
+    }
+    const token = localStorage.getItem('genois_token');
+    fetch('/api/leaderboard', { headers: { 'Authorization': `Bearer ${token}` } })
       .then(r => r.json())
       .then(d => {
-        setColleges(d.data?.colleges || []);
-        setLastUpdated(new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }));
+        const all = d.data?.leaderboard || [];
+        const filtered = all.filter(p => p.college === user.college);
+        setPeers(filtered);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
-  }, []);
+      .catch(err => {
+        console.error('College war fetch error:', err);
+        setError('Failed to load rankings');
+        setLoading(false);
+      });
+  }, [user?.college]);
 
-  const filtered = colleges.filter(c =>
-    !search || c.college.toLowerCase().includes(search.toLowerCase())
-  );
+  if (!user?.college) {
+    return (
+      <div style={{ background: BG, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+        <div style={{ textAlign: 'center', padding: '48px 32px', borderRadius: 20, background: BG2, border: '1px solid rgba(0,255,65,0.15)', maxWidth: 480 }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>🏫</div>
+          <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 22, fontWeight: 800, color: '#fff', marginBottom: 12 }}>
+            Join College War
+          </h2>
+          <p style={{ color: '#6b7280', fontSize: 14, lineHeight: 1.7 }}>
+            Set your college in Profile to join College War and see how you rank among your batchmates.
+          </p>
+          <a href="/profile" style={{
+            display: 'inline-block', marginTop: 24, padding: '12px 28px', borderRadius: 10,
+            background: G, color: '#000', textDecoration: 'none',
+            fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 14,
+          }}>
+            Go to Profile →
+          </a>
+        </div>
+      </div>
+    );
+  }
 
-  const top = filtered[0];
+  const myRank = peers.findIndex(p => p.id === user?.id) + 1;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#020812', color: '#e8f4ff', fontFamily: 'Outfit,sans-serif' }}>
-      <main style={{ position: 'relative', zIndex: 1, maxWidth: 900, margin: '0 auto', padding: '40px 20px' }}>
-        <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(0,240,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,0.015) 1px,transparent 1px)', backgroundSize: '56px 56px' }} />
+    <div style={{ background: BG, minHeight: '100vh', color: '#e5e7eb', fontFamily: 'Outfit,sans-serif' }}>
+      <div style={{ maxWidth: 900, margin: '0 auto', padding: '40px 24px' }}>
 
-        {/* HEADER */}
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#EF9F27', letterSpacing: 2, marginBottom: 12 }}>
-            ⚔️ COLLEGE WAR
+        {/* Header */}
+        <div style={{ marginBottom: 40 }}>
+          <div style={{ display: 'inline-block', padding: '4px 12px', borderRadius: 999, background: 'rgba(0,255,65,0.07)', border: '1px solid rgba(0,255,65,0.22)', color: G, fontSize: 11, fontWeight: 600, letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 14, fontFamily: 'Outfit,sans-serif' }}>
+            College War
           </div>
-          <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 'clamp(28px,5vw,48px)', fontWeight: 800, marginBottom: 12, lineHeight: 1.1 }}>
-            Which college has the<br />
-            <span style={{ background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              most skilled engineers?
-            </span>
+          <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 'clamp(28px,5vw,42px)', fontWeight: 800, color: '#fff', margin: '0 0 8px', lineHeight: 1.1 }}>
+            College War 🏆
           </h1>
-          <p style={{ color: '#5a7a9a', fontSize: 15, marginBottom: 8 }}>
-            Ranked by average GENOIS score. Updated daily. No fake rankings.
-          </p>
-          <p style={{ color: '#3a4a5a', fontSize: 12, fontFamily: 'JetBrains Mono,monospace' }}>
-            Last updated: {lastUpdated}
+          <p style={{ color: '#6b7280', fontSize: 15, margin: 0 }}>
+            See how you rank among your batchmates
           </p>
         </div>
 
-        {/* TOP COLLEGE BANNER */}
-        {!loading && top && (
-          <div style={{ background: 'linear-gradient(135deg,rgba(239,159,39,0.1),rgba(186,117,23,0.05))', border: '1px solid rgba(239,159,39,0.3)', borderRadius: 16, padding: 24, marginBottom: 32, position: 'relative', overflow: 'hidden' }}>
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#EF9F27,transparent)' }} />
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
-              <div>
-                <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#EF9F27', letterSpacing: 2, marginBottom: 8 }}>
-                  🏆 THIS WEEK&apos;S TOP COLLEGE
-                </div>
-                <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 4 }}>
-                  {top.college}
-                </div>
-                <div style={{ fontSize: 13, color: '#5a7a9a' }}>
-                  {top.students} students · Avg score {top.avgScore} · Top domain: {top.topDomain?.toUpperCase()}
-                </div>
-              </div>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 40, fontWeight: 800, color: '#EF9F27' }}>{top.avgScore}</div>
-                <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>avg score</div>
-              </div>
-            </div>
+        {/* College badge */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 20px', borderRadius: 14, background: BG2, border: '1px solid rgba(0,255,65,0.15)', marginBottom: 32, flexWrap: 'wrap' }}>
+          <div style={{ width: 42, height: 42, borderRadius: 10, background: 'rgba(0,255,65,0.1)', border: '1px solid rgba(0,255,65,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>
+            🏫
           </div>
-        )}
+          <div style={{ flex: 1 }}>
+            <div style={{ fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 16, color: '#fff' }}>{user.college}</div>
+            <div style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>{peers.length} student{peers.length !== 1 ? 's' : ''} on GENOIS</div>
+          </div>
+          {myRank > 0 && (
+            <div style={{ textAlign: 'right', flexShrink: 0 }}>
+              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 26, fontWeight: 800, color: G }}>#{myRank}</div>
+              <div style={{ fontSize: 11, color: '#6b7280' }}>your rank</div>
+            </div>
+          )}
+        </div>
 
-        {/* SEARCH */}
-        <input
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Search your college..."
-          style={{ width: '100%', padding: '12px 16px', borderRadius: 10, border: '1px solid rgba(0,240,255,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8f4ff', fontSize: 14, fontFamily: 'Outfit,sans-serif', outline: 'none', marginBottom: 20, boxSizing: 'border-box' }}
-        />
-
-        {/* COLLEGES LIST */}
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, overflow: 'hidden' }}>
-          <div style={{ padding: '12px 20px', borderBottom: '1px solid rgba(0,240,255,0.07)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1 }}>COLLEGE RANKINGS</span>
-            <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a' }}>{filtered.length} colleges</span>
+        {/* Table */}
+        <div style={{ background: BG2, border: '1px solid rgba(0,255,65,0.1)', borderRadius: 16, overflow: 'hidden' }}>
+          {/* Table header */}
+          <div style={{ display: 'grid', gridTemplateColumns: '52px 1fr 120px 100px 110px', padding: '12px 20px', borderBottom: '1px solid rgba(0,255,65,0.08)', background: BG3 }}>
+            {['Rank', 'Name', 'Score', 'Streak', 'Domain'].map(h => (
+              <div key={h} style={{ fontFamily: 'Outfit,sans-serif', fontSize: 10, fontWeight: 700, color: '#4b5563', letterSpacing: 1.2, textTransform: 'uppercase' }}>{h}</div>
+            ))}
           </div>
 
           {loading ? (
-            <div style={{ padding: 40, textAlign: 'center', color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>Loading rankings...</div>
-          ) : filtered.length === 0 ? (
-            <div style={{ padding: 40, textAlign: 'center', color: '#5a7a9a', fontSize: 13 }}>No colleges found yet. Be the first from your college!</div>
+            <div style={{ padding: 48, textAlign: 'center', color: '#4b5563', fontFamily: 'Outfit,sans-serif', fontSize: 14 }}>
+              Loading rankings...
+            </div>
+          ) : error ? (
+            <div style={{ padding: 48, textAlign: 'center', color: '#6b7280', fontSize: 14 }}>{error}</div>
+          ) : peers.length === 0 ? (
+            <div style={{ padding: 48, textAlign: 'center' }}>
+              <div style={{ fontSize: 36, marginBottom: 12 }}>🚀</div>
+              <div style={{ color: '#fff', fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 16, marginBottom: 8 }}>
+                You&apos;re the first from {user.college}!
+              </div>
+              <div style={{ color: '#6b7280', fontSize: 13 }}>Share GENOIS with your batchmates to start College War.</div>
+            </div>
           ) : (
-            filtered.map((c, i) => {
-              const rank = colleges.indexOf(c) + 1;
-              const isTop = rank === 1;
+            peers.map((p, i) => {
+              const isMe = p.id === user?.id;
+              const medals = ['🥇', '🥈', '🥉'];
               return (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 20px', borderBottom: '1px solid rgba(255,255,255,0.03)', background: isTop ? 'rgba(239,159,39,0.03)' : 'transparent' }}>
-                  <div style={{ width: 36, textAlign: 'center', flexShrink: 0 }}>
-                    {rank === 1 ? <span style={{ fontSize: 22 }}>🥇</span>
-                      : rank === 2 ? <span style={{ fontSize: 22 }}>🥈</span>
-                      : rank === 3 ? <span style={{ fontSize: 22 }}>🥉</span>
-                      : <span style={{ fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700, color: '#3a4a5a' }}>#{rank}</span>}
+                <div key={p.id} style={{
+                  display: 'grid', gridTemplateColumns: '52px 1fr 120px 100px 110px',
+                  padding: '14px 20px', borderBottom: '1px solid rgba(255,255,255,0.03)',
+                  background: isMe ? 'rgba(0,255,65,0.04)' : 'transparent',
+                  alignItems: 'center', transition: 'background 0.15s',
+                }}>
+                  <div style={{ fontFamily: 'Syne,sans-serif', fontWeight: 700, color: isMe ? G : '#4b5563', fontSize: 15 }}>
+                    {i < 3 ? medals[i] : `#${i + 1}`}
                   </div>
-
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, color: isTop ? '#EF9F27' : '#e8f4ff', marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {c.college}
-                    </div>
-                    <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>
-                      {c.students} student{c.students > 1 ? 's' : ''} · Top domain: {c.topDomain?.toUpperCase()} · Avg streak: 🔥{c.avgStreak}d
+                  <div>
+                    <div style={{ fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14, color: isMe ? G : '#fff', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      {p.name}
+                      {isMe && <span style={{ fontSize: 10, padding: '2px 6px', borderRadius: 4, background: 'rgba(0,255,65,0.12)', border: '1px solid rgba(0,255,65,0.3)', color: G, fontFamily: 'Outfit,sans-serif', fontWeight: 600 }}>YOU</span>}
                     </div>
                   </div>
-
-                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                    <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 800, color: isTop ? '#EF9F27' : '#5a7a9a' }}>{c.avgScore}</div>
-                    <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>avg score</div>
+                  <div style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 15, color: isMe ? G : '#fff' }}>
+                    {(p.score || 0).toLocaleString()}
+                    <span style={{ fontSize: 10, color: '#4b5563', marginLeft: 3, fontWeight: 400 }}>pts</span>
+                  </div>
+                  <div style={{ fontSize: 13, color: '#fbbf24' }}>
+                    🔥 {p.streak || 0}d
+                  </div>
+                  <div style={{ fontSize: 12, color: '#6b7280', textTransform: 'capitalize' }}>
+                    {(p.domain || 'general').replace(/_/g, ' ')}
                   </div>
                 </div>
               );
@@ -124,20 +152,11 @@ export default function CollegeWarPage() {
           )}
         </div>
 
-        {/* CTA */}
-        <div style={{ textAlign: 'center', marginTop: 40, padding: 32, background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 16 }}>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: '#e8f4ff', marginBottom: 8 }}>
-            Is your college on this list?
-          </div>
-          <div style={{ color: '#5a7a9a', fontSize: 14, marginBottom: 20 }}>
-            Join GENOIS and represent your college. Every student you bring improves your college ranking.
-          </div>
-          <Link href="/onboarding" style={{ display: 'inline-block', padding: '12px 32px', borderRadius: 10, background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', textDecoration: 'none', fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700 }}>
-            Join Free →
-          </Link>
-        </div>
-
-      </main>
+        {/* Footer note */}
+        <p style={{ textAlign: 'center', color: '#374151', fontSize: 12, marginTop: 24, fontFamily: 'Outfit,sans-serif' }}>
+          Rankings update every minute · Score based on streak, completed days, and tests
+        </p>
+      </div>
     </div>
   );
 }

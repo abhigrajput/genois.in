@@ -4,6 +4,18 @@ import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { askClaudeJSON } from '@/lib/claude';
 
+const FALLBACK_PROBLEM = {
+  title: "Two Sum",
+  description: "Given array of integers and a target, return indices of two numbers that add up to target.",
+  difficulty: "Easy",
+  example_input: "nums = [2,7,11,15], target = 9",
+  example_output: "[0,1]",
+  hint: "Use a hash map to store complement values",
+  solution_approach: "For each element, check if complement (target - element) exists in hash map",
+  language: "cpp",
+  starter_code: "#include<bits/stdc++.h>\nusing namespace std;\n\nvector<int> twoSum(vector<int>& nums, int target) {\n    // Write your solution\n}"
+};
+
 export async function GET(request, { params }) {
   try {
     const payload = await getUserFromRequest(request);
@@ -12,6 +24,7 @@ export async function GET(request, { params }) {
 
     const { day } = await params;
     const dayNumber = parseInt(day);
+    if (isNaN(dayNumber)) return successResponse({ data: FALLBACK_PROBLEM });
     const supabase = getAdminClient();
 
     const { data: user } = await supabase
@@ -42,8 +55,10 @@ export async function GET(request, { params }) {
       return successResponse({ codingTests: existing.slice(0, 5) });
     }
 
-    const generated = await askClaudeJSON(
-      `Create exactly 5 different coding problems for a ${difficulty} engineering student.
+    let generated = null;
+    try {
+      generated = await askClaudeJSON(
+        `Create exactly 5 different coding problems for a ${difficulty} engineering student.
 Topic: "${topic}" in domain: "${user.domain_slug}".
 Problems should vary in difficulty: 2 easy, 2 medium, 1 hard.
 Return JSON array with exactly 5 objects:
@@ -59,8 +74,14 @@ Return JSON array with exactly 5 objects:
     "difficulty": "easy|medium|hard"
   }
 ]`,
-      'Return ONLY a valid JSON array with exactly 5 objects. No markdown. No explanation.', 2000
-    );
+        'Return ONLY a valid JSON array with exactly 5 objects. No markdown. No explanation.', 2000
+      );
+    } catch (aiErr) {
+      console.error('Claude coding generation error:', aiErr);
+      return successResponse({ data: FALLBACK_PROBLEM });
+    }
+
+    if (!generated) return successResponse({ data: FALLBACK_PROBLEM });
 
     const problems = Array.isArray(generated) ? generated : [generated];
 
@@ -102,6 +123,6 @@ Return JSON array with exactly 5 objects:
 
   } catch (error) {
     console.error('Get coding tests error:', error);
-    return errorResponse('Internal server error', 500);
+    return successResponse({ data: FALLBACK_PROBLEM });
   }
 }
