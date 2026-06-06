@@ -59,6 +59,17 @@ BEGIN
 END $$;
     `,
   },
+  {
+    name: '20260605_v3_context_schema',
+    sql: `
+ALTER TABLE users ADD COLUMN IF NOT EXISTS target_companies TEXT[] DEFAULT '{}';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS cgpa DECIMAL(3,1);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS months_to_placement INTEGER;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS weak_subjects TEXT[] DEFAULT '{}';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS placement_type TEXT DEFAULT 'campus';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS college_tier TEXT DEFAULT 'tier3';
+    `,
+  },
 ];
 
 // Auth: accepts either the Supabase service role key (X-Service-Key header)
