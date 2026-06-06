@@ -740,7 +740,10 @@ export default function LandingPage() {
         </div>
         <div style={{ maxWidth:1200, margin:'32px auto 0', paddingTop:20, borderTop:'1px solid rgba(0,255,65,0.08)', display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:12 }}>
           <div style={{ color:'#6b7280', fontSize:12 }}>© {new Date().getFullYear()} GENOIS. All rights reserved.</div>
-          <div style={{ color:G, fontSize:12, textShadow:'0 0 8px rgba(0,255,65,0.3)' }}>Built for India · Made for engineers</div>
+          <div style={{ display:'flex', alignItems:'center', gap:20, flexWrap:'wrap' }}>
+            <Link href="/placement-admin/login" style={{ color:'#374151', textDecoration:'none', fontSize:11 }}>Placement Cell? Access your dashboard →</Link>
+            <div style={{ color:G, fontSize:12, textShadow:'0 0 8px rgba(0,255,65,0.3)' }}>Built for India · Made for engineers</div>
+          </div>
         </div>
       </footer>
     </div>
