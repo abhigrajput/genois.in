@@ -16,13 +16,46 @@ const DOMAINS = [
   { id: 'gamedev', label: 'Game Dev', icon: '▷', color: '#888780', desc: 'Unity C# Game Design' },
 ];
 
-const STEPS = ['welcome', 'domain', 'details', 'account'];
+const COMPANIES = [
+  { id: 'TCS', label: 'TCS' },
+  { id: 'Infosys', label: 'Infosys' },
+  { id: 'Wipro', label: 'Wipro' },
+  { id: 'Accenture', label: 'Accenture' },
+  { id: 'Cognizant', label: 'Cognizant' },
+  { id: 'HCL', label: 'HCL' },
+  { id: 'Amazon', label: 'Amazon' },
+  { id: 'Flipkart', label: 'Flipkart' },
+  { id: 'Startups', label: 'Startups' },
+  { id: 'Other MNCs', label: 'Other MNCs' },
+  { id: 'Not sure yet', label: 'Not sure yet' },
+];
+
+const MONTH_OPTIONS = [
+  { label: '1-3 months', value: 2 },
+  { label: '4-6 months', value: 5 },
+  { label: '7-9 months', value: 8 },
+  { label: '10-12 months', value: 11 },
+  { label: '12+ months', value: 18 },
+];
+
+const WEAK_SUBJECTS = [
+  'Arrays & Strings', 'Linked Lists', 'Trees & Graphs',
+  'Dynamic Programming', 'Recursion', 'OS & DBMS',
+  'Computer Networks', 'System Design', 'Math & Aptitude',
+  'OOP Concepts', 'SQL Queries', "I'm strong everywhere",
+];
+
+const STEPS = ['welcome', 'domain', 'details', 'placement', 'assessment', 'account'];
 
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [selectedDomain, setSelectedDomain] = useState(null);
   const [form, setForm] = useState({ name: '', email: '', password: '', college: '', year: '2' });
+  const [targetCompanies, setTargetCompanies] = useState([]);
+  const [monthsToPlacement, setMonthsToPlacement] = useState(8);
+  const [weakSubjects, setWeakSubjects] = useState([]);
+  const [cgpa, setCgpa] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [referralCode, setReferralCode] = useState('');
@@ -39,6 +72,19 @@ export default function OnboardingPage() {
     }
   }, []);
 
+  function toggleCompany(id) {
+    if (id === 'Not sure yet') { setTargetCompanies(['Not sure yet']); return; }
+    setTargetCompanies(prev => {
+      const without = prev.filter(c => c !== 'Not sure yet');
+      return without.includes(id) ? without.filter(c => c !== id) : [...without, id];
+    });
+  }
+
+  function toggleWeakSubject(s) {
+    if (s === "I'm strong everywhere") { setWeakSubjects([]); return; }
+    setWeakSubjects(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
+  }
+
   async function signup() {
     if (!form.name.trim()) { setError('Enter your name'); return; }
     if (!form.email.trim()) { setError('Enter your email'); return; }
@@ -54,15 +100,50 @@ export default function OnboardingPage() {
       });
       const d = await r.json();
       if (!d.success) { setError(d.message || 'Signup failed'); setLoading(false); return; }
-      localStorage.setItem('genois_token', d.data.token);
+
+      const token = d.data.token;
+      localStorage.setItem('genois_token', token);
       localStorage.setItem('genois_user', JSON.stringify(d.data.user));
       trackSignup('email');
+
+      // Save placement profile data (non-fatal if it fails)
+      try {
+        const profilePayload = {
+          target_companies: targetCompanies.filter(c => c !== 'Not sure yet'),
+          months_to_placement: monthsToPlacement,
+          weak_subjects: weakSubjects,
+        };
+        if (cgpa && !isNaN(parseFloat(cgpa))) profilePayload.cgpa = parseFloat(cgpa);
+
+        const pr = await fetch('/api/auth/profile', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+          body: JSON.stringify(profilePayload),
+        });
+        const pd = await pr.json();
+        if (pd.success && pd.data?.user) {
+          localStorage.setItem('genois_user', JSON.stringify(pd.data.user));
+        }
+      } catch { /* non-fatal */ }
+
       router.push('/welcome');
     } catch { setError('Something went wrong. Try again.'); }
     setLoading(false);
   }
 
-  const progress = ((step) / (STEPS.length - 1)) * 100;
+  const progress = (step / (STEPS.length - 1)) * 100;
+
+  const chipStyle = (selected) => ({
+    padding: '10px 14px', borderRadius: 10, cursor: 'pointer', textAlign: 'center',
+    background: selected ? 'rgba(0,255,136,0.1)' : '#070f1f',
+    border: `2px solid ${selected ? '#00ff88' : 'rgba(255,255,255,0.06)'}`,
+    color: selected ? '#00ff88' : '#c8d8e8',
+    fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600,
+    transition: 'all 0.15s',
+  });
+
+  const backBtn = { flex: 1, padding: '14px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 14 };
+  const nextBtn = (active) => ({ flex: 2, padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: active ? 'linear-gradient(135deg,#00f0ff,#7b5cff)' : 'rgba(255,255,255,0.05)', color: active ? '#020812' : '#3a4a5a', fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700 });
 
   return (
     <div style={{ minHeight: '100vh', background: '#020812', color: '#e8f4ff', fontFamily: 'Outfit,sans-serif' }}>
@@ -148,8 +229,8 @@ export default function OnboardingPage() {
               ))}
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => setStep(0)} style={{ flex: 1, padding: '14px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 14 }}>← Back</button>
-              <button onClick={() => { if (!selectedDomain) { setError('Pick a domain'); return; } setError(''); setStep(2); }} style={{ flex: 2, padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: selectedDomain ? 'linear-gradient(135deg,#00f0ff,#7b5cff)' : 'rgba(255,255,255,0.05)', color: selectedDomain ? '#020812' : '#3a4a5a', fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700 }}>
+              <button onClick={() => setStep(0)} style={backBtn}>← Back</button>
+              <button onClick={() => { if (!selectedDomain) { setError('Pick a domain'); return; } setError(''); setStep(2); }} style={nextBtn(!!selectedDomain)}>
                 Continue →
               </button>
             </div>
@@ -190,8 +271,8 @@ export default function OnboardingPage() {
               </div>
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => setStep(1)} style={{ flex: 1, padding: '14px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 14 }}>← Back</button>
-              <button onClick={() => { if (!form.name.trim() || !form.college.trim()) { setError('Fill all fields'); return; } setError(''); setStep(3); }} style={{ flex: 2, padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700 }}>
+              <button onClick={() => setStep(1)} style={backBtn}>← Back</button>
+              <button onClick={() => { if (!form.name.trim() || !form.college.trim()) { setError('Fill all fields'); return; } setError(''); setStep(3); }} style={nextBtn(true)}>
                 Continue →
               </button>
             </div>
@@ -199,8 +280,103 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* STEP 3 — ACCOUNT */}
+        {/* STEP 3 — PLACEMENT TARGET */}
         {step === 3 && (
+          <div>
+            <div style={{ textAlign: 'center', marginBottom: 28 }}>
+              <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 8 }}>
+                Where do you want to get placed?
+              </h2>
+              <p style={{ color: '#5a7a9a', fontSize: 14 }}>
+                We&apos;ll customize your entire roadmap for these companies
+              </p>
+            </div>
+
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1, marginBottom: 10 }}>TARGET COMPANIES (select all that apply)</div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+                {COMPANIES.map(c => (
+                  <div key={c.id} onClick={() => toggleCompany(c.id)} style={chipStyle(targetCompanies.includes(c.id))}>
+                    {c.label}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1, marginBottom: 10 }}>HOW MANY MONTHS UNTIL PLACEMENT SEASON?</div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {MONTH_OPTIONS.map(m => (
+                  <button key={m.value} onClick={() => setMonthsToPlacement(m.value)} style={{
+                    padding: '9px 14px', borderRadius: 10, cursor: 'pointer',
+                    border: `1px solid ${monthsToPlacement === m.value ? '#00ff88' : 'rgba(255,255,255,0.08)'}`,
+                    background: monthsToPlacement === m.value ? 'rgba(0,255,136,0.1)' : 'transparent',
+                    color: monthsToPlacement === m.value ? '#00ff88' : '#5a7a9a',
+                    fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600,
+                  }}>
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button onClick={() => setStep(2)} style={backBtn}>← Back</button>
+              <button onClick={() => { setError(''); setStep(4); }} style={nextBtn(true)}>
+                Continue →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 4 — HONEST ASSESSMENT */}
+        {step === 4 && (
+          <div>
+            <div style={{ textAlign: 'center', marginBottom: 28 }}>
+              <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 8 }}>
+                Where are you weak? Be honest.
+              </h2>
+              <p style={{ color: '#5a7a9a', fontSize: 14 }}>
+                This is private. It helps us fix the gaps before interviews.
+              </p>
+            </div>
+
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1, marginBottom: 10 }}>WEAK AREAS (select all that apply)</div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
+                {WEAK_SUBJECTS.map(s => (
+                  <div key={s} onClick={() => toggleWeakSubject(s)} style={chipStyle(weakSubjects.includes(s) || (s === "I'm strong everywhere" && weakSubjects.length === 0))}>
+                    {s}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1, marginBottom: 6 }}>YOUR APPROXIMATE CGPA</div>
+              <input
+                type="number" min="0" max="10" step="0.1"
+                value={cgpa}
+                onChange={e => setCgpa(e.target.value)}
+                placeholder="e.g. 7.2"
+                style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,240,255,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8f4ff', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+              />
+              <div style={{ fontSize: 11, color: '#3a4a5a', marginTop: 6, fontFamily: 'JetBrains Mono,monospace' }}>
+                Helps show companies you&apos;re eligible for. Not shared publicly.
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button onClick={() => setStep(3)} style={backBtn}>← Back</button>
+              <button onClick={() => { setError(''); setStep(5); }} style={nextBtn(true)}>
+                Continue →
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* STEP 5 — ACCOUNT */}
+        {step === 5 && (
           <div>
             <div style={{ textAlign: 'center', marginBottom: 28 }}>
               <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 8 }}>
@@ -215,6 +391,11 @@ export default function OnboardingPage() {
               <div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#e8f4ff' }}>{form.name} · {form.college}</div>
                 <div style={{ fontSize: 12, color: '#5a7a9a' }}>Domain: {DOMAINS.find(d => d.id === selectedDomain)?.label} · Year {form.year}</div>
+                {targetCompanies.length > 0 && (
+                  <div style={{ fontSize: 11, color: '#00ff88', marginTop: 2 }}>
+                    Target: {targetCompanies.slice(0, 3).join(', ')}{targetCompanies.length > 3 ? ` +${targetCompanies.length - 3}` : ''}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -237,7 +418,7 @@ export default function OnboardingPage() {
             )}
 
             <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => setStep(2)} style={{ flex: 1, padding: '14px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 14 }}>← Back</button>
+              <button onClick={() => setStep(4)} style={backBtn}>← Back</button>
               <button onClick={signup} disabled={loading} style={{ flex: 2, padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: loading ? 'rgba(0,240,255,0.2)' : 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, boxShadow: '0 0 20px rgba(0,240,255,0.2)' }}>
                 {loading ? 'Creating account...' : 'Start Free — 30 Days →'}
               </button>

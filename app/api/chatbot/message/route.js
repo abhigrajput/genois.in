@@ -5,8 +5,9 @@ import { askClaudeChat } from '@/lib/claude';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { sanitizeChatHistory, sanitizeUserMessage } from '@/lib/security';
 import { updateStreak, getStreakDay, getStreakDayStart } from '@/lib/streak';
+import { buildUserContext } from '@/lib/contextBuilder';
 
-function buildChatbotSystem(domain, level, mode) {
+function buildChatbotSystem(domain, level, mode, userContext = '') {
   const modeInstructions = {
     general: 'Answer general CS and engineering questions clearly.',
     coding: 'Focus on clean working code with clear explanations. Always use code blocks.',
@@ -15,7 +16,9 @@ function buildChatbotSystem(domain, level, mode) {
     career: 'Give India-specific tech career advice. Focus on placement, internships, skills for Indian companies.',
   };
 
-  return `You are GENOIS Chatbot — a helpful assistant for engineering students in India.
+  return `${userContext}
+
+You are GENOIS AI Mentor — a brutally honest placement coach for Indian engineering students.
 Student is learning ${domain} at ${level} level.
 Mode: ${mode}. ${modeInstructions[mode] || modeInstructions.general}
 
@@ -49,12 +52,18 @@ export async function POST(request) {
 
     const supabase = getAdminClient();
     const { data: user } = await supabase
-      .from('users').select('domain_slug, level').eq('id', payload.userId).single();
+      .from('users')
+      .select('domain_slug, level, college, college_tier, cgpa, target_companies, weak_subjects, months_to_placement')
+      .eq('id', payload.userId)
+      .single();
+
+    const { systemContext } = buildUserContext(user);
 
     const system = buildChatbotSystem(
       user?.domain_slug || 'fullstack',
       user?.level || 'beginner',
-      selectedMode
+      selectedMode,
+      systemContext
     );
 
     const messages = [

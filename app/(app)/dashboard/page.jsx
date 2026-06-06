@@ -779,6 +779,61 @@ export default function DashboardPage() {
         {/* RIGHT 40% */}
         <div style={{ flex: isMobile ? 'none' : '2 1 0', width: isMobile ? '100%' : undefined, minWidth: isMobile ? 0 : 280, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
+          {/* Card 0: Placement Profile */}
+          {(() => {
+            const tc = user?.target_companies || [];
+            const hasCgpa = user?.cgpa != null;
+            const months = user?.months_to_placement;
+            const weak = user?.weak_subjects || [];
+            const tier = user?.college_tier || 'tier3';
+            const urgencyLabel = months <= 3 ? '🔴 CRITICAL' : months <= 6 ? '🟡 URGENT' : months ? '🟢 OK' : null;
+            const profileComplete = tc.length > 0 && hasCgpa;
+
+            if (!profileComplete) return (
+              <div style={{ ...cardBase, border: '1px solid rgba(251,191,36,0.3)', background: 'rgba(251,191,36,0.04)' }}>
+                <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: AMBER, letterSpacing: 2, marginBottom: 8 }}>⚠️ PLACEMENT PROFILE</div>
+                <div style={{ fontSize: 13, color: '#9ba8b5', lineHeight: 1.6, marginBottom: 12 }}>
+                  Complete your profile for personalized AI content — target companies, CGPA, and weak areas.
+                </div>
+                <a href="/profile" style={{ display: 'inline-block', padding: '8px 16px', borderRadius: 8, background: AMBER, color: '#000', fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 12, textDecoration: 'none' }}>
+                  Update Profile →
+                </a>
+              </div>
+            );
+
+            return (
+              <div style={cardBase}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                  <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2 }}>🎯 YOUR PLACEMENT PROFILE</div>
+                  <a href="/profile" style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, textDecoration: 'none' }}>Edit →</a>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+                    <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555' }}>TARGET:</span>
+                    {tc.slice(0, 4).map(c => (
+                      <span key={c} style={{ padding: '2px 8px', borderRadius: 20, background: G10, border: `1px solid ${G20}`, fontSize: 10, color: G, fontFamily: 'JetBrains Mono,monospace' }}>{c}</span>
+                    ))}
+                    {tc.length > 4 && <span style={{ fontSize: 10, color: '#555' }}>+{tc.length - 4}</span>}
+                  </div>
+                  <div style={{ display: 'flex', gap: 12, fontSize: 11, color: '#9ba8b5', fontFamily: 'JetBrains Mono,monospace' }}>
+                    {hasCgpa && <span>CGPA: <span style={{ color: '#e8f4ff' }}>{user.cgpa}</span></span>}
+                    <span>Tier: <span style={{ color: '#e8f4ff' }}>{tier.toUpperCase()}</span></span>
+                    {urgencyLabel && months && <span>Timeline: <span style={{ color: urgencyLabel.includes('🔴') ? '#ff4545' : urgencyLabel.includes('🟡') ? AMBER : G }}>{urgencyLabel}</span></span>}
+                  </div>
+                  {weak.length > 0 && (
+                    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                      <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555', alignSelf: 'center' }}>WEAK:</span>
+                      {weak.slice(0, 3).map(w => (
+                        <span key={w} style={{ padding: '2px 7px', borderRadius: 20, background: 'rgba(251,191,36,0.1)', border: `1px solid rgba(251,191,36,0.25)`, fontSize: 9, color: AMBER, fontFamily: 'JetBrains Mono,monospace' }}>{w}</span>
+                      ))}
+                      {weak.length > 3 && <span style={{ fontSize: 9, color: '#555' }}>+{weak.length - 3}</span>}
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
+
           {/* Card 1: Daily Objectives */}
           <div style={cardBase}>
             <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}>🎯 DAILY OBJECTIVES</div>

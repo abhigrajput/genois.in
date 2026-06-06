@@ -66,7 +66,7 @@ export async function GET(request) {
 
     const { data: user } = await supabase
       .from('users')
-      .select('domain_slug, level')
+      .select('id, name, domain_slug, level, college, college_tier, cgpa, target_companies, weak_subjects, months_to_placement, year')
       .eq('id', payload.userId)
       .single();
 
@@ -133,7 +133,7 @@ export async function GET(request) {
       };
     } else {
       // ── 2. Cache miss — call AI then persist for next time ──────────────
-      dayContent = await generateDayContent(user.domain_slug, displayDay, level);
+      dayContent = await generateDayContent(user.domain_slug, displayDay, level, user);
 
       const cachePayload = {
         domain_slug: user.domain_slug,

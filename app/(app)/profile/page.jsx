@@ -7,6 +7,25 @@ import { authAPI } from '@/lib/api';
 import { useToken, apiFetch } from '@/lib/useApi';
 import Link from 'next/link';
 
+const PLACEMENT_COMPANIES = [
+  'TCS', 'Infosys', 'Wipro', 'Accenture', 'Cognizant', 'HCL', 'Amazon', 'Flipkart', 'Startups', 'Other MNCs',
+];
+
+const WEAK_SUBJECTS = [
+  'Arrays & Strings', 'Linked Lists', 'Trees & Graphs',
+  'Dynamic Programming', 'Recursion', 'OS & DBMS',
+  'Computer Networks', 'System Design', 'Math & Aptitude',
+  'OOP Concepts', 'SQL Queries',
+];
+
+const MONTH_OPTIONS = [
+  { label: '1-3 months', value: 2 },
+  { label: '4-6 months', value: 5 },
+  { label: '7-9 months', value: 8 },
+  { label: '10-12 months', value: 11 },
+  { label: '12+ months', value: 18 },
+];
+
 const DOMAINS = [
   {slug:'fullstack',label:'Full Stack'},{slug:'dsa',label:'DSA'},
   {slug:'aiml',label:'Machine Learning'},{slug:'datascience',label:'Data Science'},
@@ -29,6 +48,15 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(false);
   const [myBadges, setMyBadges] = useState([]);
 
+  // Placement profile state
+  const [placementForm, setPlacementForm] = useState({
+    target_companies: user?.target_companies || [],
+    cgpa: user?.cgpa ?? '',
+    months_to_placement: user?.months_to_placement || 8,
+    weak_subjects: user?.weak_subjects || [],
+  });
+  const [placementLoading, setPlacementLoading] = useState(false);
+
   useEffect(() => {
     if (!token) return;
     apiFetch('/api/badge/status', token)
@@ -47,6 +75,49 @@ export default function ProfilePage() {
       toast.success('Profile updated!');
     } catch (e) { toast.error('Update failed'); }
     setLoading(false);
+  }
+
+  async function savePlacementProfile() {
+    setPlacementLoading(true);
+    try {
+      const payload = {
+        target_companies: placementForm.target_companies,
+        weak_subjects: placementForm.weak_subjects,
+        months_to_placement: placementForm.months_to_placement,
+      };
+      if (placementForm.cgpa !== '' && !isNaN(parseFloat(placementForm.cgpa))) {
+        payload.cgpa = parseFloat(placementForm.cgpa);
+      } else if (placementForm.cgpa === '') {
+        payload.cgpa = null;
+      }
+      const res = await fetch('/api/auth/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify(payload),
+      });
+      const d = await res.json();
+      if (d.success) { updateUser(d.data.user); toast.success('Placement profile saved!'); }
+      else toast.error(d.message || 'Save failed');
+    } catch { toast.error('Save failed'); }
+    setPlacementLoading(false);
+  }
+
+  function togglePlacementCompany(c) {
+    setPlacementForm(p => ({
+      ...p,
+      target_companies: p.target_companies.includes(c)
+        ? p.target_companies.filter(x => x !== c)
+        : [...p.target_companies, c],
+    }));
+  }
+
+  function toggleWeakSubject(s) {
+    setPlacementForm(p => ({
+      ...p,
+      weak_subjects: p.weak_subjects.includes(s)
+        ? p.weak_subjects.filter(x => x !== s)
+        : [...p.weak_subjects, s],
+    }));
   }
 
   async function changeDomain(slug) {
@@ -194,6 +265,82 @@ export default function ProfilePage() {
               })}
             </div>
           )}
+        </div>
+
+        {/* PLACEMENT PROFILE - full width */}
+        <div style={{ gridColumn: '1 / -1', background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24 }}>
+          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#e8f4ff', marginBottom: 4 }}>🎯 Placement Profile</div>
+          <div style={{ fontSize: 12, color: '#5a7a9a', marginBottom: 20 }}>Used by GENOIS AI to personalize your roadmap, chatbot, and company-specific prep.</div>
+
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 10 }}>TARGET COMPANIES</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {PLACEMENT_COMPANIES.map(c => {
+                const sel = placementForm.target_companies.includes(c);
+                return (
+                  <button key={c} onClick={() => togglePlacementCompany(c)} style={{
+                    padding: '8px 14px', borderRadius: 10, cursor: 'pointer',
+                    border: `1px solid ${sel ? '#00f0ff' : 'rgba(255,255,255,0.08)'}`,
+                    background: sel ? 'rgba(0,240,255,0.08)' : 'transparent',
+                    color: sel ? '#00f0ff' : '#5a7a9a',
+                    fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600,
+                  }}>{c}</button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 10 }}>MONTHS TO PLACEMENT</div>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {MONTH_OPTIONS.map(m => {
+                const sel = placementForm.months_to_placement === m.value;
+                return (
+                  <button key={m.value} onClick={() => setPlacementForm(p => ({ ...p, months_to_placement: m.value }))} style={{
+                    padding: '8px 14px', borderRadius: 10, cursor: 'pointer',
+                    border: `1px solid ${sel ? '#00f0ff' : 'rgba(255,255,255,0.08)'}`,
+                    background: sel ? 'rgba(0,240,255,0.08)' : 'transparent',
+                    color: sel ? '#00f0ff' : '#5a7a9a',
+                    fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600,
+                  }}>{m.label}</button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 10 }}>WEAK AREAS</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              {WEAK_SUBJECTS.map(s => {
+                const sel = placementForm.weak_subjects.includes(s);
+                return (
+                  <button key={s} onClick={() => toggleWeakSubject(s)} style={{
+                    padding: '8px 14px', borderRadius: 10, cursor: 'pointer',
+                    border: `1px solid ${sel ? '#00f0ff' : 'rgba(255,255,255,0.08)'}`,
+                    background: sel ? 'rgba(0,240,255,0.08)' : 'transparent',
+                    color: sel ? '#00f0ff' : '#5a7a9a',
+                    fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600,
+                  }}>{s}</button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 20, maxWidth: 240 }}>
+            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 6 }}>CGPA</div>
+            <input
+              type="number" min="0" max="10" step="0.1"
+              value={placementForm.cgpa}
+              onChange={e => setPlacementForm(p => ({ ...p, cgpa: e.target.value }))}
+              placeholder="e.g. 7.2"
+              style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.12)', background: 'rgba(255,255,255,0.02)', color: '#e8f4ff', fontSize: 14, outline: 'none', fontFamily: 'Outfit,sans-serif', boxSizing: 'border-box' }}
+            />
+            <div style={{ fontSize: 11, color: '#3a4a5a', marginTop: 4, fontFamily: 'JetBrains Mono,monospace' }}>Not shared publicly</div>
+          </div>
+
+          <button onClick={savePlacementProfile} disabled={placementLoading} style={{ padding: '10px 24px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700 }}>
+            {placementLoading ? 'Saving...' : 'Save Placement Profile'}
+          </button>
         </div>
 
         {/* SETTINGS - full width */}

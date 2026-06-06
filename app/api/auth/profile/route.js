@@ -2,12 +2,19 @@ import { z } from 'zod';
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
+import { getCollegeTier } from '@/lib/contextBuilder';
 
 const ProfileUpdateSchema = z.object({
-  name:          z.string().trim().min(1).max(50).optional(),
-  college:       z.string().trim().max(200).optional().nullable(),
-  year:          z.string().trim().max(20).optional().nullable(),
-  learningSpeed: z.enum(['slow', 'normal', 'fast']).optional(),
+  name:                z.string().trim().min(1).max(50).optional(),
+  college:             z.string().trim().max(200).optional().nullable(),
+  year:                z.string().trim().max(20).optional().nullable(),
+  learningSpeed:       z.enum(['slow', 'normal', 'fast']).optional(),
+  target_companies:    z.array(z.string().max(50)).max(10).optional(),
+  cgpa:                z.number().min(0).max(10).optional().nullable(),
+  months_to_placement: z.number().int().min(1).max(36).optional().nullable(),
+  weak_subjects:       z.array(z.string().max(100)).max(20).optional(),
+  placement_type:      z.enum(['campus', 'off-campus', 'both']).optional(),
+  college_tier:        z.enum(['tier1', 'tier2', 'tier3']).optional(),
 }).strict();
 
 export async function GET(request) {
@@ -70,13 +77,22 @@ export async function PUT(request) {
     // (is_admin, subscription_plan, total_score, trial_ends_at, etc.).
     const parsed = ProfileUpdateSchema.safeParse(body);
     if (!parsed.success) return errorResponse((parsed.error.issues?.[0]?.message || parsed.error.errors?.[0]?.message || "Validation failed"), 400);
-    const { name, college, year, learningSpeed } = parsed.data;
+    const { name, college, year, learningSpeed, target_companies, cgpa, months_to_placement, weak_subjects, placement_type, college_tier } = parsed.data;
 
     const updates = { updated_at: new Date().toISOString() };
     if (name !== undefined) updates.name = name;
-    if (college !== undefined) updates.college = college;
+    if (college !== undefined) {
+      updates.college = college;
+      updates.college_tier = getCollegeTier(college);
+    }
     if (year !== undefined) updates.year = year;
     if (learningSpeed !== undefined) updates.learning_speed = learningSpeed;
+    if (target_companies !== undefined) updates.target_companies = target_companies;
+    if (cgpa !== undefined) updates.cgpa = cgpa;
+    if (months_to_placement !== undefined) updates.months_to_placement = months_to_placement;
+    if (weak_subjects !== undefined) updates.weak_subjects = weak_subjects;
+    if (placement_type !== undefined) updates.placement_type = placement_type;
+    if (college_tier !== undefined && !updates.college_tier) updates.college_tier = college_tier;
 
     const supabase = getAdminClient();
     const { data: user, error } = await supabase
