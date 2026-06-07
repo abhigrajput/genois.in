@@ -190,9 +190,9 @@ export default function LandingPage() {
             <div style={{ fontSize:12, color:'#9ca3af', marginBottom:8 }}>
               🔴 Live: 12 students completed their challenge in the last hour
             </div>
-            <div style={{ display:'flex', gap:22, flexWrap:'wrap' }}>
+            <div style={{ display:'flex', gap:'10px 16px', flexWrap:'wrap' }}>
               {['Ready in 60 seconds','Free forever','360+ students active'].map(t => (
-                <div key={t} style={{ display:'flex', alignItems:'center', gap:7, fontSize:13, color:MUTED }}>
+                <div key={t} style={{ display:'flex', alignItems:'center', gap:6, fontSize:13, color:MUTED, whiteSpace:'nowrap' }}>
                   <span style={{ color:GREEN, fontSize:12 }}>✓</span>{t}
                 </div>
               ))}
