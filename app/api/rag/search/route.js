@@ -1,6 +1,6 @@
-import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
+import { searchKnowledgeBase } from '@/lib/ragSearch';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,20 +17,8 @@ export async function GET(request) {
     const company = searchParams.get('company') || null;
     const limit = Math.min(parseInt(searchParams.get('limit') || '5', 10) || 5, 20);
 
-    const supabase = getAdminClient();
-    let query = supabase
-      .from('knowledge_base')
-      .select('content, category, company, domain, difficulty')
-      .textSearch('content', q, { type: 'plain', config: 'english' })
-      .limit(limit);
-
-    if (domain) query = query.or(`domain.eq.${domain},domain.eq.general`);
-    if (company) query = query.or(`company.eq.${company},company.is.null`);
-
-    const { data, error } = await query;
-    if (error) return errorResponse(error.message, 400);
-
-    return successResponse({ results: data || [] });
+    const results = await searchKnowledgeBase(q, domain, company, limit);
+    return successResponse({ results });
   } catch (error) {
     console.error('RAG search error:', error);
     return errorResponse('Internal server error', 500);
