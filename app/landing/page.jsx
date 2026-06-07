@@ -17,9 +17,9 @@ const WHITE = '#f8fafc';
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 const STEPS = [
-  { emoji:'🎯', title:'Tell us your target', desc:'Pick your domain, your target company, and your placement timeline.' },
-  { emoji:'📅', title:'Follow your roadmap', desc:'AI generates personalized daily tasks — videos, problems, notes, tests.' },
-  { emoji:'🏆', title:'Get placed', desc:'Track progress, earn verified badges, and beat your college rank.' },
+  { emoji:'⚡', title:'60 seconds',    time:'just 1 min',    desc:'Tell us your target company and domain.' },
+  { emoji:'📅', title:'Daily 30 mins', time:'30 min / day',  desc:'Follow your AI-generated daily task.' },
+  { emoji:'🏆', title:'Get placed',    time:'day 1 → offer', desc:'Beat your college rank, earn verified badges.' },
 ];
 
 const FEATURES = [
@@ -44,7 +44,20 @@ const PLANS = [
   { name:'Dominator', price:'₹499', cadence:'/month',   desc:'For elite placement goals.',           features:['Everything in Performer','Company-specific prep','Priority mentor escalation','Shareable report'], cta:'Go Dominator', highlight:false },
 ];
 
-const PROOF = ['500+ students', '10 domains', '365-day roadmap', 'AI-powered'];
+const PROOF = [
+  '🔥 Priya S. from VTU just completed Day 23',
+  'Arjun K. earned DSA badge',
+  'Rahul M. hit Rank #3',
+  'Sneha P. started her roadmap',
+  'Vikram T. solved 2 problems today',
+  'Pooja R. streak: 15 days 🔥',
+];
+
+const FOMO = [
+  { num:'47', unit:'students', label:'Solved a coding problem today' },
+  { num:'23', unit:'students', label:'Earned a skill badge this week' },
+  { num:'8',  unit:'students', label:'Got interview calls after using GENOIS' },
+];
 
 // ─── Scroll reveal ──────────────────────────────────────────────────────────
 function useScrollReveal() {
@@ -73,9 +86,9 @@ function ProductCard() {
       {/* Header row */}
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:18 }}>
         <div style={{ display:'flex', alignItems:'center', gap:12 }}>
-          <div style={{ width:42, height:42, borderRadius:'50%', background:`linear-gradient(135deg, ${PURPLE}, ${PURPLE_DARK})`, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Syne,sans-serif', fontWeight:800, color:'#fff', fontSize:16 }}>A</div>
+          <div style={{ width:42, height:42, borderRadius:'50%', background:`linear-gradient(135deg, ${PURPLE}, ${PURPLE_DARK})`, display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Syne,sans-serif', fontWeight:800, color:'#fff', fontSize:16 }}>R</div>
           <div>
-            <div style={{ fontFamily:'Syne,sans-serif', fontWeight:700, color:WHITE, fontSize:15 }}>Abhishek</div>
+            <div style={{ fontFamily:'Syne,sans-serif', fontWeight:700, color:WHITE, fontSize:15 }}>Rahul K.</div>
             <div style={{ fontSize:11.5, color:MUTED, fontFamily:'JetBrains Mono,monospace', marginTop:1 }}>Day 47 · DSA</div>
           </div>
         </div>
@@ -156,8 +169,9 @@ export default function LandingPage() {
             <h1 className="gen-hero-h1" style={{ fontFamily:'Syne,sans-serif', fontSize:'clamp(40px,6vw,64px)', fontWeight:800, lineHeight:1.05, letterSpacing:-1.5, margin:'0 0 20px', color:WHITE }}>
               Get placed.<br />Not just prepared.
             </h1>
-            <p style={{ fontSize:17, color:'#9ca3af', lineHeight:1.65, margin:'0 0 34px', maxWidth:480 }}>
-              A 365-day AI roadmap personalized for <span style={{ color:'#cbd5e1', fontWeight:600 }}>your college</span>, <span style={{ color:'#cbd5e1', fontWeight:600 }}>your target company</span>, and <span style={{ color:'#cbd5e1', fontWeight:600 }}>your timeline</span>.
+            <p style={{ fontSize:17, color:'#9ca3af', lineHeight:1.65, margin:'0 0 30px', maxWidth:480 }}>
+              Your first coding challenge is ready in <span style={{ color:WHITE, fontWeight:700 }}>60 seconds</span>.<br />
+              Personalized for <span style={{ color:'#cbd5e1', fontWeight:600 }}>YOUR college</span>, <span style={{ color:'#cbd5e1', fontWeight:600 }}>YOUR target company</span>, <span style={{ color:'#cbd5e1', fontWeight:600 }}>YOUR timeline</span>.
             </p>
             <div style={{ display:'flex', gap:14, flexWrap:'wrap', marginBottom:30 }}>
               <Link href="/signup" style={{
@@ -166,15 +180,18 @@ export default function LandingPage() {
                 fontFamily:'Syne,sans-serif', fontWeight:700, fontSize:15,
                 display:'inline-flex', alignItems:'center', gap:8,
                 boxShadow:'0 10px 30px rgba(99,102,241,0.4)',
-              }}>Start Free — No Card Needed →</Link>
+              }}>Get My Free Roadmap →</Link>
               <a href="#how" style={{
                 padding:'15px 26px', borderRadius:12, textDecoration:'none',
                 background:'transparent', border:'1px solid rgba(99,102,241,0.3)', color:PURPLE_LIGHT,
                 fontFamily:'Syne,sans-serif', fontWeight:600, fontSize:15,
               }}>See how it works</a>
             </div>
+            <div style={{ fontSize:12, color:'#9ca3af', marginBottom:8 }}>
+              🔴 Live: 12 students completed their challenge in the last hour
+            </div>
             <div style={{ display:'flex', gap:22, flexWrap:'wrap' }}>
-              {['No credit card','30-day free trial','Cancel anytime'].map(t => (
+              {['Ready in 60 seconds','Free forever','360+ students active'].map(t => (
                 <div key={t} style={{ display:'flex', alignItems:'center', gap:7, fontSize:13, color:MUTED }}>
                   <span style={{ color:GREEN, fontSize:12 }}>✓</span>{t}
                 </div>
@@ -189,14 +206,14 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ═══ SOCIAL PROOF BAR ═══ */}
-      <div style={{ borderTop:'1px solid rgba(99,102,241,0.1)', borderBottom:'1px solid rgba(99,102,241,0.1)', background:'rgba(99,102,241,0.03)' }}>
-        <div style={{ maxWidth:1000, margin:'0 auto', padding:'18px 28px', display:'flex', flexWrap:'wrap', justifyContent:'center', alignItems:'center', gap:'10px 28px' }}>
-          {PROOF.map((p, i) => (
-            <div key={p} style={{ display:'flex', alignItems:'center', gap:'28px' }}>
-              <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:13.5, color:'#9ca3af', letterSpacing:0.5 }}>{p}</span>
-              {i < PROOF.length - 1 && <span style={{ color:PURPLE, opacity:0.5 }}>·</span>}
-            </div>
+      {/* ═══ SOCIAL PROOF BAR — live activity ticker ═══ */}
+      <div style={{ borderTop:'1px solid rgba(99,102,241,0.1)', borderBottom:'1px solid rgba(99,102,241,0.1)', background:'rgba(99,102,241,0.03)', overflow:'hidden' }}>
+        <div className="gen-ticker" style={{ width:'max-content', padding:'14px 0' }}>
+          {[...PROOF, ...PROOF].map((p, i) => (
+            <span key={i} style={{ display:'inline-flex', alignItems:'center', gap:14, flexShrink:0, whiteSpace:'nowrap', fontFamily:'JetBrains Mono,monospace', fontSize:13.5, color:'#9ca3af', letterSpacing:0.4 }}>
+              {p}
+              <span style={{ color:PURPLE, opacity:0.55 }}>·</span>
+            </span>
           ))}
         </div>
       </div>
@@ -210,7 +227,10 @@ export default function LandingPage() {
               position:'relative', padding:'30px 26px', borderRadius:18, background:BG2,
               border:'1px solid rgba(99,102,241,0.12)',
             }}>
-              <div style={{ position:'absolute', top:20, right:24, fontFamily:'Syne,sans-serif', fontSize:46, fontWeight:800, color:'rgba(99,102,241,0.1)', lineHeight:1 }}>0{i+1}</div>
+              <div style={{ position:'absolute', top:20, right:24, textAlign:'right' }}>
+                <div style={{ fontFamily:'Syne,sans-serif', fontSize:46, fontWeight:800, color:'rgba(99,102,241,0.1)', lineHeight:1 }}>0{i+1}</div>
+                <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, color:MUTED, marginTop:4 }}>{s.time}</div>
+              </div>
               <div style={{ width:60, height:60, borderRadius:14, background:'rgba(99,102,241,0.1)', border:'1px solid rgba(99,102,241,0.25)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:28, marginBottom:20 }}>{s.emoji}</div>
               <h3 style={{ fontFamily:'Syne,sans-serif', fontSize:18, fontWeight:700, color:WHITE, margin:'0 0 9px' }}>{s.title}</h3>
               <p style={{ color:'#9ca3af', fontSize:14, lineHeight:1.6, margin:0 }}>{s.desc}</p>
@@ -260,6 +280,27 @@ export default function LandingPage() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ═══ FOMO / PEER PRESSURE ═══ */}
+      <section style={{ padding:'80px 28px', background:'rgba(99,102,241,0.04)', borderTop:'1px solid rgba(99,102,241,0.1)', borderBottom:'1px solid rgba(99,102,241,0.1)' }}>
+        <div style={{ maxWidth:1100, margin:'0 auto' }}>
+          <SectionHeader eyebrow="Peer activity" title="Your batchmates are already preparing" sub="Don't fall behind. 360 students from your college network are active." />
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))', gap:18 }}>
+            {FOMO.map((c, i) => (
+              <div key={c.label} data-reveal data-reveal-delay={i+1} style={{
+                padding:'32px 26px', borderRadius:18, background:BG2, textAlign:'center',
+                border:'1px solid rgba(99,102,241,0.25)', boxShadow:'0 0 30px rgba(99,102,241,0.06)',
+              }}>
+                <div style={{ display:'flex', alignItems:'baseline', justifyContent:'center', gap:8, marginBottom:10 }}>
+                  <span style={{ fontFamily:'Syne,sans-serif', fontSize:46, fontWeight:800, color:PURPLE_LIGHT, lineHeight:1 }}>{c.num}</span>
+                  <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:13, color:MUTED, letterSpacing:0.5 }}>{c.unit}</span>
+                </div>
+                <div style={{ color:'#d1d5db', fontSize:14.5, lineHeight:1.5 }}>{c.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -317,10 +358,10 @@ export default function LandingPage() {
           boxShadow:'0 0 60px rgba(99,102,241,0.12)',
         }}>
           <h2 style={{ fontFamily:'Syne,sans-serif', fontSize:'clamp(26px,4vw,36px)', fontWeight:800, color:WHITE, margin:'0 0 14px', lineHeight:1.15 }}>
-            Ready to start your placement journey?
+            Don&apos;t open this tomorrow. Start now.
           </h2>
           <p style={{ color:'#9ca3af', fontSize:16, margin:'0 0 30px' }}>
-            Join 500+ students building real skills, one day at a time.
+            Every day you wait, someone from your college is getting ahead. Your roadmap is ready.
           </p>
           <Link href="/signup" style={{
             display:'inline-flex', alignItems:'center', gap:10,
@@ -328,7 +369,7 @@ export default function LandingPage() {
             background:`linear-gradient(135deg, ${PURPLE}, ${PURPLE_DARK})`, color:'#fff',
             fontFamily:'Syne,sans-serif', fontWeight:700, fontSize:16,
             boxShadow:'0 12px 34px rgba(99,102,241,0.42)',
-          }}>Start Free Today →</Link>
+          }}>Start My Journey — It&apos;s Free →</Link>
         </div>
       </section>
 
