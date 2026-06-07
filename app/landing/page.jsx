@@ -221,7 +221,7 @@ export default function LandingPage() {
       {/* ═══ HOW IT WORKS ═══ */}
       <section id="how" style={{ padding:'88px 28px', maxWidth:1100, margin:'0 auto' }}>
         <SectionHeader eyebrow="How it works" title="Three steps to your offer" />
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))', gap:24 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(210px, 1fr))', gap:24 }}>
           {STEPS.map((s, i) => (
             <div key={s.title} data-reveal data-reveal-delay={i+1} style={{
               position:'relative', padding:'30px 26px', borderRadius:18, background:BG2,
@@ -261,7 +261,7 @@ export default function LandingPage() {
       {/* ═══ TESTIMONIALS ═══ */}
       <section style={{ padding:'88px 28px', maxWidth:1100, margin:'0 auto' }}>
         <SectionHeader eyebrow="What students say" title="From confused to placed" />
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(300px, 1fr))', gap:20 }}>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(210px, 1fr))', gap:20 }}>
           {TESTIMONIALS.map((t, i) => (
             <div key={t.name} data-reveal data-reveal-delay={i+1} style={{
               padding:26, borderRadius:18, background:BG2, border:'1px solid rgba(255,255,255,0.07)',
@@ -287,7 +287,7 @@ export default function LandingPage() {
       <section style={{ padding:'80px 28px', background:'rgba(99,102,241,0.04)', borderTop:'1px solid rgba(99,102,241,0.1)', borderBottom:'1px solid rgba(99,102,241,0.1)' }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <SectionHeader eyebrow="Peer activity" title="Your batchmates are already preparing" sub="Don't fall behind. 360 students from your college network are active." />
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(260px, 1fr))', gap:18 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(210px, 1fr))', gap:18 }}>
             {FOMO.map((c, i) => (
               <div key={c.label} data-reveal data-reveal-delay={i+1} style={{
                 padding:'32px 26px', borderRadius:18, background:BG2, textAlign:'center',
