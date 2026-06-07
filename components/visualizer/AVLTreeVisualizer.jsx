@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from 'react';
 import CodePanel from './CodePanel';
 import VisualizerControls from './VisualizerControls';
+import ConceptBox from './ConceptBox';
 
 const CODE = `struct Node {
   int key, height;

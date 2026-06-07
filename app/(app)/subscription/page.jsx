@@ -8,7 +8,7 @@ export default function SubscriptionPage() {
     {
       name: 'Spectator',
       price: '₹0',
-      period: '30 days free',
+      period: '/forever',
       color: '#5a7a9a',
       features: [
         '30-day full access trial',
@@ -24,7 +24,7 @@ export default function SubscriptionPage() {
     },
     {
       name: 'Player',
-      price: '₹99',
+      price: '₹299',
       period: '/month',
       color: '#00f0ff',
       badge: null,
@@ -42,7 +42,7 @@ export default function SubscriptionPage() {
     },
     {
       name: 'Performer',
-      price: '₹199',
+      price: '₹499',
       period: '/month',
       color: '#7b5cff',
       badge: 'MOST POPULAR',
@@ -62,7 +62,7 @@ export default function SubscriptionPage() {
     },
     {
       name: 'Dominator',
-      price: '₹499',
+      price: '₹1999',
       period: '/month',
       color: '#EF9F27',
       badge: 'BEST VALUE',
