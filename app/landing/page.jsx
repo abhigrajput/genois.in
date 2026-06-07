@@ -23,7 +23,7 @@ const STEPS = [
 ];
 
 const FEATURES = [
-  { icon:'📅', title:'Daily Roadmap', desc:'A 365-day plan that adapts to your level and pace.' },
+  { icon:'📅', title:'Daily Roadmap', desc:'A bite-sized daily plan that adapts to your level and pace.' },
   { icon:'🤖', title:'AI Mentor', desc:'Stuck at 2 AM? Get answers and guidance instantly.' },
   { icon:'💻', title:'Coding Challenges', desc:'Daily problems with AI code review and hints.' },
   { icon:'🎖️', title:'Skill Badges', desc:'Earn proctored, verifiable credentials recruiters trust.' },
