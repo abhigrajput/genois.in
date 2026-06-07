@@ -6,13 +6,13 @@ import useAuthStore from '@/store/authStore';
 import { authAPI } from '@/lib/api';
 import NotificationBell from '@/components/NotificationBell';
 
-const G = '#00ff88';
-const G10 = 'rgba(0,255,136,0.1)';
-const G20 = 'rgba(0,255,136,0.2)';
-const G08 = 'rgba(0,255,136,0.08)';
-const G04 = 'rgba(0,255,136,0.04)';
+const G = '#6366f1';
+const G10 = 'rgba(99,102,241,0.1)';
+const G20 = 'rgba(99,102,241,0.2)';
+const G08 = 'rgba(99,102,241,0.08)';
+const G04 = 'rgba(99,102,241,0.04)';
 const AMBER = '#fbbf24';
-const SB_BG = '#0a0a0a';
+const SB_BG = '#0a0a14';
 
 // Always-visible nav (8 items shown at top level)
 const PRIMARY_NAV = [
@@ -166,7 +166,7 @@ export default function AppLayout({ children }) {
 
   if (checking) {
     return (
-      <div style={{ minHeight: '100vh', background: '#050505', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100vh', background: '#0d0d14', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center' }}>
           <div className="genois-loading" style={{ fontFamily: 'Syne,sans-serif', fontSize: 28, fontWeight: 800 }}>
             <span style={{ color: G }}>GEN</span><span style={{ color: '#e8f4ff' }}>OIS</span>
@@ -191,9 +191,9 @@ export default function AppLayout({ children }) {
   const sbWidth = isMobile ? 240 : (collapsed ? 68 : 240);
 
   return (
-    <div style={{ display: 'flex', height: '100vh', background: '#050505', overflow: 'hidden', position: 'relative' }}>
+    <div style={{ display: 'flex', height: '100vh', background: '#0d0d14', overflow: 'hidden', position: 'relative' }}>
       {/* Matrix grid bg */}
-      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(0,255,136,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,0.02) 1px,transparent 1px)', backgroundSize: '60px 60px' }} />
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(99,102,241,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,0.02) 1px,transparent 1px)', backgroundSize: '60px 60px' }} />
 
       {/* Mobile overlay */}
       {isMobile && sidebarOpen && (
@@ -210,7 +210,7 @@ export default function AppLayout({ children }) {
         display: isMobile ? (sidebarOpen ? 'flex' : 'none') : 'flex',
         flexDirection: 'column',
         background: SB_BG,
-        borderRight: `1px solid rgba(0,255,136,0.08)`,
+        borderRight: `1px solid rgba(99,102,241,0.08)`,
         overflowY: 'hidden',
         height: '100%',
         transition: 'width 0.2s ease',
@@ -235,7 +235,7 @@ export default function AppLayout({ children }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: collapsed ? 0 : 10, justifyContent: collapsed ? 'center' : 'flex-start' }}>
             {/* Avatar */}
             <div className={streak > 0 ? 'pulse-amber' : ''}
-              style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(0,255,136,0.12)', border: `2px solid ${G}33`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 800, color: G, flexShrink: 0 }}>
+              style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, rgba(99,102,241,0.35), rgba(129,140,248,0.12))', border: `2px solid ${G}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 800, color: G, flexShrink: 0 }}>
               {initials}
             </div>
             {!collapsed && (
@@ -306,7 +306,7 @@ export default function AppLayout({ children }) {
         </nav>
 
         {/* SCORE BAR (bottom) */}
-        <div style={{ padding: collapsed ? '12px 8px' : '12px 14px', borderTop: '1px solid rgba(0,255,136,0.06)', flexShrink: 0 }}>
+        <div style={{ padding: collapsed ? '12px 8px' : '12px 14px', borderTop: '1px solid rgba(99,102,241,0.06)', flexShrink: 0 }}>
           {!collapsed && (
             <>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
@@ -318,7 +318,7 @@ export default function AppLayout({ children }) {
                 </button>
               </div>
               <div style={{ height: 3, background: 'rgba(255,255,255,0.04)', borderRadius: 2, overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${Math.min(100, (weeklyPts / 500) * 100)}%`, background: `linear-gradient(90deg, ${G}, #00cc66)`, borderRadius: 2, transition: 'width 0.5s' }} />
+                <div style={{ height: '100%', width: `${Math.min(100, (weeklyPts / 500) * 100)}%`, background: `linear-gradient(90deg, ${G}, #818cf8)`, borderRadius: 2, transition: 'width 0.5s' }} />
               </div>
               <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, color: '#333', marginTop: 4 }}>weekly progress</div>
             </>
@@ -337,7 +337,7 @@ export default function AppLayout({ children }) {
       {/* MAIN CONTENT */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflow: 'hidden', position: 'relative', zIndex: 1 }}>
         {/* Header */}
-        <header style={{ height: 48, flexShrink: 0, background: 'rgba(10,10,10,0.95)', borderBottom: '1px solid rgba(0,255,136,0.07)', display: 'flex', alignItems: 'center', padding: '0 16px', gap: 10, backdropFilter: 'blur(20px)', overflow: 'visible' }}>
+        <header style={{ height: 48, flexShrink: 0, background: 'rgba(13,13,20,0.95)', borderBottom: '1px solid rgba(99,102,241,0.07)', display: 'flex', alignItems: 'center', padding: '0 16px', gap: 10, backdropFilter: 'blur(20px)', overflow: 'visible' }}>
           <button onClick={() => { if (isMobile) setSidebarOpen(s => !s); else toggleCollapsed(); }}
             style={{ background: 'transparent', border: 'none', color: '#555', cursor: 'pointer', fontSize: 20, padding: 4, flexShrink: 0, lineHeight: 1, transition: 'color 0.15s' }}
             onMouseEnter={e => e.currentTarget.style.color = G}
@@ -349,7 +349,7 @@ export default function AppLayout({ children }) {
           </span>
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 6, flexShrink: 0, alignItems: 'center' }}>
             <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, background: 'rgba(251,191,36,0.1)', color: AMBER, padding: '3px 8px', borderRadius: 20 }}>🔥 {streak}</span>
-            <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, background: 'rgba(0,255,136,0.08)', color: G, padding: '3px 8px', borderRadius: 20 }}>⚡ {totalScore.toLocaleString()}</span>
+            <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, background: 'rgba(99,102,241,0.08)', color: G, padding: '3px 8px', borderRadius: 20 }}>⚡ {totalScore.toLocaleString()}</span>
             <div style={{ position: 'relative', zIndex: 9999 }}>
               <NotificationBell token={navToken} />
             </div>

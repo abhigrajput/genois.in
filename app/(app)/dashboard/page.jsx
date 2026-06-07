@@ -28,12 +28,12 @@ function YouTubeEmbed({ url, title }) {
     <a href={url} target="_blank" rel="noopener noreferrer" style={{
       display: 'inline-flex', alignItems: 'center', gap: 8,
       padding: '12px 20px', borderRadius: 10, textDecoration: 'none',
-      background: 'rgba(0,255,136,0.1)', border: '1px solid rgba(0,255,136,0.3)',
-      color: '#00ff88', fontFamily: 'Outfit,sans-serif', fontWeight: 600, fontSize: 14,
+      background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)',
+      color: '#6366f1', fontFamily: 'Outfit,sans-serif', fontWeight: 600, fontSize: 14,
     }}>▶ Watch on YouTube →</a>
   );
   return (
-    <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(0,255,136,0.15)' }}>
+    <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(99,102,241,0.15)' }}>
       <iframe
         src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&color=white`}
         title={title || 'Video'}
@@ -46,13 +46,13 @@ function YouTubeEmbed({ url, title }) {
   );
 }
 
-const G = '#00ff88'
-const G10 = 'rgba(0,255,136,0.1)'
-const G20 = 'rgba(0,255,136,0.2)'
+const G = '#6366f1'
+const G10 = 'rgba(99,102,241,0.1)'
+const G20 = 'rgba(99,102,241,0.2)'
 const AMBER = '#fbbf24'
-const BG = '#050505'
-const BG2 = '#0d0d0d'
-const BG3 = '#111111'
+const BG = '#0d0d14'
+const BG2 = '#13131f'
+const BG3 = '#1a1a2e'
 
 const TASK_BITS = { video: 1, resource: 2, coding: 4, test: 8, notes: 16 }
 const TASK_META = [
@@ -77,7 +77,7 @@ function DayRing({ day, size = 72 }) {
           strokeLinecap="round" strokeDasharray={circ}
           strokeDashoffset={circ * (1 - pct)}
           transform={`rotate(-90 ${size/2} ${size/2})`}
-          style={{ filter: `drop-shadow(0 0 5px rgba(0,255,136,0.7))`, transition: 'stroke-dashoffset 0.8s ease' }} />
+          style={{ filter: `drop-shadow(0 0 5px rgba(99,102,241,0.7))`, transition: 'stroke-dashoffset 0.8s ease' }} />
       </svg>
       <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: size > 60 ? 20 : 14, fontWeight: 700, color: G, lineHeight: 1 }}>{day}</span>
@@ -93,7 +93,7 @@ function Skel({ h = 60, w = '100%' }) {
 
 function Confetti({ show }) {
   if (!show) return null
-  const colors = [G, AMBER, '#00ffff', '#ff69b4', '#ffffff', '#7b5cff']
+  const colors = [G, AMBER, '#818cf8', '#ff69b4', '#ffffff', '#7b5cff']
   const particles = Array.from({ length: 24 }, (_, i) => {
     const angle = (i / 24) * 360
     const dist = 80 + (i % 4) * 30
@@ -123,7 +123,7 @@ function FloatAnim({ items }) {
         <div key={a.id} className="pts-float" style={{
           position: 'fixed', bottom: '25%', left: '55%',
           fontFamily: 'JetBrains Mono,monospace', fontSize: 20, fontWeight: 800,
-          color: G, zIndex: 9999, textShadow: `0 0 12px rgba(0,255,136,0.9)`,
+          color: G, zIndex: 9999, textShadow: `0 0 12px rgba(99,102,241,0.9)`,
           transform: 'translateX(-50%)',
         }}>{a.text}</div>
       ))}
@@ -390,7 +390,7 @@ export default function DashboardPage() {
     const btnStyle = {
       display: 'inline-flex', alignItems: 'center', gap: 8,
       padding: '10px 20px', borderRadius: 8, border: 'none', cursor: done ? 'default' : 'pointer',
-      background: done ? 'rgba(0,255,136,0.1)' : G, color: done ? G : '#000',
+      background: done ? 'rgba(99,102,241,0.1)' : G, color: done ? G : '#fff',
       fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14, transition: 'all 0.2s',
       opacity: done ? 0.7 : 1,
     }
@@ -410,7 +410,7 @@ export default function DashboardPage() {
               padding: '11px 20px', borderRadius: 8, border: 'none',
               cursor: videoEligible ? 'pointer' : 'not-allowed',
               background: videoEligible ? G : 'rgba(255,255,255,0.06)',
-              color: videoEligible ? '#000' : '#555',
+              color: videoEligible ? '#fff' : '#555',
               fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14,
               transition: 'all 0.4s ease', width: '100%',
             }}>
@@ -425,7 +425,7 @@ export default function DashboardPage() {
         {resource?.title && <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 600, color: '#e8f4ff' }}>{resource.title}</div>}
         <div style={{ display: 'flex', gap: 10 }}>
           {resource?.url && (
-            <a href={resource.url} target="_blank" rel="noopener noreferrer" style={{ ...btnStyle, background: done ? 'rgba(0,255,136,0.1)' : G, color: done ? G : '#000', textDecoration: 'none' }}>
+            <a href={resource.url} target="_blank" rel="noopener noreferrer" style={{ ...btnStyle, background: done ? 'rgba(99,102,241,0.1)' : G, color: done ? G : '#fff', textDecoration: 'none' }}>
               📖 Open Resource
             </a>
           )}
@@ -444,13 +444,13 @@ export default function DashboardPage() {
           </div>
           {coding?.description && <div style={{ fontSize: 12, color: '#6b7a8d', lineHeight: 1.6 }}>{coding.description}</div>}
           {coding?.codeSnippet && (
-            <pre style={{ background: '#0a0a0a', border: `1px solid rgba(0,255,136,0.15)`, borderRadius: 8, padding: '12px 14px', fontSize: 11, color: G, fontFamily: 'JetBrains Mono,monospace', overflow: 'auto', maxHeight: 100, margin: 0 }}>
+            <pre style={{ background: '#0d0d14', border: `1px solid rgba(99,102,241,0.15)`, borderRadius: 8, padding: '12px 14px', fontSize: 11, color: G, fontFamily: 'JetBrains Mono,monospace', overflow: 'auto', maxHeight: 100, margin: 0 }}>
               {coding.codeSnippet}
             </pre>
           )}
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             {coding?.url && (
-              <a href={coding.url} target="_blank" rel="noopener noreferrer" style={{ ...btnStyle, background: done ? 'rgba(0,255,136,0.1)' : G, color: done ? G : '#000', textDecoration: 'none' }}>
+              <a href={coding.url} target="_blank" rel="noopener noreferrer" style={{ ...btnStyle, background: done ? 'rgba(99,102,241,0.1)' : G, color: done ? G : '#fff', textDecoration: 'none' }}>
                 💻 Solve Problem →
               </a>
             )}
@@ -463,7 +463,7 @@ export default function DashboardPage() {
     if (activeTask === 'test') return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div style={{ fontSize: 13, color: '#6b7a8d' }}>Take today&apos;s test to earn bonus points and test your understanding.</div>
-        <Link href="/tests" style={{ ...btnStyle, background: done ? 'rgba(0,255,136,0.1)' : G, color: done ? G : '#000', textDecoration: 'none', alignSelf: 'flex-start' }}>
+        <Link href="/tests" style={{ ...btnStyle, background: done ? 'rgba(99,102,241,0.1)' : G, color: done ? G : '#fff', textDecoration: 'none', alignSelf: 'flex-start' }}>
           🧪 Take Today&apos;s Test →
         </Link>
       </div>
@@ -472,7 +472,7 @@ export default function DashboardPage() {
     if (activeTask === 'notes') return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {notes?.content ? (
-          <div style={{ background: '#0a0a0a', border: `1px solid rgba(0,255,136,0.12)`, borderRadius: 8, padding: '12px 14px', fontSize: 12, color: '#aab', lineHeight: 1.7, maxHeight: 140, overflow: 'auto', fontFamily: 'Outfit,sans-serif' }}>
+          <div style={{ background: '#0d0d14', border: `1px solid rgba(99,102,241,0.12)`, borderRadius: 8, padding: '12px 14px', fontSize: 12, color: '#aab', lineHeight: 1.7, maxHeight: 140, overflow: 'auto', fontFamily: 'Outfit,sans-serif' }}>
             {notes.content}
           </div>
         ) : (
@@ -493,7 +493,7 @@ export default function DashboardPage() {
   }
 
   const cardBase = {
-    background: BG2, border: `1px solid rgba(0,255,136,0.12)`, borderRadius: 14,
+    background: BG2, border: `1px solid rgba(99,102,241,0.12)`, borderRadius: 14,
     padding: 20, position: 'relative', overflow: 'hidden',
   }
 
@@ -530,25 +530,25 @@ export default function DashboardPage() {
 
       {/* Admin link */}
       {isAdmin && (
-        <a href="/admin" style={{ display: 'inline-block', padding: '6px 14px', borderRadius: 8, background: 'rgba(0,255,136,0.08)', border: `1px solid ${G20}`, color: G, textDecoration: 'none', fontSize: 12, fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, alignSelf: 'flex-start' }}>⚙️ Admin Dashboard →</a>
+        <a href="/admin" style={{ display: 'inline-block', padding: '6px 14px', borderRadius: 8, background: 'rgba(99,102,241,0.08)', border: `1px solid ${G20}`, color: G, textDecoration: 'none', fontSize: 12, fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, alignSelf: 'flex-start' }}>⚙️ Admin Dashboard →</a>
       )}
 
       {/* DSA Diagnostic banner */}
       {user?.domain_slug === 'dsa' && analytics?.diagnosticStatus === false && (
-        <div onClick={() => router.push('/diagnostic')} style={{ ...cardBase, cursor: 'pointer', borderColor: `rgba(0,255,136,0.3)` }}>
+        <div onClick={() => router.push('/diagnostic')} style={{ ...cardBase, cursor: 'pointer', borderColor: `rgba(99,102,241,0.3)` }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
             <div>
               <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: G, letterSpacing: 2, marginBottom: 4 }}>🎯 RECOMMENDED</div>
               <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, color: '#e8f4ff' }}>Take DSA Diagnostic to get your level →</div>
               <div style={{ fontSize: 12, color: '#6b7a8d', marginTop: 2 }}>15 questions · 10 min · Sets your personalized track</div>
             </div>
-            <div style={{ padding: '8px 18px', borderRadius: 8, background: G, color: '#000', fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 13 }}>Start Now →</div>
+            <div style={{ padding: '8px 18px', borderRadius: 8, background: G, color: '#fff', fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 13 }}>Start Now →</div>
           </div>
         </div>
       )}
 
       {/* ── HERO STATS BAR ── */}
-      <div className="stats-bar" style={{ background: BG2, borderRadius: 14, border: `1px solid rgba(0,255,136,0.12)`, padding: isMobile ? '12px 14px' : '16px 24px', display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: isMobile ? 10 : 16 }}>
+      <div className="stats-bar" style={{ background: BG2, borderRadius: 14, border: `1px solid rgba(99,102,241,0.12)`, padding: isMobile ? '12px 14px' : '16px 24px', display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: isMobile ? 10 : 16 }}>
         {/* Day */}
         <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 14 }}>
           <DayRing day={currentDay} size={isMobile ? 52 : 68} />
@@ -582,7 +582,7 @@ export default function DashboardPage() {
               ⚡ {totalScore.toLocaleString()}
             </div>
             {doneTasks > 0 && (
-              <div style={{ display: 'inline-block', marginTop: 3, padding: '1px 8px', borderRadius: 20, background: 'rgba(0,255,136,0.12)', border: `1px solid ${G20}`, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G }}>
+              <div style={{ display: 'inline-block', marginTop: 3, padding: '1px 8px', borderRadius: 20, background: 'rgba(99,102,241,0.12)', border: `1px solid ${G20}`, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G }}>
                 +{doneTasks * 20} today
               </div>
             )}
@@ -609,7 +609,7 @@ export default function DashboardPage() {
         <div style={{ flex: isMobile ? 'none' : '3 1 0', width: isMobile ? '100%' : undefined, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
 
           {/* TODAY'S MISSION CARD */}
-          <div style={{ ...cardBase, border: `1px solid rgba(0,255,136,0.25)`, boxShadow: '0 0 24px rgba(0,255,136,0.05)' }}>
+          <div style={{ ...cardBase, border: `1px solid rgba(99,102,241,0.25)`, boxShadow: '0 0 24px rgba(99,102,241,0.05)' }}>
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -634,7 +634,7 @@ export default function DashboardPage() {
                 {project?.steps?.length > 0 && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                     {project.steps.map((s, i) => (
-                      <div key={i} style={{ display: 'flex', gap: 10, padding: '8px 12px', background: '#0a0a0a', borderRadius: 8, border: '1px solid rgba(255,255,255,0.04)' }}>
+                      <div key={i} style={{ display: 'flex', gap: 10, padding: '8px 12px', background: '#0d0d14', borderRadius: 8, border: '1px solid rgba(255,255,255,0.04)' }}>
                         <span style={{ color: G, fontSize: 12, fontWeight: 700, fontFamily: 'JetBrains Mono,monospace', flexShrink: 0 }}>{i + 1}.</span>
                         <span style={{ fontSize: 13, color: '#aab' }}>{s}</span>
                       </div>
@@ -643,11 +643,11 @@ export default function DashboardPage() {
                 )}
                 <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                   {project?.githubUrl && (
-                    <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" style={{ padding: '10px 20px', borderRadius: 8, background: G, color: '#000', fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
+                    <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" style={{ padding: '10px 20px', borderRadius: 8, background: G, color: '#fff', fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
                       Submit on GitHub →
                     </a>
                   )}
-                  <input value={githubInput} onChange={e => setGithubInput(e.target.value)} placeholder="Your GitHub repo URL..." style={{ flex: 1, minWidth: 200, padding: '10px 14px', borderRadius: 8, border: `1px solid rgba(0,255,136,0.2)`, background: '#0a0a0a', color: '#e8f4ff', fontSize: 13, fontFamily: 'Outfit,sans-serif', outline: 'none' }} />
+                  <input value={githubInput} onChange={e => setGithubInput(e.target.value)} placeholder="Your GitHub repo URL..." style={{ flex: 1, minWidth: 200, padding: '10px 14px', borderRadius: 8, border: `1px solid rgba(99,102,241,0.2)`, background: '#0d0d14', color: '#e8f4ff', fontSize: 13, fontFamily: 'Outfit,sans-serif', outline: 'none' }} />
                 </div>
               </div>
             ) : (
@@ -679,7 +679,7 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Active task content */}
-                <div style={{ background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '16px', marginBottom: 16, minHeight: 80 }}>
+                <div style={{ background: '#0d0d14', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '16px', marginBottom: 16, minHeight: 80 }}>
                   <TaskContent />
                 </div>
 
@@ -690,7 +690,7 @@ export default function DashboardPage() {
                     {allDone && <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: G }}>🎉 ALL DONE</span>}
                   </div>
                   <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${(doneTasks / 5) * 100}%`, background: `linear-gradient(90deg, ${G}, #00cc66)`, borderRadius: 3, transition: 'width 0.5s ease', boxShadow: `0 0 8px rgba(0,255,136,0.4)` }} />
+                    <div style={{ height: '100%', width: `${(doneTasks / 5) * 100}%`, background: `linear-gradient(90deg, ${G}, #818cf8)`, borderRadius: 3, transition: 'width 0.5s ease', boxShadow: `0 0 8px rgba(99,102,241,0.4)` }} />
                   </div>
                 </div>
 
@@ -698,7 +698,7 @@ export default function DashboardPage() {
                 <button
                   onClick={() => { if (allDone) router.push('/roadmap'); else if (nextTask) { setActiveTask(nextTask.type); completeTask(nextTask.type) } }}
                   className={allDone ? 'pulse-amber' : ''}
-                  style={{ width: '100%', padding: '14px', borderRadius: 10, border: 'none', cursor: 'pointer', background: allDone ? `linear-gradient(135deg, ${AMBER}, #f59e0b)` : G, color: allDone ? '#000' : '#000', fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 800, letterSpacing: 0.5, transition: 'all 0.2s' }}>
+                  style={{ width: '100%', padding: '14px', borderRadius: 10, border: 'none', cursor: 'pointer', background: allDone ? `linear-gradient(135deg, ${AMBER}, #f59e0b)` : G, color: allDone ? '#000' : '#fff', fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 800, letterSpacing: 0.5, transition: 'all 0.2s' }}>
                   {allDone ? '🎉 Day Complete! See Tomorrow →' : `▶ Start ${nextTask?.label || 'Next'} →`}
                 </button>
               </>
@@ -716,11 +716,11 @@ export default function DashboardPage() {
                   const dayNum = weekStart + i
                   const isToday = dayNum === currentDay
                   const isPast = dayNum < currentDay
-                  const bg = isToday ? G : isPast ? 'rgba(0,255,136,0.4)' : 'rgba(255,255,255,0.04)'
+                  const bg = isToday ? G : isPast ? 'rgba(99,102,241,0.4)' : 'rgba(255,255,255,0.04)'
                   const border = isToday ? `2px solid ${G}` : 'none'
                   return (
                     <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: '50%', background: bg, border, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: isToday ? '#000' : isPast ? G : '#444', transition: 'all 0.2s' }}>
+                      <div style={{ width: 28, height: 28, borderRadius: '50%', background: bg, border, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: isToday ? '#fff' : isPast ? G : '#444', transition: 'all 0.2s' }}>
                         {isToday ? '●' : isPast ? '✓' : ''}
                       </div>
                       <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, color: isToday ? G : '#444' }}>{d}</span>
@@ -740,14 +740,14 @@ export default function DashboardPage() {
                 {cal30.map((d, i) => {
                   const isToday = i === 29 || d.isToday
                   const count = d.count ?? (d.done ? 1 : 0)
-                  const bg = isToday ? G : count >= 3 ? 'rgba(0,255,136,0.7)' : count >= 2 ? 'rgba(0,255,136,0.45)' : count >= 1 ? 'rgba(0,255,136,0.25)' : 'rgba(255,255,255,0.03)'
+                  const bg = isToday ? G : count >= 3 ? 'rgba(99,102,241,0.7)' : count >= 2 ? 'rgba(99,102,241,0.45)' : count >= 1 ? 'rgba(99,102,241,0.25)' : 'rgba(255,255,255,0.03)'
                   return (
                     <div key={i} className="streak-day" style={{ aspectRatio: '1', background: bg, borderRadius: 2, border: isToday ? `1px solid ${G}` : 'none', position: 'relative' }} />
                   )
                 })}
               </div>
               <div style={{ marginTop: 6, display: 'flex', gap: 6, alignItems: 'center' }}>
-                <div style={{ width: 8, height: 8, background: 'rgba(0,255,136,0.25)', borderRadius: 1 }} />
+                <div style={{ width: 8, height: 8, background: 'rgba(99,102,241,0.25)', borderRadius: 1 }} />
                 <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, color: '#555' }}>less</span>
                 <div style={{ width: 8, height: 8, background: G, borderRadius: 1 }} />
                 <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, color: '#555' }}>more</span>
@@ -764,9 +764,9 @@ export default function DashboardPage() {
                   { href: '/badge', icon: '🎖️', label: 'Badges' },
                   { href: '/leaderboard', icon: '🏆', label: 'Leaderboard' },
                 ].map(q => (
-                  <Link key={q.href} href={q.href} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 6px', borderRadius: 8, background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.04)', textDecoration: 'none', transition: 'all 0.2s' }}
+                  <Link key={q.href} href={q.href} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 6px', borderRadius: 8, background: '#0d0d14', border: '1px solid rgba(255,255,255,0.04)', textDecoration: 'none', transition: 'all 0.2s' }}
                     onMouseEnter={e => { e.currentTarget.style.background = G10; e.currentTarget.style.borderColor = G20 }}
-                    onMouseLeave={e => { e.currentTarget.style.background = '#0a0a0a'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.04)' }}>
+                    onMouseLeave={e => { e.currentTarget.style.background = '#0d0d14'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.04)' }}>
                     {q.href === '/chatbot' && (
                       <span style={{ position: 'absolute', top: 4, right: 4, fontFamily: 'JetBrains Mono,monospace', fontSize: 6, letterSpacing: 0.5, color: G, background: G10, border: `1px solid ${G20}`, borderRadius: 4, padding: '2px 4px' }}>
                         AI + VERIFIED DATA
@@ -933,7 +933,7 @@ export default function DashboardPage() {
       </div>
 
       {/* ── MOTIVATION BAR ── */}
-      <div style={{ background: BG2, border: `1px solid rgba(0,255,136,0.1)`, borderLeft: `3px solid ${G}`, borderRadius: 10, padding: '14px 20px', overflow: 'hidden' }}>
+      <div style={{ background: BG2, border: `1px solid rgba(99,102,241,0.1)`, borderLeft: `3px solid ${G}`, borderRadius: 10, padding: '14px 20px', overflow: 'hidden' }}>
         <div key={motiveIdx} style={{ fontFamily: 'Outfit,sans-serif', fontSize: 13, color: '#9ba8b5', animation: 'motive-fade 5s ease-out forwards' }}>
           {currentMotive}
         </div>
@@ -941,14 +941,14 @@ export default function DashboardPage() {
 
       {/* Outcome popup */}
       {showOutcomePopup && (
-        <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1000, background: BG2, border: `1px solid rgba(0,255,136,0.2)`, borderRadius: 14, padding: 20, maxWidth: 320, boxShadow: '0 0 40px rgba(0,0,0,0.6)' }}>
+        <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1000, background: BG2, border: `1px solid rgba(99,102,241,0.2)`, borderRadius: 14, padding: 20, maxWidth: 320, boxShadow: '0 0 40px rgba(0,0,0,0.6)' }}>
           <button onClick={() => { setShowOutcomePopup(false); localStorage.setItem('outcome_popup_shown', 'true') }} style={{ position: 'absolute', top: 10, right: 12, background: 'transparent', border: 'none', color: '#555', cursor: 'pointer', fontSize: 16 }}>×</button>
           <div style={{ fontSize: 22, marginBottom: 8 }}>🎯</div>
           <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700, color: '#e8f4ff', marginBottom: 6 }}>Got an interview recently?</div>
           <div style={{ fontSize: 12, color: '#6b7a8d', lineHeight: 1.6, marginBottom: 14 }}>Help us prove GENOIS works. Takes 30 seconds.</div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button onClick={() => { setShowOutcomePopup(false); localStorage.setItem('outcome_popup_shown', 'true') }} style={{ flex: 1, padding: '8px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)', background: 'transparent', color: '#555', cursor: 'pointer', fontSize: 12 }}>Not yet</button>
-            <button onClick={() => { setShowOutcomePopup(false); localStorage.setItem('outcome_popup_shown', 'true'); router.push('/outcomes') }} style={{ flex: 2, padding: '8px', borderRadius: 8, border: 'none', cursor: 'pointer', background: G, color: '#000', fontFamily: 'Syne,sans-serif', fontSize: 12, fontWeight: 700 }}>Yes — Report It →</button>
+            <button onClick={() => { setShowOutcomePopup(false); localStorage.setItem('outcome_popup_shown', 'true'); router.push('/outcomes') }} style={{ flex: 2, padding: '8px', borderRadius: 8, border: 'none', cursor: 'pointer', background: G, color: '#fff', fontFamily: 'Syne,sans-serif', fontSize: 12, fontWeight: 700 }}>Yes — Report It →</button>
           </div>
         </div>
       )}

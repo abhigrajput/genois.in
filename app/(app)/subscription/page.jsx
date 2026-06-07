@@ -24,7 +24,7 @@ export default function SubscriptionPage() {
     },
     {
       name: 'Player',
-      price: '₹299',
+      price: '₹199',
       period: '/month',
       color: '#00f0ff',
       badge: null,
@@ -42,7 +42,7 @@ export default function SubscriptionPage() {
     },
     {
       name: 'Performer',
-      price: '₹499',
+      price: '₹299',
       period: '/month',
       color: '#7b5cff',
       badge: 'MOST POPULAR',
@@ -62,7 +62,7 @@ export default function SubscriptionPage() {
     },
     {
       name: 'Dominator',
-      price: '₹1999',
+      price: '₹499',
       period: '/month',
       color: '#EF9F27',
       badge: 'BEST VALUE',

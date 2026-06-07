@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import CodePanel from './CodePanel';
 import ConceptBox from './ConceptBox';
 
@@ -29,12 +29,16 @@ export default function QueueVisualizer() {
   const [message, setMessage] = useState('');
   const [animOut, setAnimOut] = useState(false);
   const [animIn, setAnimIn] = useState(false);
+  const timersRef = useRef([]);
+
+  // Clear any pending animation timers if the component unmounts (e.g. on algorithm switch)
+  useEffect(() => () => timersRef.current.forEach(clearTimeout), []);
 
   const enqueue = () => {
     if (queue.length >= MAX_SIZE) { setMessage('Queue is full! Max size reached.'); return; }
     const val = Math.floor(Math.random() * 90) + 10;
     setAnimIn(true);
-    setTimeout(() => setAnimIn(false), 350);
+    timersRef.current.push(setTimeout(() => setAnimIn(false), 350));
     setQueue(prev => [...prev, val]);
     setLastAction({ type: 'enqueue', val });
     setMessage(`Enqueued ${val} at the rear`);
@@ -44,7 +48,7 @@ export default function QueueVisualizer() {
     if (queue.length === 0) { setMessage('Queue is empty!'); return; }
     const val = queue[0];
     setAnimOut(true);
-    setTimeout(() => { setAnimOut(false); setQueue(prev => prev.slice(1)); }, 300);
+    timersRef.current.push(setTimeout(() => { setAnimOut(false); setQueue(prev => prev.slice(1)); }, 300));
     setLastAction({ type: 'dequeue', val });
     setMessage(`Dequeued ${val} from the front`);
   };

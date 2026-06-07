@@ -1,7 +1,24 @@
 'use client';
-import { useState, Suspense } from 'react';
+import { useState, Suspense, Component } from 'react';
 import { useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
+
+// Catches any crash inside a visualizer so one broken algorithm never takes
+// down the whole page. Keyed by algorithm id on the page so it resets on switch.
+class VisualizerErrorBoundary extends Component {
+  constructor(props) { super(props); this.state = { hasError: false }; }
+  static getDerivedStateFromError() { return { hasError: true }; }
+  render() {
+    if (this.state.hasError) return (
+      <div style={{ textAlign: 'center', padding: 60, color: '#6b7280' }}>
+        <div style={{ fontSize: 40, marginBottom: 12 }}>🚧</div>
+        <div style={{ fontSize: 16, color: '#fff', marginBottom: 8 }}>Visualizer loading...</div>
+        <div style={{ fontSize: 13 }}>Try selecting a different algorithm</div>
+      </div>
+    );
+    return this.props.children;
+  }
+}
 
 // Sorting
 const BubbleSortVisualizer    = dynamic(() => import('@/components/visualizer/BubbleSortVisualizer'),    { ssr: false });
@@ -255,9 +272,11 @@ function DSAVisualizerInner() {
         }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: `linear-gradient(90deg,transparent,${CATEGORY_COLORS[selected.category]}60,transparent)` }} />
 
-          <Suspense fallback={<AlgoSkeleton />}>
-            <VisualizerComponent key={selectedId} />
-          </Suspense>
+          <VisualizerErrorBoundary key={selectedId}>
+            <Suspense fallback={<AlgoSkeleton />}>
+              <VisualizerComponent />
+            </Suspense>
+          </VisualizerErrorBoundary>
         </div>
       </div>
     </div>
