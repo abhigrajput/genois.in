@@ -9,6 +9,19 @@ const V3_SQL = [
   `ALTER TABLE users ADD COLUMN IF NOT EXISTS weak_subjects TEXT[] DEFAULT '{}'`,
   `ALTER TABLE users ADD COLUMN IF NOT EXISTS placement_type TEXT DEFAULT 'campus'`,
   `ALTER TABLE users ADD COLUMN IF NOT EXISTS college_tier TEXT DEFAULT 'tier3'`,
+  `CREATE TABLE IF NOT EXISTS knowledge_base (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    content TEXT NOT NULL,
+    metadata JSONB DEFAULT '{}',
+    category TEXT NOT NULL,
+    company TEXT,
+    domain TEXT,
+    difficulty TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  )`,
+  `CREATE INDEX IF NOT EXISTS kb_content_search ON knowledge_base USING gin(to_tsvector('english', content))`,
+  `CREATE INDEX IF NOT EXISTS kb_company_idx ON knowledge_base (company)`,
+  `CREATE INDEX IF NOT EXISTS kb_domain_idx ON knowledge_base (domain)`,
 ];
 
 export async function POST(request) {

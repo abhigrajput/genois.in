@@ -764,9 +764,14 @@ export default function DashboardPage() {
                   { href: '/badge', icon: '🎖️', label: 'Badges' },
                   { href: '/leaderboard', icon: '🏆', label: 'Leaderboard' },
                 ].map(q => (
-                  <Link key={q.href} href={q.href} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 6px', borderRadius: 8, background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.04)', textDecoration: 'none', transition: 'all 0.2s' }}
+                  <Link key={q.href} href={q.href} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 6px', borderRadius: 8, background: '#0a0a0a', border: '1px solid rgba(255,255,255,0.04)', textDecoration: 'none', transition: 'all 0.2s' }}
                     onMouseEnter={e => { e.currentTarget.style.background = G10; e.currentTarget.style.borderColor = G20 }}
                     onMouseLeave={e => { e.currentTarget.style.background = '#0a0a0a'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.04)' }}>
+                    {q.href === '/chatbot' && (
+                      <span style={{ position: 'absolute', top: 4, right: 4, fontFamily: 'JetBrains Mono,monospace', fontSize: 6, letterSpacing: 0.5, color: G, background: G10, border: `1px solid ${G20}`, borderRadius: 4, padding: '2px 4px' }}>
+                        AI + VERIFIED DATA
+                      </span>
+                    )}
                     <span style={{ fontSize: 18 }}>{q.icon}</span>
                     <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#888' }}>{q.label}</span>
                   </Link>

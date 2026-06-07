@@ -6,6 +6,7 @@ import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { sanitizeChatHistory, sanitizeUserMessage } from '@/lib/security';
 import { updateStreak, getStreakDay, getStreakDayStart } from '@/lib/streak';
 import { buildUserContext } from '@/lib/contextBuilder';
+import { searchKnowledgeBase, formatRagContext } from '@/lib/ragSearch';
 
 function buildChatbotSystem(domain, level, mode, userContext = '') {
   const modeInstructions = {
@@ -57,13 +58,16 @@ export async function POST(request) {
       .eq('id', payload.userId)
       .single();
 
-    const { systemContext } = buildUserContext(user);
+    const { systemContext, primaryTarget } = buildUserContext(user);
+
+    const ragResults = await searchKnowledgeBase(cleanMessage, user?.domain_slug, primaryTarget, 3);
+    const ragContext = formatRagContext(ragResults);
 
     const system = buildChatbotSystem(
       user?.domain_slug || 'fullstack',
       user?.level || 'beginner',
       selectedMode,
-      systemContext
+      systemContext + ragContext
     );
 
     const messages = [
