@@ -70,6 +70,25 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS placement_type TEXT DEFAULT 'campus';
 ALTER TABLE users ADD COLUMN IF NOT EXISTS college_tier TEXT DEFAULT 'tier3';
     `,
   },
+  {
+    name: '20260607_rag_schema',
+    sql: `
+CREATE TABLE IF NOT EXISTS knowledge_base (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  content TEXT NOT NULL,
+  metadata JSONB DEFAULT '{}',
+  category TEXT NOT NULL,
+  company TEXT,
+  domain TEXT,
+  difficulty TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS kb_content_search ON knowledge_base USING gin(to_tsvector('english', content));
+CREATE INDEX IF NOT EXISTS kb_company_idx ON knowledge_base (company);
+CREATE INDEX IF NOT EXISTS kb_domain_idx ON knowledge_base (domain);
+    `,
+  },
 ];
 
 // Auth: accepts either the Supabase service role key (X-Service-Key header)
@@ -196,16 +215,18 @@ export async function GET(request) {
 
   const supabase = getAdminClient();
 
-  const [secEvt, rmCols] = await Promise.all([
+  const [secEvt, rmCols, kb] = await Promise.all([
     supabase.from('security_events').select('id').limit(0),
     supabase.from('roadmap').select('id,objectives,key_concepts,is_project_day').limit(0),
+    supabase.from('knowledge_base').select('id').limit(0),
   ]);
 
-  const needsMigration = !!(secEvt.error || rmCols.error);
+  const needsMigration = !!(secEvt.error || rmCols.error || kb.error);
 
   return successResponse({
     security_events_exists: !secEvt.error,
     roadmap_enriched_columns: !rmCols.error,
+    knowledge_base_exists: !kb.error,
     needs_migration: needsMigration,
     instructions: needsMigration
       ? 'POST to this endpoint with X-Service-Key header. Needs DATABASE_URL or SUPABASE_ACCESS_TOKEN env var.'
