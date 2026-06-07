@@ -1,5 +1,8 @@
 const nextConfig = {
   reactStrictMode: true,
+  images: {
+    minimumCacheTTL: 60,
+  },
   experimental: {
     serverActions: {
       // FIX 06: Server Actions body limit

@@ -1,9 +1,11 @@
-const CACHE_NAME = 'genois-v3';
+const CACHE_NAME = 'genois-v4';
 const URLS_TO_CACHE = ['/', '/dashboard', '/login'];
 
-const PASSTHROUGH_DOMAINS = [
+const SKIP_CACHE = [
+  '/api/',
   'googletagmanager.com',
   'google-analytics.com',
+  'supabase.co',
   'analytics',
 ];
 
@@ -23,11 +25,9 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
-  if (PASSTHROUGH_DOMAINS.some(d => event.request.url.includes(d))) {
-    event.respondWith(fetch(event.request));
-    return;
+  if (SKIP_CACHE.some(s => event.request.url.includes(s))) {
+    return; // let browser handle normally
   }
-  if (event.request.url.includes('/api/')) return;
   event.respondWith(
     fetch(event.request).catch(() => caches.match(event.request))
   );

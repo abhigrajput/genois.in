@@ -35,18 +35,27 @@ export default function CodingPage() {
 
   useEffect(() => {
     if (!ready || !token) return;
+
+    function applyChallenge(r) {
+      const tests = r.data.codingTests || (r.data.codingTest ? [r.data.codingTest] : []);
+      setCodingTests(tests);
+      setCodingTest(tests[0] || null);
+    }
+
     apiFetch('/api/roadmap/daily', token)
       .then(r => {
-        const day = r.data?.currentDay || 1;
+        const day = r.data?.currentDay;
+        if (!day) throw new Error('No current day');
         setCurrentDay(day);
         return apiFetch('/api/coding/day/' + day, token);
       })
-      .then(r => {
-        const tests = r.data.codingTests || (r.data.codingTest ? [r.data.codingTest] : []);
-        setCodingTests(tests);
-        setCodingTest(tests[0] || null);
+      .then(applyChallenge)
+      .catch(() => {
+        setCurrentDay(1);
+        return apiFetch('/api/coding/day/1', token)
+          .then(applyChallenge)
+          .catch(() => toast.error('Failed to load challenge'));
       })
-      .catch(err => toast.error('Failed to load challenge'))
       .finally(() => setPageLoading(false));
   }, [ready, token]);
 
