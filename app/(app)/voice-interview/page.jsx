@@ -76,6 +76,7 @@ export default function VoiceInterviewPage() {
   const [speechSupported, setSpeechSupported] = useState(true);
   const [isChromium, setIsChromium] = useState(true);
   const [isListening, setIsListening] = useState(false);
+  const [micBlocked, setMicBlocked] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [interim, setInterim] = useState('');
   const recognitionRef = useRef(null);
@@ -93,6 +94,22 @@ export default function VoiceInterviewPage() {
     setSpeechSupported(!!SR);
     const ua = navigator.userAgent || '';
     setIsChromium(/Chrome|Edg|CriOS/i.test(ua) && !/Firefox|FxiOS/i.test(ua));
+  }, []);
+
+  // surface a banner if mic permission was already denied (before the user even taps)
+  useEffect(() => {
+    navigator.permissions?.query({ name: 'microphone' })
+      .then(result => { if (result.state === 'denied') setMicBlocked(true); })
+      .catch(() => {}); // permissions API / 'microphone' name not supported — ignore
+  }, []);
+
+  // voices load async in some browsers — preload them, and stop any speech on unmount
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.getVoices(); // trigger load
+      window.speechSynthesis.onvoiceschanged = () => { window.speechSynthesis.getVoices(); };
+    }
+    return () => { window.speechSynthesis?.cancel(); };
   }, []);
 
   // load profile (name + domain) once
@@ -122,31 +139,113 @@ export default function VoiceInterviewPage() {
   // stop mic on unmount
   useEffect(() => () => stopListening(), [stopListening]);
 
-  function startListening() {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) { toast.error('Voice not supported in this browser. Use Chrome.'); return; }
-    const recognition = new SR();
+  const startListening = async () => {
+    if (typeof window === 'undefined') return;
+
+    // Step 1: Trigger browser permission popup explicitly
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Permission granted — stop the stream immediately, we don't need it
+      stream.getTracks().forEach(t => t.stop());
+      setMicBlocked(false);
+    } catch (err) {
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        toast.error('🎤 Microphone blocked! Click the 🔒 lock icon in address bar → Allow microphone → Refresh.');
+        setMicBlocked(true);
+        return;
+      }
+      if (err.name === 'NotFoundError') {
+        toast.error('No microphone detected. Please connect a mic and try again.');
+        return;
+      }
+      toast.error('Mic error: ' + (err.message || err.name));
+      return;
+    }
+
+    // Step 2: Now start SpeechRecognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast.error('Voice not supported. Please use Google Chrome.');
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = 'en-IN';
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+      setInterim('');
+    };
+
     recognition.onresult = (event) => {
-      let interimText = '', finalText = '';
+      let interimText = '';
+      let finalText = '';
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const t = event.results[i][0].transcript;
-        if (event.results[i].isFinal) finalText += t; else interimText += t;
+        if (event.results[i].isFinal) finalText += t + ' ';
+        else interimText += t;
       }
-      if (finalText) setTranscript(prev => (prev + ' ' + finalText).replace(/\s+/g, ' ').trimStart());
+      if (finalText) setTranscript(prev => (prev + ' ' + finalText).trim());
       setInterim(interimText);
     };
+
     recognition.onerror = (e) => {
-      if (e.error !== 'no-speech' && e.error !== 'aborted') toast.error('Mic error: ' + e.error);
+      const silent = ['no-speech', 'aborted'];
+      if (!silent.includes(e.error)) {
+        const msgs = {
+          'not-allowed': '🎤 Mic blocked. Click 🔒 in address bar → Allow mic → Refresh.',
+          'audio-capture': 'No microphone found. Connect a mic and retry.',
+          'network': 'Network error. Check your connection.',
+          'service-not-allowed': 'Speech service blocked. Try on HTTPS or use Chrome.',
+        };
+        toast.error(msgs[e.error] || 'Mic error: ' + e.error);
+      }
       setIsListening(false);
+      setInterim('');
     };
-    recognition.onend = () => setIsListening(false);
+
+    recognition.onend = () => {
+      setIsListening(false);
+      setInterim('');
+    };
+
     recognitionRef.current = recognition;
-    try { recognition.start(); setIsListening(true); }
-    catch { /* already started */ }
-  }
+    try {
+      recognition.start();
+    } catch (e) {
+      toast.error('Could not start recording: ' + e.message);
+      setIsListening(false);
+    }
+  };
+
+  const speakQuestion = (text) => {
+    if (typeof window === 'undefined') return;
+    if (!window.speechSynthesis) return;
+    if (!text) return;
+
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'en-IN';
+    utterance.rate = 0.9;  // slightly slower = clearer
+    utterance.pitch = 1.0;
+    utterance.volume = 1.0;
+
+    // Prefer a male voice (interviewer feel)
+    const voices = window.speechSynthesis.getVoices();
+    const preferredVoice = voices.find(v =>
+      v.lang.includes('en') && v.name.toLowerCase().includes('male')
+    ) || voices.find(v => v.lang.includes('en-IN'))
+      || voices.find(v => v.lang.includes('en'));
+
+    if (preferredVoice) utterance.voice = preferredVoice;
+
+    window.speechSynthesis.speak(utterance);
+  };
 
   async function fetchQuestion(qNum, revertStatus) {
     stopListening();
@@ -159,6 +258,7 @@ export default function VoiceInterviewPage() {
       });
       const q = r.data.question;
       setQuestions(arr => [...arr, q]);
+      speakQuestion(q.question); // 🔊 read the new question aloud (start + every "Next")
       setQIndex(qNum - 1);
       setQStartTime(Date.now());
       setStatus('question');
@@ -265,6 +365,16 @@ export default function VoiceInterviewPage() {
     @keyframes vi-spin { to { transform: rotate(360deg) } }
     @keyframes vi-blink { 0%,100%{opacity:1} 50%{opacity:.25} }`;
 
+  const micBlockedBanner = micBlocked ? (
+    <div style={{
+      background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.4)',
+      borderRadius: 10, padding: '12px 18px', marginBottom: 16,
+      color: '#fbbf24', fontSize: 13, fontFamily: 'Outfit,sans-serif', lineHeight: 1.6,
+    }}>
+      🎤 <strong>Microphone blocked.</strong> To fix: Click the <strong>🔒 lock icon</strong> in Chrome’s address bar → Find “Microphone” → Set to <strong>“Allow”</strong> → Refresh this page.
+    </div>
+  ) : null;
+
   if (!ready) return <div style={{ color: MUTED, padding: 60, textAlign: 'center' }}>Loading…</div>;
 
   // ── loaders ────────────────────────────────────────────────────────────
@@ -304,6 +414,8 @@ export default function VoiceInterviewPage() {
           </div>
         </div>
 
+        {micBlockedBanner}
+
         {/* progress */}
         <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, marginBottom: 22, overflow: 'hidden' }}>
           <div style={{ height: '100%', width: `${((qIndex + 1) / TOTAL_QUESTIONS) * 100}%`, background: `linear-gradient(90deg,${CYAN},${PURPLE})`, borderRadius: 3, transition: 'width .4s' }} />
@@ -316,6 +428,17 @@ export default function VoiceInterviewPage() {
             <span style={{ fontSize: 9, padding: '3px 9px', borderRadius: 10, background: `${AMBER}1a`, color: AMBER, fontFamily: 'JetBrains Mono,monospace', textTransform: 'uppercase' }}>{currentQ.difficulty}</span>
           </div>
           <div style={{ fontSize: 'clamp(17px,3.6vw,23px)', color: LIGHT, lineHeight: 1.55, fontWeight: 500, fontFamily: 'Syne,sans-serif' }}>{currentQ.question}</div>
+          <button
+            onClick={() => speakQuestion(currentQ?.question)}
+            style={{
+              background: 'transparent', border: '1px solid rgba(99,102,241,0.3)',
+              borderRadius: 8, padding: '6px 14px', color: '#818cf8',
+              fontFamily: 'Outfit,sans-serif', fontSize: 12, cursor: 'pointer',
+              marginTop: 12, display: 'flex', alignItems: 'center', gap: 6,
+            }}
+          >
+            🔊 Replay Question
+          </button>
         </div>
 
         {/* mic / transcript */}
@@ -502,6 +625,8 @@ export default function VoiceInterviewPage() {
         <h1 style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 27, color: LIGHT, margin: '0 0 6px' }}>🎤 Voice Mock Interview</h1>
         <p style={{ color: MUTED, fontSize: 13.5, lineHeight: 1.6, margin: 0 }}>Practice <b style={{ color: SOFT }}>speaking</b> your answers out loud — not typing. The AI plays a tough interviewer and scores you on accuracy, clarity, and confidence. 10 questions.</p>
       </div>
+
+      {micBlockedBanner}
 
       {!isChromium && (
         <div style={{ background: `${AMBER}12`, border: `1px solid ${AMBER}33`, borderRadius: 10, padding: '10px 14px', marginBottom: 18, fontSize: 12.5, color: AMBER }}>
