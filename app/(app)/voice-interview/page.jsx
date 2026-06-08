@@ -237,10 +237,13 @@ export default function VoiceInterviewPage() {
 
     // Prefer a male voice (interviewer feel)
     const voices = window.speechSynthesis.getVoices();
-    const preferredVoice = voices.find(v =>
-      v.lang.includes('en') && v.name.toLowerCase().includes('male')
-    ) || voices.find(v => v.lang.includes('en-IN'))
-      || voices.find(v => v.lang.includes('en'));
+    const preferredVoice =
+      voices.find(v => v.name === 'Microsoft Ravi - English (India)') ||
+      voices.find(v => v.name === 'Google UK English Male') ||
+      voices.find(v => v.name.includes('Ravi')) ||
+      voices.find(v => v.lang === 'en-IN' && !v.name.toLowerCase().includes('female')) ||
+      voices.find(v => v.lang.startsWith('en') && v.name.toLowerCase().includes('male') && !v.name.toLowerCase().includes('female')) ||
+      voices.find(v => v.lang.startsWith('en'));
 
     if (preferredVoice) utterance.voice = preferredVoice;
 
