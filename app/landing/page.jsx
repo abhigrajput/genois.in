@@ -244,6 +244,26 @@ export default function LandingPage() {
       <section id="features" style={{ padding:'88px 28px', background:BG2, borderTop:'1px solid rgba(255,255,255,0.04)', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
         <div style={{ maxWidth:1100, margin:'0 auto' }}>
           <SectionHeader eyebrow="Everything you need" title="One platform. Every tool to get hired." sub="No more juggling ten tabs. Your entire placement prep, in one focused workspace." />
+
+          {/* ── The moat: Voice Mock Interview ── */}
+          <Link href="/signup" data-reveal style={{
+            display:'flex', alignItems:'center', gap:20, padding:'24px 26px', marginBottom:18,
+            borderRadius:18, textDecoration:'none', flexWrap:'wrap',
+            background:`linear-gradient(120deg, ${PURPLE}1f, ${BG3})`, border:`1px solid ${PURPLE}55`,
+            position:'relative', overflow:'hidden',
+          }}>
+            <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:`linear-gradient(90deg, transparent, ${PURPLE_LIGHT}, transparent)` }} />
+            <div style={{ width:64, height:64, borderRadius:16, flexShrink:0, background:`linear-gradient(135deg, ${PURPLE}, ${PURPLE_DARK})`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:32 }}>🎤</div>
+            <div style={{ flex:1, minWidth:220 }}>
+              <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6, flexWrap:'wrap' }}>
+                <h3 style={{ fontFamily:'Syne,sans-serif', fontSize:20, fontWeight:800, color:WHITE, margin:0 }}>Voice Mock Interview</h3>
+                <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:9, letterSpacing:1, color:PURPLE_LIGHT, background:`${PURPLE}22`, border:`1px solid ${PURPLE}55`, borderRadius:6, padding:'3px 7px' }}>NEW · ONLY ON GENOIS</span>
+              </div>
+              <p style={{ color:MUTED, fontSize:14, lineHeight:1.6, margin:0 }}>Practice speaking your answers out loud. Our AI plays a tough interviewer and scores your clarity, accuracy, and confidence — the way a real panel would.</p>
+            </div>
+            <div style={{ fontFamily:'Syne,sans-serif', fontWeight:700, fontSize:14, color:PURPLE_LIGHT, whiteSpace:'nowrap' }}>Try it free →</div>
+          </Link>
+
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(290px, 1fr))', gap:18 }}>
             {FEATURES.map((f, i) => (
               <div key={f.title} data-reveal data-reveal-delay={(i % 3) + 1} style={{

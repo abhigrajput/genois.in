@@ -54,6 +54,7 @@ const MORE_NAV = [
   { href:'/mentors',            label:'1-on-1 Mentors',     icon:'🎓' },
   { href:'/auction',            label:'Skill Auction',      icon:'⚡' },
   { href:'/interview-simulator',label:'Interview Sim',      icon:'🎯' },
+  { href:'/voice-interview',    label:'Voice Interview',    icon:'🎙️' },
   { href:'/diagnostic',         label:'Diagnostic Test',    icon:'🔬' },
   { href:'/analytics',          label:'Analytics',          icon:'◇' },
   { href:'/skill-levels',       label:'Skill Levels',       icon:'📊' },
