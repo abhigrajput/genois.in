@@ -25,6 +25,76 @@ void insert(TreeNode*& root, int val) {
   }
 }`;
 
+const SNIPPETS = {
+  python: `from collections import deque
+
+class TreeNode:
+    def __init__(self, val):
+        self.val = val
+        self.left = None
+        self.right = None
+
+# Insert (level-order / complete binary tree)
+def insert(root, val):
+    node = TreeNode(val)
+    if not root:
+        return node
+    q = deque([root])
+    while q:
+        cur = q.popleft()
+        if not cur.left:
+            cur.left = node
+            return root
+        q.append(cur.left)
+        if not cur.right:
+            cur.right = node
+            return root
+        q.append(cur.right)`,
+  java: `class TreeNode {
+  int val;
+  TreeNode left, right;
+  TreeNode(int x) { val = x; }
+}
+
+// Insert (level-order / complete binary tree)
+TreeNode insert(TreeNode root, int val) {
+  TreeNode node = new TreeNode(val);
+  if (root == null) return node;
+  Queue<TreeNode> q = new LinkedList<>();
+  q.offer(root);
+  while (!q.isEmpty()) {
+    TreeNode cur = q.poll();
+    if (cur.left == null) { cur.left = node; return root; }
+    q.offer(cur.left);
+    if (cur.right == null) { cur.right = node; return root; }
+    q.offer(cur.right);
+  }
+  return root;
+}`,
+  javascript: `class TreeNode {
+  constructor(val) {
+    this.val = val;
+    this.left = null;
+    this.right = null;
+  }
+}
+
+// Insert (level-order / complete binary tree)
+function insert(root, val) {
+  const node = new TreeNode(val);
+  if (!root) return node;
+  const q = [root];
+  while (q.length) {
+    const cur = q.shift();
+    if (!cur.left) { cur.left = node; return root; }
+    q.push(cur.left);
+    if (!cur.right) { cur.right = node; return root; }
+    q.push(cur.right);
+  }
+  return root;
+}`,
+};
+
 const SPEEDS = { 1: 1000, 2: 600, 3: 250, 4: 100 };
 
 // --- Tree node helpers ---
@@ -347,7 +417,7 @@ export default function BinaryTreeVisualizer() {
         ))}
       </div>
 
-      <CodePanel code={CODE} />
+      <CodePanel code={CODE} snippets={SNIPPETS} />
     </div>
   );
 }

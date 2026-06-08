@@ -5,6 +5,7 @@ import Link from 'next/link';
 import useAuthStore from '@/store/authStore';
 import { authAPI } from '@/lib/api';
 import NotificationBell from '@/components/NotificationBell';
+import DailyCheckIn from '@/components/DailyCheckIn';
 
 const G = '#6366f1';
 const G10 = 'rgba(99,102,241,0.1)';
@@ -37,6 +38,7 @@ const MORE_NAV = [
   { href:'/blog',               label:'DSA Blog',           icon:'📝' },
   { href:'/chatbot',            label:'Chatbot',            icon:'○' },
   { href:'/anxiety',            label:'2AM Chat',           icon:'🌙' },
+  { href:'/ai-vs-human',        label:'AI vs Human',        icon:'🤖' },
   { href:'/duels',              label:'Duels',              icon:'⚔️' },
   { href:'/rival',              label:'Your Rival',         icon:'🎯' },
   { href:'/college-war',        label:'College War',        icon:'⚔️' },
@@ -360,6 +362,9 @@ export default function AppLayout({ children }) {
         <main style={{ flex: 1, minWidth: 0, width: '100%', overflowY: 'auto', padding: isMobile ? '16px 12px' : '24px' }} className="page-fade">
           {children}
         </main>
+
+        {/* Floating daily check-in — logged-in users only */}
+        {(isAuthenticated || user) && <DailyCheckIn name={user?.name} />}
       </div>
     </div>
   );

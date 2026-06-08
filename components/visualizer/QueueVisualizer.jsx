@@ -21,6 +21,56 @@ int rear = q.back();
 // Check empty
 bool empty = q.empty();`;
 
+const SNIPPETS = {
+  python: `from collections import deque
+q = deque()
+
+# Enqueue (push to rear)
+q.append(x)
+
+# Dequeue (remove from front)
+if q:
+    q.popleft()
+
+# Front element
+front = q[0]
+
+# Rear element
+rear = q[-1]
+
+# Check empty
+empty = len(q) == 0`,
+  java: `Queue<Integer> q = new LinkedList<>();
+
+// Enqueue (push to rear)
+q.offer(x);
+
+// Dequeue (remove from front)
+if (!q.isEmpty()) q.poll();
+
+// Front element
+int front = q.peek();
+
+// Check empty
+boolean empty = q.isEmpty();`,
+  javascript: `const q = [];
+
+// Enqueue (push to rear)
+q.push(x);
+
+// Dequeue (remove from front)
+if (q.length) q.shift();
+
+// Front element
+const front = q[0];
+
+// Rear element
+const rear = q[q.length - 1];
+
+// Check empty
+const empty = q.length === 0;`,
+};
+
 const MAX_SIZE = 7;
 
 export default function QueueVisualizer() {
@@ -142,7 +192,7 @@ export default function QueueVisualizer() {
         ))}
       </div>
 
-      <CodePanel code={CODE} />
+      <CodePanel code={CODE} snippets={SNIPPETS} />
       <style>{`
         @keyframes queueIn { from { opacity:0; transform:translateX(30px); } to { opacity:1; transform:translateX(0); } }
         @keyframes queueOut { from { opacity:1; transform:translateX(0); } to { opacity:0; transform:translateX(-30px); } }

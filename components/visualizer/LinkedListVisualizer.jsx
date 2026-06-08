@@ -33,6 +33,89 @@ void deleteHead(Node*& head) {
   delete tmp;
 }`;
 
+const SNIPPETS = {
+  python: `class Node:
+    def __init__(self, val):
+        self.val = val
+        self.next = None
+
+# Insert at head
+def insert_head(head, val):
+    node = Node(val)
+    node.next = head
+    return node  # new head
+
+# Insert at tail
+def insert_tail(head, val):
+    node = Node(val)
+    if not head:
+        return node
+    cur = head
+    while cur.next:
+        cur = cur.next
+    cur.next = node
+    return head
+
+# Delete head
+def delete_head(head):
+    return head.next if head else None`,
+  java: `class Node {
+  int val;
+  Node next;
+  Node(int x) { val = x; next = null; }
+}
+
+// Insert at head
+Node insertHead(Node head, int val) {
+  Node node = new Node(val);
+  node.next = head;
+  return node;
+}
+
+// Insert at tail
+Node insertTail(Node head, int val) {
+  Node node = new Node(val);
+  if (head == null) return node;
+  Node cur = head;
+  while (cur.next != null) cur = cur.next;
+  cur.next = node;
+  return head;
+}
+
+// Delete head
+Node deleteHead(Node head) {
+  return head == null ? null : head.next;
+}`,
+  javascript: `class Node {
+  constructor(val) {
+    this.val = val;
+    this.next = null;
+  }
+}
+
+// Insert at head
+function insertHead(head, val) {
+  const node = new Node(val);
+  node.next = head;
+  return node;
+}
+
+// Insert at tail
+function insertTail(head, val) {
+  const node = new Node(val);
+  if (!head) return node;
+  let cur = head;
+  while (cur.next) cur = cur.next;
+  cur.next = node;
+  return head;
+}
+
+// Delete head
+function deleteHead(head) {
+  return head ? head.next : null;
+}`,
+};
+
 let nodeIdCounter = 100;
 
 export default function LinkedListVisualizer() {
@@ -221,7 +304,7 @@ export default function LinkedListVisualizer() {
         ))}
       </div>
 
-      <CodePanel code={CODE} />
+      <CodePanel code={CODE} snippets={SNIPPETS} />
       <style>{`@keyframes nodeAppear { from { opacity:0; transform:scale(0.7); } to { opacity:1; transform:scale(1); } }`}</style>
     </div>
   );

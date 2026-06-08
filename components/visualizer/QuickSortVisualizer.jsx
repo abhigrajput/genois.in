@@ -27,6 +27,61 @@ void quickSort(int arr[],int l,int h){
   }
 }`;
 
+const SNIPPETS = {
+  python: `def partition(arr, low, high):
+    pivot = arr[high]
+    i = low - 1
+    for j in range(low, high):
+        if arr[j] < pivot:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+    arr[i + 1], arr[high] = arr[high], arr[i + 1]
+    return i + 1
+
+def quick_sort(arr, low, high):
+    if low < high:
+        pi = partition(arr, low, high)
+        quick_sort(arr, low, pi - 1)
+        quick_sort(arr, pi + 1, high)`,
+  java: `int partition(int[] arr, int low, int high) {
+  int pivot = arr[high], i = low - 1;
+  for (int j = low; j < high; j++) {
+    if (arr[j] < pivot) {
+      i++;
+      int t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+  }
+  int t = arr[i + 1]; arr[i + 1] = arr[high]; arr[high] = t;
+  return i + 1;
+}
+void quickSort(int[] arr, int l, int h) {
+  if (l < h) {
+    int pi = partition(arr, l, h);
+    quickSort(arr, l, pi - 1);
+    quickSort(arr, pi + 1, h);
+  }
+}`,
+  javascript: `function partition(arr, low, high) {
+  const pivot = arr[high];
+  let i = low - 1;
+  for (let j = low; j < high; j++) {
+    if (arr[j] < pivot) {
+      i++;
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+  [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+  return i + 1;
+}
+function quickSort(arr, l, h) {
+  if (l < h) {
+    const pi = partition(arr, l, h);
+    quickSort(arr, l, pi - 1);
+    quickSort(arr, pi + 1, h);
+  }
+}`,
+};
+
 function generateArray(size) {
   return Array.from({ length: size }, () => Math.floor(Math.random() * 85) + 10);
 }
@@ -229,7 +284,7 @@ export default function QuickSortVisualizer() {
         onRandomize={() => setArr(generateArray(size))}
         arraySize={size} onArraySizeChange={n => { setSize(n); setArr(generateArray(n)); }}
       />
-      <CodePanel code={CODE} activeLine={current?.activeLine ?? -1} />
+      <CodePanel code={CODE} snippets={SNIPPETS} activeLine={current?.activeLine ?? -1} />
     </div>
   );
 }

@@ -21,6 +21,43 @@ const CODE = `int binarySearch(int arr[], int n, int target) {
   return -1;
 }`;
 
+const SNIPPETS = {
+  python: `def binary_search(arr, target):
+    left, right = 0, len(arr) - 1
+    while left <= right:
+        mid = left + (right - left) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1`,
+  java: `int binarySearch(int[] arr, int target) {
+  int left = 0, right = arr.length - 1;
+  while (left <= right) {
+    int mid = left + (right - left) / 2;
+    if (arr[mid] == target)
+      return mid;
+    else if (arr[mid] < target)
+      left = mid + 1;
+    else
+      right = mid - 1;
+  }
+  return -1;
+}`,
+  javascript: `function binarySearch(arr, target) {
+  let left = 0, right = arr.length - 1;
+  while (left <= right) {
+    const mid = left + Math.floor((right - left) / 2);
+    if (arr[mid] === target) return mid;
+    else if (arr[mid] < target) left = mid + 1;
+    else right = mid - 1;
+  }
+  return -1;
+}`,
+};
+
 function generateSortedArray(size) {
   const set = new Set();
   while (set.size < size) set.add(Math.floor(Math.random() * 95) + 5);
@@ -225,7 +262,7 @@ export default function BinarySearchVisualizer() {
         onRandomize={() => setArr(generateSortedArray(size))}
         arraySize={size} onArraySizeChange={n => { setSize(n); setArr(generateSortedArray(n)); }}
       />
-      <CodePanel code={CODE} activeLine={current?.activeLine ?? -1} />
+      <CodePanel code={CODE} snippets={SNIPPETS} activeLine={current?.activeLine ?? -1} />
     </div>
   );
 }

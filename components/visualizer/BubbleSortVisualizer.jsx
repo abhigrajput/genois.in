@@ -15,6 +15,29 @@ const CODE = `for(int i = 0; i < n-1; i++) {
   }
 }`;
 
+const SNIPPETS = {
+  python: `for i in range(n - 1):
+    for j in range(n - i - 1):
+        if arr[j] > arr[j + 1]:
+            arr[j], arr[j + 1] = arr[j + 1], arr[j]`,
+  java: `for (int i = 0; i < n - 1; i++) {
+  for (int j = 0; j < n - i - 1; j++) {
+    if (arr[j] > arr[j + 1]) {
+      int t = arr[j];
+      arr[j] = arr[j + 1];
+      arr[j + 1] = t;
+    }
+  }
+}`,
+  javascript: `for (let i = 0; i < n - 1; i++) {
+  for (let j = 0; j < n - i - 1; j++) {
+    if (arr[j] > arr[j + 1]) {
+      [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+    }
+  }
+}`,
+};
+
 function generateArray(size) {
   return Array.from({ length: size }, () => Math.floor(Math.random() * 85) + 10);
 }
@@ -180,7 +203,7 @@ export default function BubbleSortVisualizer() {
         arraySize={size} onArraySizeChange={n => { setSize(n); setArr(generateArray(n)); }}
       />
 
-      <CodePanel code={CODE} activeLine={current?.activeLine ?? -1} />
+      <CodePanel code={CODE} snippets={SNIPPETS} activeLine={current?.activeLine ?? -1} />
     </div>
   );
 }

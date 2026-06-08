@@ -18,6 +18,49 @@ int top = st.top();
 // Check empty
 bool empty = st.empty();`;
 
+const SNIPPETS = {
+  python: `stack = []
+
+# Push
+stack.append(x)
+
+# Pop
+if stack:
+    stack.pop()
+
+# Peek top
+top = stack[-1]
+
+# Check empty
+empty = len(stack) == 0`,
+  java: `Deque<Integer> st = new ArrayDeque<>();
+
+// Push
+st.push(x);
+
+// Pop
+if (!st.isEmpty()) st.pop();
+
+// Peek top
+int top = st.peek();
+
+// Check empty
+boolean empty = st.isEmpty();`,
+  javascript: `const st = [];
+
+// Push
+st.push(x);
+
+// Pop
+if (st.length) st.pop();
+
+// Peek top
+const top = st[st.length - 1];
+
+// Check empty
+const empty = st.length === 0;`,
+};
+
 const MAX_SIZE = 8;
 
 export default function StackVisualizer() {
@@ -142,7 +185,7 @@ export default function StackVisualizer() {
         ))}
       </div>
 
-      <CodePanel code={CODE} />
+      <CodePanel code={CODE} snippets={SNIPPETS} />
       <style>{`@keyframes stackPush { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }`}</style>
     </div>
   );
