@@ -36,19 +36,19 @@ const firstName = (name) => (name || '').trim().split(/\s+/)[0] || 'bhai';
 function aiPrompt(step, data) {
   switch (step) {
     case 'name':
-      return 'Aye bhai! 👋 Main GENOIS hoon — tera placement ka yaar. Pehle bata, tera naam kya hai?';
+      return 'Aye bhai! 👋 Main GENOIS hoon — tera placement ka best friend. Chal shuru karte hain, apna naam bata!';
     case 'email':
-      return `Nice to meet you ${firstName(data.name)}! 🎯 Ab tera email bata — isi se login karega aage.`;
+      return `Nice to meet you ${firstName(data.name)}! 😄 Ab apna email address daal — isi se tu login karega.`;
     case 'password':
-      return 'Perfect! Ab ek strong password set kar — yaad rakhna 😄';
+      return `Great! Ab ek strong password set kar bhai. Uppercase letter + number dono hone chahiye — jaise Abhi@2024 😎`;
     case 'college':
-      return 'Bhai tera college kaunsa hai? (jaise KLE Hubballi, VTU, etc.)';
+      return `Password set ho gaya 🔐 Ab bata — tera college kaunsa hai? Full name likh, jaise "KLE Institute of Technology, Hubballi"`;
     case 'domain':
-      return 'Aur konse domain mein career banana hai? Choose kar:';
+      return `Nice! Ab bol — kaunsa domain mein career banana hai? Ek choose kar 👇`;
     case 'company':
-      return 'Last question — target company kaunsa hai? (TCS, Infosys, ya kuch bhi)';
+      return `Ekdum sahi choice! Last step — target company kaunsa hai? Placement ka target clear hona chahiye 🎯`;
     case 'creating':
-      return `Perfect ${firstName(data.name)}! Sab ready hai. Tera 30-day free Dominator account bana raha hoon... 🚀`;
+      return `Perfect ${firstName(data.name)} bhai! Sab information aa gayi. Abhi tera free Dominator account bana raha hoon... 🚀`;
     default:
       return '';
   }
@@ -158,12 +158,12 @@ export default function SignupPage() {
     const v = input.trim();
 
     if (step === 'name') {
-      if (v.length < 2) { setMessages((m) => [...m, { from: 'user', text: input }]); setInput(''); friendlyError('Naam thoda chhota laga 😅 Pura naam bata na bhai!'); return; }
+      if (v.length < 2) { setMessages((m) => [...m, { from: 'user', text: input }]); setInput(''); friendlyError('Arre naam thoda bada hoga na bhai 😅 Full naam likh!'); return; }
       advance('name', v, v, { name: v });
     } else if (step === 'email') {
       if (!v.includes('@') || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
         setMessages((m) => [...m, { from: 'user', text: input }]); setInput('');
-        friendlyError('Arre bhai yeh email sahi nahi laga 😅 Ek baar dobara try kar!');
+        friendlyError('Yeh email sahi nahi laga 🤔 Format hona chahiye: name@domain.com');
         return;
       }
       advance('email', v, v, { email: v.toLowerCase() });
@@ -197,7 +197,7 @@ export default function SignupPage() {
 
       advance('password', v, '••••••••', { password: v });
     } else if (step === 'college') {
-      if (v.length < 2) { setMessages((m) => [...m, { from: 'user', text: input }]); setInput(''); friendlyError('College ka naam thoda aur clearly bata 😄'); return; }
+      if (v.length < 2) { setMessages((m) => [...m, { from: 'user', text: input }]); setInput(''); friendlyError('College ka poora naam likh bhai!'); return; }
       advance('college', v, v, { college: v });
     }
   };
@@ -230,9 +230,9 @@ export default function SignupPage() {
       if (!d.success) {
         // Roll back to the password step so the user can fix strength issues —
         // retryPassword keeps us from re-asking college/domain/company.
-        setRetryPassword(true);
         setStep('password');
-        pushAI('Ek kaam kar — password mein ek uppercase letter aur ek number add kar. Jaise: Abcd@123');
+        setRetryPassword(true);
+        pushAI(`Hmm, ek problem aayi 😅 ${d.message || 'Password strong nahi tha'}. Ek baar aur try kar — uppercase letter + number dono chahiye. Jaise: Abhi@2024`);
         return;
       }
       const { user, token } = d.data;
