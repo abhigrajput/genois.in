@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 const PURPLE = '#6366f1';
+const PURPLE_DARK = '#4f46e5';
 
 export default function LandingNavbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -42,7 +43,7 @@ export default function LandingNavbar() {
         <Link href="/login" className="gen-nav-link gen-desktop-only" style={{ padding: '8px 14px' }}>Log in</Link>
         <Link href="/signup" style={{
           padding: '10px 20px', borderRadius: 10, textDecoration: 'none',
-          background: PURPLE, color: '#fff',
+          background: PURPLE_DARK, color: '#fff',
           fontFamily: 'var(--font-syne), sans-serif', fontWeight: 700, fontSize: 13,
           boxShadow: '0 6px 20px rgba(99,102,241,0.35)',
           transition: 'box-shadow 0.2s ease, transform 0.2s ease',
