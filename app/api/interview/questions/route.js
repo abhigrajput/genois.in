@@ -24,6 +24,30 @@ function styleFor(company) {
   return COMPANY_STYLE[company] || `Interview in the style of ${company}: probe domain fundamentals, problem-solving, and communication.`;
 }
 
+// Domain-specific subject matter so questions actually match the candidate's field.
+const DOMAIN_CONTEXT = {
+  dsa: 'Data Structures and Algorithms — arrays, trees, graphs, DP, sorting, searching',
+  fullstack: 'Full Stack Development — React, Node.js, REST APIs, databases, deployment',
+  aiml: 'AI/ML — machine learning algorithms, neural networks, Python, model training',
+  cybersecurity: 'Cybersecurity — network security, ethical hacking, OWASP, encryption',
+  devops: 'DevOps — CI/CD, Docker, Kubernetes, cloud platforms, monitoring',
+  android: 'Android Development — Kotlin, Jetpack Compose, Android SDK, mobile architecture',
+  datascience: 'Data Science — Python, pandas, visualization, statistical analysis',
+  blockchain: 'Blockchain — smart contracts, Solidity, Web3, consensus mechanisms',
+  gamedev: 'Game Development — game loops, physics, Unity/Unreal, shader programming',
+  systemdesign: 'System Design — scalability, load balancing, databases, microservices',
+};
+
+// The page may send a slug ("dsa") or a humanised label ("Full Stack").
+// Normalise to a key so the lookup works either way.
+function domainFocusFor(domain) {
+  const key = String(domain || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (DOMAIN_CONTEXT[key]) return DOMAIN_CONTEXT[key];
+  // Custom/unknown domain — build a focus from the raw text rather than forcing DSA.
+  const raw = String(domain || '').trim();
+  return raw ? `${raw} — core concepts, tools, and real-world problems in this field` : DOMAIN_CONTEXT.dsa;
+}
+
 function modeDirective(mode, questionNumber) {
   if (mode === 'hr') {
     return 'This is an HR / behavioural round. Ask about motivation, conflict, failure, teamwork, placement strategy, or communication. NO coding problems.';
@@ -39,6 +63,8 @@ function modeDirective(mode, questionNumber) {
 
 function buildPrompts({ domain, level, targetCompany, mode, questionNumber, previousQuestions }) {
   const company = targetCompany || 'a top product company';
+  const domainFocus = domainFocusFor(domain);
+  const difficultyBand = questionNumber <= 3 ? 'easy' : questionNumber <= 7 ? 'medium' : 'hard';
   const system = `You are a hostile, senior engineer at ${company} conducting a real placement interview.
 DO NOT be friendly. Be direct, challenging, and probe weaknesses — but ask exactly ONE clear, answerable question.
 Candidate profile:
@@ -46,6 +72,10 @@ Candidate profile:
 - Level: ${level || 'Fresher'}
 - Target: ${company}
 - Question: ${questionNumber}/10
+The candidate's primary domain is: ${domainFocus}
+Generate a question SPECIFIC to this domain. Do NOT ask generic questions.
+- Ask about real concepts, algorithms, tools, or frameworks from ${domainFocus}.
+- Make questions progressively harder: Q1-3 easy, Q4-7 medium, Q8-10 hard. This is question ${questionNumber}/10, so target ${difficultyBand} difficulty.
 Interview style for ${company}: ${styleFor(targetCompany)}
 ${modeDirective(mode, questionNumber)}`;
 
