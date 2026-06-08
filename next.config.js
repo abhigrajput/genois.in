@@ -33,7 +33,7 @@ const nextConfig = {
           },
           {
             key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), bluetooth=()',
+            value: 'camera=(), microphone=(self), geolocation=(), payment=(), usb=(), bluetooth=()',
           },
           // X-XSS-Protection is deprecated and has been removed. Modern browsers
           // ignore it, and `1; mode=block` has introduced DOM-XSS in some
