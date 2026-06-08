@@ -34,21 +34,22 @@ const firstName = (name) => (name || '').trim().split(/\s+/)[0] || 'bhai';
 
 // The AI message for each step. Some depend on collected data.
 function aiPrompt(step, data) {
+  const name = firstName(data.name);
   switch (step) {
     case 'name':
-      return 'Aye bhai! 👋 Main GENOIS hoon — tera placement ka best friend. Chal shuru karte hain, apna naam bata!';
+      return "Hey! 👋 I'm GENOIS — your placement buddy. Apna naam bata bhai, kya kehte hain tujhe?";
     case 'email':
-      return `Nice to meet you ${firstName(data.name)}! 😄 Ab apna email address daal — isi se tu login karega.`;
+      return `Nice ${name}! 🎯 Ab tera email bata — isi se login karega. Pakka yaad rakhna!`;
     case 'password':
-      return `Great! Ab ek strong password set kar bhai. Uppercase letter + number dono hone chahiye — jaise Abhi@2024 😎`;
+      return "Perfect! Ek strong password set kar 🔒\n\nZaroor include kar:\n• Ek uppercase letter (A-Z)\n• Ek number (0-9)\n• Minimum 8 characters\n\nJaise: Abhi@2024";
     case 'college':
-      return `Password set ho gaya 🔐 Ab bata — tera college kaunsa hai? Full name likh, jaise "KLE Institute of Technology, Hubballi"`;
+      return `${name} bhai, tera college kaunsa hai? (e.g. KLE Hubballi, VTU, RGPV...)`;
     case 'domain':
-      return `Nice! Ab bol — kaunsa domain mein career banana hai? Ek choose kar 👇`;
+      return "Kaunse domain mein career banana hai? 👇 Ek choose kar:";
     case 'company':
-      return `Ekdum sahi choice! Last step — target company kaunsa hai? Placement ka target clear hona chahiye 🎯`;
+      return "Last one! Target company kaunsi hai? 🎯";
     case 'creating':
-      return `Perfect ${firstName(data.name)} bhai! Sab information aa gayi. Abhi tera free Dominator account bana raha hoon... 🚀`;
+      return `Sab ready hai ${name}! 🚀 Tera free Dominator account bana raha hoon...`;
     default:
       return '';
   }
@@ -170,14 +171,14 @@ export default function SignupPage() {
     } else if (step === 'password') {
       // Client-side validation — catch strength issues immediately at step 3
       // instead of after all 7 steps (backend requires uppercase + number).
-      const passwordErrors = [];
-      if (v.length < 8) passwordErrors.push('8 characters minimum');
-      if (!/[A-Z]/.test(v)) passwordErrors.push('ek uppercase letter chahiye (A-Z)');
-      if (!/[0-9]/.test(v)) passwordErrors.push('ek number chahiye (0-9)');
+      const hasUpper = /[A-Z]/.test(v);
+      const hasNumber = /[0-9]/.test(v);
+      const hasLength = v.length >= 8;
 
-      if (passwordErrors.length > 0) {
+      if (!hasUpper || !hasNumber || !hasLength) {
         setMessages((m) => [...m, { from: 'user', text: '••••••••' }]); setInput('');
-        friendlyError(`Password thoda aur strong rakh 💪 ${passwordErrors.join(', ')}. Try again!`);
+        const initial = data.name?.charAt(0).toUpperCase() || 'A';
+        friendlyError(`Password strong nahi laga 💪\n\nYeh sab chahiye:\n• Uppercase letter ${hasUpper ? '✓' : '✗'}\n• Number (0-9) ${hasNumber ? '✓' : '✗'}\n• 8+ characters ${hasLength ? '✓' : '✗'}\n\nJaise: ${initial}bhi@2024`);
         return;
       }
 
@@ -214,41 +215,70 @@ export default function SignupPage() {
 
   const createAccount = async (finalData) => {
     try {
-      const r = await fetch('/api/auth/signup', {
+      const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: finalData.name,
           email: finalData.email,
           password: finalData.password,
-          college: finalData.college,
-          domainSlug: finalData.domain_slug,
-          target_companies: finalData.target_companies,
+          college: finalData.college || '',
+          // API (route.js Zod schema) expects camelCase `domainSlug`.
+          domainSlug: finalData.domain_slug || 'fullstack',
+          target_companies: finalData.target_companies || [],
         }),
       });
-      const d = await r.json();
+
+      // Read the raw body first so a non-JSON / HTML error page doesn't throw
+      // an unhandled SyntaxError and leave the user stuck on the spinner.
+      const text = await res.text();
+      let d;
+      try {
+        d = JSON.parse(text);
+      } catch {
+        setStep('password');
+        setRetryPassword(true);
+        pushAI(`Server error 😬 Ek baar aur try kar. (${res.status})`);
+        return;
+      }
+
       if (!d.success) {
         // Roll back to the password step so the user can fix strength issues —
         // retryPassword keeps us from re-asking college/domain/company.
         setStep('password');
         setRetryPassword(true);
-        pushAI(`Hmm, ek problem aayi 😅 ${d.message || 'Password strong nahi tha'}. Ek baar aur try kar — uppercase letter + number dono chahiye. Jaise: Abhi@2024`);
+        pushAI(`Hmm, account nahi bana 😬 ${d.message || 'Kuch galat ho gaya'}. Password dobara try kar!`);
         return;
       }
-      const { user, token } = d.data;
+
+      const { user, token } = d.data || {};
+      if (!token) {
+        setStep('password');
+        setRetryPassword(true);
+        pushAI('Account bana but login nahi hua 😅 Ek baar try kar!');
+        return;
+      }
+
       if (typeof window !== 'undefined') {
         localStorage.setItem('genois_token', token);
         localStorage.setItem('genois_user', JSON.stringify(user));
         localStorage.setItem('genois_plan', user?.subscription_plan || 'spectator');
         document.cookie = `genois_token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
       }
+
+      // Hydrate the auth store so the dashboard sees the session immediately.
+      try {
+        const { default: useAuthStore } = await import('@/store/authStore');
+        useAuthStore.getState().setAuth(user, token);
+      } catch {}
+
       trackSignup('email');
-      toast.success('Account created! Welcome to GENOIS 🎉');
-      setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
-    } catch {
-      setRetryPassword(true);
+      toast.success('Account ban gaya! Welcome to GENOIS 🎉');
+      window.location.href = '/dashboard';
+    } catch (err) {
       setStep('password');
-      friendlyError('Network thoda slow laga 😅 Ek baar phir try karte hain — password dobara daal.');
+      setRetryPassword(true);
+      pushAI(`Network error 😅 Check internet aur dobara try kar! (${err.message})`);
     }
   };
 
