@@ -72,6 +72,7 @@ export default function SignupPage() {
   const [typing, setTyping] = useState(false);
   const [started, setStarted] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [retryPassword, setRetryPassword] = useState(false);
 
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
@@ -167,11 +168,33 @@ export default function SignupPage() {
       }
       advance('email', v, v, { email: v.toLowerCase() });
     } else if (step === 'password') {
-      if (v.length < 8) {
+      // Client-side validation — catch strength issues immediately at step 3
+      // instead of after all 7 steps (backend requires uppercase + number).
+      const passwordErrors = [];
+      if (v.length < 8) passwordErrors.push('8 characters minimum');
+      if (!/[A-Z]/.test(v)) passwordErrors.push('ek uppercase letter chahiye (A-Z)');
+      if (!/[0-9]/.test(v)) passwordErrors.push('ek number chahiye (0-9)');
+
+      if (passwordErrors.length > 0) {
         setMessages((m) => [...m, { from: 'user', text: '••••••••' }]); setInput('');
-        friendlyError('Password thoda aur strong rakh — 8 characters minimum! 💪');
+        friendlyError(`Password thoda aur strong rakh 💪 ${passwordErrors.join(', ')}. Try again!`);
         return;
       }
+
+      if (retryPassword) {
+        // Retrying after a backend account-creation failure: go straight back
+        // to creating with the existing data + new password — don't re-ask
+        // college/domain/company.
+        setRetryPassword(false);
+        const newData = { ...data, password: v };
+        setData(newData);
+        setMessages((m) => [...m, { from: 'user', text: '••••••••' }]);
+        setInput('');
+        setStep('creating');
+        pushAI(aiPrompt('creating', newData), () => createAccount(newData));
+        return;
+      }
+
       advance('password', v, '••••••••', { password: v });
     } else if (step === 'college') {
       if (v.length < 2) { setMessages((m) => [...m, { from: 'user', text: input }]); setInput(''); friendlyError('College ka naam thoda aur clearly bata 😄'); return; }
@@ -205,9 +228,11 @@ export default function SignupPage() {
       });
       const d = await r.json();
       if (!d.success) {
-        // Roll back to the password step so the user can fix strength issues.
+        // Roll back to the password step so the user can fix strength issues —
+        // retryPassword keeps us from re-asking college/domain/company.
+        setRetryPassword(true);
         setStep('password');
-        friendlyError(`Hmm, account nahi bana 😬 ${d.message || 'Kuch galat ho gaya'}. Password dobara set kar (uppercase, lowercase aur number include kar).`);
+        pushAI('Ek kaam kar — password mein ek uppercase letter aur ek number add kar. Jaise: Abcd@123');
         return;
       }
       const { user, token } = d.data;
@@ -221,6 +246,7 @@ export default function SignupPage() {
       toast.success('Account created! Welcome to GENOIS 🎉');
       setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
     } catch {
+      setRetryPassword(true);
       setStep('password');
       friendlyError('Network thoda slow laga 😅 Ek baar phir try karte hain — password dobara daal.');
     }
