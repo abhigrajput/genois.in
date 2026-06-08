@@ -57,10 +57,13 @@ const authOptions = {
         if (error) throw new Error(error.message);
 
         if (newUser?.id) {
-          await Promise.all([
-            supabase.from('scores').insert({ user_id: newUser.id }).catch(() => {}),
-            supabase.from('progress').insert({ user_id: newUser.id, streak: 0, current_day: 1 }).catch(() => {}),
-            supabase.from('skill_identity').insert({ user_id: newUser.id }).catch(() => {}),
+          // Supabase builders are thenables with no `.catch()` method — calling
+          // `builder.catch(...)` throws TypeError synchronously. Use allSettled
+          // so a failing seed never aborts Google sign-in.
+          await Promise.allSettled([
+            supabase.from('scores').insert({ user_id: newUser.id }),
+            supabase.from('progress').insert({ user_id: newUser.id, streak: 0, current_day: 1 }),
+            supabase.from('skill_identity').insert({ user_id: newUser.id }),
           ]);
         }
 

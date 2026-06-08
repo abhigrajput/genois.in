@@ -143,33 +143,50 @@ export async function POST(request) {
         .single();
 
       if (referrer) {
+        // NOTE: Supabase query builders are thenables that implement `.then()`
+        // only — they have NO `.catch()` method, so `builder.catch(...)` throws
+        // `TypeError: ...catch is not a function` synchronously. Use the
+        // two-arg `.then(undefined, onRejected)` form instead.
         await supabase.from('referrals').insert({
           referrer_id: referrer.id,
           referred_id: user.id,
           referred_email: email,
           status: 'pending',
-        }).catch(() => {});
+        }).then(undefined, () => {});
         await supabase.from('users').update({
           referred_by_code: referralCode,
           referral_count: (referrer.referral_count || 0) + 1,
-        }).eq('id', referrer.id).catch(() => {});
+        }).eq('id', referrer.id).then(undefined, () => {});
       }
     }
 
-    // Seed companion records completely fire-and-forget (non-blocking)
-    supabase.from('scores').insert({ user_id: user.id }).catch(e => console.error('scores seed error:', e));
-    supabase.from('progress').insert({
-      user_id: user.id,
-      last_active_date: new Date().toISOString(),
-      streak: 0,
-    }).catch(e => console.error('progress seed error:', e));
-    supabase.from('skill_identity').insert({ user_id: user.id }).catch(e => console.error('skill_identity seed error:', e));
-    supabase.from('trials').insert({
-      user_id: user.id,
-      start_date: trialStart.toISOString(),
-      end_date: trialEnd.toISOString(),
-      is_active: true,
-    }).catch(e => console.error('trials seed error:', e));
+    // Seed companion records. Supabase query builders are thenables with NO
+    // `.catch()` method, so the previous `builder.catch(...)` calls threw
+    // `TypeError: ...catch is not a function` synchronously — AFTER the user row
+    // was already inserted above — which the outer catch turned into a generic
+    // 500. That was the real "Internal server error". Await with allSettled so
+    // (a) the writes actually complete before the serverless function freezes,
+    // and (b) a failing seed is logged but never fails the signup.
+    const seeds = await Promise.allSettled([
+      supabase.from('scores').insert({ user_id: user.id }),
+      supabase.from('progress').insert({
+        user_id: user.id,
+        last_active_date: new Date().toISOString(),
+        streak: 0,
+      }),
+      supabase.from('skill_identity').insert({ user_id: user.id }),
+      supabase.from('trials').insert({
+        user_id: user.id,
+        start_date: trialStart.toISOString(),
+        end_date: trialEnd.toISOString(),
+        is_active: true,
+      }),
+    ]);
+    const seedNames = ['scores', 'progress', 'skill_identity', 'trials'];
+    seeds.forEach((r, i) => {
+      if (r.status === 'rejected') console.error(`${seedNames[i]} seed error:`, r.reason);
+      else if (r.value?.error) console.error(`${seedNames[i]} seed error:`, JSON.stringify(r.value.error));
+    });
 
     const token = await generateToken({ userId: user.id });
     const { password_hash: _, ...safeUser } = user;
