@@ -5,12 +5,9 @@ import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import SessionProviderWrapper from '@/components/SessionProviderWrapper';
 
-// Outfit is the body font (used above the fold), so keep its preload.
-// Syne + JetBrains render the LCP h1 / mono labels via fallback first, so skip
-// their high-priority preloads to free up critical-path bandwidth on mobile.
-const syne = Syne({ subsets: ['latin'], variable: '--font-syne', preload: false });
+const syne = Syne({ subsets: ['latin'], variable: '--font-syne' });
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' });
-const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains', preload: false });
+const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains' });
 
 export const metadata = {
   title: 'GENOIS — Career OS for Engineering Students',
