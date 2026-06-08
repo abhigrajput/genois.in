@@ -12,7 +12,7 @@ const PURPLE = '#6366f1';
 const PURPLE_LIGHT = '#818cf8';
 const BG = '#0d0d14';
 const CARD = '#13131f';
-const MUTED = '#6b7280';
+const MUTED = '#8b93a1';
 
 const BRAND_BULLETS = ['Free 30-day trial', 'No credit card needed', '10 career domains'];
 

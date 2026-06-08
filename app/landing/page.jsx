@@ -12,7 +12,7 @@ const BG2 = '#13131f';
 const BG3 = '#1a1a2e';
 const AMBER = '#f59e0b';
 const GREEN = '#10b981';
-const MUTED = '#6b7280';
+const MUTED = '#8b93a1';
 const WHITE = '#f8fafc';
 
 // ─── Data ───────────────────────────────────────────────────────────────────
@@ -153,6 +153,7 @@ export default function LandingPage() {
     <div style={{ background:BG, color:'#e5e7eb', minHeight:'100vh', overflowX:'hidden' }}>
       <LandingNavbar />
 
+      <main>
       {/* ═══ HERO ═══ */}
       <section style={{ position:'relative', padding:'72px 28px 64px', overflow:'hidden' }}>
         {/* Purple glow top-left */}
@@ -372,6 +373,7 @@ export default function LandingPage() {
           }}>Start My Journey — It&apos;s Free →</Link>
         </div>
       </section>
+      </main>
 
       {/* ═══ FOOTER ═══ */}
       <footer style={{ padding:'44px 28px 28px', background:BG, borderTop:'1px solid rgba(99,102,241,0.1)' }}>
