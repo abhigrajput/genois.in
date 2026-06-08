@@ -170,15 +170,19 @@ export default function SignupPage() {
       advance('email', v, v, { email: v.toLowerCase() });
     } else if (step === 'password') {
       // Client-side validation — catch strength issues immediately at step 3
-      // instead of after all 7 steps (backend requires uppercase + number).
+      // instead of after all 7 steps. Must mirror backend checkPasswordStrength
+      // EXACTLY (lib/security.js): upper + lower + number + 8 chars. Missing the
+      // lowercase rule here let "ABHI@2024" pass the client and silently 400 on
+      // the server, stranding the user in a retry loop.
       const hasUpper = /[A-Z]/.test(v);
+      const hasLower = /[a-z]/.test(v);
       const hasNumber = /[0-9]/.test(v);
       const hasLength = v.length >= 8;
 
-      if (!hasUpper || !hasNumber || !hasLength) {
+      if (!hasUpper || !hasLower || !hasNumber || !hasLength) {
         setMessages((m) => [...m, { from: 'user', text: '••••••••' }]); setInput('');
         const initial = data.name?.charAt(0).toUpperCase() || 'A';
-        friendlyError(`Password strong nahi laga 💪\n\nYeh sab chahiye:\n• Uppercase letter ${hasUpper ? '✓' : '✗'}\n• Number (0-9) ${hasNumber ? '✓' : '✗'}\n• 8+ characters ${hasLength ? '✓' : '✗'}\n\nJaise: ${initial}bhi@2024`);
+        friendlyError(`Password strong nahi laga 💪\n\nYeh sab chahiye:\n• Uppercase letter ${hasUpper ? '✓' : '✗'}\n• Lowercase letter ${hasLower ? '✓' : '✗'}\n• Number (0-9) ${hasNumber ? '✓' : '✗'}\n• 8+ characters ${hasLength ? '✓' : '✗'}\n\nJaise: ${initial}bhi@2024`);
         return;
       }
 
@@ -215,23 +219,32 @@ export default function SignupPage() {
 
   const createAccount = async (finalData) => {
     try {
+      console.log('Creating account for:', finalData.name, finalData.email, 'domain:', finalData.domain_slug);
+
+      // API (route.js Zod schema) expects camelCase `domainSlug`. `college` is
+      // optional/nullable server-side — send null (not '') when empty so it maps
+      // cleanly to the nullable column. `target_companies` is stripped by Zod.
+      const payload = {
+        name: finalData.name,
+        email: finalData.email,
+        password: finalData.password,
+        college: finalData.college || null,
+        domainSlug: finalData.domain_slug || 'fullstack',
+        target_companies: finalData.target_companies || [],
+      };
+      console.log('Signup payload:', JSON.stringify({ ...payload, password: '[HIDDEN]' }));
+
       const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: finalData.name,
-          email: finalData.email,
-          password: finalData.password,
-          college: finalData.college || '',
-          // API (route.js Zod schema) expects camelCase `domainSlug`.
-          domainSlug: finalData.domain_slug || 'fullstack',
-          target_companies: finalData.target_companies || [],
-        }),
+        body: JSON.stringify(payload),
       });
 
       // Read the raw body first so a non-JSON / HTML error page doesn't throw
       // an unhandled SyntaxError and leave the user stuck on the spinner.
       const text = await res.text();
+      console.log('API response status:', res.status);
+      console.log('API response:', text);
       let d;
       try {
         d = JSON.parse(text);

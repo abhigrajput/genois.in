@@ -48,6 +48,16 @@ export async function POST(request) {
     const pwdError = checkPasswordStrength(password);
     if (pwdError) return errorResponse(pwdError, 400);
 
+    // Fail loud (and logged) if the service-role config is missing — otherwise
+    // createClient throws a cryptic error that surfaces as a generic 500.
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error('SIGNUP_CONFIG_ERROR: missing Supabase env vars', {
+        hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
+        hasKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+      });
+      return errorResponse('Server configuration error', 500);
+    }
+
     const supabase = getAdminClient();
 
     const { data: existing } = await supabase
@@ -84,7 +94,15 @@ export async function POST(request) {
       .single();
 
     if (userError) {
-      console.error('SIGNUP_DB_ERROR:', userError.code || 'unknown');
+      // Log full PostgREST error detail so the real cause (missing column, RLS
+      // policy, bad enum value, etc.) is visible in Vercel logs instead of a
+      // bare code. Never returned to the client.
+      console.error('SIGNUP_DB_ERROR:', JSON.stringify({
+        code:    userError.code,
+        message: userError.message,
+        details: userError.details,
+        hint:    userError.hint,
+      }));
       return errorResponse('Account creation failed', 500);
     }
 
