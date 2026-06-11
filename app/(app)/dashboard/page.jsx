@@ -762,7 +762,7 @@ export default function DashboardPage() {
                   { href: '/chatbot', icon: '🤖', label: 'AI Chat' },
                   { href: '/dsa-visualizer', icon: '📊', label: 'Visualizer' },
                   { href: '/voice-interview', icon: '🎙️', label: 'Voice Sim' },
-                  { href: '/leaderboard', icon: '🏆', label: 'Leaderboard' },
+                  { href: '/roadmap', icon: '📅', label: 'Roadmap' },
                 ].map(q => (
                   <Link key={q.href} href={q.href} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 6px', borderRadius: 8, background: '#0d0d14', border: '1px solid rgba(255,255,255,0.04)', textDecoration: 'none', transition: 'all 0.2s' }}
                     onMouseEnter={e => { e.currentTarget.style.background = G10; e.currentTarget.style.borderColor = G20 }}
