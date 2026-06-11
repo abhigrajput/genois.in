@@ -15,57 +15,19 @@ const G04 = 'rgba(99,102,241,0.04)';
 const AMBER = '#fbbf24';
 const SB_BG = '#0a0a14';
 
-// Always-visible nav (8 items shown at top level)
-const PRIMARY_NAV = [
-  { group: 'MAIN',     href:'/dashboard',      label:'Dashboard',     icon:'🏠' },
-  { group: 'MAIN',     href:'/roadmap',         label:'Daily Roadmap', icon:'📅' },
-  { group: 'LEARN',    href:'/coding',          label:'Coding',        icon:'{ }' },
-  { group: 'LEARN',    href:'/notes',           label:'AI Notes',      icon:'📝' },
-  { group: 'LEARN',    href:'/dsa-roadmap',     label:'DSA Roadmap',   icon:'📊' },
-  { group: 'LEARN',    href:'/dsa-visualizer',  label:'Visualizer',    icon:'▶' },
-  { group: 'COMPETE',  href:'/mentor',          label:'AI Mentor',     icon:'🤖' },
-  { group: 'ACCOUNT',  href:'/profile',         label:'Profile',       icon:'👤' },
-  { group: 'ACCOUNT',  href:'/subscription',    label:'Subscription',  icon:'💳' },
-];
-
-const MORE_NAV = [
-  { href:'/tests',              label:'Tests',              icon:'✎' },
-  { href:'/projects',           label:'Projects',           icon:'◆' },
-  { href:'/aptitude',           label:'Aptitude',           icon:'🧠' },
-  { href:'/dsa-guide',          label:'DSA Guide',          icon:'📘' },
-  { href:'/blog',               label:'DSA Blog',           icon:'📝' },
-  { href:'/chatbot',            label:'Chatbot',            icon:'○' },
-  { href:'/anxiety',            label:'2AM Chat',           icon:'🌙' },
-  { href:'/ai-vs-human',        label:'AI vs Human',        icon:'🤖' },
-  { href:'/duels',              label:'Duels',              icon:'⚔️' },
-  { href:'/leaderboard',        label:'Leaderboard',        icon:'🏆' },
-  { href:'/rival',              label:'Your Rival',         icon:'🎯' },
-  { href:'/college-war',        label:'College War',        icon:'⚔️' },
-  { href:'/confessions',        label:'Confession Wall',    icon:'🤫' },
-  { href:'/github-profile',     label:'GitHub Profile',     icon:'🐙' },
-  { href:'/rank-card',          label:'Rank Card',          icon:'🎴' },
-  { href:'/glow-up',            label:'Glow Up Card',       icon:'🔥' },
-  { href:'/certificate',        label:'Certificate',        icon:'🎓' },
-  { href:'/linkedin-badge',     label:'LinkedIn Badge',     icon:'💼' },
-  { href:'/referral',           label:'Refer & Earn',       icon:'🎁' },
-  { href:'/companies',          label:'Company Prep',       icon:'🏢' },
-  { href:'/mock-interview',     label:'Mock Interview',     icon:'🎤' },
-  { href:'/challenges',         label:'Company Challenges', icon:'🏆' },
-  { href:'/prep-packs',         label:'Prep Packs',         icon:'📦' },
-  { href:'/mentors',            label:'1-on-1 Mentors',     icon:'🎓' },
-  { href:'/auction',            label:'Skill Auction',      icon:'⚡' },
-  { href:'/interview-simulator',label:'Interview Sim',      icon:'🎯' },
-  { href:'/voice-interview',    label:'Voice Interview',    icon:'🎙️' },
-  { href:'/diagnostic',         label:'Diagnostic Test',    icon:'🔬' },
-  { href:'/analytics',          label:'Analytics',          icon:'◇' },
-  { href:'/skill-levels',       label:'Skill Levels',       icon:'📊' },
-  { href:'/skills',             label:'Mastery Trials',     icon:'⚒️' },
-  { href:'/badge',              label:'Skill Badges',       icon:'🎖️' },
-  { href:'/outcomes',           label:'Outcomes',           icon:'📊' },
-  { href:'/streak-rewards',     label:'Streak Rewards',     icon:'🔥' },
-  { href:'/custom-roadmap',     label:'Custom Roadmap',     icon:'🗺️' },
-  { href:'/legend',             label:'Legend Access',      icon:'👑' },
-  { href:'/feedback',           label:'Send Feedback',      icon:'💬' },
+// The 11 working features — grouped visually in the sidebar.
+const NAV_ITEMS = [
+  { group: 'MAIN',     href:'/dashboard',       label:'Dashboard',       icon:'🏠' },
+  { group: 'LEARN',    href:'/roadmap',         label:'Daily Roadmap',   icon:'📅' },
+  { group: 'LEARN',    href:'/notes',           label:'AI Notes',        icon:'📝' },
+  { group: 'LEARN',    href:'/dsa-roadmap',     label:'DSA Roadmap',     icon:'🗺️' },
+  { group: 'PRACTICE', href:'/coding',          label:'Coding',          icon:'{ }' },
+  { group: 'PRACTICE', href:'/dsa-visualizer',  label:'DSA Visualizer',  icon:'▶' },
+  { group: 'PRACTICE', href:'/chatbot',         label:'AI Mentor',       icon:'🤖' },
+  { group: 'PRACTICE', href:'/voice-interview', label:'Voice Interview', icon:'🎙️' },
+  { group: 'PRACTICE', href:'/ai-vs-human',     label:'AI vs Human',     icon:'⚡' },
+  { group: 'ACCOUNT',  href:'/profile',         label:'Profile',         icon:'👤' },
+  { group: 'ACCOUNT',  href:'/subscription',    label:'Subscription',    icon:'💳' },
 ];
 
 const DOMAIN_LABELS = {
@@ -109,10 +71,7 @@ export default function AppLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [checking, setChecking] = useState(!isAuthenticated);
-  const [isAuthor, setIsAuthor] = useState(false);
   const [navToken, setNavToken] = useState(null);
-  const [moreOpen, setMoreOpen] = useState(false);
-  const [hoverMore, setHoverMore] = useState(false);
 
   // Init from localStorage
   useEffect(() => {
@@ -121,16 +80,6 @@ export default function AppLayout({ children }) {
     const savedCollapsed = localStorage.getItem('genois_sidebar_collapsed') === 'true';
     setCollapsed(savedCollapsed);
   }, []);
-
-  // Author check
-  useEffect(() => {
-    const t = typeof window !== 'undefined' ? localStorage.getItem('genois_token') : null;
-    if (!t) return;
-    fetch('/api/blog/author', { headers: { Authorization: 'Bearer ' + t } })
-      .then(r => r.json())
-      .then(d => { if (d.data?.isAuthor) setIsAuthor(true); })
-      .catch(() => {});
-  }, [isAuthenticated]);
 
   // Mobile detection
   useEffect(() => {
@@ -185,10 +134,6 @@ export default function AppLayout({ children }) {
   const totalScore = score?.total_score || 0;
   const weeklyPts = score?.weekly_score || Math.min(totalScore, 500);
   const initials = user?.name?.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'GN';
-
-  const moreWithAuthor = isAuthor
-    ? [...MORE_NAV, { href: '/author/dashboard', label: 'Author Studio', icon: '✍️' }]
-    : MORE_NAV;
 
   const sbWidth = isMobile ? 240 : (collapsed ? 68 : 240);
 
@@ -253,58 +198,22 @@ export default function AppLayout({ children }) {
         </div>
 
         {/* NAV */}
-        <nav style={{ flex: 1, padding: collapsed ? '0 8px' : '0 8px', overflowY: 'auto', overflowX: 'hidden' }}>
-          {/* Group labels only when expanded */}
-          {!collapsed && (
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, color: '#333', letterSpacing: 2, padding: '8px 8px 4px', fontWeight: 600 }}>MAIN</div>
-          )}
-          {PRIMARY_NAV.filter(n => n.group === 'MAIN').map(n => (
+        <nav style={{ flex: 1, padding: '0 8px', overflowY: 'auto', overflowX: 'hidden' }}>
+          {/* Dashboard — always first, no group label */}
+          {NAV_ITEMS.filter(n => n.group === 'MAIN').map(n => (
             <NavItem key={n.href} href={n.href} label={n.label} icon={n.icon} active={pathname === n.href} collapsed={collapsed} />
           ))}
 
-          {!collapsed && (
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, color: '#333', letterSpacing: 2, padding: '10px 8px 4px', fontWeight: 600 }}>LEARN</div>
-          )}
-          {collapsed && <div style={{ height: 8 }} />}
-          {PRIMARY_NAV.filter(n => n.group === 'LEARN').map(n => (
-            <NavItem key={n.href} href={n.href} label={n.label} icon={n.icon} active={pathname === n.href} collapsed={collapsed} />
-          ))}
-
-          {!collapsed && (
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, color: '#333', letterSpacing: 2, padding: '10px 8px 4px', fontWeight: 600 }}>COMPETE</div>
-          )}
-          {collapsed && <div style={{ height: 8 }} />}
-          {PRIMARY_NAV.filter(n => n.group === 'COMPETE').map(n => (
-            <NavItem key={n.href} href={n.href} label={n.label} icon={n.icon} active={pathname === n.href} collapsed={collapsed} />
-          ))}
-
-          {!collapsed && (
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, color: '#333', letterSpacing: 2, padding: '10px 8px 4px', fontWeight: 600 }}>ACCOUNT</div>
-          )}
-          {collapsed && <div style={{ height: 8 }} />}
-          {PRIMARY_NAV.filter(n => n.group === 'ACCOUNT').map(n => (
-            <NavItem key={n.href} href={n.href} label={n.label} icon={n.icon} active={pathname === n.href} collapsed={collapsed} />
-          ))}
-
-          {/* MORE section */}
-          <div style={{ height: 8 }} />
-          <button
-            onClick={() => setMoreOpen(m => !m)}
-            onMouseEnter={() => setHoverMore(true)}
-            onMouseLeave={() => setHoverMore(false)}
-            style={{ display: 'flex', alignItems: 'center', gap: collapsed ? 0 : 8, width: '100%', padding: collapsed ? '10px 0' : '8px 12px', justifyContent: collapsed ? 'center' : 'flex-start', borderRadius: 8, border: 'none', cursor: 'pointer', background: hoverMore ? G04 : 'transparent', color: '#555', fontFamily: 'JetBrains Mono,monospace', fontSize: 11, transition: 'all 0.15s', marginBottom: 2 }}>
-            <span style={{ fontSize: 14, width: 18, textAlign: 'center' }}>···</span>
-            {!collapsed && <span>{moreOpen ? 'Less' : 'More'}</span>}
-            {!collapsed && <span style={{ marginLeft: 'auto', fontSize: 10 }}>{moreOpen ? '▲' : '▼'}</span>}
-          </button>
-
-          {moreOpen && (
-            <div>
-              {moreWithAuthor.map(n => (
+          {['LEARN', 'PRACTICE', 'ACCOUNT'].map(group => (
+            <div key={group}>
+              {!collapsed
+                ? <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, color: '#333', letterSpacing: 2, padding: '10px 8px 4px', fontWeight: 600 }}>{group}</div>
+                : <div style={{ height: 8 }} />}
+              {NAV_ITEMS.filter(n => n.group === group).map(n => (
                 <NavItem key={n.href} href={n.href} label={n.label} icon={n.icon} active={pathname === n.href} collapsed={collapsed} />
               ))}
             </div>
-          )}
+          ))}
         </nav>
 
         {/* SCORE BAR (bottom) */}

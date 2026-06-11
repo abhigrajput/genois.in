@@ -145,7 +145,6 @@ export default function DashboardPage() {
   const [showConfetti, setShowConfetti] = useState(false)
   const [floatAnims, setFloatAnims] = useState([])
   const [motiveIdx, setMotiveIdx] = useState(0)
-  const [showOutcomePopup, setShowOutcomePopup] = useState(false)
   const [generatingNotes, setGeneratingNotes] = useState(false)
   const [videoEligible, setVideoEligible] = useState(false)
   const [streakAtRisk, setStreakAtRisk] = useState(false)
@@ -187,11 +186,6 @@ export default function DashboardPage() {
 
       const firstInc = TASK_META.find(tm => !(mask & tm.bit))
       if (firstInc) setActiveTask(firstInc.type)
-
-      const cd = ad?.progress?.currentDay || 0
-      if (cd >= 7 && !localStorage.getItem('outcome_popup_shown')) {
-        setTimeout(() => setShowOutcomePopup(true), 3000)
-      }
     }).finally(() => setLoading(false))
 
     // Calendar data fetch
@@ -757,21 +751,15 @@ export default function DashboardPage() {
             {/* Quick Access */}
             <div style={cardBase}>
               <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 10 }}>QUICK ACCESS</div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
                 {[
-                  { href: '/chatbot', icon: '🤖', label: 'AI Chat' },
-                  { href: '/dsa-visualizer', icon: '📊', label: 'Visualizer' },
+                  { href: '/chatbot', icon: '🤖', label: 'AI Mentor' },
+                  { href: '/dsa-visualizer', icon: '▶', label: 'Visualizer' },
                   { href: '/voice-interview', icon: '🎙️', label: 'Voice Sim' },
-                  { href: '/roadmap', icon: '📅', label: 'Roadmap' },
                 ].map(q => (
                   <Link key={q.href} href={q.href} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 6px', borderRadius: 8, background: '#0d0d14', border: '1px solid rgba(255,255,255,0.04)', textDecoration: 'none', transition: 'all 0.2s' }}
                     onMouseEnter={e => { e.currentTarget.style.background = G10; e.currentTarget.style.borderColor = G20 }}
                     onMouseLeave={e => { e.currentTarget.style.background = '#0d0d14'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.04)' }}>
-                    {q.href === '/chatbot' && (
-                      <span style={{ position: 'absolute', top: 4, right: 4, fontFamily: 'JetBrains Mono,monospace', fontSize: 6, letterSpacing: 0.5, color: G, background: G10, border: `1px solid ${G20}`, borderRadius: 4, padding: '2px 4px' }}>
-                        AI + VERIFIED DATA
-                      </span>
-                    )}
                     <span style={{ fontSize: 18 }}>{q.icon}</span>
                     <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#888' }}>{q.label}</span>
                   </Link>
@@ -938,20 +926,6 @@ export default function DashboardPage() {
           {currentMotive}
         </div>
       </div>
-
-      {/* Outcome popup */}
-      {showOutcomePopup && (
-        <div style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 1000, background: BG2, border: `1px solid rgba(99,102,241,0.2)`, borderRadius: 14, padding: 20, maxWidth: 320, boxShadow: '0 0 40px rgba(0,0,0,0.6)' }}>
-          <button onClick={() => { setShowOutcomePopup(false); localStorage.setItem('outcome_popup_shown', 'true') }} style={{ position: 'absolute', top: 10, right: 12, background: 'transparent', border: 'none', color: '#555', cursor: 'pointer', fontSize: 16 }}>×</button>
-          <div style={{ fontSize: 22, marginBottom: 8 }}>🎯</div>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700, color: '#e8f4ff', marginBottom: 6 }}>Got an interview recently?</div>
-          <div style={{ fontSize: 12, color: '#6b7a8d', lineHeight: 1.6, marginBottom: 14 }}>Help us prove GENOIS works. Takes 30 seconds.</div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={() => { setShowOutcomePopup(false); localStorage.setItem('outcome_popup_shown', 'true') }} style={{ flex: 1, padding: '8px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.06)', background: 'transparent', color: '#555', cursor: 'pointer', fontSize: 12 }}>Not yet</button>
-            <button onClick={() => { setShowOutcomePopup(false); localStorage.setItem('outcome_popup_shown', 'true'); router.push('/outcomes') }} style={{ flex: 2, padding: '8px', borderRadius: 8, border: 'none', cursor: 'pointer', background: G, color: '#fff', fontFamily: 'Syne,sans-serif', fontSize: 12, fontWeight: 700 }}>Yes — Report It →</button>
-          </div>
-        </div>
-      )}
 
       <OnboardingTour />
     </div>
