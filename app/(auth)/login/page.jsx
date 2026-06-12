@@ -7,6 +7,7 @@ import { signIn } from 'next-auth/react';
 import useAuthStore from '@/store/authStore';
 import { authAPI } from '@/lib/api';
 import { trackLogin } from '@/lib/analytics';
+import { Check } from 'lucide-react';
 
 const PURPLE = '#6366f1';
 const PURPLE_LIGHT = '#818cf8';
@@ -107,7 +108,7 @@ export default function LoginPage() {
           <div style={{ display:'flex', flexDirection:'column', gap:12, marginBottom:40 }}>
             {BRAND_BULLETS.map(b => (
               <div key={b} style={{ display:'flex', alignItems:'center', gap:10, fontSize:14, color:'#d1d5db' }}>
-                <span style={{ width:20, height:20, borderRadius:'50%', background:'rgba(99,102,241,0.15)', border:'1px solid rgba(99,102,241,0.4)', color:PURPLE_LIGHT, display:'flex', alignItems:'center', justifyContent:'center', fontSize:11, flexShrink:0 }}>✓</span>
+                <span style={{ width:20, height:20, borderRadius:'50%', background:'rgba(99,102,241,0.15)', border:'1px solid rgba(99,102,241,0.4)', color:PURPLE_LIGHT, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}><Check size={12} strokeWidth={2.5} color={PURPLE_LIGHT} /></span>
                 {b}
               </div>
             ))}
@@ -138,7 +139,7 @@ export default function LoginPage() {
 
             {verified && (
               <div style={{ background:'rgba(16,185,129,0.1)', border:'1px solid rgba(16,185,129,0.3)', borderRadius:10, padding:'10px 14px', color:'#10b981', fontSize:13, marginBottom:16, display:'flex', alignItems:'center', gap:8 }}>
-                <span style={{ fontSize:16 }}>✓</span>
+                <Check size={16} strokeWidth={2.5} color="#10b981" style={{ flexShrink:0 }} />
                 <span>Email verified! Please sign in.</span>
               </div>
             )}

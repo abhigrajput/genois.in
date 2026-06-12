@@ -7,6 +7,10 @@ import useAuthStore from '@/store/authStore'
 import { useToken } from '@/lib/useApi'
 import TrialBanner from '@/components/TrialBanner'
 import OnboardingTour from '@/components/OnboardingTour'
+import {
+  Flame, Zap, Trophy, Play, BookOpen, Code2, ClipboardCheck, FileText, Target,
+  Bot, Mic, Lightbulb, Rocket, Check, Sparkles, Mail, AlertTriangle, Settings,
+} from 'lucide-react'
 
 function getYouTubeId(url) {
   if (!url) return null;
@@ -14,6 +18,7 @@ function getYouTubeId(url) {
     /youtube\.com\/watch\?v=([^&]+)/,
     /youtu\.be\/([^?]+)/,
     /youtube\.com\/embed\/([^?]+)/,
+    /youtube\.com\/shorts\/([^?]+)/,
   ];
   for (const p of patterns) {
     const m = url.match(p);
@@ -56,11 +61,11 @@ const BG3 = '#1a1a2e'
 
 const TASK_BITS = { video: 1, resource: 2, coding: 4, test: 8, notes: 16 }
 const TASK_META = [
-  { type: 'video',    emoji: '📺', label: 'Watch',  bit: 1  },
-  { type: 'resource', emoji: '📖', label: 'Read',   bit: 2  },
-  { type: 'coding',   emoji: '💻', label: 'Code',   bit: 4  },
-  { type: 'test',     emoji: '🧪', label: 'Test',   bit: 8  },
-  { type: 'notes',    emoji: '📝', label: 'Notes',  bit: 16 },
+  { type: 'video',    icon: Play,           label: 'Watch',  bit: 1  },
+  { type: 'resource', icon: BookOpen,       label: 'Read',   bit: 2  },
+  { type: 'coding',   icon: Code2,          label: 'Code',   bit: 4  },
+  { type: 'test',     icon: ClipboardCheck, label: 'Test',   bit: 8  },
+  { type: 'notes',    icon: FileText,       label: 'Notes',  bit: 16 },
 ]
 
 const DIFF_COLORS = { Easy: G, Medium: AMBER, Hard: '#ff4757' }
@@ -237,18 +242,18 @@ export default function DashboardPage() {
 
     const prevCount = TASK_META.filter(tm => completedMask & tm.bit).length
     if (prevCount === 0 && newMask > 0 && !shown[`first_${dk}`]) {
-      toast.success('First task done! 🎯 Keep going', { style: toStyle })
+      toast.success('First task done! Keep going', { style: toStyle })
       shown[`first_${dk}`] = true
     }
     if (newMask === 31 && !shown[`all_${dk}`]) {
       const day = analytics?.progress?.currentDay || 1
-      toast.success(`Day ${day} complete! 🎉 +100 bonus pts`, { style: toStyle, duration: 5000 })
+      toast.success(`Day ${day} complete! +100 bonus pts`, { style: toStyle, duration: 5000 })
       shown[`all_${dk}`] = true
     }
     const total = analytics?.score?.total_score || 0
     for (const th of [1000, 5000, 10000]) {
       if (total < th && total + 20 >= th && !shown[`score_${th}`]) {
-        toast.success(`🏆 ${th.toLocaleString()} pts milestone!`, { style: toStyle })
+        toast.success(`${th.toLocaleString()} pts milestone!`, { style: toStyle })
         shown[`score_${th}`] = true
       }
     }
@@ -286,7 +291,7 @@ export default function DashboardPage() {
         headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
         body: JSON.stringify({ day: analytics?.progress?.currentDay || 1 }),
       })
-      toast.success('Notes generated! ✨', { style: { background: BG2, color: G } })
+      toast.success('Notes generated!', { style: { background: BG2, color: G } })
       // Mark notes as done after generation
       completeTask('notes')
     } catch {
@@ -347,11 +352,11 @@ export default function DashboardPage() {
   const nameAbove = lb[Math.max(0, myIdx - 1)]?.name || 'someone'
   const ptsAhead = lb[Math.max(0, myIdx - 1)]?.score ? lb[Math.max(0, myIdx - 1)].score - totalScore : 0
   const motives = [
-    `🔥 You've completed ${streak} days in a row — don't stop now!`,
-    `💪 ${5 - doneTasks} more task${5 - doneTasks !== 1 ? 's' : ''} to finish Day ${currentDay}`,
-    myRank ? `🏆 You're rank #${myRank}${ptsAhead > 0 ? ` — ${nameAbove} is ${ptsAhead} pts ahead` : ' — keep climbing!'}` : `🚀 Complete tasks to earn your rank!`,
-    `⚡ You've earned ${totalScore.toLocaleString()} pts total${percentile ? ` — top ${percentile}% of all students` : ''}`,
-    `🎯 You're on Day ${currentDay} of 365 — ${365 - currentDay} days to go!`,
+    `You've completed ${streak} days in a row — don't stop now!`,
+    `${5 - doneTasks} more task${5 - doneTasks !== 1 ? 's' : ''} to finish Day ${currentDay}`,
+    myRank ? `You're rank #${myRank}${ptsAhead > 0 ? ` — ${nameAbove} is ${ptsAhead} pts ahead` : ' — keep climbing!'}` : `Complete tasks to earn your rank!`,
+    `You've earned ${totalScore.toLocaleString()} pts total${percentile ? ` — top ${percentile}% of all students` : ''}`,
+    `You're on Day ${currentDay} of 365 — ${365 - currentDay} days to go!`,
   ]
   const currentMotive = motives[motiveIdx % motives.length]
 
@@ -408,7 +413,7 @@ export default function DashboardPage() {
               fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14,
               transition: 'all 0.4s ease', width: '100%',
             }}>
-            {videoEligible ? '✓ Mark Video as Watched' : '⏳ Watch 30 seconds to unlock...'}
+            {videoEligible ? 'Mark Video as Watched' : 'Watch 30 seconds to unlock...'}
           </button>
         )}
       </div>
@@ -420,10 +425,10 @@ export default function DashboardPage() {
         <div style={{ display: 'flex', gap: 10 }}>
           {resource?.url && (
             <a href={resource.url} target="_blank" rel="noopener noreferrer" style={{ ...btnStyle, background: done ? 'rgba(99,102,241,0.1)' : G, color: done ? G : '#fff', textDecoration: 'none' }}>
-              📖 Open Resource
+              <BookOpen size={16} strokeWidth={2} /> Open Resource
             </a>
           )}
-          {!done && <button onClick={() => completeTask('resource')} style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${G20}`, background: 'transparent', color: G, cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontWeight: 600, fontSize: 14 }}>✓ Mark Complete</button>}
+          {!done && <button onClick={() => completeTask('resource')} style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${G20}`, background: 'transparent', color: G, cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontWeight: 600, fontSize: 14 }}>Mark Complete</button>}
         </div>
       </div>
     )
@@ -445,10 +450,10 @@ export default function DashboardPage() {
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             {coding?.url && (
               <a href={coding.url} target="_blank" rel="noopener noreferrer" style={{ ...btnStyle, background: done ? 'rgba(99,102,241,0.1)' : G, color: done ? G : '#fff', textDecoration: 'none' }}>
-                💻 Solve Problem →
+                <Code2 size={16} strokeWidth={2} /> Solve Problem →
               </a>
             )}
-            {!done && <button onClick={() => completeTask('coding')} style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${G20}`, background: 'transparent', color: G, cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontWeight: 600, fontSize: 14 }}>✓ Mark Complete</button>}
+            {!done && <button onClick={() => completeTask('coding')} style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${G20}`, background: 'transparent', color: G, cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontWeight: 600, fontSize: 14 }}>Mark Complete</button>}
           </div>
         </div>
       )
@@ -458,7 +463,7 @@ export default function DashboardPage() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div style={{ fontSize: 13, color: '#6b7a8d' }}>Take today&apos;s test to earn bonus points and test your understanding.</div>
         <Link href="/tests" style={{ ...btnStyle, background: done ? 'rgba(99,102,241,0.1)' : G, color: done ? G : '#fff', textDecoration: 'none', alignSelf: 'flex-start' }}>
-          🧪 Take Today&apos;s Test →
+          <ClipboardCheck size={16} strokeWidth={2} /> Take Today&apos;s Test →
         </Link>
       </div>
     )
@@ -474,11 +479,11 @@ export default function DashboardPage() {
         )}
         {!notes?.content && (
           <button onClick={generateNotes} disabled={generatingNotes} style={{ ...btnStyle, alignSelf: 'flex-start', opacity: generatingNotes ? 0.6 : 1, cursor: generatingNotes ? 'not-allowed' : 'pointer' }}>
-            {generatingNotes ? '⏳ Generating...' : '✨ Generate Notes'}
+            {generatingNotes ? 'Generating...' : <><Sparkles size={16} strokeWidth={2} /> Generate Notes</>}
           </button>
         )}
         {notes?.content && !done && (
-          <button onClick={() => completeTask('notes')} style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${G20}`, background: 'transparent', color: G, cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontWeight: 600, fontSize: 14, alignSelf: 'flex-start' }}>✓ Mark Complete</button>
+          <button onClick={() => completeTask('notes')} style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${G20}`, background: 'transparent', color: G, cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontWeight: 600, fontSize: 14, alignSelf: 'flex-start' }}>Mark Complete</button>
         )}
       </div>
     )
@@ -502,7 +507,7 @@ export default function DashboardPage() {
       {user?.email_verified === false && (
         <div style={{ background: 'rgba(255,50,50,0.08)', border: '1px solid rgba(255,50,50,0.3)', borderRadius: 10, padding: '12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 16 }}>📧</span>
+            <Mail size={16} strokeWidth={2} color="#ff6b6b" style={{ flexShrink: 0 }} />
             <span style={{ fontFamily: 'Outfit,sans-serif', fontSize: 13, color: '#ff6b6b' }}>Please verify your email to unlock all features</span>
           </div>
           <button onClick={async () => {
@@ -517,14 +522,14 @@ export default function DashboardPage() {
       {/* Streak at risk */}
       {streakAtRisk && (
         <div style={{ background: 'rgba(251,191,36,0.07)', border: `1px solid rgba(251,191,36,0.3)`, borderRadius: 10, padding: '10px 20px', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 18 }}>⚠️</span>
+          <AlertTriangle size={18} strokeWidth={2} color={AMBER} style={{ flexShrink: 0 }} />
           <span style={{ fontFamily: 'Outfit,sans-serif', fontSize: 13, color: AMBER }}>Complete at least 1 task to keep your streak alive tonight!</span>
         </div>
       )}
 
       {/* Admin link */}
       {isAdmin && (
-        <a href="/admin" style={{ display: 'inline-block', padding: '6px 14px', borderRadius: 8, background: 'rgba(99,102,241,0.08)', border: `1px solid ${G20}`, color: G, textDecoration: 'none', fontSize: 12, fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, alignSelf: 'flex-start' }}>⚙️ Admin Dashboard →</a>
+        <a href="/admin" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 8, background: 'rgba(99,102,241,0.08)', border: `1px solid ${G20}`, color: G, textDecoration: 'none', fontSize: 12, fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, alignSelf: 'flex-start' }}><Settings size={14} strokeWidth={2} /> Admin Dashboard →</a>
       )}
 
       {/* DSA Diagnostic banner */}
@@ -532,7 +537,7 @@ export default function DashboardPage() {
         <div onClick={() => router.push('/diagnostic')} style={{ ...cardBase, cursor: 'pointer', borderColor: `rgba(99,102,241,0.3)` }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
             <div>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: G, letterSpacing: 2, marginBottom: 4 }}>🎯 RECOMMENDED</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: G, letterSpacing: 2, marginBottom: 4 }}><Target size={12} strokeWidth={2} /> RECOMMENDED</div>
               <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, color: '#e8f4ff' }}>Take DSA Diagnostic to get your level →</div>
               <div style={{ fontSize: 12, color: '#6b7a8d', marginTop: 2 }}>15 questions · 10 min · Sets your personalized track</div>
             </div>
@@ -556,14 +561,14 @@ export default function DashboardPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderLeft: `1px solid rgba(255,255,255,0.06)`, paddingLeft: 16 }}>
           <div>
             <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 4 }}>STREAK</div>
-            <div className={streak >= 7 ? 'pulse-amber' : ''} style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 28, fontWeight: 800, color: streak > 0 ? AMBER : '#444', lineHeight: 1 }}>
-              {streak > 0 ? `🔥` : ''} {streak > 0 ? `${streak}` : '0'}
+            <div className={streak >= 7 ? 'pulse-amber' : ''} style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'JetBrains Mono,monospace', fontSize: 28, fontWeight: 800, color: streak > 0 ? AMBER : '#444', lineHeight: 1 }}>
+              {streak > 0 && <Flame size={24} strokeWidth={2} color={AMBER} />}{streak > 0 ? `${streak}` : '0'}
             </div>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: streak > 0 ? AMBER : '#555', marginTop: 2 }}>
-              {streak === 0 ? 'Start today!' : streak >= 30 ? '🔥🔥 ON FIRE' : 'days'}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: streak > 0 ? AMBER : '#555', marginTop: 2 }}>
+              {streak === 0 ? 'Start today!' : streak >= 30 ? <><Flame size={11} strokeWidth={2} color={AMBER} /> ON FIRE</> : 'days'}
             </div>
             {streakAtRisk && streak > 0 && doneTasks === 0 && (
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#ff4545', marginTop: 2 }}>⚠️ AT RISK</div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#ff4545', marginTop: 2 }}><AlertTriangle size={10} strokeWidth={2} /> AT RISK</div>
             )}
           </div>
         </div>
@@ -572,8 +577,8 @@ export default function DashboardPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderLeft: isMobile ? 'none' : `1px solid rgba(255,255,255,0.06)`, paddingLeft: isMobile ? 0 : 16 }}>
           <div>
             <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 4 }}>SCORE</div>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: isMobile ? 20 : 26, fontWeight: 800, color: G, lineHeight: 1 }}>
-              ⚡ {totalScore.toLocaleString()}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'JetBrains Mono,monospace', fontSize: isMobile ? 20 : 26, fontWeight: 800, color: G, lineHeight: 1 }}>
+              <Zap size={isMobile ? 18 : 22} strokeWidth={2} color={G} /> {totalScore.toLocaleString()}
             </div>
             {doneTasks > 0 && (
               <div style={{ display: 'inline-block', marginTop: 3, padding: '1px 8px', borderRadius: 20, background: 'rgba(99,102,241,0.12)', border: `1px solid ${G20}`, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G }}>
@@ -588,8 +593,8 @@ export default function DashboardPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderLeft: `1px solid rgba(255,255,255,0.06)`, paddingLeft: 16 }}>
           <div>
             <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 4 }}>RANK</div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: isMobile ? 20 : 26, fontWeight: 800, color: '#e8f4ff', lineHeight: 1 }}>
-              🏆 {myRank ? `#${myRank}` : '--'}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'Syne,sans-serif', fontSize: isMobile ? 20 : 26, fontWeight: 800, color: '#e8f4ff', lineHeight: 1 }}>
+              <Trophy size={isMobile ? 18 : 22} strokeWidth={2} color={G} /> {myRank ? `#${myRank}` : '--'}
             </div>
             {percentile && <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, marginTop: 3 }}>Top {100 - percentile}%</div>}
           </div>
@@ -664,9 +669,9 @@ export default function DashboardPage() {
                       <button key={tm.type} onClick={() => setActiveTask(tm.type)}
                         className={isDone ? 'task-pill-done' : isActive ? 'task-pill-active' : 'task-pill-pending'}
                         style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 20, fontFamily: 'Outfit,sans-serif', fontSize: 13, fontWeight: 600, border: 'none', transition: 'all 0.2s' }}>
-                        <span>{tm.emoji}</span>
+                        <tm.icon size={14} strokeWidth={2} />
                         <span>{tm.label}</span>
-                        {isDone && <span style={{ fontSize: 11 }}>✓</span>}
+                        {isDone && <Check size={12} strokeWidth={2.5} />}
                       </button>
                     )
                   })}
@@ -681,7 +686,7 @@ export default function DashboardPage() {
                 <div style={{ marginBottom: 14 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                     <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#6b7a8d' }}>{doneTasks} / 5 tasks done</span>
-                    {allDone && <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: G }}>🎉 ALL DONE</span>}
+                    {allDone && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: G }}><Check size={12} strokeWidth={2.5} /> ALL DONE</span>}
                   </div>
                   <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
                     <div style={{ height: '100%', width: `${(doneTasks / 5) * 100}%`, background: `linear-gradient(90deg, ${G}, #818cf8)`, borderRadius: 3, transition: 'width 0.5s ease', boxShadow: `0 0 8px rgba(99,102,241,0.4)` }} />
@@ -693,7 +698,7 @@ export default function DashboardPage() {
                   onClick={() => { if (allDone) router.push('/roadmap'); else if (nextTask) { setActiveTask(nextTask.type); completeTask(nextTask.type) } }}
                   className={allDone ? 'pulse-amber' : ''}
                   style={{ width: '100%', padding: '14px', borderRadius: 10, border: 'none', cursor: 'pointer', background: allDone ? `linear-gradient(135deg, ${AMBER}, #f59e0b)` : G, color: allDone ? '#000' : '#fff', fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 800, letterSpacing: 0.5, transition: 'all 0.2s' }}>
-                  {allDone ? '🎉 Day Complete! See Tomorrow →' : `▶ Start ${nextTask?.label || 'Next'} →`}
+                  {allDone ? 'Day Complete! See Tomorrow →' : `Start ${nextTask?.label || 'Next'} →`}
                 </button>
               </>
             )}
@@ -753,14 +758,14 @@ export default function DashboardPage() {
               <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 10 }}>QUICK ACCESS</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
                 {[
-                  { href: '/chatbot', icon: '🤖', label: 'AI Mentor' },
-                  { href: '/dsa-visualizer', icon: '▶', label: 'Visualizer' },
-                  { href: '/voice-interview', icon: '🎙️', label: 'Voice Sim' },
+                  { href: '/chatbot', icon: Bot, label: 'AI Mentor' },
+                  { href: '/dsa-visualizer', icon: Play, label: 'Visualizer' },
+                  { href: '/voice-interview', icon: Mic, label: 'Voice Sim' },
                 ].map(q => (
                   <Link key={q.href} href={q.href} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 6px', borderRadius: 8, background: '#0d0d14', border: '1px solid rgba(255,255,255,0.04)', textDecoration: 'none', transition: 'all 0.2s' }}
                     onMouseEnter={e => { e.currentTarget.style.background = G10; e.currentTarget.style.borderColor = G20 }}
                     onMouseLeave={e => { e.currentTarget.style.background = '#0d0d14'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.04)' }}>
-                    <span style={{ fontSize: 18 }}>{q.icon}</span>
+                    <q.icon size={20} strokeWidth={1.8} color="#888" />
                     <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#888' }}>{q.label}</span>
                   </Link>
                 ))}
@@ -779,12 +784,12 @@ export default function DashboardPage() {
             const months = user?.months_to_placement;
             const weak = user?.weak_subjects || [];
             const tier = user?.college_tier || 'tier3';
-            const urgencyLabel = months <= 3 ? '🔴 CRITICAL' : months <= 6 ? '🟡 URGENT' : months ? '🟢 OK' : null;
+            const urgencyLabel = months <= 3 ? 'CRITICAL' : months <= 6 ? 'URGENT' : months ? 'OK' : null;
             const profileComplete = tc.length > 0 && hasCgpa;
 
             if (!profileComplete) return (
               <div style={{ ...cardBase, border: '1px solid rgba(251,191,36,0.3)', background: 'rgba(251,191,36,0.04)' }}>
-                <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: AMBER, letterSpacing: 2, marginBottom: 8 }}>⚠️ PLACEMENT PROFILE</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: AMBER, letterSpacing: 2, marginBottom: 8 }}><AlertTriangle size={11} strokeWidth={2} /> PLACEMENT PROFILE</div>
                 <div style={{ fontSize: 13, color: '#9ba8b5', lineHeight: 1.6, marginBottom: 12 }}>
                   Complete your profile for personalized AI content — target companies, CGPA, and weak areas.
                 </div>
@@ -797,7 +802,7 @@ export default function DashboardPage() {
             return (
               <div style={cardBase}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2 }}>🎯 YOUR PLACEMENT PROFILE</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2 }}><Target size={11} strokeWidth={2} /> YOUR PLACEMENT PROFILE</div>
                   <a href="/profile" style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, textDecoration: 'none' }}>Edit →</a>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -811,7 +816,7 @@ export default function DashboardPage() {
                   <div style={{ display: 'flex', gap: 12, fontSize: 11, color: '#9ba8b5', fontFamily: 'JetBrains Mono,monospace' }}>
                     {hasCgpa && <span>CGPA: <span style={{ color: '#e8f4ff' }}>{user.cgpa}</span></span>}
                     <span>Tier: <span style={{ color: '#e8f4ff' }}>{tier.toUpperCase()}</span></span>
-                    {urgencyLabel && months && <span>Timeline: <span style={{ color: urgencyLabel.includes('🔴') ? '#ff4545' : urgencyLabel.includes('🟡') ? AMBER : G }}>{urgencyLabel}</span></span>}
+                    {urgencyLabel && months && <span>Timeline: <span style={{ color: urgencyLabel === 'CRITICAL' ? '#ff4545' : urgencyLabel === 'URGENT' ? AMBER : G }}>{urgencyLabel}</span></span>}
                   </div>
                   {weak.length > 0 && (
                     <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
@@ -829,7 +834,7 @@ export default function DashboardPage() {
 
           {/* Card 1: Daily Objectives */}
           <div style={cardBase}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}>🎯 DAILY OBJECTIVES</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}><Target size={11} strokeWidth={2} /> DAILY OBJECTIVES</div>
             {objectives.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {objectives.slice(0, 3).map((obj, i) => (
@@ -850,7 +855,7 @@ export default function DashboardPage() {
 
           {/* Card 2: Key Concepts */}
           <div style={cardBase}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}>💡 KEY CONCEPTS</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}><Lightbulb size={11} strokeWidth={2} /> KEY CONCEPTS</div>
             {concepts.length > 0 ? (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {concepts.map((c, i) => (
@@ -866,7 +871,7 @@ export default function DashboardPage() {
 
           {/* Card 3: Coding Problem */}
           <div style={cardBase}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}>🚀 CODING PROBLEM</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}><Rocket size={11} strokeWidth={2} /> CODING PROBLEM</div>
             {coding?.title ? (
               <>
                 <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 13, color: G, marginBottom: 6 }}>{coding.title}</div>
@@ -891,7 +896,7 @@ export default function DashboardPage() {
 
           {/* Card 4: Your Rank */}
           <div style={cardBase}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}>🏆 YOUR RANK</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}><Trophy size={11} strokeWidth={2} /> YOUR RANK</div>
             {lbSlice.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {lbSlice.map((entry, i) => {
@@ -903,7 +908,7 @@ export default function DashboardPage() {
                         {(entry.name || 'Anonymous').slice(0, 12)}
                       </span>
                       <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: isMe ? G : '#6b7a8d', flexShrink: 0 }}>{entry.score?.toLocaleString()}</span>
-                      <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: AMBER, flexShrink: 0 }}>🔥{entry.streak}</span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2, fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: AMBER, flexShrink: 0 }}><Flame size={11} strokeWidth={2} color={AMBER} />{entry.streak}</span>
                     </div>
                   )
                 })}

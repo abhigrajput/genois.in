@@ -6,6 +6,10 @@ import useAuthStore from '@/store/authStore';
 import { authAPI } from '@/lib/api';
 import NotificationBell from '@/components/NotificationBell';
 import DailyCheckIn from '@/components/DailyCheckIn';
+import {
+  Home, Calendar, FileText, Map, Code2, Play, Bot, Mic, Zap, User, CreditCard,
+  Flame, LogOut, Menu, X, PanelLeftClose, PanelLeftOpen,
+} from 'lucide-react';
 
 const G = '#6366f1';
 const G10 = 'rgba(99,102,241,0.1)';
@@ -17,17 +21,17 @@ const SB_BG = '#0a0a14';
 
 // The 11 working features — grouped visually in the sidebar.
 const NAV_ITEMS = [
-  { group: 'MAIN',     href:'/dashboard',       label:'Dashboard',       icon:'🏠' },
-  { group: 'LEARN',    href:'/roadmap',         label:'Daily Roadmap',   icon:'📅' },
-  { group: 'LEARN',    href:'/notes',           label:'AI Notes',        icon:'📝' },
-  { group: 'LEARN',    href:'/dsa-roadmap',     label:'DSA Roadmap',     icon:'🗺️' },
-  { group: 'PRACTICE', href:'/coding',          label:'Coding',          icon:'{ }' },
-  { group: 'PRACTICE', href:'/dsa-visualizer',  label:'DSA Visualizer',  icon:'▶' },
-  { group: 'PRACTICE', href:'/chatbot',         label:'AI Mentor',       icon:'🤖' },
-  { group: 'PRACTICE', href:'/voice-interview', label:'Voice Interview', icon:'🎙️' },
-  { group: 'PRACTICE', href:'/ai-vs-human',     label:'AI vs Human',     icon:'⚡' },
-  { group: 'ACCOUNT',  href:'/profile',         label:'Profile',         icon:'👤' },
-  { group: 'ACCOUNT',  href:'/subscription',    label:'Subscription',    icon:'💳' },
+  { group: 'MAIN',     href:'/dashboard',       label:'Dashboard',       icon:Home },
+  { group: 'LEARN',    href:'/roadmap',         label:'Daily Roadmap',   icon:Calendar },
+  { group: 'LEARN',    href:'/notes',           label:'AI Notes',        icon:FileText },
+  { group: 'LEARN',    href:'/dsa-roadmap',     label:'DSA Roadmap',     icon:Map },
+  { group: 'PRACTICE', href:'/coding',          label:'Coding',          icon:Code2 },
+  { group: 'PRACTICE', href:'/dsa-visualizer',  label:'DSA Visualizer',  icon:Play },
+  { group: 'PRACTICE', href:'/chatbot',         label:'AI Mentor',       icon:Bot },
+  { group: 'PRACTICE', href:'/voice-interview', label:'Voice Interview', icon:Mic },
+  { group: 'PRACTICE', href:'/ai-vs-human',     label:'AI vs Human',     icon:Zap },
+  { group: 'ACCOUNT',  href:'/profile',         label:'Profile',         icon:User },
+  { group: 'ACCOUNT',  href:'/subscription',    label:'Subscription',    icon:CreditCard },
 ];
 
 const DOMAIN_LABELS = {
@@ -36,8 +40,9 @@ const DOMAIN_LABELS = {
   blockchain:'Blockchain', gamedev:'Game Dev',
 };
 
-function NavItem({ href, label, icon, active, collapsed }) {
+function NavItem({ href, label, icon: Icon, active, collapsed }) {
   const [hover, setHover] = useState(false);
+  const iconColor = active ? G : hover ? '#818cf8' : '#6b7280';
   return (
     <Link href={href} title={collapsed ? label : undefined}
       style={{
@@ -57,7 +62,9 @@ function NavItem({ href, label, icon, active, collapsed }) {
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
     >
-      <span style={{ fontSize: 14, width: 18, textAlign: 'center', flexShrink: 0 }}>{icon}</span>
+      <span style={{ width: 18, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <Icon size={18} strokeWidth={1.8} color={iconColor} />
+      </span>
       {!collapsed && <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{label}</span>}
     </Link>
   );
@@ -171,9 +178,9 @@ export default function AppLayout({ children }) {
             </div>
           )}
           <button onClick={isMobile ? () => setSidebarOpen(false) : toggleCollapsed}
-            style={{ background: 'transparent', border: 'none', color: '#555', fontSize: 16, cursor: 'pointer', padding: 4, borderRadius: 6, transition: 'color 0.15s', lineHeight: 1 }}
+            style={{ background: 'transparent', border: 'none', color: '#555', cursor: 'pointer', padding: 4, borderRadius: 6, transition: 'color 0.15s', lineHeight: 0, display: 'flex', alignItems: 'center' }}
             title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}>
-            {isMobile ? '✕' : (collapsed ? '→' : '←')}
+            {isMobile ? <X size={18} strokeWidth={2} /> : (collapsed ? <PanelLeftOpen size={18} strokeWidth={1.8} /> : <PanelLeftClose size={18} strokeWidth={1.8} />)}
           </button>
         </div>
 
@@ -190,7 +197,7 @@ export default function AppLayout({ children }) {
                 <div style={{ fontFamily: 'Outfit,sans-serif', fontSize: 13, fontWeight: 600, color: '#e8f4ff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.name}</div>
                 <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 2 }}>
                   <span style={{ padding: '1px 7px', borderRadius: 20, background: G10, border: `1px solid ${G20}`, fontSize: 9, color: G, fontFamily: 'JetBrains Mono,monospace', fontWeight: 700 }}>{domainLabel}</span>
-                  <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555' }}>D{currentDay} · 🔥{streak}</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555' }}>D{currentDay} · <Flame size={10} strokeWidth={2} color={AMBER} />{streak}</span>
                 </div>
               </div>
             )}
@@ -221,7 +228,7 @@ export default function AppLayout({ children }) {
           {!collapsed && (
             <>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: G }}>⚡ {totalScore.toLocaleString()} pts</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: G }}><Zap size={13} strokeWidth={2} color={G} /> {totalScore.toLocaleString()} pts</span>
                 <button onClick={() => { logout(); router.push('/login'); }} style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#444', background: 'transparent', border: 'none', cursor: 'pointer', padding: '2px 8px', borderRadius: 4, transition: 'color 0.15s' }}
                   onMouseEnter={e => e.currentTarget.style.color = '#e8f4ff'}
                   onMouseLeave={e => e.currentTarget.style.color = '#444'}>
@@ -236,9 +243,9 @@ export default function AppLayout({ children }) {
           )}
           {collapsed && (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G }}>⚡</span>
-              <button onClick={() => { logout(); router.push('/login'); }} style={{ background: 'transparent', border: 'none', color: '#444', cursor: 'pointer', fontSize: 14, padding: 0 }} title="Logout">
-                ⏻
+              <Zap size={14} strokeWidth={2} color={G} />
+              <button onClick={() => { logout(); router.push('/login'); }} style={{ background: 'transparent', border: 'none', color: '#444', cursor: 'pointer', padding: 0, lineHeight: 0, display: 'flex' }} title="Logout">
+                <LogOut size={14} strokeWidth={2} />
               </button>
             </div>
           )}
@@ -250,17 +257,17 @@ export default function AppLayout({ children }) {
         {/* Header */}
         <header style={{ height: 48, flexShrink: 0, background: 'rgba(13,13,20,0.95)', borderBottom: '1px solid rgba(99,102,241,0.07)', display: 'flex', alignItems: 'center', padding: '0 16px', gap: 10, backdropFilter: 'blur(20px)', overflow: 'visible' }}>
           <button onClick={() => { if (isMobile) setSidebarOpen(s => !s); else toggleCollapsed(); }}
-            style={{ background: 'transparent', border: 'none', color: '#555', cursor: 'pointer', fontSize: 20, padding: 4, flexShrink: 0, lineHeight: 1, transition: 'color 0.15s' }}
+            style={{ background: 'transparent', border: 'none', color: '#555', cursor: 'pointer', padding: 4, flexShrink: 0, lineHeight: 0, display: 'flex', alignItems: 'center', transition: 'color 0.15s' }}
             onMouseEnter={e => e.currentTarget.style.color = G}
             onMouseLeave={e => e.currentTarget.style.color = '#555'}>
-            ☰
+            <Menu size={20} strokeWidth={2} />
           </button>
           <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#444', letterSpacing: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {pathname.replace(/^\//, '').toUpperCase() || 'DASHBOARD'}
           </span>
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 6, flexShrink: 0, alignItems: 'center' }}>
-            <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, background: 'rgba(251,191,36,0.1)', color: AMBER, padding: '3px 8px', borderRadius: 20 }}>🔥 {streak}</span>
-            <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, background: 'rgba(99,102,241,0.08)', color: G, padding: '3px 8px', borderRadius: 20 }}>⚡ {totalScore.toLocaleString()}</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'JetBrains Mono,monospace', fontSize: 10, background: 'rgba(251,191,36,0.1)', color: AMBER, padding: '3px 8px', borderRadius: 20 }}><Flame size={12} strokeWidth={2} color={AMBER} /> {streak}</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'JetBrains Mono,monospace', fontSize: 10, background: 'rgba(99,102,241,0.08)', color: G, padding: '3px 8px', borderRadius: 20 }}><Zap size={12} strokeWidth={2} color={G} /> {totalScore.toLocaleString()}</span>
             <div style={{ position: 'relative', zIndex: 9999 }}>
               <NotificationBell token={navToken} />
             </div>

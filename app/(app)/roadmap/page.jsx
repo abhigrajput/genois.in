@@ -11,6 +11,7 @@ function getYouTubeId(url) {
     /youtube\.com\/watch\?v=([^&]+)/,
     /youtu\.be\/([^?]+)/,
     /youtube\.com\/embed\/([^?]+)/,
+    /youtube\.com\/shorts\/([^?]+)/,
   ];
   for (const p of patterns) {
     const m = url.match(p);

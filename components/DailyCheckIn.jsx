@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { MessageCircle, X } from 'lucide-react';
 
 const PURPLE = '#6366f1';
 const PURPLE_LIGHT = '#818cf8';
@@ -82,7 +83,7 @@ export default function DailyCheckIn({ name }) {
               <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 13.5, fontWeight: 700, color: '#f8fafc' }}>GENOIS</div>
               <div style={{ fontSize: 10.5, color: '#34d399', fontFamily: 'JetBrains Mono,monospace' }}>● online</div>
             </div>
-            <button onClick={dismissButton} aria-label="Close" style={{ background: 'transparent', border: 'none', color: MUTED, fontSize: 16, cursor: 'pointer', padding: 4, lineHeight: 1 }}>✕</button>
+            <button onClick={dismissButton} aria-label="Close" style={{ background: 'transparent', border: 'none', color: MUTED, cursor: 'pointer', padding: 4, lineHeight: 0, display: 'flex' }}><X size={16} strokeWidth={2} /></button>
           </div>
 
           {/* Body */}
@@ -114,11 +115,11 @@ export default function DailyCheckIn({ name }) {
       ) : (
         <button onClick={() => setOpen(true)} aria-label="Daily check-in" style={{
           width: 58, height: 58, borderRadius: '50%', border: 'none', cursor: 'pointer',
-          background: `linear-gradient(135deg, ${PURPLE}, #4f46e5)`, color: '#fff', fontSize: 26,
+          background: `linear-gradient(135deg, ${PURPLE}, #4f46e5)`, color: '#fff',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 10px 30px rgba(99,102,241,0.5)', animation: 'dci-pop 0.35s cubic-bezier(0.16,1,0.3,1), dci-float 3s ease-in-out infinite 0.35s',
         }}>
-          💬
+          <MessageCircle size={26} strokeWidth={2} />
         </button>
       )}
 

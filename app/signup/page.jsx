@@ -5,6 +5,7 @@ import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { signIn } from 'next-auth/react';
 import { trackSignup } from '@/lib/analytics';
+import { MessageCircle } from 'lucide-react';
 
 const PURPLE = '#6366f1';
 const PURPLE_LIGHT = '#818cf8';
@@ -39,17 +40,17 @@ function aiPrompt(step, data) {
     case 'name':
       return "Hey! 👋 I'm GENOIS — your placement buddy. Apna naam bata bhai, kya kehte hain tujhe?";
     case 'email':
-      return `Nice ${name}! 🎯 Ab tera email bata — isi se login karega. Pakka yaad rakhna!`;
+      return `Nice ${name}! Ab tera email bata — isi se login karega. Pakka yaad rakhna!`;
     case 'password':
-      return "Perfect! Ek strong password set kar 🔒\n\nZaroor include kar:\n• Ek uppercase letter (A-Z)\n• Ek number (0-9)\n• Minimum 8 characters\n\nJaise: Abhi@2024";
+      return "Perfect! Ek strong password set kar.\n\nZaroor include kar:\n• Ek uppercase letter (A-Z)\n• Ek number (0-9)\n• Minimum 8 characters\n\nJaise: Abhi@2024";
     case 'college':
       return `${name} bhai, tera college kaunsa hai? (e.g. KLE Hubballi, VTU, RGPV...)`;
     case 'domain':
-      return "Kaunse domain mein career banana hai? 👇 Ek choose kar:";
+      return "Kaunse domain mein career banana hai? Ek choose kar:";
     case 'company':
-      return "Last one! Target company kaunsi hai? 🎯";
+      return "Last one! Target company kaunsi hai?";
     case 'creating':
-      return `Sab ready hai ${name}! 🚀 Tera free Dominator account bana raha hoon...`;
+      return `Sab ready hai ${name}! Tera free Dominator account bana raha hoon...`;
     default:
       return '';
   }
@@ -60,8 +61,8 @@ const placeholders = {
   email:    'your@email.com',
   password: 'At least 8 characters…',
   college:  'Your college name…',
-  domain:   'Pick a domain above 👆',
-  company:  'Pick a company above 👆',
+  domain:   'Pick a domain above',
+  company:  'Pick a company above',
 };
 
 export default function SignupPage() {
@@ -159,12 +160,12 @@ export default function SignupPage() {
     const v = input.trim();
 
     if (step === 'name') {
-      if (v.length < 2) { setMessages((m) => [...m, { from: 'user', text: input }]); setInput(''); friendlyError('Arre naam thoda bada hoga na bhai 😅 Full naam likh!'); return; }
+      if (v.length < 2) { setMessages((m) => [...m, { from: 'user', text: input }]); setInput(''); friendlyError('Arre naam thoda bada hoga na bhai. Full naam likh!'); return; }
       advance('name', v, v, { name: v });
     } else if (step === 'email') {
       if (!v.includes('@') || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) {
         setMessages((m) => [...m, { from: 'user', text: input }]); setInput('');
-        friendlyError('Yeh email sahi nahi laga 🤔 Format hona chahiye: name@domain.com');
+        friendlyError('Yeh email sahi nahi laga. Format hona chahiye: name@domain.com');
         return;
       }
       advance('email', v, v, { email: v.toLowerCase() });
@@ -182,7 +183,7 @@ export default function SignupPage() {
       if (!hasUpper || !hasLower || !hasNumber || !hasLength) {
         setMessages((m) => [...m, { from: 'user', text: '••••••••' }]); setInput('');
         const initial = data.name?.charAt(0).toUpperCase() || 'A';
-        friendlyError(`Password strong nahi laga 💪\n\nYeh sab chahiye:\n• Uppercase letter ${hasUpper ? '✓' : '✗'}\n• Lowercase letter ${hasLower ? '✓' : '✗'}\n• Number (0-9) ${hasNumber ? '✓' : '✗'}\n• 8+ characters ${hasLength ? '✓' : '✗'}\n\nJaise: ${initial}bhi@2024`);
+        friendlyError(`Password strong nahi laga.\n\nYeh sab chahiye:\n• Uppercase letter ${hasUpper ? '✓' : '✗'}\n• Lowercase letter ${hasLower ? '✓' : '✗'}\n• Number (0-9) ${hasNumber ? '✓' : '✗'}\n• 8+ characters ${hasLength ? '✓' : '✗'}\n\nJaise: ${initial}bhi@2024`);
         return;
       }
 
@@ -251,7 +252,7 @@ export default function SignupPage() {
       } catch {
         setStep('password');
         setRetryPassword(true);
-        pushAI(`Server error 😬 Ek baar aur try kar. (${res.status})`);
+        pushAI(`Server error. Ek baar aur try kar. (${res.status})`);
         return;
       }
 
@@ -260,7 +261,7 @@ export default function SignupPage() {
         // retryPassword keeps us from re-asking college/domain/company.
         setStep('password');
         setRetryPassword(true);
-        pushAI(`Hmm, account nahi bana 😬 ${d.message || 'Kuch galat ho gaya'}. Password dobara try kar!`);
+        pushAI(`Hmm, account nahi bana. ${d.message || 'Kuch galat ho gaya'}. Password dobara try kar!`);
         return;
       }
 
@@ -268,7 +269,7 @@ export default function SignupPage() {
       if (!token) {
         setStep('password');
         setRetryPassword(true);
-        pushAI('Account bana but login nahi hua 😅 Ek baar try kar!');
+        pushAI('Account bana but login nahi hua. Ek baar try kar!');
         return;
       }
 
@@ -286,12 +287,12 @@ export default function SignupPage() {
       } catch {}
 
       trackSignup('email');
-      toast.success('Account ban gaya! Welcome to GENOIS 🎉');
+      toast.success('Account ban gaya! Welcome to GENOIS');
       window.location.href = '/dashboard';
     } catch (err) {
       setStep('password');
       setRetryPassword(true);
-      pushAI(`Network error 😅 Check internet aur dobara try kar! (${err.message})`);
+      pushAI(`Network error. Check internet aur dobara try kar! (${err.message})`);
     }
   };
 
@@ -315,7 +316,7 @@ export default function SignupPage() {
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 20px' }}>
           <div style={{ width: '100%', maxWidth: 420, textAlign: 'center' }}>
             <div style={{ width: 72, height: 72, borderRadius: '50%', margin: '0 auto 20px', background: `linear-gradient(135deg, ${PURPLE}, #4f46e5)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 34, color: '#fff', boxShadow: '0 12px 36px rgba(99,102,241,0.4)' }}>G</div>
-            <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 26, fontWeight: 800, color: '#f8fafc', margin: '0 0 10px' }}>Let&apos;s set you up 🚀</h1>
+            <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 26, fontWeight: 800, color: '#f8fafc', margin: '0 0 10px' }}>Let&apos;s set you up</h1>
             <p style={{ color: MUTED, fontSize: 15, lineHeight: 1.6, margin: '0 0 28px' }}>
               No boring forms. Bas thodi si baat-cheet aur tera free Dominator account ready! Chalein?
             </p>
@@ -326,7 +327,7 @@ export default function SignupPage() {
               fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700,
               boxShadow: '0 8px 24px rgba(99,102,241,0.32)', marginBottom: 20,
             }}>
-              Start the chat 💬
+              <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}><MessageCircle size={18} strokeWidth={2} /> Start the chat</span>
             </button>
 
             <p style={{ color: MUTED, fontSize: 13, margin: '0 0 14px' }}>Ya seedha Google se sign up kar:</p>

@@ -2,6 +2,9 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import LandingNavbar from '@/components/LandingNavbar';
+import {
+  Rocket, Check, Zap, Calendar, Trophy, Bot, Code2, Award, BarChart3, TrendingUp, Mic, Flame,
+} from 'lucide-react';
 
 // ─── Theme ──────────────────────────────────────────────────────────────────
 const PURPLE = '#6366f1';
@@ -17,18 +20,18 @@ const WHITE = '#f8fafc';
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 const STEPS = [
-  { emoji:'⚡', title:'60 seconds',    time:'just 1 min',    desc:'Tell us your target company and domain.' },
-  { emoji:'📅', title:'Daily 30 mins', time:'30 min / day',  desc:'Follow your AI-generated daily task.' },
-  { emoji:'🏆', title:'Get placed',    time:'day 1 → offer', desc:'Beat your college rank, earn verified badges.' },
+  { icon:Zap,      title:'60 seconds',    time:'just 1 min',    desc:'Tell us your target company and domain.' },
+  { icon:Calendar, title:'Daily 30 mins', time:'30 min / day',  desc:'Follow your AI-generated daily task.' },
+  { icon:Trophy,   title:'Get placed',    time:'day 1 → offer', desc:'Beat your college rank, earn verified badges.' },
 ];
 
 const FEATURES = [
-  { icon:'📅', title:'Daily Roadmap', desc:'A bite-sized daily plan that adapts to your level and pace.' },
-  { icon:'🤖', title:'AI Mentor', desc:'Stuck at 2 AM? Get answers and guidance instantly.' },
-  { icon:'💻', title:'Coding Challenges', desc:'Daily problems with AI code review and hints.' },
-  { icon:'🎖️', title:'Skill Badges', desc:'Earn proctored, verifiable credentials recruiters trust.' },
-  { icon:'🏆', title:'Leaderboard', desc:'Compete with your college and climb the rankings.' },
-  { icon:'📊', title:'Progress Analytics', desc:'See your growth with daily graphs and score breakdowns.' },
+  { icon:Calendar,    title:'Daily Roadmap', desc:'A bite-sized daily plan that adapts to your level and pace.' },
+  { icon:Bot,         title:'AI Mentor', desc:'Stuck at 2 AM? Get answers and guidance instantly.' },
+  { icon:Code2,       title:'Coding Challenges', desc:'Daily problems with AI code review and hints.' },
+  { icon:Award,       title:'Skill Badges', desc:'Earn proctored, verifiable credentials recruiters trust.' },
+  { icon:BarChart3,   title:'Leaderboard', desc:'Compete with your college and climb the rankings.' },
+  { icon:TrendingUp,  title:'Progress Analytics', desc:'See your growth with daily graphs and score breakdowns.' },
 ];
 
 const PLANS = [
@@ -71,7 +74,7 @@ function ProductCard() {
             <div style={{ fontSize:11.5, color:MUTED, fontFamily:'JetBrains Mono,monospace', marginTop:1 }}>Day 47 · DSA</div>
           </div>
         </div>
-        <span style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'5px 11px', borderRadius:20, background:'rgba(245,158,11,0.12)', border:'1px solid rgba(245,158,11,0.3)', color:AMBER, fontSize:12, fontWeight:700, fontFamily:'JetBrains Mono,monospace' }}>🔥 8</span>
+        <span style={{ display:'inline-flex', alignItems:'center', gap:5, padding:'5px 11px', borderRadius:20, background:'rgba(245,158,11,0.12)', border:'1px solid rgba(245,158,11,0.3)', color:AMBER, fontSize:12, fontWeight:700, fontFamily:'JetBrains Mono,monospace' }}><Flame size={13} strokeWidth={2} color={AMBER} /> 8</span>
       </div>
 
       {/* Mission label */}
@@ -94,7 +97,7 @@ function ProductCard() {
             background: t.done ? 'rgba(99,102,241,0.15)' : '#fff',
             color: t.done ? PURPLE_LIGHT : '#0d0d14',
             border: t.done ? '1px solid rgba(99,102,241,0.35)' : '1px solid #fff',
-          }}>{t.l} {t.done ? '✓' : '→'}</span>
+          }}>{t.l} {t.done ? <Check size={13} strokeWidth={2.5} /> : '→'}</span>
         ))}
       </div>
 
@@ -102,11 +105,11 @@ function ProductCard() {
       <div style={{ display:'flex', gap:10 }}>
         <div style={{ flex:1, background:BG3, borderRadius:12, padding:'12px 14px', border:'1px solid rgba(99,102,241,0.1)' }}>
           <div style={{ fontSize:9.5, color:MUTED, fontFamily:'JetBrains Mono,monospace', letterSpacing:1, marginBottom:4 }}>SCORE</div>
-          <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:19, fontWeight:800, color:PURPLE }}>⚡ 5,385</div>
+          <div style={{ display:'flex', alignItems:'center', gap:5, fontFamily:'JetBrains Mono,monospace', fontSize:19, fontWeight:800, color:PURPLE }}><Zap size={17} strokeWidth={2} color={PURPLE} /> 5,385</div>
         </div>
         <div style={{ flex:1, background:BG3, borderRadius:12, padding:'12px 14px', border:'1px solid rgba(99,102,241,0.1)' }}>
           <div style={{ fontSize:9.5, color:MUTED, fontFamily:'JetBrains Mono,monospace', letterSpacing:1, marginBottom:4 }}>RANK</div>
-          <div style={{ fontFamily:'Syne,sans-serif', fontSize:19, fontWeight:800, color:WHITE }}>🏆 #12</div>
+          <div style={{ display:'flex', alignItems:'center', gap:5, fontFamily:'Syne,sans-serif', fontSize:19, fontWeight:800, color:WHITE }}><Trophy size={17} strokeWidth={2} color={PURPLE} /> #12</div>
         </div>
       </div>
     </div>
@@ -144,7 +147,7 @@ export default function LandingPage() {
           {/* Left — text */}
           <div className="gen-hero-text">
             <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'6px 14px', borderRadius:999, background:'rgba(99,102,241,0.1)', border:'1px solid rgba(99,102,241,0.25)', color:PURPLE_LIGHT, fontSize:12.5, fontWeight:600, marginBottom:24 }}>
-              🚀 Just launched · Be among the first 100
+              <Rocket size={14} strokeWidth={2} color={PURPLE_LIGHT} /> Just launched · Be among the first 100
             </div>
             <h1 className="gen-hero-h1" style={{ fontFamily:'Syne,sans-serif', fontSize:'clamp(40px,6vw,64px)', fontWeight:800, lineHeight:1.05, letterSpacing:-1.5, margin:'0 0 20px', color:WHITE }}>
               Get placed.<br />Not just prepared.
@@ -170,7 +173,7 @@ export default function LandingPage() {
             <div style={{ display:'flex', gap:'10px 16px', flexWrap:'wrap' }}>
               {['Ready in 60 seconds','Free forever','No credit card'].map(t => (
                 <div key={t} style={{ display:'flex', alignItems:'center', gap:6, fontSize:13, color:MUTED, whiteSpace:'nowrap' }}>
-                  <span style={{ color:GREEN, fontSize:12 }}>✓</span>{t}
+                  <Check size={13} strokeWidth={2.5} color={GREEN} style={{ flexShrink:0 }} />{t}
                 </div>
               ))}
             </div>
@@ -208,7 +211,7 @@ export default function LandingPage() {
                 <div style={{ fontFamily:'Syne,sans-serif', fontSize:46, fontWeight:800, color:'rgba(99,102,241,0.1)', lineHeight:1 }}>0{i+1}</div>
                 <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, color:MUTED, marginTop:4 }}>{s.time}</div>
               </div>
-              <div style={{ width:60, height:60, borderRadius:14, background:'rgba(99,102,241,0.1)', border:'1px solid rgba(99,102,241,0.25)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:28, marginBottom:20 }}>{s.emoji}</div>
+              <div style={{ width:60, height:60, borderRadius:14, background:'rgba(99,102,241,0.1)', border:'1px solid rgba(99,102,241,0.25)', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:20 }}><s.icon size={28} strokeWidth={1.5} color={PURPLE_LIGHT} /></div>
               <h3 style={{ fontFamily:'Syne,sans-serif', fontSize:18, fontWeight:700, color:WHITE, margin:'0 0 9px' }}>{s.title}</h3>
               <p style={{ color:'#9ca3af', fontSize:14, lineHeight:1.6, margin:0 }}>{s.desc}</p>
             </div>
@@ -229,7 +232,7 @@ export default function LandingPage() {
             position:'relative', overflow:'hidden',
           }}>
             <div style={{ position:'absolute', top:0, left:0, right:0, height:2, background:`linear-gradient(90deg, transparent, ${PURPLE_LIGHT}, transparent)` }} />
-            <div style={{ width:64, height:64, borderRadius:16, flexShrink:0, background:`linear-gradient(135deg, ${PURPLE}, ${PURPLE_DARK})`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:32 }}>🎤</div>
+            <div style={{ width:64, height:64, borderRadius:16, flexShrink:0, background:`linear-gradient(135deg, ${PURPLE}, ${PURPLE_DARK})`, display:'flex', alignItems:'center', justifyContent:'center' }}><Mic size={30} strokeWidth={1.8} color="#fff" /></div>
             <div style={{ flex:1, minWidth:220 }}>
               <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6, flexWrap:'wrap' }}>
                 <h3 style={{ fontFamily:'Syne,sans-serif', fontSize:20, fontWeight:800, color:WHITE, margin:0 }}>Voice Mock Interview</h3>
@@ -246,7 +249,7 @@ export default function LandingPage() {
                 padding:'26px 24px', borderRadius:16, background:BG,
                 border:'1px solid rgba(99,102,241,0.1)', transition:'border-color 0.25s, transform 0.25s',
               }}>
-                <div style={{ width:50, height:50, borderRadius:12, background:'rgba(99,102,241,0.1)', border:'1px solid rgba(99,102,241,0.2)', display:'flex', alignItems:'center', justifyContent:'center', fontSize:24, marginBottom:16 }}>{f.icon}</div>
+                <div style={{ width:50, height:50, borderRadius:12, background:'rgba(99,102,241,0.1)', border:'1px solid rgba(99,102,241,0.2)', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:16 }}><f.icon size={24} strokeWidth={1.5} color={PURPLE_LIGHT} /></div>
                 <h3 style={{ fontFamily:'Syne,sans-serif', fontSize:16.5, fontWeight:700, color:WHITE, margin:'0 0 8px' }}>{f.title}</h3>
                 <p style={{ color:'#9ca3af', fontSize:13.5, lineHeight:1.6, margin:0 }}>{f.desc}</p>
               </div>
@@ -300,7 +303,7 @@ export default function LandingPage() {
                 <ul style={{ listStyle:'none', padding:0, margin:'0 0 24px', flex:1 }}>
                   {p.features.map(f => (
                     <li key={f} style={{ display:'flex', gap:9, marginBottom:10, color:'#d1d5db', fontSize:13, lineHeight:1.4 }}>
-                      <span style={{ color:PURPLE_LIGHT, flexShrink:0 }}>✓</span>{f}
+                      <Check size={14} strokeWidth={2.5} color={PURPLE_LIGHT} style={{ flexShrink:0, marginTop:1 }} />{f}
                     </li>
                   ))}
                 </ul>
@@ -315,8 +318,8 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
-          <p style={{ textAlign:'center', color:MUTED, fontSize:12.5, marginTop:22 }}>
-            ⚡ Payments launching soon — start your 30-day free trial today, no card required.
+          <p style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', gap:6, width:'100%', textAlign:'center', color:MUTED, fontSize:12.5, marginTop:22 }}>
+            <Zap size={13} strokeWidth={2} color={MUTED} /> Payments launching soon — start your 30-day free trial today, no card required.
           </p>
         </div>
       </section>
