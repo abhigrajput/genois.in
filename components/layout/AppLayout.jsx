@@ -8,7 +8,7 @@ import NotificationBell from '@/components/NotificationBell';
 import DailyCheckIn from '@/components/DailyCheckIn';
 import {
   Home, Calendar, FileText, Map, Code2, Play, Bot, Mic, Zap, User, CreditCard,
-  Flame, LogOut, Menu, X, PanelLeftClose, PanelLeftOpen,
+  Flame, LogOut, Menu, X, PanelLeftClose, PanelLeftOpen, FolderGit2,
 } from 'lucide-react';
 
 const G = '#6366f1';
@@ -27,6 +27,7 @@ const NAV_ITEMS = [
   { group: 'LEARN',    href:'/dsa-roadmap',     label:'DSA Roadmap',     icon:Map },
   { group: 'PRACTICE', href:'/coding',          label:'Coding',          icon:Code2 },
   { group: 'PRACTICE', href:'/dsa-visualizer',  label:'DSA Visualizer',  icon:Play },
+  { group: 'PRACTICE', href:'/projects',        label:'Projects',        icon:FolderGit2 },
   { group: 'PRACTICE', href:'/chatbot',         label:'AI Mentor',       icon:Bot },
   { group: 'PRACTICE', href:'/voice-interview', label:'Voice Interview', icon:Mic },
   { group: 'PRACTICE', href:'/ai-vs-human',     label:'AI vs Human',     icon:Zap },
