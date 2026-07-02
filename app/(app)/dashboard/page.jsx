@@ -82,7 +82,7 @@ function DayRing({ day, size = 72 }) {
           strokeLinecap="round" strokeDasharray={circ}
           strokeDashoffset={circ * (1 - pct)}
           transform={`rotate(-90 ${size/2} ${size/2})`}
-          style={{ filter: `drop-shadow(0 0 5px rgba(99,102,241,0.7))`, transition: 'stroke-dashoffset 0.8s ease' }} />
+          style={{ transition: 'stroke-dashoffset 0.8s ease' }} />
       </svg>
       <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
         <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: size > 60 ? 20 : 14, fontWeight: 700, color: G, lineHeight: 1 }}>{day}</span>
@@ -128,7 +128,7 @@ function FloatAnim({ items }) {
         <div key={a.id} className="pts-float" style={{
           position: 'fixed', bottom: '25%', left: '55%',
           fontFamily: 'JetBrains Mono,monospace', fontSize: 20, fontWeight: 800,
-          color: G, zIndex: 9999, textShadow: `0 0 12px rgba(99,102,241,0.9)`,
+          color: G, zIndex: 9999,
           transform: 'translateX(-50%)',
         }}>{a.text}</div>
       ))}
@@ -689,7 +689,7 @@ export default function DashboardPage() {
                     {allDone && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: G }}><Check size={12} strokeWidth={2.5} /> ALL DONE</span>}
                   </div>
                   <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${(doneTasks / 5) * 100}%`, background: `linear-gradient(90deg, ${G}, #818cf8)`, borderRadius: 3, transition: 'width 0.5s ease', boxShadow: `0 0 8px rgba(99,102,241,0.4)` }} />
+                    <div style={{ height: '100%', width: `${(doneTasks / 5) * 100}%`, background: `linear-gradient(90deg, ${G}, #818cf8)`, borderRadius: 3, transition: 'width 0.5s ease' }} />
                   </div>
                 </div>
 

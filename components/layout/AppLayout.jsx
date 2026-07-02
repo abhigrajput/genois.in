@@ -123,6 +123,13 @@ export default function AppLayout({ children }) {
     localStorage.setItem('genois_sidebar_collapsed', String(next));
   };
 
+  const handleLogout = () => {
+    logout();
+    localStorage.removeItem('genois_plan');
+    document.cookie = 'genois_token=; path=/; max-age=0';
+    router.push('/login');
+  };
+
   if (checking) {
     return (
       <div style={{ minHeight: '100vh', background: '#0d0d14', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -224,32 +231,41 @@ export default function AppLayout({ children }) {
           ))}
         </nav>
 
-        {/* SCORE BAR (bottom) */}
+        {/* SCORE BAR + LOGOUT (bottom) */}
         <div style={{ padding: collapsed ? '12px 8px' : '12px 14px', borderTop: '1px solid rgba(99,102,241,0.06)', flexShrink: 0 }}>
-          {!collapsed && (
+          {!collapsed ? (
             <>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: 6 }}>
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: G }}><Zap size={13} strokeWidth={2} color={G} /> {totalScore.toLocaleString()} pts</span>
-                <button onClick={() => { logout(); router.push('/login'); }} style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#444', background: 'transparent', border: 'none', cursor: 'pointer', padding: '2px 8px', borderRadius: 4, transition: 'color 0.15s' }}
-                  onMouseEnter={e => e.currentTarget.style.color = '#e8f4ff'}
-                  onMouseLeave={e => e.currentTarget.style.color = '#444'}>
-                  logout
-                </button>
               </div>
               <div style={{ height: 3, background: 'rgba(255,255,255,0.04)', borderRadius: 2, overflow: 'hidden' }}>
                 <div style={{ height: '100%', width: `${Math.min(100, (weeklyPts / 500) * 100)}%`, background: `linear-gradient(90deg, ${G}, #818cf8)`, borderRadius: 2, transition: 'width 0.5s' }} />
               </div>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, color: '#333', marginTop: 4 }}>weekly progress</div>
+              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, color: '#333', marginTop: 4, marginBottom: 10 }}>weekly progress</div>
             </>
-          )}
-          {collapsed && (
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 10 }}>
               <Zap size={14} strokeWidth={2} color={G} />
-              <button onClick={() => { logout(); router.push('/login'); }} style={{ background: 'transparent', border: 'none', color: '#444', cursor: 'pointer', padding: 0, lineHeight: 0, display: 'flex' }} title="Logout">
-                <LogOut size={14} strokeWidth={2} />
-              </button>
             </div>
           )}
+          <button
+            onClick={handleLogout}
+            title="Logout"
+            style={{
+              display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'flex-start', gap: 8,
+              width: '100%', padding: collapsed ? '10px 0' : '10px 14px',
+              background: 'transparent', border: 'none',
+              color: '#6b7280', fontSize: 13,
+              fontFamily: 'Outfit,sans-serif',
+              cursor: 'pointer', borderRadius: 8,
+              transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#ef4444'; e.currentTarget.style.background = 'rgba(239,68,68,0.08)'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = '#6b7280'; e.currentTarget.style.background = 'transparent'; }}
+          >
+            <LogOut size={16} strokeWidth={1.8} />
+            {!collapsed && 'Logout'}
+          </button>
         </div>
       </div>
 

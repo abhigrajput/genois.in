@@ -16,7 +16,7 @@ const BG3 = '#1a1a2e';
 const AMBER = '#f59e0b';
 const GREEN = '#10b981';
 const MUTED = '#8b93a1';
-const WHITE = '#f8fafc';
+const WHITE = '#e2e8f0';
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 const STEPS = [
