@@ -35,7 +35,7 @@ export default function PlacementLoginPage() {
       <div style={{ width: '100%', maxWidth: 420 }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 36 }}>
-          <div style={{ fontFamily: 'Syne, sans-serif', fontSize: 32, fontWeight: 900, letterSpacing: 2, color: G, textShadow: '0 0 20px rgba(0,255,65,0.4)', marginBottom: 4 }}>
+          <div style={{ fontFamily: 'Syne, sans-serif', fontSize: 32, fontWeight: 900, letterSpacing: 2, color: G, marginBottom: 4 }}>
             GENOIS
           </div>
           <div style={{ color: '#4ade80', fontSize: 13, letterSpacing: 2, textTransform: 'uppercase', fontFamily: 'JetBrains Mono, monospace' }}>

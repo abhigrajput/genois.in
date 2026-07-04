@@ -409,12 +409,10 @@ select option { background: #060f1e; color: #e8f4ff; }
 }
 .gen-glitch::before {
   color: #00ff41;
-  text-shadow: -2px 0 rgba(255,0,102,0.6);
   animation: gen-glitch-1 7s infinite;
 }
 .gen-glitch::after {
   color: #00ff41;
-  text-shadow: 2px 0 rgba(0,240,255,0.6);
   animation: gen-glitch-2 7s infinite;
   animation-delay: 0.4s;
 }
@@ -425,8 +423,8 @@ select option { background: #060f1e; color: #e8f4ff; }
 
 /* ─── Score flash (leaderboard) ─── */
 @keyframes gen-flash-anim {
-  0% { color: #00ff41; text-shadow: 0 0 12px rgba(0,255,65,0.8); }
-  100% { color: #fff; text-shadow: none; }
+  0% { color: #00ff41; }
+  100% { color: #fff; }
 }
 .gen-score-flash { animation: gen-flash-anim 0.65s ease forwards; }
 
