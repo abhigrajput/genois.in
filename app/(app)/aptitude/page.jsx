@@ -1,13 +1,165 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useToken, apiFetch } from '@/lib/useApi';
 import toast from 'react-hot-toast';
 import PermissionGate from '@/components/PermissionGate';
 import { usePermission } from '@/lib/usePermission';
+import { Search, Zap, BookOpen } from 'lucide-react';
+
+const TRICKS = [
+  { topic: 'Ratio & Proportion', title: 'Splitting a Number', content: 'To divide N in ratio a:b → First = N×a/(a+b), Second = N×b/(a+b)', example: '720 in 2:3 → 288, 432', companies: ['TCS NQT', 'Infosys SP'], difficulty: 'easy' },
+  { topic: 'Ratio & Proportion', title: 'Direct & Inverse Proportion', content: 'Direct: A1/A2 = B1/B2. Inverse: A1/A2 = B2/B1', example: '2kg = ₹500, 6kg = ₹500×6/2 = ₹1500', companies: ['TCS NQT'], difficulty: 'easy' },
+  { topic: 'Percentage', title: 'X% of Y = Y% of X', content: 'Always flip to easier side. 37% of 50 = 50% of 37 = 18.5', example: '24% of 50 = 50% of 24 = 12', companies: ['TCS NQT', 'Infosys SP', 'Wipro'], difficulty: 'easy' },
+  { topic: 'Percentage', title: 'Successive % Change', content: 'a% then b% net = (a+b+ab/100)%', example: '20% + 30% = 56% not 50%', companies: ['TCS NQT'], difficulty: 'medium' },
+  { topic: 'Profit & Loss', title: 'Same SP Profit+Loss = Net Loss', content: 'If sold at same SP with X% profit and X% loss → Net loss = X²/100 %', example: '20% each → Net loss = 4%', companies: ['TCS NQT', 'Infosys SP'], difficulty: 'medium' },
+  { topic: 'Profit & Loss', title: 'Successive Discounts', content: 'A% + B% ≠ (A+B)%. Real = A+B-AB/100', example: '20%+10% = 28% not 30%', companies: ['Wipro NLTH'], difficulty: 'medium' },
+  { topic: 'Speed & Distance', title: 'Conversion + Average Speed', content: 'km/hr→m/s: ×5/18. Average speed (same dist) = 2ab/(a+b)', example: '72 km/hr = 20 m/s', companies: ['TCS NQT', 'Infosys SP'], difficulty: 'easy' },
+  { topic: 'Speed & Distance', title: 'Relative Speed', content: 'Same dir: |S1-S2|. Opposite: S1+S2. Meet time = D/(S1+S2)', example: '150km apart, 60+40 opposite → 1.5 hrs', companies: ['TCS NQT'], difficulty: 'medium' },
+  { topic: 'Trains', title: 'Train Crossing', content: 'Pole: T=L/S. Platform: T=(L₁+L₂)/S. Two trains: T=(L₁+L₂)/Relative', example: '200m train at 72km/hr crosses pole in 10s', companies: ['TCS NQT', 'Infosys SP'], difficulty: 'medium' },
+  { topic: 'Boats', title: 'Upstream & Downstream', content: 'Down=B+S, Up=B-S. Boat=(D+U)/2, Stream=(D-U)/2', example: 'D=24, U=16 → Boat=20, Stream=4', companies: ['TCS NQT'], difficulty: 'medium' },
+  { topic: 'Time & Work', title: 'LCM Method', content: 'LCM of days → assign units → add rates → Total/Combined', example: 'A:10d B:15d → LCM=30, rates 3+2=5 → 6 days', companies: ['TCS NQT', 'Infosys', 'Wipro'], difficulty: 'medium' },
+  { topic: 'Time & Work', title: 'Pipes & Cisterns', content: 'Inlet = +rate, Outlet = -rate. Net = sum of all', example: 'Fill 6hr, Empty 8hr → 1/6-1/8=1/24 → 24hrs', companies: ['TCS NQT'], difficulty: 'medium' },
+  { topic: 'Interest', title: 'CI-SI Shortcut (2 years)', content: 'CI - SI = P × (R/100)²', example: '₹5000 at 10% → CI-SI = ₹50', companies: ['TCS NQT', 'Infosys SP'], difficulty: 'medium' },
+  { topic: 'Numbers', title: 'Divisibility Rules', content: 'By 3: digit sum. By 4: last 2 digits. By 8: last 3. By 9: digit sum. By 11: alternating sum', example: '2376: ÷2✓ ÷3✓ ÷4✓ ÷8✓', companies: ['TCS NQT'], difficulty: 'easy' },
+  { topic: 'Numbers', title: 'Remainder Cycle', content: 'For a^n mod d: find repeating pattern in remainders', example: '2^100 mod 3: cycle 2,1 → even power → rem 1', companies: ['TCS NQT', 'Infosys'], difficulty: 'hard' },
+  { topic: 'HCF & LCM', title: 'HCF × LCM = Product', content: 'HCF×LCM = A×B. Fractions: HCF(num)/LCM(den)', example: '12,18: HCF=6, LCM=36. 6×36=216=12×18', companies: ['TCS NQT'], difficulty: 'easy' },
+  { topic: 'Ages', title: 'Ratio + Years Method', content: 'Ages in ratio a:b → assume aK, bK. Use years condition to find K', example: 'Father 3×son, after 12yrs 2×son → son=12', companies: ['TCS NQT', 'Infosys'], difficulty: 'medium' },
+  { topic: 'Calendar', title: 'Odd Days Method', content: '1yr=1odd, Leap=2, 100yrs=5, 200=3, 300=1, 400=0', example: 'Count odd days to find weekday of any date', companies: ['TCS NQT'], difficulty: 'medium' },
+  { topic: 'Clocks', title: 'Angle Formula', content: 'Angle = |30H - 5.5M|°. Overlap 11 times/12hrs', example: '3:30 → |90-165| = 75°', companies: ['TCS NQT', 'Wipro'], difficulty: 'medium' },
+  { topic: 'P & C', title: 'Permutation vs Combination', content: 'nPr = n!/(n-r)! order matters. nCr = n!/(r!(n-r)!) no order', example: '5P3=60, 5C3=10', companies: ['TCS NQT', 'Infosys'], difficulty: 'hard' },
+  { topic: 'Probability', title: 'Basic Rules', content: 'P=fav/total. P(A∪B)=P(A)+P(B)-P(A∩B). Independent: multiply', example: 'Two dice both even: 1/2 × 1/2 = 1/4', companies: ['TCS NQT', 'Infosys', 'Wipro'], difficulty: 'medium' },
+  { topic: 'Averages', title: 'Add/Remove Formula', content: 'Add X: new avg = (NA+X)/(N+1). Remove: (NA-X)/(N-1)', example: 'Avg of 5 = 20, add 32 → 132/6 = 22', companies: ['TCS NQT'], difficulty: 'easy' },
+  { topic: 'Mixtures', title: 'Allegation Cross', content: 'Ratio = (P2-Pm):(Pm-P1). Cross diagram for any mixing problem', example: '₹40+₹60 tea for ₹45 → ratio 3:1', companies: ['TCS NQT', 'Infosys'], difficulty: 'medium' },
+  { topic: 'Partnership', title: 'Investment × Time', content: 'Profit ratio = I₁×T₁ : I₂×T₂', example: '₹5000×12m : ₹8000×9m = 5:6', companies: ['Infosys SP'], difficulty: 'medium' },
+  { topic: 'Progressions', title: 'AP & GP Formulas', content: 'AP: nth=a+(n-1)d, Sum=n/2×(first+last). GP: nth=ar^(n-1)', example: 'Sum 1 to 100 = 5050', companies: ['TCS NQT', 'Infosys'], difficulty: 'medium' },
+];
+
+const TOPICS = ['All', 'Ratio & Proportion', 'Percentage', 'Profit & Loss', 'Speed & Distance', 'Trains', 'Boats', 'Time & Work', 'Interest', 'Numbers', 'HCF & LCM', 'Ages', 'Calendar', 'Clocks', 'P & C', 'Probability', 'Averages', 'Mixtures', 'Partnership', 'Progressions'];
+
+const DIFF_BG = { easy: 'rgba(16,185,129,0.12)', hard: 'rgba(239,68,68,0.12)', medium: 'rgba(245,158,11,0.12)' };
+const DIFF_FG = { easy: '#10b981', hard: '#ef4444', medium: '#f59e0b' };
+
+function ModeTabs({ mode, setMode }) {
+  const tabs = [
+    { key: 'train', label: 'Training', icon: Zap },
+    { key: 'shortcuts', label: 'Shortcuts', icon: BookOpen },
+  ];
+  return (
+    <div style={{ display: 'inline-flex', gap: 4, padding: 4, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.12)', borderRadius: 12, marginBottom: 20 }}>
+      {tabs.map(t => {
+        const active = mode === t.key;
+        const Icon = t.icon;
+        return (
+          <button key={t.key} onClick={() => setMode(t.key)} style={{
+            display: 'flex', alignItems: 'center', gap: 7, padding: '8px 16px', borderRadius: 9,
+            border: 'none', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700,
+            background: active ? '#6366f1' : 'transparent', color: active ? '#fff' : '#9ca3af',
+          }}>
+            <Icon size={15} />{t.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+function ShortcutsView({ mode, setMode }) {
+  const [search, setSearch] = useState('');
+  const [topic, setTopic] = useState('All');
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return TRICKS.filter(t => {
+      if (topic !== 'All' && t.topic !== topic) return false;
+      if (!q) return true;
+      return (
+        t.topic.toLowerCase().includes(q) ||
+        t.title.toLowerCase().includes(q) ||
+        t.content.toLowerCase().includes(q) ||
+        t.example.toLowerCase().includes(q) ||
+        t.companies.some(c => c.toLowerCase().includes(q))
+      );
+    });
+  }, [search, topic]);
+
+  return (
+    <div style={{ fontFamily: 'Outfit,sans-serif', width: '100%' }}>
+      <ModeTabs mode={mode} setMode={setMode} />
+
+      <div style={{ marginBottom: 20 }}>
+        <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 28, fontWeight: 800, color: '#e2e8f0', marginBottom: 4 }}>Aptitude Shortcuts</h1>
+        <p style={{ color: '#9ca3af', fontSize: 14 }}>Quick tricks for TCS NQT, Infosys SP, Wipro NLTH</p>
+      </div>
+
+      <div style={{ position: 'relative', marginBottom: 16 }}>
+        <Search size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#6b7280' }} />
+        <input
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Search shortcuts, topics, formulas..."
+          style={{
+            width: '100%', padding: '12px 14px 12px 40px', borderRadius: 12,
+            background: '#13131f', border: '1px solid rgba(99,102,241,0.12)',
+            color: '#e2e8f0', fontSize: 14, fontFamily: 'Outfit,sans-serif', outline: 'none',
+          }}
+        />
+      </div>
+
+      <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4, marginBottom: 18, scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        {TOPICS.map(tp => {
+          const active = topic === tp;
+          return (
+            <button key={tp} onClick={() => setTopic(tp)} style={{
+              flexShrink: 0, padding: '7px 14px', borderRadius: 20, cursor: 'pointer',
+              fontSize: 12, fontFamily: 'JetBrains Mono,monospace', whiteSpace: 'nowrap',
+              background: active ? '#6366f1' : 'transparent',
+              color: active ? '#fff' : '#9ca3af',
+              border: active ? '1px solid #6366f1' : '1px solid rgba(99,102,241,0.18)',
+            }}>{tp}</button>
+          );
+        })}
+      </div>
+
+      <div style={{ fontSize: 12, color: '#6b7280', fontFamily: 'JetBrains Mono,monospace', marginBottom: 14 }}>
+        Showing {filtered.length} of {TRICKS.length} shortcuts
+      </div>
+
+      {filtered.length === 0 ? (
+        <div style={{ padding: 40, textAlign: 'center', color: '#6b7280', fontFamily: 'JetBrains Mono,monospace', fontSize: 13 }}>
+          No shortcuts match your search.
+        </div>
+      ) : filtered.map((trick, i) => (
+        <div key={i} style={{
+          background: '#13131f',
+          border: '1px solid rgba(99,102,241,0.12)',
+          borderRadius: 14, padding: '20px 22px',
+          marginBottom: 14,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: 'rgba(99,102,241,0.12)', color: '#818cf8', fontFamily: 'JetBrains Mono,monospace' }}>{trick.topic}</span>
+            <span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 20, background: DIFF_BG[trick.difficulty], color: DIFF_FG[trick.difficulty] }}>{trick.difficulty}</span>
+          </div>
+          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 17, fontWeight: 700, color: '#e2e8f0', marginBottom: 8 }}>{trick.title}</div>
+          <div style={{ fontSize: 14, color: '#9ca3af', lineHeight: 1.7, marginBottom: 12 }}>{trick.content}</div>
+          <div style={{ background: 'rgba(99,102,241,0.06)', borderRadius: 10, padding: '10px 14px', marginBottom: 10 }}>
+            <span style={{ fontSize: 11, color: '#818cf8', fontFamily: 'JetBrains Mono,monospace' }}>EXAMPLE</span>
+            <div style={{ fontSize: 13, color: '#d1d5db', marginTop: 4 }}>{trick.example}</div>
+          </div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {trick.companies.map(c => (
+              <span key={c} style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'rgba(255,255,255,0.04)', color: '#6b7280', fontFamily: 'JetBrains Mono,monospace' }}>{c}</span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function AptitudePage() {
   const { token, ready } = useToken();
   const { userPlan } = usePermission();
+  const [mode, setMode] = useState('train');
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [phase, setPhase] = useState('list');
@@ -67,6 +219,9 @@ export default function AptitudePage() {
     } catch (e) { toast.error(e.message); }
     setSubmitting(false);
   }
+
+  // Shortcuts is static reference — render instantly, no API/auth dependency.
+  if (mode === 'shortcuts') return <ShortcutsView mode={mode} setMode={setMode} />;
 
   if (loading) return <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center', fontFamily: 'JetBrains Mono,monospace' }}>Loading aptitude...</div>;
 
@@ -172,6 +327,7 @@ export default function AptitudePage() {
   return (
   <PermissionGate feature="aptitude_training">
   <div style={{ fontFamily: 'Outfit,sans-serif', width: '100%' }}>
+    <ModeTabs mode={mode} setMode={setMode} />
     <div style={{ marginBottom: 24 }}>
       <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 26, fontWeight: 800, color: '#e8f4ff', marginBottom: 4 }}>🧠 Aptitude Training</h1>
       <p style={{ color: '#5a7a9a', fontSize: 13 }}>Quant, Logical, Verbal. Crack TCS, Infosys, Wipro placement tests.</p>
