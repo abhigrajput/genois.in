@@ -220,8 +220,12 @@ export default function AptitudePage() {
     setSubmitting(false);
   }
 
-  // Shortcuts is static reference — render instantly, no API/auth dependency.
-  if (mode === 'shortcuts') return <ShortcutsView mode={mode} setMode={setMode} />;
+  // Shortcuts is static reference — render instantly, no API dependency (still plan-gated).
+  if (mode === 'shortcuts') return (
+    <PermissionGate feature="aptitude_training">
+      <ShortcutsView mode={mode} setMode={setMode} />
+    </PermissionGate>
+  );
 
   if (loading) return <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center', fontFamily: 'JetBrains Mono,monospace' }}>Loading aptitude...</div>;
 
