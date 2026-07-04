@@ -7,29 +7,15 @@ import useAuthStore from '@/store/authStore'
 import { useToken } from '@/lib/useApi'
 import TrialBanner from '@/components/TrialBanner'
 import OnboardingTour from '@/components/OnboardingTour'
+import { toEmbedUrl } from '@/lib/youtubeEmbed'
 import {
   Flame, Zap, Trophy, Play, BookOpen, Code2, ClipboardCheck, FileText, Target,
   Bot, Mic, Lightbulb, Rocket, Check, Sparkles, Mail, AlertTriangle, Settings,
 } from 'lucide-react'
 
-function getYouTubeId(url) {
-  if (!url) return null;
-  const patterns = [
-    /youtube\.com\/watch\?v=([^&]+)/,
-    /youtu\.be\/([^?]+)/,
-    /youtube\.com\/embed\/([^?]+)/,
-    /youtube\.com\/shorts\/([^?]+)/,
-  ];
-  for (const p of patterns) {
-    const m = url.match(p);
-    if (m) return m[1];
-  }
-  return null;
-}
-
 function YouTubeEmbed({ url, title }) {
-  const videoId = getYouTubeId(url);
-  if (!videoId) return (
+  const embedUrl = toEmbedUrl(url);
+  if (!embedUrl) return (
     <a href={url} target="_blank" rel="noopener noreferrer" style={{
       display: 'inline-flex', alignItems: 'center', gap: 8,
       padding: '12px 20px', borderRadius: 10, textDecoration: 'none',
@@ -40,7 +26,7 @@ function YouTubeEmbed({ url, title }) {
   return (
     <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(99,102,241,0.15)' }}>
       <iframe
-        src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&color=white`}
+        src={embedUrl}
         title={title || 'Video'}
         frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

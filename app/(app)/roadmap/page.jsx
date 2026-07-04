@@ -4,25 +4,11 @@ import toast from 'react-hot-toast';
 import { roadmapAPI, taskAPI, testAPI, codingAPI, notesAPI } from '@/lib/api';
 import useAuthStore from '@/store/authStore';
 import CodeEditor from '@/components/CodeEditor';
-
-function getYouTubeId(url) {
-  if (!url) return null;
-  const patterns = [
-    /youtube\.com\/watch\?v=([^&]+)/,
-    /youtu\.be\/([^?]+)/,
-    /youtube\.com\/embed\/([^?]+)/,
-    /youtube\.com\/shorts\/([^?]+)/,
-  ];
-  for (const p of patterns) {
-    const m = url.match(p);
-    if (m) return m[1];
-  }
-  return null;
-}
+import { toEmbedUrl } from '@/lib/youtubeEmbed';
 
 function YouTubeEmbed({ url, title }) {
-  const videoId = getYouTubeId(url);
-  if (!videoId) return (
+  const embedUrl = toEmbedUrl(url);
+  if (!embedUrl) return (
     <a href={url} target="_blank" rel="noopener noreferrer" style={{
       display: 'inline-flex', alignItems: 'center', gap: 8,
       padding: '12px 20px', borderRadius: 10, textDecoration: 'none',
@@ -33,7 +19,7 @@ function YouTubeEmbed({ url, title }) {
   return (
     <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(0,255,136,0.15)' }}>
       <iframe
-        src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&color=white`}
+        src={embedUrl}
         title={title || 'Daily Roadmap Video'}
         frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
