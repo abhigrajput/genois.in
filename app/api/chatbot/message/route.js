@@ -5,10 +5,10 @@ import { askClaudeChat } from '@/lib/claude';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { sanitizeChatHistory, sanitizeUserMessage } from '@/lib/security';
 import { updateStreak, getStreakDay, getStreakDayStart } from '@/lib/streak';
-import { buildUserContext } from '@/lib/contextBuilder';
+import { buildFullStudentContext, buildMentorPrompt } from '@/lib/contextBuilder';
 import { searchKnowledgeBase, formatRagContext } from '@/lib/ragSearch';
 
-function buildChatbotSystem(domain, level, mode, userContext = '') {
+function buildChatbotSystem(mentorPrompt, domain, mode, ragContext = '') {
   const modeInstructions = {
     general: 'Answer general CS and engineering questions clearly.',
     coding: 'Focus on clean working code with clear explanations. Always use code blocks.',
@@ -17,16 +17,15 @@ function buildChatbotSystem(domain, level, mode, userContext = '') {
     career: 'Give India-specific tech career advice. Focus on placement, internships, skills for Indian companies.',
   };
 
-  return `${userContext}
+  return `${mentorPrompt}
+${ragContext}
 
-You are GENOIS AI Mentor — a brutally honest placement coach for Indian engineering students.
-Student is learning ${domain} at ${level} level.
+=== THIS CONVERSATION ===
 Mode: ${mode}. ${modeInstructions[mode] || modeInstructions.general}
 
-Rules:
+Formatting rules:
 - Be concise and practical
 - Use code blocks with language tag for any code
-- Be relevant to Tier 2/3 college engineering students in India
 - Never give wrong info — say "I am not sure" if uncertain
 - Keep responses focused and actionable`;
 }
@@ -52,22 +51,20 @@ export async function POST(request) {
     const selectedMode = validModes.includes(mode) ? mode : 'general';
 
     const supabase = getAdminClient();
-    const { data: user } = await supabase
-      .from('users')
-      .select('domain_slug, level, college, college_tier, cgpa, target_companies, weak_subjects, months_to_placement')
-      .eq('id', payload.userId)
-      .single();
 
-    const { systemContext, primaryTarget } = buildUserContext(user);
+    // Deep, performance-aware student context → personalized mentor prompt.
+    const ctx = await buildFullStudentContext(payload.userId);
+    const mentorPrompt = buildMentorPrompt(ctx);
+    const primaryTarget = ctx.targetCompanies[0] || null;
 
-    const ragResults = await searchKnowledgeBase(cleanMessage, user?.domain_slug, primaryTarget, 3);
+    const ragResults = await searchKnowledgeBase(cleanMessage, ctx.domain, primaryTarget, 3);
     const ragContext = formatRagContext(ragResults);
 
     const system = buildChatbotSystem(
-      user?.domain_slug || 'fullstack',
-      user?.level || 'beginner',
+      mentorPrompt,
+      ctx.domain,
       selectedMode,
-      systemContext + ragContext
+      ragContext
     );
 
     const messages = [
@@ -82,7 +79,7 @@ export async function POST(request) {
       message: cleanMessage,
       response,
       mode: selectedMode,
-      domain: user?.domain_slug,
+      domain: ctx.domain,
     });
 
     // Trigger streak on 3rd message of the streak day

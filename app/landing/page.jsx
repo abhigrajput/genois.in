@@ -27,7 +27,7 @@ const STEPS = [
 
 const FEATURES = [
   { icon:Calendar,    title:'Daily Roadmap', desc:'A bite-sized daily plan that adapts to your level and pace.' },
-  { icon:Bot,         title:'AI Mentor', desc:'Stuck at 2 AM? Get answers and guidance instantly.' },
+  { icon:Bot,         title:'AI Mentor', desc:'AI-powered and personalized for you — it reads your real test and coding performance, then adapts every answer to your level.' },
   { icon:Code2,       title:'Coding Challenges', desc:'Daily problems with AI code review and hints.' },
   { icon:Award,       title:'Skill Badges', desc:'Earn proctored, verifiable credentials recruiters trust.' },
   { icon:BarChart3,   title:'Leaderboard', desc:'Compete with your college and climb the rankings.' },
@@ -152,9 +152,12 @@ export default function LandingPage() {
             <h1 className="gen-hero-h1" style={{ fontFamily:'Syne,sans-serif', fontSize:'clamp(40px,6vw,64px)', fontWeight:800, lineHeight:1.05, letterSpacing:-1.5, margin:'0 0 20px', color:WHITE }}>
               Get placed.<br />Not just prepared.
             </h1>
-            <p style={{ fontSize:17, color:'#9ca3af', lineHeight:1.65, margin:'0 0 30px', maxWidth:480 }}>
+            <p style={{ fontSize:17, color:'#9ca3af', lineHeight:1.65, margin:'0 0 18px', maxWidth:480 }}>
               Your first coding challenge is ready in <span style={{ color:WHITE, fontWeight:700 }}>60 seconds</span>.<br />
               Personalized for <span style={{ color:'#cbd5e1', fontWeight:600 }}>YOUR college</span>, <span style={{ color:'#cbd5e1', fontWeight:600 }}>YOUR target company</span>, <span style={{ color:'#cbd5e1', fontWeight:600 }}>YOUR timeline</span>.
+            </p>
+            <p style={{ fontSize:15, color:'#cbd5e1', lineHeight:1.6, margin:'0 0 30px', maxWidth:480, fontWeight:600 }}>
+              GENOIS learns <span style={{ color:PURPLE_LIGHT }}>YOUR level</span>, <span style={{ color:PURPLE_LIGHT }}>YOUR pace</span>, <span style={{ color:PURPLE_LIGHT }}>YOUR weak spots</span> — and adapts every single day.
             </p>
             <div style={{ display:'flex', gap:14, flexWrap:'wrap', marginBottom:30 }}>
               <Link href="/signup" style={{

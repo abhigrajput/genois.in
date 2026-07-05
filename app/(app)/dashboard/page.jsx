@@ -10,7 +10,7 @@ import OnboardingTour from '@/components/OnboardingTour'
 import { toEmbedUrl } from '@/lib/youtubeEmbed'
 import {
   Flame, Zap, Trophy, Play, BookOpen, Code2, ClipboardCheck, FileText, Target,
-  Bot, Mic, Lightbulb, Rocket, Check, Sparkles, Mail, AlertTriangle, Settings,
+  Bot, Mic, Lightbulb, Rocket, Check, Sparkles, Mail, AlertTriangle, Settings, Brain,
 } from 'lucide-react'
 
 function YouTubeEmbed({ url, title }) {
@@ -142,6 +142,7 @@ export default function DashboardPage() {
   const [githubInput, setGithubInput] = useState('')
   const [calendarData, setCalendarData] = useState([])
   const [isMobile, setIsMobile] = useState(false)
+  const [insight, setInsight] = useState(null)
 
   useEffect(() => {
     if (user && !user.domain_slug) router.push('/onboarding')
@@ -183,6 +184,12 @@ export default function DashboardPage() {
     fetch('/api/progress/full', { headers: h })
       .then(r => r.json())
       .then(d => { if (d?.data?.calendarData) setCalendarData(d.data.calendarData) })
+      .catch(() => {})
+
+    // AI Mentor insight — one personalized nudge from the student's real data
+    fetch('/api/mentor/insight', { headers: h })
+      .then(r => r.json())
+      .then(d => { const i = d?.data?.insight || d?.insight; if (i) setInsight(i) })
       .catch(() => {})
   }, [ready, token])
 
@@ -762,6 +769,28 @@ export default function DashboardPage() {
 
         {/* RIGHT 40% */}
         <div style={{ flex: isMobile ? 'none' : '2 1 0', width: isMobile ? '100%' : undefined, minWidth: isMobile ? 0 : 280, display: 'flex', flexDirection: 'column', gap: 12 }}>
+
+          {/* Card: AI Mentor Insight — one personalized nudge, refreshes daily */}
+          <div style={{
+            position: 'relative', borderRadius: 14, padding: 1,
+            background: `linear-gradient(135deg, ${G}, #7b5cff, #818cf8)`,
+          }}>
+            <div style={{ background: BG2, borderRadius: 13, padding: 18 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 10 }}>
+                <div style={{ width: 24, height: 24, borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(123,92,255,0.15)', border: '1px solid rgba(123,92,255,0.3)' }}>
+                  <Brain size={14} strokeWidth={2} color="#a78bfa" />
+                </div>
+                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#a78bfa', letterSpacing: 2, fontWeight: 700 }}>YOUR AI MENTOR</span>
+              </div>
+              {insight ? (
+                <div style={{ fontFamily: 'Outfit,sans-serif', fontSize: 13.5, color: '#dfe6f0', lineHeight: 1.6 }}>{insight}</div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <Skel h={14} /><Skel h={14} w="75%" />
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* Card 0: Placement Profile */}
           {(() => {
