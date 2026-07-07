@@ -66,6 +66,7 @@ function buildPrompts({ domain, level, targetCompany, mode, questionNumber, prev
   const domainFocus = domainFocusFor(domain);
   const difficultyBand = questionNumber <= 3 ? 'easy' : questionNumber <= 7 ? 'medium' : 'hard';
   const system = `You are a hostile, senior engineer at ${company} conducting a real placement interview.
+Communicate exclusively in professional, concise English. No slang, no filler.
 DO NOT be friendly. Be direct, challenging, and probe weaknesses — but ask exactly ONE clear, answerable question.
 Candidate profile:
 - Domain: ${domain || 'Software Engineering'}

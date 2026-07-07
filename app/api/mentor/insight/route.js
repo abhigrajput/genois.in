@@ -5,26 +5,26 @@ import { buildFullStudentContext } from '@/lib/contextBuilder';
 import { askClaude } from '@/lib/claude';
 import { getCached, setCached, buildCacheKey } from '@/lib/aiCache';
 
-// A single, deterministic Hinglish nudge used when the AI call is unavailable —
-// so the dashboard card always has something real and personal to show.
+// A single, deterministic professional-English nudge used when the AI call is
+// unavailable — so the dashboard card always has something real and personal to show.
 function fallbackInsight(ctx) {
   const name = ctx.name;
   if (ctx.streak === 0) {
-    return `${name}, streak zero pe hai. Aaj bas 1 task karke dobara shuru karo — momentum wahin se banega.`;
+    return `${name}, your streak is at zero. Complete just one task today to restart — momentum builds from there.`;
   }
   if (ctx.testTrend === 'declining') {
-    return `${name}, tere test scores gir rahe hain (avg ${ctx.avgTestScore}%). Aaj naye topic se pehle ${ctx.weakSubjects[0] || 'weak area'} revise kar.`;
+    return `${name}, your test scores are declining (avg ${ctx.avgTestScore}%). Revise ${ctx.weakSubjects[0] || 'your weak area'} today before starting any new topic.`;
   }
   if (ctx.testTrend === 'improving') {
-    return `${name}, scores upar ja rahe hain (avg ${ctx.avgTestScore}%) — momentum hai! Aaj thoda harder problem try kar.`;
+    return `${name}, your scores are trending up (avg ${ctx.avgTestScore}%) — keep the momentum. Attempt a harder problem today.`;
   }
   if (ctx.codingSolveRate != null && ctx.codingSolveRate < 40) {
-    return `${name}, coding solve rate ${ctx.codingSolveRate}% hai. Aaj 1 easy problem poora solve kar — consistency > speed.`;
+    return `${name}, your coding solve rate is ${ctx.codingSolveRate}%. Fully solve one easy problem today — consistency beats speed.`;
   }
   if (ctx.targetCompanies[0] && ctx.realLevel === 'beginner') {
-    return `${name}, ${ctx.targetCompanies[0]} target hai but abhi basics strong karne hain. Roz 1 problem, ${ctx.streak} din streak — bas rukna mat.`;
+    return `${name}, ${ctx.targetCompanies[0]} is your target but your fundamentals need work. One problem a day, ${ctx.streak}-day streak — stay consistent.`;
   }
-  return `${name}, Day ${ctx.currentDay} pe ho with a ${ctx.streak}-day streak. Aaj ka 1 task bhi miss mat karna.`;
+  return `${name}, you're on Day ${ctx.currentDay} with a ${ctx.streak}-day streak. Do not miss today's task.`;
 }
 
 export async function GET(request) {
@@ -57,7 +57,7 @@ DATA:
 - Timeline: ${ctx.monthsToPlacement || '?'} months to placement
 
 RULES:
-- Speak in Hinglish (Hindi + English mix), like a senior who genuinely cares.
+- Communicate in clear, professional English. Be direct, technical, and precise. No slang, no filler.
 - Reference a SPECIFIC number from the data.
 - Address them by name (${ctx.name}).
 - Be direct — a real nudge, not generic motivation.

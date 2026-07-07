@@ -51,7 +51,7 @@ Include:
 5. Common mistakes to avoid
 6. Interview tips
 
-Format with clear headings. Use simple Hinglish-friendly English (Indian student level).`;
+Format with clear headings. Use clear, professional English (Indian student level).`;
 
     let notes = '';
     try {

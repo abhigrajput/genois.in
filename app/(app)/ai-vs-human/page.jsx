@@ -8,34 +8,34 @@ const MUTED = '#8b93a1';
 const LOSE_CARDS = [
   {
     icon: '🧠',
-    title: 'Creativity mein main fail hoon',
-    says: 'Ek naya idea, ek original solution, ek "aha!" moment — yeh sirf insaan ke paas hota hai. Main patterns dhundta hoon, tum patterns todte ho.',
-    challenge: 'Aaj ek coding problem aisa solve karo jo maine suggest nahi kiya tha.',
+    title: 'I fail at creativity',
+    says: 'A new idea, an original solution, an "aha!" moment — those belong to humans alone. I find patterns; you break them.',
+    challenge: 'Today, solve a coding problem in a way I never suggested.',
     btn: 'Accept Challenge →',
     href: '/coding',
   },
   {
     icon: '💪',
-    title: 'Pressure mein main ghabra jaata hoon',
-    says: 'Real interview mein, jab HR tumse ghoor ke poochhe "Why should we hire you?" — main wahan nahi hoon. Woh moment sirf tumhara hai.',
-    challenge: 'Aaj voice interview mein 8/10 score karo. Prove karo pressure handle kar sakte ho.',
+    title: 'I panic under pressure',
+    says: 'In a real interview, when HR looks you in the eye and asks "Why should we hire you?" — I am not there. That moment is entirely yours.',
+    challenge: 'Score 8/10 in a voice interview today. Prove you can handle the pressure.',
     btn: 'Take Voice Interview →',
     href: '/voice-interview',
   },
   {
     icon: '🔥',
-    title: 'Consistency mein main zero hoon',
-    says: 'Main shutdown ho jaata hoon, update ho jaata hoon, reset ho jaata hoon. Tumhari 30-day streak — woh main kabhi nahi bana sakta. Sirf insaan yeh kar sakta hai.',
-    challenge: 'Aaj ka task complete karo. Ek din main nahi jeet sakta — tu jeet sakta hai.',
+    title: 'I am zero at consistency',
+    says: 'I shut down, I update, I reset. Your 30-day streak — I can never build that. Only a human can.',
+    challenge: "Complete today's task. I can't win a single day — you can.",
     btn: "Complete Today's Task →",
     href: '/roadmap',
   },
 ];
 
 const AI_WINS = [
-  '24/7 available — 3 AM ka doubt bhi instant solve',
-  '1000 topics yaad — koi bhi topic kabhi forget nahi hota',
-  'No judgment — galat answer pe main kabhi judge nahi karta',
+  '24/7 available — even a 3 AM doubt gets solved instantly',
+  '1000 topics memorized — I never forget a single one',
+  'No judgment — I never judge you for a wrong answer',
 ];
 
 export default function AIvsHumanPage() {
@@ -48,7 +48,7 @@ export default function AIvsHumanPage() {
           AI vs Human 🤖
         </h1>
         <p style={{ color: MUTED, fontSize: 16, lineHeight: 1.6, maxWidth: 640, margin: '0 auto' }}>
-          Main (AI) hoon — aur main honestly bolunga: kuch cheezein main kabhi nahi kar sakta.
+          I am the AI — and I'll be honest: there are some things I can never do.
         </p>
       </div>
 
@@ -87,7 +87,7 @@ export default function AIvsHumanPage() {
       {/* Where AI wins */}
       <div style={{ marginBottom: 44 }}>
         <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 22, fontWeight: 800, color: '#f8fafc', textAlign: 'center', margin: '0 0 20px' }}>
-          Lekin jahan main tumse better hoon 👇
+          But here's where I'm better than you 👇
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14 }}>
           {AI_WINS.map((w, i) => (
@@ -108,7 +108,7 @@ export default function AIvsHumanPage() {
         border: '1px solid rgba(99,102,241,0.22)',
       }}>
         <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 28, fontWeight: 800, color: '#f8fafc', margin: '0 0 20px', lineHeight: 1.3 }}>
-          Tum + Main = Unstoppable.<br />Shuru karte hain?
+          You + Me = Unstoppable.<br />Shall we begin?
         </h2>
         <Link href="/dashboard" style={{
           display: 'inline-block', padding: '14px 32px', borderRadius: 12, textDecoration: 'none',

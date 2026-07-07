@@ -8,13 +8,13 @@ const MUTED = '#8b93a1';
 
 // Day-of-week messages. [name] is replaced with the user's first name.
 const DAY_MESSAGES = [
-  'Sunday grind! Most students aaj chhod dete hain — tu nahi 😎',                          // 0 Sun
-  'Aye [name] bhai! Naya hapta shuru ho gaya 💪 Aaj ka roadmap ready hai — shuru karte hain?', // 1 Mon
-  'Kya haal hai [name]? 😄 Kal accha kiya — aaj aur better karenge!',                        // 2 Tue
-  'Bich hafte ka dard samajhta hoon 😅 Par tu kar sakta hai. Aaj ka task complete karega?',  // 3 Wed
-  'Almost weekend [name]! 🔥 Ek aur strong day — streak mat todna!',                         // 4 Thu
-  'TGIF bhai! 🎉 Aaj complete kar toh weekend chill pe jaata hai!',                          // 5 Fri
-  'Weekend mein bhi aaya! 💪 Yeh dedication hi placement dilayega [name]!',                  // 6 Sat
+  'Sunday effort. Most students quit today — you won\'t. 😎',                     // 0 Sun
+  'New week, [name]. Your roadmap is ready. Let\'s start strong. 💪',             // 1 Mon
+  'Good progress yesterday. Today, aim higher. 😄',                              // 2 Tue
+  'Midweek push. Complete today\'s task to keep your streak. 🔥',                 // 3 Wed
+  'Almost the weekend. Don\'t break the streak now, [name]. 🔥',                  // 4 Thu
+  'Finish today\'s task and enjoy your weekend. 🎉',                             // 5 Fri
+  'Weekend grind. This dedication is what gets you placed, [name]. 💪',          // 6 Sat
 ];
 
 function todayKey() {
@@ -30,7 +30,7 @@ export default function DailyCheckIn({ name }) {
   const [open, setOpen] = useState(false);       // popup open
   const [busyReply, setBusyReply] = useState(false);
 
-  const firstName = (name || '').trim().split(/\s+/)[0] || 'bhai';
+  const firstName = (name || '').trim().split(/\s+/)[0] || 'there';
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -89,7 +89,7 @@ export default function DailyCheckIn({ name }) {
           {/* Body */}
           <div style={{ padding: '16px' }}>
             <div style={{ background: 'rgba(99,102,241,0.14)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: '4px 14px 14px 14px', padding: '11px 14px', color: '#f1f5f9', fontSize: 14, lineHeight: 1.55, marginBottom: 14 }}>
-              {busyReply ? 'Koi baat nahi! 15 min bhi kaafi hai. All the best! 🙌' : message}
+              {busyReply ? 'No problem! Even 15 minutes counts. All the best! 🙌' : message}
             </div>
 
             {!busyReply && (
@@ -99,14 +99,14 @@ export default function DailyCheckIn({ name }) {
                   background: `linear-gradient(135deg, ${PURPLE}, #4f46e5)`, color: '#fff',
                   fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700,
                 }}>
-                  Haan bhai, kar lunga! 💪
+                  I'll do it 💪
                 </button>
                 <button onClick={handleBusy} style={{
                   padding: '11px 14px', borderRadius: 10, cursor: 'pointer',
                   background: 'transparent', border: '1px solid rgba(99,102,241,0.25)', color: '#c7d2fe',
                   fontFamily: 'Outfit,sans-serif', fontSize: 13.5, fontWeight: 600,
                 }}>
-                  Aaj busy hoon 😅
+                  Busy today 😅
                 </button>
               </div>
             )}
