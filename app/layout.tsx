@@ -23,6 +23,7 @@ export const viewport = {
   width: 'device-width',
   initialScale: 1,
   themeColor: '#6366f1',
+  viewportFit: 'cover', // required so env(safe-area-inset-*) resolves on notched phones
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -26,6 +26,19 @@ const MODES = [
 
 const COMPANIES = ['TCS', 'Infosys', 'Wipro', 'Accenture', 'Cognizant', 'Amazon', 'Microsoft', 'Google', 'Flipkart'];
 
+// Collapse immediate word repetitions ("so so well" → "so well") that the
+// Web Speech API can leave behind when final results overlap. Applied on submit.
+function cleanTranscript(text) {
+  if (!text) return text;
+  const words = text.split(/\s+/);
+  const cleaned = [];
+  for (let i = 0; i < words.length; i++) {
+    if (i > 0 && words[i].toLowerCase() === words[i - 1].toLowerCase()) continue;
+    cleaned.push(words[i]);
+  }
+  return cleaned.join(' ');
+}
+
 const wordsOf = (s) => (s || '').trim().split(/\s+/).filter(Boolean).length;
 const avg = (arr) => (arr.length ? Math.round(arr.reduce((a, b) => a + b, 0) / arr.length) : 0);
 const barColor = (v) => (v >= 75 ? GREEN : v >= 55 ? AMBER : RED);
@@ -80,6 +93,7 @@ export default function VoiceInterviewPage() {
   const [transcript, setTranscript] = useState('');
   const [interim, setInterim] = useState('');
   const recognitionRef = useRef(null);
+  const finalTranscriptRef = useRef(''); // accumulates confirmed final text — dedup source of truth
   const shareRef = useRef(null);
 
   const currentQ = questions[qIndex];
@@ -142,6 +156,11 @@ export default function VoiceInterviewPage() {
   const startListening = async () => {
     if (typeof window === 'undefined') return;
 
+    // Seed the dedup ref from whatever's already transcribed so a resumed
+    // ("Tap to add more") session appends instead of overwriting. A fresh
+    // question resets transcript to '' first, so this starts empty then.
+    finalTranscriptRef.current = transcript ? transcript.trim() + ' ' : '';
+
     // Step 1: Trigger browser permission popup explicitly
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -188,7 +207,13 @@ export default function VoiceInterviewPage() {
         if (event.results[i].isFinal) finalText += t + ' ';
         else interimText += t;
       }
-      if (finalText) setTranscript(prev => (prev + ' ' + finalText).trim());
+      // Accumulate ONLY the newly-finalized text into a ref, then mirror it into
+      // state. Mutating the ref inside the event handler (not via a functional
+      // state updater) avoids double-appends and overlapping-segment loops.
+      if (finalText) {
+        finalTranscriptRef.current += finalText;
+        setTranscript(finalTranscriptRef.current.trim());
+      }
       setInterim(interimText);
     };
 
@@ -252,6 +277,7 @@ export default function VoiceInterviewPage() {
 
   async function fetchQuestion(qNum, revertStatus) {
     stopListening();
+    finalTranscriptRef.current = '';
     setTranscript(''); setInterim(''); setElapsed(0);
     setStatus('loadingQ');
     try {
@@ -279,7 +305,7 @@ export default function VoiceInterviewPage() {
   }
 
   async function submitAnswer() {
-    const answerText = liveText;
+    const answerText = cleanTranscript(liveText);
     const wc = wordsOf(answerText);
     if (wc < MIN_WORDS) { toast.error(`Speak a bit more — at least ${MIN_WORDS} words (you have ${wc}).`); return; }
     stopListening();
@@ -352,6 +378,7 @@ export default function VoiceInterviewPage() {
 
   function retake() {
     stopListening();
+    finalTranscriptRef.current = '';
     setStatus('idle'); setQuestions([]); setAnswers([]); setEvaluations([]); setQIndex(0);
     setSummary(null); setPercentile(null); setTranscript(''); setInterim(''); setShowDetails(false);
   }
@@ -415,7 +442,7 @@ export default function VoiceInterviewPage() {
   if (status === 'question' && currentQ) {
     const enough = liveWords >= MIN_WORDS;
     return (
-      <div style={{ maxWidth: 760, margin: '0 auto', fontFamily: 'Outfit,sans-serif' }}>
+      <div style={{ maxWidth: 760, margin: '0 auto', fontFamily: 'Outfit,sans-serif', paddingBottom: 'calc(120px + env(safe-area-inset-bottom))' }}>
         <style dangerouslySetInnerHTML={{ __html: keyframes }} />
 
         {/* interviewer bar */}
@@ -502,7 +529,7 @@ export default function VoiceInterviewPage() {
             {liveWords} words {enough ? '✓' : `· need ${MIN_WORDS}+`}
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
-            {(transcript || interim) && <button onClick={() => { setTranscript(''); setInterim(''); }} style={{ padding: '11px 16px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: MUTED, cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 13 }}>Clear</button>}
+            {(transcript || interim) && <button onClick={() => { finalTranscriptRef.current = ''; setTranscript(''); setInterim(''); }} style={{ padding: '11px 16px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: MUTED, cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 13 }}>Clear</button>}
             <button onClick={submitAnswer} disabled={!enough} style={{ padding: '11px 22px', borderRadius: 10, border: 'none', cursor: enough ? 'pointer' : 'not-allowed', background: enough ? `linear-gradient(135deg,${GREEN},${CYAN})` : 'rgba(255,255,255,0.06)', color: enough ? '#020812' : MUTED, fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14 }}>Submit Answer →</button>
           </div>
         </div>

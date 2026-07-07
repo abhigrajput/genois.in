@@ -292,7 +292,7 @@ export default function AppLayout({ children }) {
           </div>
         </header>
 
-        <main style={{ flex: 1, minWidth: 0, width: '100%', overflowY: 'auto', padding: isMobile ? '16px 12px' : '24px' }} className="page-fade">
+        <main style={{ flex: 1, minWidth: 0, width: '100%', overflowY: 'auto', padding: isMobile ? '16px 12px' : '24px', paddingBottom: isMobile ? 'calc(96px + env(safe-area-inset-bottom))' : 'calc(40px + env(safe-area-inset-bottom))' }} className="page-fade">
           {children}
         </main>
 
