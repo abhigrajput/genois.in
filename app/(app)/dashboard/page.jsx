@@ -140,6 +140,8 @@ export default function DashboardPage() {
   const [videoEligible, setVideoEligible] = useState(false)
   const [streakAtRisk, setStreakAtRisk] = useState(false)
   const [githubInput, setGithubInput] = useState('')
+  const [submittingProject, setSubmittingProject] = useState(false)
+  const [projectDone, setProjectDone] = useState(false)
   const [calendarData, setCalendarData] = useState([])
   const [isMobile, setIsMobile] = useState(false)
   const [insight, setInsight] = useState(null)
@@ -317,6 +319,52 @@ export default function DashboardPage() {
   const coding = rm?.coding || {}
   const project = rm?.project || {}
   const notes = rm?.notes || {}
+
+  // Project already submitted? Reflect server state (from /api/roadmap/daily)
+  // or a submission made this session.
+  const projectProgress = rm?.projectProgress || null
+  const projectSubmitted = projectDone || ['submitted', 'reviewed'].includes(projectProgress?.status)
+
+  // Submit the project's GitHub repo straight from the dashboard — same endpoint
+  // and payload the /roadmap project form uses. Defined after the derived vars
+  // (week/project/user) so it can close over them without a TDZ error.
+  async function submitDashboardProject() {
+    if (!token || submittingProject) return
+    if (!githubInput || !githubInput.includes('github.com')) {
+      toast.error('Enter a valid GitHub repository URL')
+      return
+    }
+    if (!project?.id) {
+      toast.error('Project isn\'t ready yet — open the Roadmap to submit.')
+      return
+    }
+    setSubmittingProject(true)
+    try {
+      const res = await fetch('/api/projects/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({
+          projectTitle: project.title,
+          githubUrl: githubInput,
+          week,
+          domain: user?.domain_slug,
+          notes: '',
+          projectId: project.id,
+        }),
+      })
+      const d = await res.json()
+      if (d.success) {
+        toast.success(d.data?.message || 'Project submitted! AI review incoming.', { style: { background: BG2, color: G } })
+        setProjectDone(true)
+      } else {
+        toast.error(d.message || 'Submission failed')
+      }
+    } catch {
+      toast.error('Project submission failed')
+    } finally {
+      setSubmittingProject(false)
+    }
+  }
 
   const doneTasks = TASK_META.filter(tm => completedMask & tm.bit).length
   const allDone = completedMask === 31
@@ -635,14 +683,30 @@ export default function DashboardPage() {
                     ))}
                   </div>
                 )}
-                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                  {project?.githubUrl && (
-                    <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" style={{ padding: '10px 20px', borderRadius: 8, background: G, color: '#0a0a0f', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
-                      Submit on GitHub →
-                    </a>
-                  )}
-                  <input value={githubInput} onChange={e => setGithubInput(e.target.value)} placeholder="Your GitHub repo URL..." style={{ flex: 1, minWidth: 200, padding: '10px 14px', borderRadius: 8, border: `1px solid rgba(0,217,163,0.2)`, background: '#0a0a0f', color: '#e8e8ed', fontSize: 13, fontFamily: 'var(--font-body)', outline: 'none' }} />
-                </div>
+                {projectSubmitted ? (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px', borderRadius: 8, background: 'rgba(0,217,163,0.08)', border: `1px solid ${G20}`, color: G, fontSize: 13, fontFamily: 'var(--font-body)' }}>
+                    <Check size={16} strokeWidth={2.5} />
+                    {projectProgress?.status === 'reviewed'
+                      ? 'Reviewed — see feedback on the Roadmap page.'
+                      : 'Submitted! AI review will be ready in 2-3 minutes.'}
+                  </div>
+                ) : (
+                  <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                    <input
+                      value={githubInput}
+                      onChange={e => setGithubInput(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') submitDashboardProject() }}
+                      placeholder="https://github.com/you/your-project"
+                      style={{ flex: 1, minWidth: 200, padding: '10px 14px', borderRadius: 8, border: `1px solid rgba(0,217,163,0.2)`, background: '#0a0a0f', color: '#e8e8ed', fontSize: 13, fontFamily: 'var(--font-body)', outline: 'none' }}
+                    />
+                    <button
+                      onClick={submitDashboardProject}
+                      disabled={submittingProject}
+                      style={{ padding: '10px 20px', borderRadius: 8, border: 'none', background: G, color: '#0a0a0f', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14, cursor: submittingProject ? 'not-allowed' : 'pointer', opacity: submittingProject ? 0.6 : 1, flexShrink: 0 }}>
+                      {submittingProject ? 'Submitting…' : 'Submit on GitHub →'}
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <>
