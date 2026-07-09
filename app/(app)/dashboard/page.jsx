@@ -170,8 +170,37 @@ export default function DashboardPage() {
       const rd = rm?.data || rm || {}
       const ld = lb?.data || lb || {}
 
+      // /api/roadmap/daily returns { roadmapItem: { video_url, resource_url,
+      // coding_problem, ... }, codingProblem, objectives, ... } but this card
+      // renders a FLATTENED shape ({ topic, video:{url,title}, resource:{url},
+      // coding:{title,url,difficulty} }). Without this map the Today card showed
+      // a placeholder topic and no video. Spread rd first so nothing else breaks.
+      const ri = rd.roadmapItem || {}
+      const DIFF_MAP = { beginner: 'Easy', intermediate: 'Medium', advanced: 'Hard', expert: 'Hard' }
+      const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : '')
+      const mappedRoadmap = {
+        ...rd,
+        topic: ri.topic || rd.topic,
+        description: ri.description,
+        week: rd.currentWeek || rd.week,
+        level: cap(ri.difficulty) || 'Beginner',
+        objectives: rd.objectives || ri.objectives || [],
+        keyConcepts: rd.keyConcepts || ri.key_concepts || [],
+        isProjectDay: rd.isProjectDay ?? ri.is_project_day ?? false,
+        project: rd.project || ri.project || {},
+        video: ri.video_url ? { url: ri.video_url, title: ri.topic, description: ri.description } : {},
+        resource: ri.resource_url ? { url: ri.resource_url, title: 'Learning Resource' } : {},
+        coding: {
+          title: (rd.codingProblem || ri.coding_problem) ? "Today's Challenge" : undefined,
+          description: rd.codingProblem || ri.coding_problem || '',
+          url: rd.codingProblemUrl || ri.coding_problem_url || ri.doc_url || '',
+          difficulty: DIFF_MAP[ri.difficulty] || 'Medium',
+        },
+        notes: {},
+      }
+
       setAnalytics(ad)
-      setRoadmap(rd)
+      setRoadmap(mappedRoadmap)
       setLbData(ld)
 
       const tasks = ad?.today?.tasks || []

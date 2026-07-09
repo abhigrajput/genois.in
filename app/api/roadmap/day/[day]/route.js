@@ -3,6 +3,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { successResponse, errorResponse } from '@/lib/response';
 import { generateDayContent } from '@/lib/curriculumGenerator';
+import { youtubeSearchUrl } from '@/lib/youtubeEmbed';
 
 const TASK_TYPES = ['video', 'resource', 'coding', 'test', 'notes'];
 const TOTAL_TASKS = 5;
@@ -189,6 +190,10 @@ export async function GET(request, { params }) {
       }
       if (dbProj) dayContent.project.id = dbProj.id;
     }
+
+    // Neutralize hallucinated/stale video URLs from older cache rows with a
+    // guaranteed-working topic search link (mirrors /api/roadmap/daily).
+    if (roadmapItem) roadmapItem.video_url = youtubeSearchUrl(roadmapItem.topic);
 
     const tasks = await ensureTasksExist(
       supabase, payload.userId, dayNumber, roadmapItem.id, user.domain_slug, roadmapItem.topic

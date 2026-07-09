@@ -1,4 +1,5 @@
 import { fetchDSAVideo } from '@/lib/youtubeSearch';
+import { youtubeSearchUrl } from '@/lib/youtubeEmbed';
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
@@ -39,7 +40,11 @@ export async function GET(request) {
   // --- 2. Fetch fresh from YouTube ---
   const url = await fetchDSAVideo(topic);
   if (!url) {
-    return Response.json({ error: 'No video found for this topic' }, { status: 404 });
+    // No YOUTUBE_API_KEY configured, or the API returned nothing. Instead of a
+    // 404 (which left the DSA roadmap with no video at all), hand back a topic
+    // search link that always works. Not cached, so a real result can populate
+    // later if an API key is added.
+    return Response.json({ url: youtubeSearchUrl(topic), fallback: true });
   }
 
   // --- 3. Upsert into cache ---

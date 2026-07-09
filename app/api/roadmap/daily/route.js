@@ -3,6 +3,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { successResponse, errorResponse } from '@/lib/response';
 import { generateDayContent } from '@/lib/curriculumGenerator';
+import { youtubeSearchUrl } from '@/lib/youtubeEmbed';
 
 const TASK_TYPES = ['video', 'resource', 'coding', 'test', 'notes'];
 const TOTAL_TASKS = 5;
@@ -135,6 +136,11 @@ export async function GET(request) {
       // ── 2. Cache miss — call AI then persist for next time ──────────────
       dayContent = await generateDayContent(user.domain_slug, displayDay, level, user);
 
+      // The model is asked for a "best YouTube URL" but hallucinates video ids
+      // that embed as "Video unavailable". Never trust an AI-produced video URL:
+      // store a topic search link instead, which always resolves to real videos.
+      dayContent.video_url = youtubeSearchUrl(dayContent.topic);
+
       const cachePayload = {
         domain_slug: user.domain_slug,
         week_number: week,
@@ -232,6 +238,10 @@ export async function GET(request) {
       user.domain_slug,
       roadmapItem.topic
     );
+
+    // Neutralize any hallucinated/stale video URL persisted in older cache rows.
+    // Every read returns a guaranteed-working topic search link (see helper).
+    if (roadmapItem) roadmapItem.video_url = youtubeSearchUrl(roadmapItem.topic);
 
     const completedCount = tasks.filter(t => t.status === 'completed').length;
     const isCompleteDay = completedCount >= TOTAL_TASKS;
