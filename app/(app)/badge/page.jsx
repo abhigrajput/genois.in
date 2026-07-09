@@ -20,12 +20,12 @@ const DOMAINS = [
 const LEVEL_COLOR = { proficient:'#4f9cf9', expert:'#EF9F27', master:'#1D9E75' };
 
 const S = {
-  page: { fontFamily:'Outfit,sans-serif', minHeight:'100vh', background:'#020812', color:'#e8f4ff', padding:'28px 16px' },
+  page: { fontFamily:'var(--font-body)', minHeight:'100vh', background:'#020812', color:'#e8e8ed', padding:'28px 16px' },
   card: { maxWidth:820, margin:'0 auto', background:'#070f1f', border:'1px solid rgba(0,240,255,0.12)', borderRadius:20, padding:28 },
-  btn:  { padding:'13px 28px', borderRadius:12, border:'none', cursor:'pointer', fontFamily:'Syne,sans-serif', fontSize:14, fontWeight:700, background:'linear-gradient(135deg,#00f0ff,#7b5cff)', color:'#020812' },
-  ghost:{ padding:'9px 18px', borderRadius:8, border:'1px solid rgba(0,240,255,0.2)', background:'transparent', cursor:'pointer', color:'#00f0ff', fontSize:12, fontFamily:'Syne,sans-serif', fontWeight:600 },
-  mono: { fontFamily:'JetBrains Mono,monospace' },
-  h1:   { fontFamily:'Syne,sans-serif', fontSize:26, fontWeight:800, color:'#e8f4ff', margin:'0 0 6px' },
+  btn:  { padding:'13px 28px', borderRadius:12, border:'none', cursor:'pointer', fontFamily:'var(--font-heading)', fontSize:14, fontWeight:700, background:'linear-gradient(135deg,#00f0ff,#ff6b4a)', color:'#020812' },
+  ghost:{ padding:'9px 18px', borderRadius:8, border:'1px solid rgba(0,240,255,0.2)', background:'transparent', cursor:'pointer', color:'#00f0ff', fontSize:12, fontFamily:'var(--font-heading)', fontWeight:600 },
+  mono: { fontFamily:'var(--font-mono)' },
+  h1:   { fontFamily:'var(--font-heading)', fontSize:26, fontWeight:800, color:'#e8e8ed', margin:'0 0 6px' },
   sub:  { color:'#5a7a9a', fontSize:13, margin:'0 0 24px' },
 };
 
@@ -49,7 +49,7 @@ function DomainSelect({ badges, cooldowns, onSelect }) {
                   border:`1px solid ${active ? 'rgba(29,158,117,0.3)' : inactive ? 'rgba(239,159,39,0.2)' : 'rgba(255,255,255,0.06)'}`,
                   borderRadius:12, padding:'16px 12px', cursor:'pointer', textAlign:'center', transition:'all 0.15s' }}>
                 <div style={{ fontSize:28, marginBottom:8 }}>{d.icon}</div>
-                <div style={{ fontSize:13, fontWeight:600, color:'#e8f4ff', marginBottom:6 }}>{d.label}</div>
+                <div style={{ fontSize:13, fontWeight:600, color:'#e8e8ed', marginBottom:6 }}>{d.label}</div>
                 {active  && <div style={{ fontSize:10, color:'#1D9E75', ...S.mono }}>✅ {badge.daysLeft}d left</div>}
                 {inactive && <div style={{ fontSize:10, color:'#EF9F27', ...S.mono }}>↻ Renew</div>}
                 {cd > 0   && <div style={{ fontSize:10, color:'#ff2d78', ...S.mono }}>🕐 {cd}d cooldown</div>}
@@ -135,14 +135,14 @@ function TestScreen({ questions, domain, onSubmit, submitting }) {
 
       {/* Progress */}
       <div style={{ maxWidth:820, margin:'0 auto 14px', height:3, background:'rgba(255,255,255,0.05)', borderRadius:2 }}>
-        <div style={{ height:'100%', width:`${(answered/questions.length)*100}%`, background:'linear-gradient(90deg,#00f0ff,#7b5cff)', borderRadius:2, transition:'width 0.3s' }} />
+        <div style={{ height:'100%', width:`${(answered/questions.length)*100}%`, background:'linear-gradient(90deg,#00f0ff,#ff6b4a)', borderRadius:2, transition:'width 0.3s' }} />
       </div>
 
       {/* Question card */}
       <div style={{ ...S.card, marginBottom:12 }}>
-        <div style={{ fontSize:14, color:'#e8f4ff', lineHeight:1.7, marginBottom: q?.code ? 14 : 20, fontWeight:500 }}>{q?.question}</div>
+        <div style={{ fontSize:14, color:'#e8e8ed', lineHeight:1.7, marginBottom: q?.code ? 14 : 20, fontWeight:500 }}>{q?.question}</div>
         {q?.code && (
-          <pre style={{ background:'#0a0f1e', border:'1px solid rgba(123,92,255,0.2)', borderRadius:10, padding:14, overflowX:'auto', fontSize:12, lineHeight:1.6, color:'#c8d8e8', marginBottom:18, ...S.mono }}>
+          <pre style={{ background:'#0a0f1e', border:'1px solid rgba(255,107,74,0.2)', borderRadius:10, padding:14, overflowX:'auto', fontSize:12, lineHeight:1.6, color:'#c8d8e8', marginBottom:18, ...S.mono }}>
             {q.code}
           </pre>
         )}
@@ -154,7 +154,7 @@ function TestScreen({ questions, domain, onSubmit, submitting }) {
                 style={{ display:'flex', gap:10, padding:'11px 14px', borderRadius:10,
                   border:`1px solid ${sel ? '#00f0ff' : 'rgba(255,255,255,0.05)'}`,
                   background: sel ? 'rgba(0,240,255,0.08)' : 'rgba(255,255,255,0.02)',
-                  color: sel ? '#00f0ff' : '#c8d8e8', cursor:'pointer', textAlign:'left', fontSize:13, fontFamily:'Outfit,sans-serif' }}>
+                  color: sel ? '#00f0ff' : '#c8d8e8', cursor:'pointer', textAlign:'left', fontSize:13, fontFamily:'var(--font-body)' }}>
                 <span style={{ ...S.mono, fontSize:11, fontWeight:700, color: sel ? '#00f0ff' : '#5a7a9a', flexShrink:0, marginTop:2 }}>{opt}.</span>
                 <span>{q?.options?.[opt]}</span>
               </button>
@@ -220,11 +220,11 @@ function ResultScreen({ result, domain, onViewBadges }) {
               <div style={{ display:'inline-flex', alignItems:'center', gap:10, background:`${lc}15`,
                 border:`2px solid ${lc}40`, borderRadius:40, padding:'10px 28px', marginBottom:10 }}>
                 <span style={{ fontSize:20 }}>{d?.icon}</span>
-                <span style={{ fontFamily:'Syne,sans-serif', fontSize:20, fontWeight:800, color:lc }}>
+                <span style={{ fontFamily:'var(--font-heading)', fontSize:20, fontWeight:800, color:lc }}>
                   {d?.label} {result.level?.charAt(0).toUpperCase()+result.level?.slice(1)} Verified
                 </span>
               </div>
-              <div style={{ fontSize:34, fontWeight:700, ...S.mono, color:'#e8f4ff', marginBottom:4 }}>
+              <div style={{ fontSize:34, fontWeight:700, ...S.mono, color:'#e8e8ed', marginBottom:4 }}>
                 {result.score}<span style={{ fontSize:16, color:'#5a7a9a' }}>/100</span>
               </div>
               {result.badge?.expiresAt && (
@@ -270,8 +270,8 @@ function ResultScreen({ result, domain, onViewBadges }) {
           <>
             <div style={{ textAlign:'center', marginBottom:24 }}>
               <div style={{ fontSize:56, marginBottom:10 }}>😔</div>
-              <div style={{ fontFamily:'Syne,sans-serif', fontSize:22, fontWeight:800, color:'#ff2d78', marginBottom:6 }}>Not Passed Yet</div>
-              <div style={{ fontSize:32, fontWeight:700, ...S.mono, color:'#e8f4ff', marginBottom:4 }}>
+              <div style={{ fontFamily:'var(--font-heading)', fontSize:22, fontWeight:800, color:'#ff2d78', marginBottom:6 }}>Not Passed Yet</div>
+              <div style={{ fontSize:32, fontWeight:700, ...S.mono, color:'#e8e8ed', marginBottom:4 }}>
                 {result.score}<span style={{ fontSize:14, color:'#5a7a9a' }}>/100 (need 70+)</span>
               </div>
               {result.cooldown && (
@@ -332,7 +332,7 @@ function MyBadgesScreen({ badges, onRenew, onBack }) {
                   borderRadius:14, padding:18, textAlign:'center',
                   boxShadow: active ? `0 0 18px ${lc}15` : 'none' }}>
                   <div style={{ fontSize:32, marginBottom:8 }}>{d?.icon || '🎖️'}</div>
-                  <div style={{ fontFamily:'Syne,sans-serif', fontSize:14, fontWeight:700, color: active ? lc : '#5a7a9a', marginBottom:4 }}>
+                  <div style={{ fontFamily:'var(--font-heading)', fontSize:14, fontWeight:700, color: active ? lc : '#5a7a9a', marginBottom:4 }}>
                     {d?.label || b.domain}
                   </div>
                   <div style={{ fontSize:11, ...S.mono, color:'#5a7a9a', marginBottom:6 }}>
@@ -429,7 +429,7 @@ export default function BadgePage() {
     <div style={{ ...S.page, display:'flex', alignItems:'center', justifyContent:'center' }}>
       <div style={{ textAlign:'center' }}>
         <div style={{ fontSize:48, marginBottom:16 }}>🤖</div>
-        <h2 style={{ fontFamily:'Syne,sans-serif', fontSize:20, color:'#e8f4ff', marginBottom:8 }}>DeepSeek R1 is evaluating...</h2>
+        <h2 style={{ fontFamily:'var(--font-heading)', fontSize:20, color:'#e8e8ed', marginBottom:8 }}>DeepSeek R1 is evaluating...</h2>
         <p style={{ color:'#5a7a9a', fontSize:13 }}>Analyzing topic mastery, code understanding, and skill level.</p>
       </div>
     </div>

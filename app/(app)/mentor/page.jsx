@@ -85,7 +85,7 @@ export default function MentorPage() {
               style={{
                 background: m.role === 'user' ? 'linear-gradient(135deg,rgba(29,158,117,0.35),rgba(29,158,117,0.15))' : 'rgba(255,255,255,0.05)',
                 border: m.role === 'user' ? '1px solid rgba(29,158,117,0.35)' : '1px solid rgba(255,255,255,0.08)',
-                color: '#e8f4ff'
+                color: '#e8e8ed'
               }}>
               {m.loading ? <span className="animate-pulse">Thinking...</span> : m.content}
             </div>

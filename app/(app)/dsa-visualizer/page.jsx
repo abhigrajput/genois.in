@@ -102,7 +102,7 @@ const ALGORITHMS = [
 
 const CATEGORY_COLORS = {
   'Sorting':             '#00f0ff',
-  'Searching':           '#7b5cff',
+  'Searching':           '#ff6b4a',
   'Data Structures':     '#1d9e75',
   'Trees':               '#ef9f27',
   'Graphs':              '#ff2d78',
@@ -170,7 +170,7 @@ function DSAVisualizerInner() {
             <input
               type="text" value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search algorithms..."
-              style={{ width: '100%', background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '7px 10px 7px 32px', color: '#e8f4ff', fontSize: 12, fontFamily: 'Outfit,sans-serif', outline: 'none' }}
+              style={{ width: '100%', background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '7px 10px 7px 32px', color: '#e8e8ed', fontSize: 12, fontFamily: 'var(--font-body)', outline: 'none' }}
             />
           </div>
         </div>
@@ -182,7 +182,7 @@ function DSAVisualizerInner() {
             const color = CATEGORY_COLORS[cat];
             return (
               <div key={cat} style={{ marginBottom: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px 4px', fontFamily: 'JetBrains Mono,monospace', fontSize: 9, letterSpacing: 2, color: color + '80', fontWeight: 600, textTransform: 'uppercase' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px 4px', fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 2, color: color + '80', fontWeight: 600, textTransform: 'uppercase' }}>
                   <span>{CATEGORY_ICONS[cat]}</span>
                   {cat}
                 </div>
@@ -195,13 +195,13 @@ function DSAVisualizerInner() {
                       background: active ? `${color}12` : 'transparent',
                       borderLeft: active ? `2px solid ${color}` : '2px solid transparent',
                       color: active ? color : '#5a7a9a',
-                      fontFamily: 'Outfit,sans-serif', fontSize: 12, fontWeight: active ? 600 : 400,
+                      fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: active ? 600 : 400,
                       cursor: 'pointer', transition: 'all 0.15s',
                     }}>
                       <span style={{ fontSize: 14 }}>{algo.icon}</span>
                       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{algo.name}</span>
-                        <span style={{ fontSize: 9, fontFamily: 'JetBrains Mono,monospace', color: active ? color + '80' : '#2a3a4a', marginTop: 1 }}>{algo.complexity}</span>
+                        <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: active ? color + '80' : '#2a3a4a', marginTop: 1 }}>{algo.complexity}</span>
                       </div>
                     </button>
                   );
@@ -212,7 +212,7 @@ function DSAVisualizerInner() {
         </nav>
 
         {/* Algorithm count */}
-        <div style={{ padding: '8px 16px', borderTop: '1px solid rgba(0,240,255,0.06)', fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#2a3a4a', flexShrink: 0 }}>
+        <div style={{ padding: '8px 16px', borderTop: '1px solid rgba(0,240,255,0.06)', fontFamily: 'var(--font-mono)', fontSize: 9, color: '#2a3a4a', flexShrink: 0 }}>
           {ALGORITHMS.length} ALGORITHMS TOTAL
         </div>
       </div>
@@ -232,16 +232,16 @@ function DSAVisualizerInner() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 24 }}>{selected.icon}</span>
             <div>
-              <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 22, fontWeight: 800, color: '#e8f4ff', margin: 0, lineHeight: 1.2 }}>
+              <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 800, color: '#e8e8ed', margin: 0, lineHeight: 1.2 }}>
                 {selected.name}
               </h1>
               <div style={{ display: 'flex', gap: 8, marginTop: 3, flexWrap: 'wrap' }}>
                 <span style={{
-                  fontFamily: 'JetBrains Mono,monospace', fontSize: 10, letterSpacing: 1,
+                  fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 1,
                   color: CATEGORY_COLORS[selected.category], background: `${CATEGORY_COLORS[selected.category]}12`,
                   border: `1px solid ${CATEGORY_COLORS[selected.category]}25`, borderRadius: 20, padding: '2px 10px',
                 }}>{selected.category}</span>
-                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 20, padding: '2px 10px' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 20, padding: '2px 10px' }}>
                   {selected.complexity}
                 </span>
               </div>

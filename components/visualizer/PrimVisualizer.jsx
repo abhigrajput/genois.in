@@ -280,18 +280,18 @@ export default function PrimVisualizer() {
         {[
           { label: 'MST Cost', value: current.mstEdges.reduce((acc, id) => acc + INITIAL_EDGES.find(e => e.id === id).w, 0), color: '#1d9e75' },
           { label: 'MST Edges Added', value: `${current.mstEdges.length} / 5`, color: '#00f0ff' },
-          { label: 'Visited Vertices', value: `${current.inMST.filter(Boolean).length} / 6`, color: '#7b5cff' },
+          { label: 'Visited Vertices', value: `${current.inMST.filter(Boolean).length} / 6`, color: '#ff6b4a' },
           { label: 'Active Candidates', value: current.pq.filter(x => x.status === 'active' && !current.inMST[x.v]).length, color: '#ef9f27' },
         ].map(s => (
           <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
       {/* Action narration */}
-      <div style={{ background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#00f0ff' }}>
+      <div style={{ background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00f0ff' }}>
         ▶ {current.description}
       </div>
 
@@ -317,7 +317,7 @@ export default function PrimVisualizer() {
                   />
                   {/* Edge Weight Pill */}
                   <rect x={mid.x - 8} y={mid.y - 8} width="16" height="16" rx="4" fill="#0d1424" stroke="rgba(0, 240, 255, 0.15)" strokeWidth="0.5" />
-                  <text x={mid.x} y={mid.y + 4} textAnchor="middle" style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, fill: edgeStyles.stroke !== 'rgba(0, 240, 255, 0.12)' ? edgeStyles.stroke : '#5a7a9a', fontWeight: 'bold' }}>
+                  <text x={mid.x} y={mid.y + 4} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fill: edgeStyles.stroke !== 'rgba(0, 240, 255, 0.12)' ? edgeStyles.stroke : '#5a7a9a', fontWeight: 'bold' }}>
                     {e.w}
                   </text>
                 </g>
@@ -330,7 +330,7 @@ export default function PrimVisualizer() {
               return (
                 <g key={id} style={{ transition: 'all 0.3s' }}>
                   <circle cx={layout.x} cy={layout.y} r={18} fill={vStyle.background} stroke={vStyle.border.split(' ')[2]} strokeWidth="2" style={{ transition: 'all 0.3s', boxShadow: vStyle.boxShadow }} />
-                  <text x={layout.x} y={layout.y + 5} textAnchor="middle" style={{ fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700, fill: vStyle.color }}>
+                  <text x={layout.x} y={layout.y + 5} textAnchor="middle" style={{ fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700, fill: vStyle.color }}>
                     {layout.label}
                   </text>
                 </g>
@@ -342,11 +342,11 @@ export default function PrimVisualizer() {
         {/* Priority Queue state lists */}
         <div style={{ flex: 0.8, minWidth: 200 }}>
           <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 14 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>PRIORITY QUEUE (Sorted)</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>PRIORITY QUEUE (Sorted)</div>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 220, overflowY: 'auto' }}>
               {current.pq.length === 0 ? (
-                <div style={{ fontSize: 11, color: '#2a3a4a', fontFamily: 'Outfit,sans-serif', padding: 8 }}>Queue is empty.</div>
+                <div style={{ fontSize: 11, color: '#2a3a4a', fontFamily: 'var(--font-body)', padding: 8 }}>Queue is empty.</div>
               ) : (
                 current.pq
                   .filter(item => !current.inMST[item.v] || item.status === 'mst')
@@ -365,7 +365,7 @@ export default function PrimVisualizer() {
                       <div key={index} style={{
                         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                         background: bg, border: `1px solid ${col}25`, borderRadius: 6, padding: '5px 8px',
-                        fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: col,
+                        fontFamily: 'var(--font-mono)', fontSize: 11, color: col,
                       }}>
                         <span>{VERTICES[item.u].label} ➔ {VERTICES[item.v].label}</span>
                         <span style={{ fontWeight: 'bold' }}>{isMst ? 'MST ✓' : `wt: ${item.w}`}</span>
@@ -394,7 +394,7 @@ export default function PrimVisualizer() {
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 12, height: 12, borderRadius: 2, background: l.color + '22', border: `1.5px solid ${l.color}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'Outfit,sans-serif' }}>{l.label}</span>
+            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l.label}</span>
           </div>
         ))}
       </div>

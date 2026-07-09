@@ -353,12 +353,12 @@ export default function SegmentTreeVisualizer() {
         {[
           { label: 'Total Range Sum', value: treeVals[1] ?? '—', color: '#1d9e75' },
           { label: 'Leaf Nodes', value: 8, color: '#00f0ff' },
-          { label: 'Total Segment Nodes', value: 15, color: '#7b5cff' },
+          { label: 'Total Segment Nodes', value: 15, color: '#ff6b4a' },
           { label: 'Query Result', value: current.sum ?? '—', color: '#ef9f27' },
         ].map(s => (
           <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 110 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
@@ -366,7 +366,7 @@ export default function SegmentTreeVisualizer() {
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {/* Leaf Array Box Representation */}
         <div style={{ width: '100%', background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 16 }}>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 12 }}>UNDERLYING LEAF ARRAY (arr[])</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 12 }}>UNDERLYING LEAF ARRAY (arr[])</div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
             {arr.map((val, idx) => {
               const isActive = current.activePath?.includes(idx + 8); // Nodes 8 to 15 are index 0 to 7
@@ -380,8 +380,8 @@ export default function SegmentTreeVisualizer() {
                   display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                   transition: 'all 0.2s',
                 }}>
-                  <span style={{ fontSize: 9, fontFamily: 'JetBrains Mono,monospace', color: '#5a7a9a' }}>idx={idx}</span>
-                  <span style={{ fontSize: 13, fontFamily: 'JetBrains Mono,monospace', color: isActive ? '#00f0ff' : '#e8f4ff', fontWeight: 'bold' }}>{val}</span>
+                  <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: '#5a7a9a' }}>idx={idx}</span>
+                  <span style={{ fontSize: 13, fontFamily: 'var(--font-mono)', color: isActive ? '#00f0ff' : '#e8e8ed', fontWeight: 'bold' }}>{val}</span>
                 </div>
               );
             })}
@@ -413,18 +413,18 @@ export default function SegmentTreeVisualizer() {
               const val = getRenderedTreeVal(id);
               const nodeColor = getNodeColor(id);
               const isHl = nodeColor === '#00f0ff';
-              const textCol = isHl ? '#0d1424' : '#e8f4ff';
+              const textCol = isHl ? '#0d1424' : '#e8e8ed';
               const fillVal = isHl ? '#00f0ff' : 'rgba(13,20,36,0.9)';
 
               return (
                 <g key={id}>
                   {isHl && <circle cx={layout.x} cy={layout.y} r={22} fill="none" stroke="#00f0ff" strokeWidth={1.5} opacity={0.4} />}
                   <circle cx={layout.x} cy={layout.y} r={18} fill={fillVal} stroke={nodeColor} strokeWidth={2} style={{ transition: 'all 0.3s' }} />
-                  <text x={layout.x} y={layout.y + 4} textAnchor="middle" style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, fill: textCol, fontWeight: 'bold', transition: 'all 0.3s' }}>
+                  <text x={layout.x} y={layout.y + 4} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fill: textCol, fontWeight: 'bold', transition: 'all 0.3s' }}>
                     {val}
                   </text>
                   {/* Range Tag above node */}
-                  <text x={layout.x} y={layout.y - 22} textAnchor="middle" style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, fill: '#5a7a9a' }}>
+                  <text x={layout.x} y={layout.y - 22} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: 8, fill: '#5a7a9a' }}>
                     [{layout.l}-{layout.r}]
                   </text>
                 </g>
@@ -475,7 +475,7 @@ export default function SegmentTreeVisualizer() {
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 12, height: 12, borderRadius: 2, background: l.color === '#ff2d7840' ? 'rgba(255,45,120,0.06)' : l.color + '22', border: `1.5px solid ${l.color}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'Outfit,sans-serif' }}>{l.label}</span>
+            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l.label}</span>
           </div>
         ))}
       </div>
@@ -505,15 +505,15 @@ const numStyle = {
   border: '1px solid rgba(0,240,255,0.2)',
   borderRadius: 6,
   padding: '5px',
-  color: '#e8f4ff',
+  color: '#e8e8ed',
   textAlign: 'center',
-  fontFamily: 'JetBrains Mono,monospace',
+  fontFamily: 'var(--font-mono)',
   fontSize: 12,
   outline: 'none',
 };
 
 const labelStyle = {
-  fontFamily: 'JetBrains Mono,monospace',
+  fontFamily: 'var(--font-mono)',
   fontSize: 10,
   color: '#5a7a9a',
   letterSpacing: 1,
@@ -526,7 +526,7 @@ const btnStyle = (c) => ({
   border: `1px solid ${c}30`,
   background: `${c}12`,
   color: c,
-  fontFamily: 'Syne,sans-serif',
+  fontFamily: 'var(--font-heading)',
   fontSize: 11,
   fontWeight: 600,
   cursor: 'pointer',

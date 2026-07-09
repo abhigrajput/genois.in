@@ -176,11 +176,11 @@ export default function DijkstraVisualizer() {
           { label:'Source', value:src, color:'#00f0ff' },
           { label:'Current', value:current?.current>=0?current.current:'-', color:'#00f0ff' },
           { label:'Visited', value:current?.visited?.filter(Boolean).length??0, color:'#1d9e75' },
-          { label:'Step', value:stepIdx>=0?stepIdx+1:0, color:'#7b5cff' },
+          { label:'Step', value:stepIdx>=0?stepIdx+1:0, color:'#ff6b4a' },
         ].map(s=>(
           <div key={s.label} style={{ background:'rgba(10,15,30,0.8)', border:`1px solid ${s.color}20`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
-            <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
-            <div style={{ fontFamily:'Syne,sans-serif', fontSize:20, fontWeight:700, color:s.color }}>{s.value}</div>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
+            <div style={{ fontFamily:'var(--font-heading)', fontSize:20, fontWeight:700, color:s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
@@ -197,7 +197,7 @@ export default function DijkstraVisualizer() {
                 <g key={i}>
                   <line x1={nu.x} y1={nu.y} x2={nv.x} y2={nv.y} stroke={isRelaxing?'#ef9f27':'rgba(0,240,255,0.2)'} strokeWidth={isRelaxing?2.5:1.5} style={{transition:'all 0.3s'}} />
                   <rect x={mid.x-12} y={mid.y-10} width={24} height={18} rx={4} fill={isRelaxing?'rgba(239,159,39,0.2)':'rgba(6,15,30,0.85)'} stroke={isRelaxing?'#ef9f27':'rgba(0,240,255,0.15)'} strokeWidth={1} />
-                  <text x={mid.x} y={mid.y+4} textAnchor="middle" style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, fontWeight:700, fill: isRelaxing ? '#ef9f27' : '#5a7a9a' }}>{e.w}</text>
+                  <text x={mid.x} y={mid.y+4} textAnchor="middle" style={{ fontFamily:'var(--font-mono)', fontSize:11, fontWeight:700, fill: isRelaxing ? '#ef9f27' : '#5a7a9a' }}>{e.w}</text>
                 </g>
               );
             })}
@@ -208,7 +208,7 @@ export default function DijkstraVisualizer() {
                 <g key={n.id}>
                   {isActive && <circle cx={n.x} cy={n.y} r={28} fill="none" stroke="#00f0ff" strokeWidth={1} opacity={0.4} />}
                   <circle cx={n.x} cy={n.y} r={22} fill={color==='#1a2a3a'?'#0d1a2a':color+'22'} stroke={color} strokeWidth={isActive?2.5:1.5} style={{transition:'all 0.3s ease'}} />
-                  <text x={n.x} y={n.y+5} textAnchor="middle" style={{ fontFamily:'JetBrains Mono,monospace', fontSize:14, fontWeight:700, fill:color }}>{n.id}</text>
+                  <text x={n.x} y={n.y+5} textAnchor="middle" style={{ fontFamily:'var(--font-mono)', fontSize:14, fontWeight:700, fill:color }}>{n.id}</text>
                 </g>
               );
             })}
@@ -218,18 +218,18 @@ export default function DijkstraVisualizer() {
         {/* dist[] table */}
         <div style={{ flex:1, minWidth:200 }}>
           <div style={{ background:'rgba(10,15,30,0.8)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:10, padding:12 }}>
-            <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#5a7a9a', letterSpacing:1, marginBottom:10 }}>DIST[] TABLE</div>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', letterSpacing:1, marginBottom:10 }}>DIST[] TABLE</div>
             {NODES.map(n => {
               const d = current?.dist?.[n.id] ?? INF;
               const isVisited = current?.visited?.[n.id];
               const isCurrent = current?.current === n.id;
               return (
                 <div key={n.id} style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6, padding:'4px 8px', borderRadius:6, background:isCurrent?'rgba(0,240,255,0.08)':isVisited?'rgba(29,158,117,0.05)':'transparent', border:`1px solid ${isCurrent?'rgba(0,240,255,0.2)':isVisited?'rgba(29,158,117,0.15)':'transparent'}`, transition:'all 0.3s' }}>
-                  <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:12, color:nodeColor(n.id,current,src), fontWeight:700, minWidth:20 }}>{n.id}</span>
+                  <span style={{ fontFamily:'var(--font-mono)', fontSize:12, color:nodeColor(n.id,current,src), fontWeight:700, minWidth:20 }}>{n.id}</span>
                   <div style={{ flex:1, height:6, borderRadius:3, background:'rgba(0,240,255,0.06)', overflow:'hidden' }}>
                      <div style={{ height:'100%', borderRadius:3, background:isCurrent?'#00f0ff':isVisited?'#1d9e75':'rgba(0,240,255,0.2)', width:d===INF?'0%':`${Math.min(100,(100/(d+1))*10)}%`, transition:'width 0.4s ease' }} />
                   </div>
-                  <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:13, fontWeight:700, color:d===INF?'#2a3a4a':isCurrent?'#00f0ff':isVisited?'#1d9e75':'#e8f4ff', minWidth:24, textAlign:'right' }}>{d===INF?'∞':d}</span>
+                  <span style={{ fontFamily:'var(--font-mono)', fontSize:13, fontWeight:700, color:d===INF?'#2a3a4a':isCurrent?'#00f0ff':isVisited?'#1d9e75':'#e8e8ed', minWidth:24, textAlign:'right' }}>{d===INF?'∞':d}</span>
                 </div>
               );
             })}
@@ -245,16 +245,16 @@ export default function DijkstraVisualizer() {
       />
 
       <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
-        <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#5a7a9a' }}>SRC</span>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a' }}>SRC</span>
         {NODES.map(n=>(
-          <button key={n.id} onClick={()=>setSrc(n.id)} style={{ padding:'4px 12px', borderRadius:6, border:`1px solid ${src===n.id?'#00f0ff':'rgba(0,240,255,0.15)'}`, background:src===n.id?'rgba(0,240,255,0.12)':'transparent', color:src===n.id?'#00f0ff':'#5a7a9a', fontSize:12, fontFamily:'JetBrains Mono,monospace', cursor:'pointer' }}>{n.id}</button>
+          <button key={n.id} onClick={()=>setSrc(n.id)} style={{ padding:'4px 12px', borderRadius:6, border:`1px solid ${src===n.id?'#00f0ff':'rgba(0,240,255,0.15)'}`, background:src===n.id?'rgba(0,240,255,0.12)':'transparent', color:src===n.id?'#00f0ff':'#5a7a9a', fontSize:12, fontFamily:'var(--font-mono)', cursor:'pointer' }}>{n.id}</button>
         ))}
         <button onClick={start} style={btn('#00f0ff')}>▶ Run Dijkstra</button>
-        <button onClick={()=>setIsPlaying(p=>!p)} style={btn('#7b5cff')}>{isPlaying?'⏸ Pause':'▶ Resume'}</button>
+        <button onClick={()=>setIsPlaying(p=>!p)} style={btn('#ff6b4a')}>{isPlaying?'⏸ Pause':'▶ Resume'}</button>
         <button onClick={()=>setStepIdx(p=>Math.min(p+1,steps.length-1))} style={btn('#ef9f27')}>⏭ Step</button>
         <div style={{ display:'flex', gap:4 }}>
           {[1,2,3,4].map(s=>(
-            <button key={s} onClick={()=>setSpeed(s)} style={{ padding:'3px 10px', borderRadius:6, border:speed===s?'1px solid #00f0ff':'1px solid rgba(0,240,255,0.15)', background:speed===s?'rgba(0,240,255,0.12)':'transparent', color:speed===s?'#00f0ff':'#5a7a9a', fontSize:11, fontFamily:'JetBrains Mono,monospace', cursor:'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
+            <button key={s} onClick={()=>setSpeed(s)} style={{ padding:'3px 10px', borderRadius:6, border:speed===s?'1px solid #00f0ff':'1px solid rgba(0,240,255,0.15)', background:speed===s?'rgba(0,240,255,0.12)':'transparent', color:speed===s?'#00f0ff':'#5a7a9a', fontSize:11, fontFamily:'var(--font-mono)', cursor:'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
           ))}
         </div>
         <button onClick={reset} style={btn('#ff2d78')}>↺ Reset</button>
@@ -264,7 +264,7 @@ export default function DijkstraVisualizer() {
         {[['#00f0ff','Current'],['#ef9f27','Relaxing Edge'],['#1d9e75','Finalized']].map(([c,l])=>(
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:'50%', background:c+'44', border:`2px solid ${c}` }}/>
-            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'Outfit,sans-serif' }}>{l}</span>
+            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>
@@ -273,5 +273,5 @@ export default function DijkstraVisualizer() {
   );
 }
 function btn(color) {
-  return { padding:'8px 16px', borderRadius:8, border:`1px solid ${color}30`, background:`${color}10`, color, fontFamily:'Syne,sans-serif', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' };
+  return { padding:'8px 16px', borderRadius:8, border:`1px solid ${color}30`, background:`${color}10`, color, fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' };
 }

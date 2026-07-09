@@ -9,10 +9,10 @@ import { authAPI } from '@/lib/api';
 import { trackLogin } from '@/lib/analytics';
 import { Check } from 'lucide-react';
 
-const PURPLE = '#6366f1';
-const PURPLE_LIGHT = '#818cf8';
-const BG = '#0d0d14';
-const CARD = '#13131f';
+const PURPLE = '#00d9a3';
+const PURPLE_LIGHT = '#2ee6b0';
+const BG = '#0a0a0f';
+const CARD = '#12121a';
 const MUTED = '#8b93a1';
 
 const BRAND_BULLETS = ['Free 30-day trial', 'No credit card needed', '10 career domains'];
@@ -77,29 +77,29 @@ export default function LoginPage() {
 
   const inputStyle = (key) => ({
     width:'100%', padding:'12px 14px', borderRadius:10,
-    border:`1px solid ${focused === key ? PURPLE : 'rgba(99,102,241,0.15)'}`,
-    background: focused === key ? 'rgba(99,102,241,0.06)' : 'rgba(255,255,255,0.03)',
-    color:'#f8fafc', fontSize:14, fontFamily:'Outfit,sans-serif', outline:'none',
+    border:`1px solid ${focused === key ? PURPLE : 'rgba(0,217,163,0.15)'}`,
+    background: focused === key ? 'rgba(0,217,163,0.06)' : 'rgba(255,255,255,0.03)',
+    color:'#f8fafc', fontSize:14, fontFamily:'var(--font-body)', outline:'none',
     boxSizing:'border-box', transition:'all 0.18s',
-    boxShadow: focused === key ? '0 0 0 3px rgba(99,102,241,0.12)' : 'none',
+    boxShadow: focused === key ? '0 0 0 3px rgba(0,217,163,0.12)' : 'none',
   });
 
   return (
-    <div style={{ minHeight:'100vh', display:'flex', background:BG, fontFamily:'Outfit,sans-serif' }}>
+    <div style={{ minHeight:'100vh', display:'flex', background:BG, fontFamily:'var(--font-body)' }}>
 
       {/* ─── LEFT BRAND PANEL (40%) ─── */}
       <div className="gen-desktop-only" style={{
         width:'40%', maxWidth:520, position:'relative', overflow:'hidden',
         display:'flex', flexDirection:'column', justifyContent:'center', padding:'56px 52px',
-        background:'linear-gradient(160deg, #15152a 0%, #0d0d14 60%)',
-        borderRight:'1px solid rgba(99,102,241,0.12)',
+        background:'linear-gradient(160deg, #15152a 0%, #0a0a0f 60%)',
+        borderRight:'1px solid rgba(0,217,163,0.12)',
       }}>
-        <div style={{ position:'absolute', top:-120, left:-100, width:420, height:420, borderRadius:'50%', background:'radial-gradient(circle, rgba(99,102,241,0.22), transparent 65%)', pointerEvents:'none' }} />
+        <div style={{ position:'absolute', top:-120, left:-100, width:420, height:420, borderRadius:'50%', background:'radial-gradient(circle, rgba(0,217,163,0.22), transparent 65%)', pointerEvents:'none' }} />
         <div style={{ position:'relative', zIndex:1 }}>
-          <div style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:34, letterSpacing:0.5, marginBottom:28 }}>
+          <div style={{ fontFamily:'var(--font-heading)', fontWeight:800, fontSize:34, letterSpacing:0.5, marginBottom:28 }}>
             <span style={{ color:PURPLE }}>GEN</span><span style={{ color:'#f8fafc' }}>OIS</span>
           </div>
-          <h2 style={{ fontFamily:'Syne,sans-serif', fontSize:30, fontWeight:800, color:'#f8fafc', lineHeight:1.2, margin:'0 0 16px' }}>
+          <h2 style={{ fontFamily:'var(--font-heading)', fontSize:30, fontWeight:800, color:'#f8fafc', lineHeight:1.2, margin:'0 0 16px' }}>
             Your placement journey starts here
           </h2>
           <p style={{ color:'#9ca3af', fontSize:15, lineHeight:1.7, margin:'0 0 30px', maxWidth:360 }}>
@@ -108,16 +108,16 @@ export default function LoginPage() {
           <div style={{ display:'flex', flexDirection:'column', gap:12, marginBottom:40 }}>
             {BRAND_BULLETS.map(b => (
               <div key={b} style={{ display:'flex', alignItems:'center', gap:10, fontSize:14, color:'#d1d5db' }}>
-                <span style={{ width:20, height:20, borderRadius:'50%', background:'rgba(99,102,241,0.15)', border:'1px solid rgba(99,102,241,0.4)', color:PURPLE_LIGHT, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}><Check size={12} strokeWidth={2.5} color={PURPLE_LIGHT} /></span>
+                <span style={{ width:20, height:20, borderRadius:'50%', background:'rgba(0,217,163,0.15)', border:'1px solid rgba(0,217,163,0.4)', color:PURPLE_LIGHT, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}><Check size={12} strokeWidth={2.5} color={PURPLE_LIGHT} /></span>
                 {b}
               </div>
             ))}
           </div>
-          <div style={{ padding:'16px 18px', borderRadius:14, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(99,102,241,0.12)', maxWidth:360 }}>
+          <div style={{ padding:'16px 18px', borderRadius:14, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(0,217,163,0.12)', maxWidth:360 }}>
             <p style={{ color:'#d1d5db', fontSize:13.5, lineHeight:1.6, margin:'0 0 8px', fontStyle:'italic' }}>
               “Got placed at Infosys after 3 months on GENOIS.”
             </p>
-            <div style={{ fontSize:12, color:MUTED, fontFamily:'JetBrains Mono,monospace' }}>— Priya S. · VTU</div>
+            <div style={{ fontSize:12, color:MUTED, fontFamily:'var(--font-mono)' }}>— Priya S. · VTU</div>
           </div>
         </div>
       </div>
@@ -128,13 +128,13 @@ export default function LoginPage() {
 
           {/* Mobile logo */}
           <div className="gen-mobile-only" style={{ textAlign:'center', marginBottom:24, display:'none' }}>
-            <span style={{ fontFamily:'Syne,sans-serif', fontWeight:800, fontSize:28 }}>
+            <span style={{ fontFamily:'var(--font-heading)', fontWeight:800, fontSize:28 }}>
               <span style={{ color:PURPLE }}>GEN</span><span style={{ color:'#f8fafc' }}>OIS</span>
             </span>
           </div>
 
-          <div style={{ background:CARD, border:'1px solid rgba(99,102,241,0.14)', borderRadius:18, padding:'32px 30px', boxShadow:'0 24px 60px rgba(0,0,0,0.45)' }}>
-            <h1 style={{ fontFamily:'Syne,sans-serif', fontSize:24, fontWeight:800, color:'#f8fafc', margin:'0 0 6px' }}>Welcome back</h1>
+          <div style={{ background:CARD, border:'1px solid rgba(0,217,163,0.14)', borderRadius:18, padding:'32px 30px', boxShadow:'0 24px 60px rgba(0,0,0,0.45)' }}>
+            <h1 style={{ fontFamily:'var(--font-heading)', fontSize:24, fontWeight:800, color:'#f8fafc', margin:'0 0 6px' }}>Welcome back</h1>
             <p style={{ color:MUTED, fontSize:14, margin:'0 0 24px' }}>Sign in to continue your journey.</p>
 
             {verified && (
@@ -151,7 +151,7 @@ export default function LoginPage() {
             {/* Google OAuth */}
             <button onClick={handleGoogleLogin} disabled={googleLoading} type="button" style={{
               width:'100%', padding:'12px', borderRadius:10, border:'1px solid rgba(255,255,255,0.12)',
-              background:'#fff', color:'#1f2937', fontFamily:'Syne,sans-serif', fontSize:14, fontWeight:600,
+              background:'#fff', color:'#1f2937', fontFamily:'var(--font-heading)', fontSize:14, fontWeight:600,
               cursor:googleLoading ? 'wait' : 'pointer', display:'flex', alignItems:'center', justifyContent:'center',
               gap:10, marginBottom:20, transition:'all 0.2s', opacity:googleLoading ? 0.7 : 1,
             }}>
@@ -166,7 +166,7 @@ export default function LoginPage() {
 
             <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:20 }}>
               <div style={{ flex:1, height:1, background:'rgba(255,255,255,0.08)' }} />
-              <span style={{ fontSize:11, color:MUTED, fontFamily:'JetBrains Mono,monospace' }}>OR</span>
+              <span style={{ fontSize:11, color:MUTED, fontFamily:'var(--font-mono)' }}>OR</span>
               <div style={{ flex:1, height:1, background:'rgba(255,255,255,0.08)' }} />
             </div>
 
@@ -185,12 +185,12 @@ export default function LoginPage() {
                   onFocus={() => setFocused('password')} onBlur={() => setFocused('')}
                   placeholder="Your password" style={inputStyle('password')} />
               </div>
-              <button type="submit" disabled={loading} style={{
+              <button type="submit" disabled={loading} className="gen-press" style={{
                 width:'100%', padding:'13px', borderRadius:10, border:'none',
                 cursor:loading ? 'wait' : 'pointer',
-                background: loading ? 'rgba(99,102,241,0.5)' : `linear-gradient(135deg, ${PURPLE}, ${'#4f46e5'})`,
-                color:'#fff', fontFamily:'Syne,sans-serif', fontSize:15, fontWeight:700,
-                boxShadow:'0 8px 24px rgba(99,102,241,0.32)', transition:'all 0.2s',
+                background: loading ? 'rgba(0,217,163,0.5)' : `linear-gradient(135deg, ${PURPLE}, ${'#00b389'})`,
+                color:'#0a0a0f', fontFamily:'var(--font-heading)', fontSize:15, fontWeight:700,
+                boxShadow:'0 8px 24px rgba(0,217,163,0.32)', transition:'all 0.2s',
               }}>
                 {loading ? 'Signing in…' : 'Sign In →'}
               </button>

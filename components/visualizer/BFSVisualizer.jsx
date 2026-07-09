@@ -135,11 +135,11 @@ export default function BFSVisualizer() {
           { label: 'Source', value: src, color: '#00f0ff' },
           { label: 'Current', value: current?.current >= 0 ? current.current : '-', color: '#ef9f27' },
           { label: 'Visited', value: current?.visited?.filter(Boolean).length ?? 0, color: '#1d9e75' },
-          { label: 'Queue Size', value: current?.queue?.length ?? 0, color: '#7b5cff' },
+          { label: 'Queue Size', value: current?.queue?.length ?? 0, color: '#ff6b4a' },
         ].map(s => (
           <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 700, color: s.color }}>{s.value}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
@@ -165,7 +165,7 @@ export default function BFSVisualizer() {
                     stroke={color} strokeWidth={isActive ? 2.5 : 1.5}
                     style={{ transition: 'all 0.3s ease' }} />
                   <text x={n.x} y={n.y + 65} textAnchor="middle"
-                    style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 14, fontWeight: 700, fill: color, transition: 'fill 0.3s ease' }}>
+                    style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, fill: color, transition: 'fill 0.3s ease' }}>
                     {n.id}
                   </text>
                 </g>
@@ -177,24 +177,24 @@ export default function BFSVisualizer() {
         {/* Right panel: queue + adj list */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 200 }}>
           {/* Queue */}
-          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(123,92,255,0.2)', borderRadius: 10, padding: 12 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#7b5cff', letterSpacing: 1, marginBottom: 8 }}>QUEUE (front→rear)</div>
+          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(255,107,74,0.2)', borderRadius: 10, padding: 12 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#ff6b4a', letterSpacing: 1, marginBottom: 8 }}>QUEUE (front→rear)</div>
             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', minHeight: 36 }}>
               {(current?.queue || []).map((v, i) => (
-                <span key={i} style={{ padding: '4px 12px', borderRadius: 6, background: 'rgba(123,92,255,0.15)', border: '1px solid rgba(123,92,255,0.3)', fontFamily: 'JetBrains Mono,monospace', fontSize: 14, fontWeight: 700, color: '#7b5cff' }}>{v}</span>
+                <span key={i} style={{ padding: '4px 12px', borderRadius: 6, background: 'rgba(255,107,74,0.15)', border: '1px solid rgba(255,107,74,0.3)', fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: '#ff6b4a' }}>{v}</span>
               ))}
               {(!current?.queue || current.queue.length === 0) && (
-                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#2a3a4a' }}>empty</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#2a3a4a' }}>empty</span>
               )}
             </div>
           </div>
           {/* Adjacency list */}
           <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 10, padding: 12 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>ADJACENCY LIST</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>ADJACENCY LIST</div>
             {ADJ.map((nbrs, i) => (
               <div key={i} style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 3 }}>
-                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: nodeColor(i, current), minWidth: 18, fontWeight: 700 }}>{i}:</span>
-                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#5a7a9a' }}>[{nbrs.join(', ')}]</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: nodeColor(i, current), minWidth: 18, fontWeight: 700 }}>{i}:</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#5a7a9a' }}>[{nbrs.join(', ')}]</span>
               </div>
             ))}
           </div>
@@ -210,16 +210,16 @@ export default function BFSVisualizer() {
 
       {/* Controls */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-        <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a' }}>SRC</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a' }}>SRC</span>
         {GRAPH_NODES.map(n => (
-          <button key={n.id} onClick={() => setSrc(n.id)} style={{ padding: '4px 12px', borderRadius: 6, border: `1px solid ${src === n.id ? '#00f0ff' : 'rgba(0,240,255,0.15)'}`, background: src === n.id ? 'rgba(0,240,255,0.12)' : 'transparent', color: src === n.id ? '#00f0ff' : '#5a7a9a', fontSize: 12, fontFamily: 'JetBrains Mono,monospace', cursor: 'pointer' }}>{n.id}</button>
+          <button key={n.id} onClick={() => setSrc(n.id)} style={{ padding: '4px 12px', borderRadius: 6, border: `1px solid ${src === n.id ? '#00f0ff' : 'rgba(0,240,255,0.15)'}`, background: src === n.id ? 'rgba(0,240,255,0.12)' : 'transparent', color: src === n.id ? '#00f0ff' : '#5a7a9a', fontSize: 12, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{n.id}</button>
         ))}
         <button onClick={start} style={btn('#00f0ff')}>▶ Start BFS</button>
-        <button onClick={() => setIsPlaying(p => !p)} style={btn('#7b5cff')}>{isPlaying ? '⏸ Pause' : '▶ Resume'}</button>
+        <button onClick={() => setIsPlaying(p => !p)} style={btn('#ff6b4a')}>{isPlaying ? '⏸ Pause' : '▶ Resume'}</button>
         <button onClick={() => setStepIdx(p => Math.min(p + 1, steps.length - 1))} style={btn('#ef9f27')}>⏭ Step</button>
         <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
           {[1,2,3,4].map(s => (
-            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid #00f0ff' : '1px solid rgba(0,240,255,0.15)', background: speed === s ? 'rgba(0,240,255,0.12)' : 'transparent', color: speed === s ? '#00f0ff' : '#5a7a9a', fontSize: 11, fontFamily: 'JetBrains Mono,monospace', cursor: 'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
+            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid #00f0ff' : '1px solid rgba(0,240,255,0.15)', background: speed === s ? 'rgba(0,240,255,0.12)' : 'transparent', color: speed === s ? '#00f0ff' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
           ))}
         </div>
         <button onClick={reset} style={btn('#ff2d78')}>↺ Reset</button>
@@ -229,7 +229,7 @@ export default function BFSVisualizer() {
         {[['#00f0ff','Current'],['#ef9f27','Being Enqueued'],['#1d9e75','Visited'],['#1a2a3a','Unvisited']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:'50%', background:c+'44', border:`2px solid ${c}` }}/>
-            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'Outfit,sans-serif' }}>{l}</span>
+            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>
@@ -240,5 +240,5 @@ export default function BFSVisualizer() {
 }
 
 function btn(color) {
-  return { padding: '8px 16px', borderRadius: 8, border: `1px solid ${color}30`, background: `${color}10`, color, fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' };
+  return { padding: '8px 16px', borderRadius: 8, border: `1px solid ${color}30`, background: `${color}10`, color, fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' };
 }

@@ -138,27 +138,27 @@ export default function OnboardingPage() {
     background: selected ? 'rgba(0,255,136,0.1)' : '#070f1f',
     border: `2px solid ${selected ? '#00ff88' : 'rgba(255,255,255,0.06)'}`,
     color: selected ? '#00ff88' : '#c8d8e8',
-    fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600,
+    fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600,
     transition: 'all 0.15s',
   });
 
-  const backBtn = { flex: 1, padding: '14px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 14 };
-  const nextBtn = (active) => ({ flex: 2, padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: active ? 'linear-gradient(135deg,#00f0ff,#7b5cff)' : 'rgba(255,255,255,0.05)', color: active ? '#020812' : '#3a4a5a', fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700 });
+  const backBtn = { flex: 1, padding: '14px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 14 };
+  const nextBtn = (active) => ({ flex: 2, padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: active ? 'linear-gradient(135deg,#00f0ff,#ff6b4a)' : 'rgba(255,255,255,0.05)', color: active ? '#020812' : '#3a4a5a', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 });
 
   return (
-    <div style={{ minHeight: '100vh', background: '#020812', color: '#e8f4ff', fontFamily: 'Outfit,sans-serif' }}>
+    <div style={{ minHeight: '100vh', background: '#020812', color: '#e8e8ed', fontFamily: 'var(--font-body)' }}>
       <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(0,240,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,0.015) 1px,transparent 1px)', backgroundSize: '56px 56px' }} />
 
       <div style={{ position: 'relative', zIndex: 1, maxWidth: 560, margin: '0 auto', padding: '40px 20px' }}>
 
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, marginBottom: 20 }}>
-            <span style={{ color: '#00f0ff' }}>GEN</span><span style={{ color: '#e8f4ff' }}>OIS</span>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, marginBottom: 20 }}>
+            <span style={{ color: '#00f0ff' }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
           </div>
           <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, marginBottom: 8, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: progress + '%', background: 'linear-gradient(90deg,#00f0ff,#7b5cff)', borderRadius: 2, transition: 'width 0.4s' }} />
+            <div style={{ height: '100%', width: progress + '%', background: 'linear-gradient(90deg,#00f0ff,#ff6b4a)', borderRadius: 2, transition: 'width 0.4s' }} />
           </div>
-          <div style={{ fontSize: 11, color: '#3a4a5a', fontFamily: 'JetBrains Mono,monospace' }}>
+          <div style={{ fontSize: 11, color: '#3a4a5a', fontFamily: 'var(--font-mono)' }}>
             Step {step + 1} of {STEPS.length}
           </div>
         </div>
@@ -167,7 +167,7 @@ export default function OnboardingPage() {
         {step === 0 && (
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: 64, marginBottom: 16 }}>🎯</div>
-            <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 28, fontWeight: 800, color: '#e8f4ff', marginBottom: 12, lineHeight: 1.2 }}>
+            <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, color: '#e8e8ed', marginBottom: 12, lineHeight: 1.2 }}>
               Ready to prove your skill?
             </h1>
             <p style={{ color: '#5a7a9a', fontSize: 16, lineHeight: 1.8, marginBottom: 12 }}>
@@ -180,7 +180,7 @@ export default function OnboardingPage() {
               GENOIS ranks you on real daily performance. Daily coding, timed tests, actual projects. No shortcuts.
             </p>
             <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 20, marginBottom: 28, textAlign: 'left' }}>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 14 }}>WHAT YOU GET</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 14 }}>WHAT YOU GET</div>
               {[
                 { icon: '📅', text: '30-day AI-powered daily roadmap' },
                 { icon: '🎯', text: 'Daily tests, coding challenges, AI notes' },
@@ -194,10 +194,10 @@ export default function OnboardingPage() {
                 </div>
               ))}
             </div>
-            <button onClick={() => setStep(1)} style={{ width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 17, fontWeight: 800, boxShadow: '0 0 30px rgba(0,240,255,0.3)' }}>
+            <button onClick={() => setStep(1)} style={{ width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 17, fontWeight: 800, boxShadow: '0 0 30px rgba(0,240,255,0.3)' }}>
               Start Free — No Card Needed →
             </button>
-            <p style={{ marginTop: 12, color: '#3a4a5a', fontSize: 12, fontFamily: 'JetBrains Mono,monospace' }}>
+            <p style={{ marginTop: 12, color: '#3a4a5a', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
               Already have an account? <a href="/login" style={{ color: '#00f0ff', textDecoration: 'none' }}>Login →</a>
             </p>
           </div>
@@ -207,7 +207,7 @@ export default function OnboardingPage() {
         {step === 1 && (
           <div>
             <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 8 }}>
+              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>
                 Pick your battlefield
               </h2>
               <p style={{ color: '#5a7a9a', fontSize: 14 }}>
@@ -223,7 +223,7 @@ export default function OnboardingPage() {
                   transition: 'all 0.15s',
                 }}>
                   <div style={{ fontSize: 24, marginBottom: 6 }}>{d.icon}</div>
-                  <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 12, fontWeight: 700, color: selectedDomain === d.id ? d.color : '#e8f4ff', marginBottom: 4 }}>{d.label}</div>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 700, color: selectedDomain === d.id ? d.color : '#e8e8ed', marginBottom: 4 }}>{d.label}</div>
                   <div style={{ fontSize: 10, color: '#5a7a9a', lineHeight: 1.4 }}>{d.desc}</div>
                 </div>
               ))}
@@ -242,7 +242,7 @@ export default function OnboardingPage() {
         {step === 2 && (
           <div>
             <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 8 }}>
+              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>
                 Tell us about yourself
               </h2>
               <p style={{ color: '#5a7a9a', fontSize: 14 }}>
@@ -255,15 +255,15 @@ export default function OnboardingPage() {
                 { label: 'COLLEGE NAME', key: 'college', placeholder: 'LNCT Bhopal', type: 'text' },
               ].map(f => (
                 <div key={f.key}>
-                  <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1, marginBottom: 6 }}>{f.label}</div>
-                  <input type={f.type} value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))} placeholder={f.placeholder} style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,240,255,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8f4ff', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                  <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 6 }}>{f.label}</div>
+                  <input type={f.type} value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))} placeholder={f.placeholder} style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,240,255,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
                 </div>
               ))}
               <div>
-                <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1, marginBottom: 6 }}>CURRENT YEAR</div>
+                <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 6 }}>CURRENT YEAR</div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   {['1', '2', '3', '4'].map(y => (
-                    <button key={y} onClick={() => setForm(p => ({ ...p, year: y }))} style={{ flex: 1, padding: '10px', borderRadius: 10, border: `1px solid ${form.year === y ? 'rgba(0,240,255,0.4)' : 'rgba(255,255,255,0.08)'}`, background: form.year === y ? 'rgba(0,240,255,0.08)' : 'transparent', color: form.year === y ? '#00f0ff' : '#5a7a9a', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontWeight: 600 }}>
+                    <button key={y} onClick={() => setForm(p => ({ ...p, year: y }))} style={{ flex: 1, padding: '10px', borderRadius: 10, border: `1px solid ${form.year === y ? 'rgba(0,240,255,0.4)' : 'rgba(255,255,255,0.08)'}`, background: form.year === y ? 'rgba(0,240,255,0.08)' : 'transparent', color: form.year === y ? '#00f0ff' : '#5a7a9a', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
                       Year {y}
                     </button>
                   ))}
@@ -284,7 +284,7 @@ export default function OnboardingPage() {
         {step === 3 && (
           <div>
             <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 8 }}>
+              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>
                 Where do you want to get placed?
               </h2>
               <p style={{ color: '#5a7a9a', fontSize: 14 }}>
@@ -293,7 +293,7 @@ export default function OnboardingPage() {
             </div>
 
             <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1, marginBottom: 10 }}>TARGET COMPANIES (select all that apply)</div>
+              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 10 }}>TARGET COMPANIES (select all that apply)</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
                 {COMPANIES.map(c => (
                   <div key={c.id} onClick={() => toggleCompany(c.id)} style={chipStyle(targetCompanies.includes(c.id))}>
@@ -304,7 +304,7 @@ export default function OnboardingPage() {
             </div>
 
             <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1, marginBottom: 10 }}>HOW MANY MONTHS UNTIL PLACEMENT SEASON?</div>
+              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 10 }}>HOW MANY MONTHS UNTIL PLACEMENT SEASON?</div>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {MONTH_OPTIONS.map(m => (
                   <button key={m.value} onClick={() => setMonthsToPlacement(m.value)} style={{
@@ -312,7 +312,7 @@ export default function OnboardingPage() {
                     border: `1px solid ${monthsToPlacement === m.value ? '#00ff88' : 'rgba(255,255,255,0.08)'}`,
                     background: monthsToPlacement === m.value ? 'rgba(0,255,136,0.1)' : 'transparent',
                     color: monthsToPlacement === m.value ? '#00ff88' : '#5a7a9a',
-                    fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600,
+                    fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600,
                   }}>
                     {m.label}
                   </button>
@@ -333,7 +333,7 @@ export default function OnboardingPage() {
         {step === 4 && (
           <div>
             <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 8 }}>
+              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>
                 Where are you weak? Be honest.
               </h2>
               <p style={{ color: '#5a7a9a', fontSize: 14 }}>
@@ -342,7 +342,7 @@ export default function OnboardingPage() {
             </div>
 
             <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1, marginBottom: 10 }}>WEAK AREAS (select all that apply)</div>
+              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 10 }}>WEAK AREAS (select all that apply)</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
                 {WEAK_SUBJECTS.map(s => (
                   <div key={s} onClick={() => toggleWeakSubject(s)} style={chipStyle(weakSubjects.includes(s) || (s === "I'm strong everywhere" && weakSubjects.length === 0))}>
@@ -353,15 +353,15 @@ export default function OnboardingPage() {
             </div>
 
             <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1, marginBottom: 6 }}>YOUR APPROXIMATE CGPA</div>
+              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 6 }}>YOUR APPROXIMATE CGPA</div>
               <input
                 type="number" min="0" max="10" step="0.1"
                 value={cgpa}
                 onChange={e => setCgpa(e.target.value)}
                 placeholder="e.g. 7.2"
-                style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,240,255,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8f4ff', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,240,255,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
               />
-              <div style={{ fontSize: 11, color: '#3a4a5a', marginTop: 6, fontFamily: 'JetBrains Mono,monospace' }}>
+              <div style={{ fontSize: 11, color: '#3a4a5a', marginTop: 6, fontFamily: 'var(--font-mono)' }}>
                 Helps show companies you&apos;re eligible for. Not shared publicly.
               </div>
             </div>
@@ -379,7 +379,7 @@ export default function OnboardingPage() {
         {step === 5 && (
           <div>
             <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 8 }}>
+              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>
                 Create your account
               </h2>
               <p style={{ color: '#5a7a9a', fontSize: 14 }}>
@@ -389,7 +389,7 @@ export default function OnboardingPage() {
 
             <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: '12px 16px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#e8f4ff' }}>{form.name} · {form.college}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#e8e8ed' }}>{form.name} · {form.college}</div>
                 <div style={{ fontSize: 12, color: '#5a7a9a' }}>Domain: {DOMAINS.find(d => d.id === selectedDomain)?.label} · Year {form.year}</div>
                 {targetCompanies.length > 0 && (
                   <div style={{ fontSize: 11, color: '#00ff88', marginTop: 2 }}>
@@ -405,8 +405,8 @@ export default function OnboardingPage() {
                 { label: 'PASSWORD', key: 'password', placeholder: 'Min 6 characters', type: 'password' },
               ].map(f => (
                 <div key={f.key}>
-                  <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1, marginBottom: 6 }}>{f.label}</div>
-                  <input type={f.type} value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))} placeholder={f.placeholder} onKeyDown={e => e.key === 'Enter' && signup()} style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,240,255,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8f4ff', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                  <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 6 }}>{f.label}</div>
+                  <input type={f.type} value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))} placeholder={f.placeholder} onKeyDown={e => e.key === 'Enter' && signup()} style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,240,255,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
                 </div>
               ))}
             </div>
@@ -419,11 +419,11 @@ export default function OnboardingPage() {
 
             <div style={{ display: 'flex', gap: 10 }}>
               <button onClick={() => setStep(4)} style={backBtn}>← Back</button>
-              <button onClick={signup} disabled={loading} style={{ flex: 2, padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: loading ? 'rgba(0,240,255,0.2)' : 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, boxShadow: '0 0 20px rgba(0,240,255,0.2)' }}>
+              <button onClick={signup} disabled={loading} style={{ flex: 2, padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: loading ? 'rgba(0,240,255,0.2)' : 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, boxShadow: '0 0 20px rgba(0,240,255,0.2)' }}>
                 {loading ? 'Creating account...' : 'Start Free — 30 Days →'}
               </button>
             </div>
-            <p style={{ textAlign: 'center', color: '#3a4a5a', fontSize: 11, fontFamily: 'JetBrains Mono,monospace', marginTop: 10 }}>
+            <p style={{ textAlign: 'center', color: '#3a4a5a', fontSize: 11, fontFamily: 'var(--font-mono)', marginTop: 10 }}>
               No credit card · Cancel anytime · Free for 30 days
             </p>
           </div>

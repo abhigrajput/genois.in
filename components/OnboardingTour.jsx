@@ -93,7 +93,7 @@ export default function OnboardingTour() {
           ))}
         </div>
 
-        <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 12 }}>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 12 }}>
           {current.title}
         </h2>
         <p style={{ color: '#8a9ab0', fontSize: 14, lineHeight: 1.7, marginBottom: 28 }}>
@@ -102,16 +102,16 @@ export default function OnboardingTour() {
 
         <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
           {step > 0 && (
-            <button onClick={skip} style={{ padding: '10px 18px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600 }}>
+            <button onClick={skip} style={{ padding: '10px 18px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600 }}>
               Skip Tour
             </button>
           )}
-          <button onClick={next} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700 }}>
+          <button onClick={next} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700 }}>
             {current.cta} →
           </button>
         </div>
 
-        <div style={{ marginTop: 16, fontSize: 11, color: '#3a4a5a', fontFamily: 'JetBrains Mono,monospace' }}>
+        <div style={{ marginTop: 16, fontSize: 11, color: '#3a4a5a', fontFamily: 'var(--font-mono)' }}>
           {step + 1} / {TOUR_STEPS.length}
         </div>
       </div>

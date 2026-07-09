@@ -80,7 +80,7 @@ function barColor(idx, step) {
   if (step.swapped?.includes(idx)) return '#1d9e75';
   if (idx === step.minIdx) return '#ef9f27';
   if (idx === step.current) return '#00f0ff';
-  if (idx === step.scanning) return '#7b5cff';
+  if (idx === step.scanning) return '#ff6b4a';
   return '#1a2a3a';
 }
 
@@ -125,12 +125,12 @@ export default function SelectionSortVisualizer() {
         {[
           { label: 'Current Pass', value: current ? Math.min(current.sortedUpto + 1, arr.length) : 1, color: '#00f0ff' },
           { label: 'Min Index', value: current?.minIdx ?? '-', color: '#ef9f27' },
-          { label: 'Time', value: 'O(n²)', color: '#7b5cff' },
+          { label: 'Time', value: 'O(n²)', color: '#ff6b4a' },
           { label: 'Space', value: 'O(1)', color: '#1d9e75' },
         ].map(s => (
           <div key={s.label} style={{ background:'rgba(10,15,30,0.8)', border:`1px solid ${s.color}20`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
-            <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
-            <div style={{ fontFamily:'Syne,sans-serif', fontSize:20, fontWeight:700, color:s.color }}>{s.value}</div>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
+            <div style={{ fontFamily:'var(--font-heading)', fontSize:20, fontWeight:700, color:s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
@@ -138,7 +138,7 @@ export default function SelectionSortVisualizer() {
       <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
         {displayArr.map((v, i) => (
           <div key={i} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, flex:1, maxWidth:60 }}>
-            <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:barColor(i, current) }}>{v}</span>
+            <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:barColor(i, current) }}>{v}</span>
             <div style={{ width:'100%', borderRadius:'4px 4px 0 0', height:`${(v / maxVal) * 160}px`, background:barColor(i, current), transition:'all 0.3s ease', boxShadow: current?.minIdx === i ? `0 0 14px #ef9f2780` : 'none', minHeight:4 }} />
           </div>
         ))}
@@ -152,10 +152,10 @@ export default function SelectionSortVisualizer() {
       />
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
-        {[['#1d9e75','Sorted'],['#00f0ff','Current Position'],['#ef9f27','Minimum Found'],['#7b5cff','Scanning']].map(([c,l]) => (
+        {[['#1d9e75','Sorted'],['#00f0ff','Current Position'],['#ef9f27','Minimum Found'],['#ff6b4a','Scanning']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:2, background:c }}/>
-            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'Outfit,sans-serif' }}>{l}</span>
+            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>

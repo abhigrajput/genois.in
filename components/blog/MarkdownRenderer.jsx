@@ -32,10 +32,10 @@ function parseInline(text) {
   html = html.replace(/\*\*(.*?)\*\*/g, '<strong style="color:#ffffff;font-weight:700;">$1</strong>');
 
   // italic: *text*
-  html = html.replace(/\*(.*?)\*/g, '<em style="color:#e8f4ff;font-style:italic;">$1</em>');
+  html = html.replace(/\*(.*?)\*/g, '<em style="color:#e8e8ed;font-style:italic;">$1</em>');
 
   // inline code: `code`
-  html = html.replace(/`(.*?)`/g, '<code style="background:#161b22;color:#00f0ff;padding:2px 6px;border-radius:4px;font-family:JetBrains Mono,monospace;font-size:13px;border:1px solid rgba(0,240,255,0.15);word-break:break-all;">$1</code>');
+  html = html.replace(/`(.*?)`/g, '<code style="background:#161b22;color:#00f0ff;padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:13px;border:1px solid rgba(0,240,255,0.15);word-break:break-all;">$1</code>');
 
   // links: [text](url) — URL must pass isSafeUrl, otherwise we render plain text only
   html = html.replace(/\[(.*?)\]\((.*?)\)/g, (_match, linkText, url) => {
@@ -76,7 +76,7 @@ function CodeBlock({ code = '', lang = 'cpp' }) {
         background: '#161b22',
         padding: '6px 16px',
         borderBottom: '1px solid #21262d',
-        fontFamily: 'JetBrains Mono,monospace',
+        fontFamily: 'var(--font-mono)',
         fontSize: '11px',
         color: '#5a7a9a'
       }}>
@@ -88,7 +88,7 @@ function CodeBlock({ code = '', lang = 'cpp' }) {
             border: 'none',
             color: copied ? '#1d9e75' : '#00f0ff',
             cursor: 'pointer',
-            fontFamily: 'Syne,sans-serif',
+            fontFamily: 'var(--font-heading)',
             fontSize: '11px',
             fontWeight: 600,
             display: 'flex',
@@ -104,7 +104,7 @@ function CodeBlock({ code = '', lang = 'cpp' }) {
       <div style={{ 
         display: 'flex', 
         overflowX: 'auto',
-        fontFamily: 'JetBrains Mono, monospace',
+        fontFamily: 'var(--font-mono)',
         fontSize: '13px',
         lineHeight: '1.6',
         padding: '12px 0'
@@ -246,8 +246,8 @@ export default function MarkdownRenderer({ content = '' }) {
               <h1 
                 key={index} 
                 style={{ 
-                  fontFamily: 'Syne,sans-serif', 
-                  color: '#e8f4ff', 
+                  fontFamily: 'var(--font-heading)', 
+                  color: '#e8e8ed', 
                   fontSize: '32px', 
                   fontWeight: 800, 
                   marginTop: '36px', 
@@ -263,7 +263,7 @@ export default function MarkdownRenderer({ content = '' }) {
                 key={index} 
                 id={encodeURIComponent(block.text.toLowerCase().replace(/\s+/g, '-'))}
                 style={{ 
-                  fontFamily: 'Syne,sans-serif', 
+                  fontFamily: 'var(--font-heading)', 
                   color: '#00f0ff', 
                   fontSize: '24px', 
                   fontWeight: 800, 
@@ -282,7 +282,7 @@ export default function MarkdownRenderer({ content = '' }) {
                 key={index} 
                 id={encodeURIComponent(block.text.toLowerCase().replace(/\s+/g, '-'))}
                 style={{ 
-                  fontFamily: 'Syne,sans-serif', 
+                  fontFamily: 'var(--font-heading)', 
                   color: '#00f0ff', 
                   fontSize: '20px', 
                   fontWeight: 700, 
@@ -302,7 +302,7 @@ export default function MarkdownRenderer({ content = '' }) {
                   fontSize: '16px', 
                   lineHeight: '1.8', 
                   marginBottom: '16px', 
-                  fontFamily: 'Outfit,sans-serif' 
+                  fontFamily: 'var(--font-body)' 
                 }}
               >
                 {parseInline(block.text)}
@@ -338,7 +338,7 @@ export default function MarkdownRenderer({ content = '' }) {
                       lineHeight: '1.8', 
                       marginBottom: '6px', 
                       position: 'relative', 
-                      fontFamily: 'Outfit,sans-serif' 
+                      fontFamily: 'var(--font-body)' 
                     }}
                   >
                     <span style={{ color: '#00f0ff', position: 'absolute', left: '-16px' }}>•</span>
@@ -366,7 +366,7 @@ export default function MarkdownRenderer({ content = '' }) {
                       lineHeight: '1.8', 
                       marginBottom: '6px', 
                       paddingLeft: '4px', 
-                      fontFamily: 'Outfit,sans-serif' 
+                      fontFamily: 'var(--font-body)' 
                     }}
                   >
                     {parseInline(item)}

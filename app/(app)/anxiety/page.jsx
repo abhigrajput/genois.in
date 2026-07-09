@@ -114,10 +114,10 @@ export default function AnxietyPage() {
                 animation: 'gentlePulse 2s infinite',
               }} />
               <span style={{
-                fontFamily: 'Syne, sans-serif',
+                fontFamily: 'var(--font-heading)',
                 fontSize: 18,
                 fontWeight: 700,
-                color: '#e8f4ff',
+                color: '#e8e8ed',
                 letterSpacing: -0.5,
               }}>
                 2AM Chat
@@ -125,7 +125,7 @@ export default function AnxietyPage() {
               {isLateNight && (
                 <span style={{
                   fontSize: 10,
-                  fontFamily: 'JetBrains Mono, monospace',
+                  fontFamily: 'var(--font-mono)',
                   color: '#00f0ff',
                   background: 'rgba(0,240,255,0.1)',
                   border: '1px solid rgba(0,240,255,0.2)',
@@ -135,7 +135,7 @@ export default function AnxietyPage() {
                 }}>LIVE</span>
               )}
             </div>
-            <div style={{ fontSize: 12, color: '#5a7a9a', fontFamily: 'Outfit, sans-serif' }}>
+            <div style={{ fontSize: 12, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>
               A safe space. No judgment. Just a senior who gets it.
             </div>
           </div>
@@ -148,7 +148,7 @@ export default function AnxietyPage() {
               padding: '5px 12px',
               borderRadius: 20,
               cursor: 'pointer',
-              fontFamily: 'JetBrains Mono, monospace',
+              fontFamily: 'var(--font-mono)',
             }}>clear</button>
           )}
         </div>
@@ -158,7 +158,7 @@ export default function AnxietyPage() {
           <div className="mt-3">
             <div style={{
               fontSize: 11, color: '#5a7a9a', marginBottom: 8,
-              fontFamily: 'JetBrains Mono, monospace', letterSpacing: 1,
+              fontFamily: 'var(--font-mono)', letterSpacing: 1,
             }}>
               HOW ARE YOU FEELING?
             </div>
@@ -174,7 +174,7 @@ export default function AnxietyPage() {
                   cursor: 'pointer',
                   transition: 'all 0.2s',
                   display: 'flex', alignItems: 'center', gap: 5,
-                  fontFamily: 'Outfit, sans-serif',
+                  fontFamily: 'var(--font-body)',
                 }}>
                   {m.emoji} {m.label}
                 </button>
@@ -190,10 +190,10 @@ export default function AnxietyPage() {
           <div style={{ textAlign: 'center', paddingTop: 40 }}>
             <div style={{ fontSize: 52, marginBottom: 16 }}>🌙</div>
             <div style={{
-              fontFamily: 'Syne, sans-serif',
+              fontFamily: 'var(--font-heading)',
               fontSize: 22,
               fontWeight: 700,
-              color: '#e8f4ff',
+              color: '#e8e8ed',
               marginBottom: 10,
             }}>
               Hey {firstName},
@@ -204,7 +204,7 @@ export default function AnxietyPage() {
               maxWidth: 360,
               margin: '0 auto 32px',
               lineHeight: 1.8,
-              fontFamily: 'Outfit, sans-serif',
+              fontFamily: 'var(--font-body)',
             }}>
               It&apos;s okay to not be okay.<br />
               Tell me what&apos;s going on — I&apos;m here.
@@ -228,7 +228,7 @@ export default function AnxietyPage() {
                   cursor: 'pointer',
                   textAlign: 'left',
                   transition: 'all 0.2s',
-                  fontFamily: 'Outfit, sans-serif',
+                  fontFamily: 'var(--font-body)',
                   lineHeight: 1.5,
                 }}>
                   &ldquo;{s}&rdquo;
@@ -262,15 +262,15 @@ export default function AnxietyPage() {
                   ? '18px 18px 4px 18px'
                   : '18px 18px 18px 4px',
                 background: m.role === 'user'
-                  ? 'linear-gradient(135deg, rgba(123,92,255,0.35), rgba(0,240,255,0.15))'
+                  ? 'linear-gradient(135deg, rgba(255,107,74,0.35), rgba(0,240,255,0.15))'
                   : 'rgba(255,255,255,0.04)',
                 border: m.role === 'user'
-                  ? '1px solid rgba(123,92,255,0.3)'
+                  ? '1px solid rgba(255,107,74,0.3)'
                   : '1px solid rgba(255,255,255,0.06)',
                 color: m.loading ? '#3a5a6a' : '#d8ecff',
                 fontSize: 14,
                 lineHeight: 1.75,
-                fontFamily: 'Outfit, sans-serif',
+                fontFamily: 'var(--font-body)',
                 whiteSpace: 'pre-wrap',
               }}>
                 {m.loading
@@ -293,7 +293,7 @@ export default function AnxietyPage() {
         <div style={{
           fontSize: 10,
           color: '#2a4a5a',
-          fontFamily: 'JetBrains Mono, monospace',
+          fontFamily: 'var(--font-mono)',
           marginBottom: 10,
           letterSpacing: 0.5,
         }}>
@@ -319,9 +319,9 @@ export default function AnxietyPage() {
               borderRadius: 12,
               border: '1px solid rgba(0,240,255,0.15)',
               background: 'rgba(255,255,255,0.03)',
-              color: '#e8f4ff',
+              color: '#e8e8ed',
               fontSize: 14,
-              fontFamily: 'Outfit, sans-serif',
+              fontFamily: 'var(--font-body)',
               resize: 'none',
               outline: 'none',
               lineHeight: 1.6,
@@ -338,14 +338,14 @@ export default function AnxietyPage() {
               borderRadius: 12,
               border: 'none',
               background: !loading && input.trim()
-                ? 'linear-gradient(135deg, #00f0ff, #7b5cff)'
+                ? 'linear-gradient(135deg, #00f0ff, #ff6b4a)'
                 : 'rgba(255,255,255,0.05)',
               color: !loading && input.trim() ? '#020812' : '#2a4a5a',
               fontWeight: 700,
               fontSize: 14,
               cursor: !loading && input.trim() ? 'pointer' : 'not-allowed',
               transition: 'all 0.2s',
-              fontFamily: 'Syne, sans-serif',
+              fontFamily: 'var(--font-heading)',
               marginBottom: 2,
             }}>
             {loading ? '...' : 'Send'}

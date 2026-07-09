@@ -22,13 +22,13 @@ const TOPIC_LABELS = {
 
 // ─── Shared styles ──────────────────────────────────────────────────────────
 const S = {
-  page:     { fontFamily: 'Outfit,sans-serif', minHeight: '100vh', background: '#020812', color: '#e8f4ff', padding: '32px 16px' },
+  page:     { fontFamily: 'var(--font-body)', minHeight: '100vh', background: '#020812', color: '#e8e8ed', padding: '32px 16px' },
   card:     { maxWidth: 780, margin: '0 auto', background: '#070f1f', border: '1px solid rgba(0,240,255,0.12)', borderRadius: 20, padding: 32 },
-  h1:       { fontFamily: 'Syne,sans-serif', fontSize: 28, fontWeight: 800, color: '#e8f4ff', margin: '0 0 8px' },
+  h1:       { fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, color: '#e8e8ed', margin: '0 0 8px' },
   sub:      { color: '#5a7a9a', fontSize: 14, lineHeight: 1.6, margin: '0 0 24px' },
-  btn:      { padding: '14px 32px', borderRadius: 12, border: 'none', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812' },
-  btnGhost: { padding: '10px 20px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', background: 'transparent', cursor: 'pointer', color: '#00f0ff', fontSize: 13, fontFamily: 'Syne,sans-serif', fontWeight: 600 },
-  mono:     { fontFamily: 'JetBrains Mono,monospace' },
+  btn:      { padding: '14px 32px', borderRadius: 12, border: 'none', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812' },
+  btnGhost: { padding: '10px 20px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', background: 'transparent', cursor: 'pointer', color: '#00f0ff', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600 },
+  mono:     { fontFamily: 'var(--font-mono)' },
 };
 
 // ─── Screen 1: Intro ────────────────────────────────────────────────────────
@@ -50,7 +50,7 @@ function IntroScreen({ onStart, loading, previousResult }) {
               ['🤖', 'AI Evaluation', 'DeepSeek analyzes your strengths']].map(([icon, title, desc]) => (
               <div key={title} style={{ background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 12, padding: '14px 18px', flex: '1 1 180px', textAlign: 'left' }}>
                 <div style={{ fontSize: 20, marginBottom: 6 }}>{icon}</div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#e8f4ff', marginBottom: 3 }}>{title}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#e8e8ed', marginBottom: 3 }}>{title}</div>
                 <div style={{ fontSize: 11, color: '#5a7a9a' }}>{desc}</div>
               </div>
             ))}
@@ -135,7 +135,7 @@ function TestScreen({ questions, onSubmit, submitting }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{ ...S.mono, fontSize: 12, color: '#5a7a9a' }}>Q {current + 1}/{questions.length}</span>
           <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: 'rgba(0,240,255,0.08)', color: '#00f0ff', ...S.mono }}>{topicLabel}</span>
-          <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: q?.type === 'code' ? 'rgba(123,92,255,0.12)' : 'rgba(29,158,117,0.1)', color: q?.type === 'code' ? '#7b5cff' : '#1D9E75' }}>
+          <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: q?.type === 'code' ? 'rgba(255,107,74,0.12)' : 'rgba(29,158,117,0.1)', color: q?.type === 'code' ? '#ff6b4a' : '#1D9E75' }}>
             {q?.type === 'code' ? '💻 Code' : '📖 Theory'}
           </span>
         </div>
@@ -147,17 +147,17 @@ function TestScreen({ questions, onSubmit, submitting }) {
 
       {/* Progress bar */}
       <div style={{ maxWidth: 780, margin: '0 auto 16px', height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: 2 }}>
-        <div style={{ height: '100%', width: `${(answeredCount / questions.length) * 100}%`, background: 'linear-gradient(90deg,#00f0ff,#7b5cff)', borderRadius: 2, transition: 'width 0.3s' }} />
+        <div style={{ height: '100%', width: `${(answeredCount / questions.length) * 100}%`, background: 'linear-gradient(90deg,#00f0ff,#ff6b4a)', borderRadius: 2, transition: 'width 0.3s' }} />
       </div>
 
       {/* Question card */}
       <div style={{ ...S.card, marginBottom: 16 }}>
-        <div style={{ fontSize: 15, color: '#e8f4ff', lineHeight: 1.6, marginBottom: q?.code ? 16 : 24, fontWeight: 500 }}>
+        <div style={{ fontSize: 15, color: '#e8e8ed', lineHeight: 1.6, marginBottom: q?.code ? 16 : 24, fontWeight: 500 }}>
           {q?.question}
         </div>
 
         {q?.code && (
-          <pre style={{ background: '#0a0f1e', border: '1px solid rgba(123,92,255,0.2)', borderRadius: 10, padding: 16, overflowX: 'auto', fontSize: 13, lineHeight: 1.6, color: '#c8d8e8', marginBottom: 20, ...S.mono }}>
+          <pre style={{ background: '#0a0f1e', border: '1px solid rgba(255,107,74,0.2)', borderRadius: 10, padding: 16, overflowX: 'auto', fontSize: 13, lineHeight: 1.6, color: '#c8d8e8', marginBottom: 20, ...S.mono }}>
             {q.code}
           </pre>
         )}
@@ -174,7 +174,7 @@ function TestScreen({ questions, onSubmit, submitting }) {
                   borderRadius: 10, border: `1px solid ${selected ? '#00f0ff' : 'rgba(255,255,255,0.06)'}`,
                   background: selected ? 'rgba(0,240,255,0.08)' : 'rgba(255,255,255,0.02)',
                   color: selected ? '#00f0ff' : '#c8d8e8', cursor: 'pointer', textAlign: 'left',
-                  transition: 'all 0.15s', fontSize: 14, fontFamily: 'Outfit,sans-serif',
+                  transition: 'all 0.15s', fontSize: 14, fontFamily: 'var(--font-body)',
                 }}
               >
                 <span style={{ ...S.mono, fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 2, width: 18, color: selected ? '#00f0ff' : '#5a7a9a' }}>{opt}.</span>
@@ -197,7 +197,7 @@ function TestScreen({ questions, onSubmit, submitting }) {
               onClick={() => setCurrent(i)}
               style={{
                 width: 28, height: 28, borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 10,
-                fontFamily: 'JetBrains Mono,monospace', fontWeight: 700,
+                fontFamily: 'var(--font-mono)', fontWeight: 700,
                 background: i === current ? '#00f0ff' : answers[qs.id] ? '#1D9E75' : 'rgba(255,255,255,0.06)',
                 color: i === current ? '#020812' : answers[qs.id] ? '#020812' : '#5a7a9a',
               }}
@@ -240,9 +240,9 @@ function ResultScreen({ result, onStartRoadmap }) {
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{ fontSize: 64, marginBottom: 8 }}>{cfg.emoji}</div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: cfg.bg, border: `2px solid ${cfg.color}40`, borderRadius: 40, padding: '10px 28px', marginBottom: 12 }}>
-            <span style={{ fontFamily: 'Syne,sans-serif', fontSize: 22, fontWeight: 800, color: cfg.color }}>{cfg.label}</span>
+            <span style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 800, color: cfg.color }}>{cfg.label}</span>
           </div>
-          <div style={{ fontSize: 36, fontWeight: 700, color: '#e8f4ff', ...S.mono, marginBottom: 4 }}>{result.score}<span style={{ fontSize: 18, color: '#5a7a9a' }}>/100</span></div>
+          <div style={{ fontSize: 36, fontWeight: 700, color: '#e8e8ed', ...S.mono, marginBottom: 4 }}>{result.score}<span style={{ fontSize: 18, color: '#5a7a9a' }}>/100</span></div>
           <div style={{ fontSize: 13, color: '#5a7a9a' }}>Your DSA diagnostic score</div>
         </div>
 
@@ -362,7 +362,7 @@ export default function DSADiagnosticPage() {
       <div style={{ ...S.page, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 56, marginBottom: 20 }}>🤖</div>
-          <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 22, color: '#e8f4ff', marginBottom: 8 }}>DeepSeek is analyzing your answers...</h2>
+          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, color: '#e8e8ed', marginBottom: 8 }}>DeepSeek is analyzing your answers...</h2>
           <p style={{ color: '#5a7a9a', fontSize: 14 }}>Evaluating topic mastery, code accuracy, and learning path. This takes ~10 seconds.</p>
           <div style={{ marginTop: 24, display: 'flex', gap: 6, justifyContent: 'center' }}>
             {[0, 1, 2].map(i => (

@@ -126,7 +126,7 @@ export default function LinearSearchVisualizer() {
 
       {/* Target input */}
       <div style={{ display:'flex', gap:10, alignItems:'center', flexWrap:'wrap' }}>
-        <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:11, color:'#5a7a9a', letterSpacing:1 }}>TARGET</span>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:11, color:'#5a7a9a', letterSpacing:1 }}>TARGET</span>
         <input
           type="number"
           value={target}
@@ -134,13 +134,13 @@ export default function LinearSearchVisualizer() {
           placeholder="Enter target value..."
           style={{
             background:'rgba(0,240,255,0.04)', border:'1px solid rgba(0,240,255,0.2)',
-            borderRadius:8, padding:'6px 12px', color:'#e8f4ff',
-            fontFamily:'JetBrains Mono,monospace', fontSize:13, outline:'none', width:160,
+            borderRadius:8, padding:'6px 12px', color:'#e8e8ed',
+            fontFamily:'var(--font-mono)', fontSize:13, outline:'none', width:160,
           }}
         />
         {result && (
           <span style={{
-            fontFamily:'Syne,sans-serif', fontSize:13, fontWeight:600,
+            fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600,
             color: result.includes('Found at') ? '#1d9e75' : '#ff2d78',
             background: result.includes('Found at') ? 'rgba(29,158,117,0.1)' : 'rgba(255,45,120,0.1)',
             border: `1px solid ${result.includes('Found at') ? 'rgba(29,158,117,0.25)' : 'rgba(255,45,120,0.25)'}`,
@@ -153,12 +153,12 @@ export default function LinearSearchVisualizer() {
         {[
           { label:'Comparisons', value: stepIdx >= 0 ? stepIdx + 1 : 0, color:'#00f0ff' },
           { label:'Current', value: current?.current ?? '-', color:'#ef9f27' },
-          { label:'Time', value:'O(n)', color:'#7b5cff' },
+          { label:'Time', value:'O(n)', color:'#ff6b4a' },
           { label:'Space', value:'O(1)', color:'#1d9e75' },
         ].map(s => (
           <div key={s.label} style={{ background:'rgba(10,15,30,0.8)', border:`1px solid ${s.color}20`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
-            <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
-            <div style={{ fontFamily:'Syne,sans-serif', fontSize:20, fontWeight:700, color:s.color }}>{s.value}</div>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
+            <div style={{ fontFamily:'var(--font-heading)', fontSize:20, fontWeight:700, color:s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
@@ -166,11 +166,11 @@ export default function LinearSearchVisualizer() {
       <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
         {arr.map((v, i) => (
           <div key={i} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, flex:1, maxWidth:60 }}>
-            <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:barColor(i, current) }}>{v}</span>
+            <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:barColor(i, current) }}>{v}</span>
             <div style={{ width:'100%', borderRadius:'4px 4px 0 0', height:`${(v / maxVal) * 160}px`, background:barColor(i, current), transition:'all 0.3s ease', minHeight:4,
               boxShadow: current?.current === i ? `0 0 14px #00f0ff80` : 'none',
             }} />
-            <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:9, color:'#2a3a4a' }}>[{i}]</span>
+            <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'#2a3a4a' }}>[{i}]</span>
           </div>
         ))}
       </div>
@@ -179,7 +179,7 @@ export default function LinearSearchVisualizer() {
         {[['#00f0ff','Current'],['#2a2a2a','Eliminated'],['#1d9e75','Found'],['#ff2d78','Not Found']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:2, background:c, border:`1px solid ${c}50` }}/>
-            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'Outfit,sans-serif' }}>{l}</span>
+            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>

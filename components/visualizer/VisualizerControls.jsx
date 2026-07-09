@@ -34,7 +34,7 @@ export default function VisualizerControls({
             border: '1px solid rgba(0,240,255,0.35)',
             color: '#00f0ff',
             minWidth: 80,
-            fontFamily: 'Outfit,sans-serif',
+            fontFamily: 'var(--font-body)',
             fontWeight: 600,
           }}>
           {isPlaying ? '⏸ Pause' : '▶ Play'}
@@ -51,7 +51,7 @@ export default function VisualizerControls({
             background: 'rgba(255,45,120,0.08)',
             border: '1px solid rgba(255,45,120,0.25)',
             color: '#ff2d78',
-            fontFamily: 'Outfit,sans-serif',
+            fontFamily: 'var(--font-body)',
           }}>
           ↺ Reset
         </button>
@@ -59,7 +59,7 @@ export default function VisualizerControls({
         {/* Step counter */}
         {totalSteps > 0 && (
           <span style={{
-            fontFamily: 'JetBrains Mono,monospace',
+            fontFamily: 'var(--font-mono)',
             fontSize: 11,
             color: '#5a7a9a',
             marginLeft: 'auto',
@@ -83,7 +83,7 @@ export default function VisualizerControls({
                 background: speed === s ? 'rgba(0,240,255,0.12)' : 'transparent',
                 color: speed === s ? '#00f0ff' : '#5a7a9a',
                 fontSize: 11,
-                fontFamily: 'JetBrains Mono,monospace',
+                fontFamily: 'var(--font-mono)',
                 cursor: 'pointer',
                 transition: 'all 0.15s',
               }}>
@@ -108,7 +108,7 @@ export default function VisualizerControls({
                 background: 'rgba(29,158,117,0.1)',
                 border: '1px solid rgba(29,158,117,0.25)',
                 color: '#1D9E75',
-                fontFamily: 'Outfit,sans-serif',
+                fontFamily: 'var(--font-body)',
                 fontSize: 12,
               }}>
               🎲 Randomize
@@ -135,7 +135,7 @@ const btnStyle = (color) => ({
 });
 
 const labelStyle = {
-  fontFamily: 'JetBrains Mono,monospace',
+  fontFamily: 'var(--font-mono)',
   fontSize: 10,
   color: '#5a7a9a',
   letterSpacing: 1,

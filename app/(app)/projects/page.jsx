@@ -133,11 +133,11 @@ export default function ProjectsPortfolioPage() {
   if (loading) return <div className="text-gray-400 text-sm">Loading projects portfolio...</div>;
 
   return (
-    <div className="w-full space-y-6" style={{ fontFamily: 'Outfit,sans-serif' }}>
+    <div className="w-full space-y-6" style={{ fontFamily: 'var(--font-body)' }}>
       
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-dark" style={{ fontFamily: 'Syne,sans-serif' }}>🎓 Career Projects Portfolio</h1>
+        <h1 className="text-2xl font-bold text-dark" style={{ fontFamily: 'var(--font-heading)' }}>🎓 Career Projects Portfolio</h1>
         <p className="text-sm text-gray-400 mt-1">Build outstanding, real-world portfolio assets as you progress through your 52-week curriculum.</p>
       </div>
 
@@ -179,7 +179,7 @@ export default function ProjectsPortfolioPage() {
                 {/* Title & Badge Row */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', paddingLeft: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '11px', color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', fontWeight: 700 }}>WEEK {proj.week}</span>
+                    <span style={{ fontSize: '11px', color: '#5a7a9a', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>WEEK {proj.week}</span>
                     <span style={{
                       background: 'rgba(255,255,255,0.03)', color: '#c8d8e8', fontSize: '10px',
                       textTransform: 'uppercase', padding: '3px 8px', borderRadius: '4px', fontWeight: 600
@@ -197,7 +197,7 @@ export default function ProjectsPortfolioPage() {
 
                 {/* Project Details */}
                 <div style={{ paddingLeft: '12px', marginTop: '8px' }}>
-                  <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#e8f4ff', fontFamily: 'Syne,sans-serif' }}>{proj.title}</h2>
+                  <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#e8e8ed', fontFamily: 'var(--font-heading)' }}>{proj.title}</h2>
                   <p style={{ fontSize: '13.5px', color: '#8aa2b9', marginTop: '4px', lineHeight: 1.5 }}>{proj.description}</p>
 
                   {/* Steps Accordion */}
@@ -224,7 +224,7 @@ export default function ProjectsPortfolioPage() {
                       // Assign dynamically generated project UUID or standard ID if exists in db
                       proj.id = progressRecord?.project_id || 'dummy-uuid-needed';
                     }} style={{
-                      marginTop: '16px', background: 'linear-gradient(135deg, #00f0ff, #7b5cff)',
+                      marginTop: '16px', background: 'linear-gradient(135deg, #00f0ff, #ff6b4a)',
                       color: '#020812', fontWeight: 700, fontSize: '13px', padding: '10px 20px',
                       borderRadius: '8px', border: 'none', cursor: 'pointer'
                     }}>
@@ -244,7 +244,7 @@ export default function ProjectsPortfolioPage() {
                           placeholder="https://github.com/yourusername/portfolio"
                           style={{
                             width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid rgba(0,240,255,0.15)',
-                            background: 'rgba(255,255,255,0.03)', color: '#e8f4ff', fontSize: '13px', outline: 'none'
+                            background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: '13px', outline: 'none'
                           }} />
                       </div>
                       <div>
@@ -253,13 +253,13 @@ export default function ProjectsPortfolioPage() {
                           placeholder="List technologies used, features implemented..."
                           style={{
                             width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid rgba(0,240,255,0.15)',
-                            background: 'rgba(255,255,255,0.03)', color: '#e8f4ff', fontSize: '13px', outline: 'none', resize: 'none'
+                            background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: '13px', outline: 'none', resize: 'none'
                           }} />
                       </div>
                       <div style={{ display: 'flex', gap: '8px' }}>
                         <button type="submit" disabled={submitting} style={{
                           flex: 1, padding: '10px', borderRadius: '6px', border: 'none', fontWeight: 700,
-                          background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', cursor: 'pointer'
+                          background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', cursor: 'pointer'
                         }}>{submitting ? 'Submitting...' : 'Submit Repository'}</button>
                         <button type="button" onClick={() => setActiveSubmitting(null)} style={{
                           padding: '10px 16px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.15)',
@@ -324,8 +324,8 @@ export default function ProjectsPortfolioPage() {
             borderRadius: '16px', padding: '20px'
           }}>
             <h3 style={{
-              fontSize: '13px', fontWeight: 800, color: '#e8f4ff', marginBottom: '16px',
-              fontFamily: 'Syne,sans-serif', textTransform: 'uppercase', letterSpacing: '1px'
+              fontSize: '13px', fontWeight: 800, color: '#e8e8ed', marginBottom: '16px',
+              fontFamily: 'var(--font-heading)', textTransform: 'uppercase', letterSpacing: '1px'
             }}>📊 Portfolio Metrics</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
               <div style={{ background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
@@ -335,7 +335,7 @@ export default function ProjectsPortfolioPage() {
                 <div style={{ fontSize: '11px', color: '#5a7a9a', marginTop: '2px' }}>Audited Projects</div>
               </div>
               <div style={{ background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
-                <div style={{ fontSize: '24px', fontWeight: 800, color: '#7b5cff' }}>
+                <div style={{ fontSize: '24px', fontWeight: 800, color: '#ff6b4a' }}>
                   {historyList.filter(h => h.status === 'submitted').length}
                 </div>
                 <div style={{ fontSize: '11px', color: '#5a7a9a', marginTop: '2px' }}>Pending Audit</div>
@@ -349,15 +349,15 @@ export default function ProjectsPortfolioPage() {
             borderRadius: '16px', padding: '20px'
           }}>
             <h3 style={{
-              fontSize: '13px', fontWeight: 800, color: '#e8f4ff', marginBottom: '12px',
-              fontFamily: 'Syne,sans-serif', textTransform: 'uppercase', letterSpacing: '1px'
+              fontSize: '13px', fontWeight: 800, color: '#e8e8ed', marginBottom: '12px',
+              fontFamily: 'var(--font-heading)', textTransform: 'uppercase', letterSpacing: '1px'
             }}>💻 VS Code Workspace Guide</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '12.5px', color: '#a2b9cd', lineHeight: 1.6 }}>
               <div>
                 <strong>1. Initialize Workspace</strong>
                 <pre style={{
                   background: 'rgba(0,0,0,0.3)', padding: '8px', borderRadius: '6px',
-                  fontFamily: 'JetBrains Mono,monospace', fontSize: '11px', color: '#00f0ff', marginTop: '4px'
+                  fontFamily: 'var(--font-mono)', fontSize: '11px', color: '#00f0ff', marginTop: '4px'
                 }}>mkdir genois-portfolio && cd genois-portfolio</pre>
               </div>
               <div>

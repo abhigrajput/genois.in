@@ -35,17 +35,17 @@ export default function PlacementLoginPage() {
       <div style={{ width: '100%', maxWidth: 420 }}>
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 36 }}>
-          <div style={{ fontFamily: 'Syne, sans-serif', fontSize: 32, fontWeight: 900, letterSpacing: 2, color: G, marginBottom: 4 }}>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 32, fontWeight: 900, letterSpacing: 2, color: G, marginBottom: 4 }}>
             GENOIS
           </div>
-          <div style={{ color: '#4ade80', fontSize: 13, letterSpacing: 2, textTransform: 'uppercase', fontFamily: 'JetBrains Mono, monospace' }}>
+          <div style={{ color: '#4ade80', fontSize: 13, letterSpacing: 2, textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>
             Placement Cell Portal
           </div>
         </div>
 
         {/* Card */}
         <div style={{ background: '#0a1a0a', border: '1px solid rgba(0,255,65,0.18)', borderRadius: 16, padding: 32 }}>
-          <h1 style={{ fontFamily: 'Syne, sans-serif', fontSize: 20, fontWeight: 800, color: '#e2ffe2', marginBottom: 6, textAlign: 'center' }}>
+          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 800, color: '#e2ffe2', marginBottom: 6, textAlign: 'center' }}>
             HOD / Placement Director Access
           </h1>
           <p style={{ color: '#4b8a4b', fontSize: 13, textAlign: 'center', marginBottom: 28 }}>
@@ -67,7 +67,7 @@ export default function PlacementLoginPage() {
                 border: `1px solid ${error ? 'rgba(255,80,80,0.4)' : 'rgba(0,255,65,0.2)'}`,
                 background: 'rgba(0,255,65,0.04)', color: '#e2ffe2',
                 fontSize: 16, outline: 'none', boxSizing: 'border-box',
-                fontFamily: 'JetBrains Mono, monospace', letterSpacing: 4,
+                fontFamily: 'var(--font-mono)', letterSpacing: 4,
               }}
             />
           </div>
@@ -85,7 +85,7 @@ export default function PlacementLoginPage() {
               width: '100%', padding: 14, borderRadius: 12, border: 'none',
               cursor: loading ? 'not-allowed' : 'pointer',
               background: loading ? 'rgba(0,255,65,0.15)' : 'linear-gradient(135deg, #00ff41, #00cc33)',
-              color: '#030a03', fontFamily: 'Syne, sans-serif', fontSize: 15, fontWeight: 800,
+              color: '#030a03', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 800,
             }}
           >
             {loading ? 'Verifying...' : 'Access Dashboard →'}

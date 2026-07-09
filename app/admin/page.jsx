@@ -3,9 +3,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
-const S = { background:'#020812', color:'#e8f4ff', fontFamily:'Outfit,sans-serif', minHeight:'100vh' };
+const S = { background:'#020812', color:'#e8e8ed', fontFamily:'var(--font-body)', minHeight:'100vh' };
 const card = { background:'#070f1f', border:'1px solid rgba(0,240,255,0.08)', borderRadius:12, padding:20 };
-const mono = { fontFamily:'JetBrains Mono,monospace' };
+const mono = { fontFamily:'var(--font-mono)' };
 
 export default function AdminPage() {
   const router = useRouter();
@@ -88,10 +88,10 @@ export default function AdminPage() {
   if (loading) return <div style={{...S, display:'flex', alignItems:'center', justifyContent:'center', color:'#00f0ff', ...mono}}>Loading admin data...</div>;
   if (error) return (
     <div style={{...S, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:20}}>
-      <div style={{color:'#ff2d78', fontFamily:'Syne,sans-serif', fontSize:18, textAlign:'center', maxWidth:480, padding:24}}>{error}</div>
+      <div style={{color:'#ff2d78', fontFamily:'var(--font-heading)', fontSize:18, textAlign:'center', maxWidth:480, padding:24}}>{error}</div>
       <button
         onClick={() => router.push('/login?redirect=/admin')}
-        style={{padding:'12px 28px', borderRadius:10, background:'#00f0ff', color:'#020812', fontFamily:'Syne,sans-serif', fontWeight:700, fontSize:14, border:'none', cursor:'pointer'}}
+        style={{padding:'12px 28px', borderRadius:10, background:'#00f0ff', color:'#020812', fontFamily:'var(--font-heading)', fontWeight:700, fontSize:14, border:'none', cursor:'pointer'}}
       >Log in as Admin</button>
     </div>
   );
@@ -110,7 +110,7 @@ export default function AdminPage() {
     <div style={S}>
       {/* Header */}
       <div style={{background:'#070f1f', borderBottom:'1px solid rgba(0,240,255,0.1)', padding:'14px 24px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, flexWrap:'wrap'}}>
-        <div style={{fontFamily:'Syne,sans-serif', fontSize:20, fontWeight:800, color:'#00f0ff'}}>⚙️ GENOIS Admin</div>
+        <div style={{fontFamily:'var(--font-heading)', fontSize:20, fontWeight:800, color:'#00f0ff'}}>⚙️ GENOIS Admin</div>
         <div style={{fontSize:12, color:'#5a7a9a', ...mono}}>{data?.stats?.totalUsers} users · ₹{(data?.stats?.monthRevenue||0).toLocaleString()} revenue</div>
         <button onClick={() => router.push('/dashboard')} style={{background:'transparent', border:'1px solid rgba(0,240,255,0.2)', color:'#00f0ff', cursor:'pointer', padding:'6px 14px', borderRadius:8, fontSize:12}}>← Dashboard</button>
       </div>
@@ -118,11 +118,11 @@ export default function AdminPage() {
       {/* Tabs */}
       <div style={{display:'flex', gap:8, padding:'14px 24px', flexWrap:'wrap', borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
         {TABS.map(t => (
-          <button key={t.key} onClick={() => setTab(t.key)} style={{padding:'7px 16px', borderRadius:20, border:'none', cursor:'pointer', background:tab===t.key?'#00f0ff':'rgba(255,255,255,0.05)', color:tab===t.key?'#020812':'#5a7a9a', fontFamily:'Syne,sans-serif', fontSize:13, fontWeight:600}}>
+          <button key={t.key} onClick={() => setTab(t.key)} style={{padding:'7px 16px', borderRadius:20, border:'none', cursor:'pointer', background:tab===t.key?'#00f0ff':'rgba(255,255,255,0.05)', color:tab===t.key?'#020812':'#5a7a9a', fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600}}>
             {t.label}
           </button>
         ))}
-        {userDetail && <button onClick={() => setTab('user_detail')} style={{padding:'7px 16px', borderRadius:20, border:'none', cursor:'pointer', background:tab==='user_detail'?'#EF9F27':'rgba(255,255,255,0.05)', color:tab==='user_detail'?'#020812':'#5a7a9a', fontFamily:'Syne,sans-serif', fontSize:13, fontWeight:600}}>👤 User Detail</button>}
+        {userDetail && <button onClick={() => setTab('user_detail')} style={{padding:'7px 16px', borderRadius:20, border:'none', cursor:'pointer', background:tab==='user_detail'?'#EF9F27':'rgba(255,255,255,0.05)', color:tab==='user_detail'?'#020812':'#5a7a9a', fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600}}>👤 User Detail</button>}
       </div>
 
       <div style={{padding:'24px', maxWidth:1400, margin:'0 auto'}}>
@@ -134,7 +134,7 @@ export default function AdminPage() {
               {[
                 {label:'Total Users', value:data?.stats?.totalUsers, color:'#00f0ff'},
                 {label:'Active Today', value:data?.stats?.activeToday, color:'#1D9E75'},
-                {label:'New This Week', value:data?.stats?.newThisWeek, color:'#7b5cff'},
+                {label:'New This Week', value:data?.stats?.newThisWeek, color:'#ff6b4a'},
                 {label:'Avg Score', value:(data?.stats?.avgScore||0)+' pts', color:'#EF9F27'},
                 {label:'Active Streaks', value:data?.stats?.activeStreaks, color:'#ff2d78'},
                 {label:'Revenue (30d)', value:'₹'+(data?.stats?.monthRevenue||0).toLocaleString(), color:'#1D9E75'},
@@ -142,7 +142,7 @@ export default function AdminPage() {
                 {label:'Interviews', value:data?.stats?.interviewSessions, color:'#D85A30'},
               ].map(s => (
                 <div key={s.label} style={{...card, textAlign:'center', border:`1px solid ${s.color}20`}}>
-                  <div style={{fontFamily:'Syne,sans-serif', fontSize:22, fontWeight:800, color:s.color}}>{s.value}</div>
+                  <div style={{fontFamily:'var(--font-heading)', fontSize:22, fontWeight:800, color:s.color}}>{s.value}</div>
                   <div style={{fontSize:10, color:'#5a7a9a', marginTop:4, ...mono}}>{s.label}</div>
                 </div>
               ))}
@@ -153,18 +153,18 @@ export default function AdminPage() {
                 <div style={{...mono, fontSize:10, color:'#00f0ff', letterSpacing:2, marginBottom:14}}>PLAN BREAKDOWN</div>
                 {Object.entries(data?.planBreakdown || {}).map(([plan, count]) => (
                   <div key={plan} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                    <span style={{ color: '#e8f4ff', textTransform: 'capitalize' }}>{plan}</span>
-                    <span style={{ color: '#00f0ff', fontFamily: 'JetBrains Mono,monospace', fontWeight: 700 }}>{count}</span>
+                    <span style={{ color: '#e8e8ed', textTransform: 'capitalize' }}>{plan}</span>
+                    <span style={{ color: '#00f0ff', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>{count}</span>
                   </div>
                 ))}
               </div>
 
-              <div style={{...card, border:'1px solid rgba(123,92,255,0.1)'}}>
-                <div style={{...mono, fontSize:10, color:'#7b5cff', letterSpacing:2, marginBottom:14}}>DOMAIN BREAKDOWN</div>
+              <div style={{...card, border:'1px solid rgba(255,107,74,0.1)'}}>
+                <div style={{...mono, fontSize:10, color:'#ff6b4a', letterSpacing:2, marginBottom:14}}>DOMAIN BREAKDOWN</div>
                 {Object.entries(data?.domainBreakdown || {}).map(([domain, count]) => (
                   <div key={domain} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                    <span style={{ color: '#e8f4ff', textTransform: 'uppercase' }}>{domain}</span>
-                    <span style={{ color: '#7b5cff', fontFamily: 'JetBrains Mono,monospace', fontWeight: 700 }}>{count}</span>
+                    <span style={{ color: '#e8e8ed', textTransform: 'uppercase' }}>{domain}</span>
+                    <span style={{ color: '#ff6b4a', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>{count}</span>
                   </div>
                 ))}
               </div>
@@ -174,10 +174,10 @@ export default function AdminPage() {
                 {(data?.recentSignups || []).map(u => (
                   <div key={u.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                     <div>
-                      <div style={{ color: '#e8f4ff', fontSize: 13 }}>{u.name}</div>
+                      <div style={{ color: '#e8e8ed', fontSize: 13 }}>{u.name}</div>
                       <div style={{ color: '#5a7a9a', fontSize: 11 }}>{u.email}</div>
                     </div>
-                    <div style={{ color: '#5a7a9a', fontSize: 11, fontFamily: 'JetBrains Mono,monospace' }}>
+                    <div style={{ color: '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)' }}>
                       {new Date(u.joined).toLocaleDateString()}
                     </div>
                   </div>
@@ -190,7 +190,7 @@ export default function AdminPage() {
         {/* USERS */}
         {tab === 'users' && (
           <div>
-            <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search name or email..." style={{width:'100%', padding:'11px 16px', borderRadius:10, border:'1px solid rgba(0,240,255,0.15)', background:'#070f1f', color:'#e8f4ff', fontSize:14, outline:'none', marginBottom:16, boxSizing:'border-box'}} />
+            <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search name or email..." style={{width:'100%', padding:'11px 16px', borderRadius:10, border:'1px solid rgba(0,240,255,0.15)', background:'#070f1f', color:'#e8e8ed', fontSize:14, outline:'none', marginBottom:16, boxSizing:'border-box'}} />
             <div style={{ marginTop: 16 }}>
               {(data?.allUsers || [])
                 .filter(u => 
@@ -202,25 +202,25 @@ export default function AdminPage() {
                   <div key={u.id} onClick={() => loadUser(u.id)} style={{ padding: 16, borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(0,240,255,0.08)', marginBottom: 12, cursor: 'pointer' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, flexWrap: 'wrap', gap: 12 }}>
                       <div>
-                        <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#e8f4ff' }}>{u.name}</div>
+                        <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#e8e8ed' }}>{u.name}</div>
                         <div style={{ fontSize: 12, color: '#5a7a9a', marginTop: 2 }}>{u.email}</div>
                       </div>
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                        <span style={{ padding: '3px 10px', borderRadius: 12, background: u.plan === 'dominator' ? 'rgba(239,159,39,0.15)' : u.plan === 'performer' ? 'rgba(123,92,255,0.15)' : u.plan === 'player' ? 'rgba(0,240,255,0.15)' : 'rgba(255,255,255,0.06)', color: u.plan === 'dominator' ? '#EF9F27' : u.plan === 'performer' ? '#7b5cff' : u.plan === 'player' ? '#00f0ff' : '#5a7a9a', fontSize: 11, fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, textTransform: 'uppercase' }}>{u.plan}</span>
-                        {u.isOnTrial && u.trialDaysLeft > 0 && <span style={{ padding: '3px 10px', borderRadius: 12, background: 'rgba(29,158,117,0.15)', color: '#1D9E75', fontSize: 11, fontFamily: 'JetBrains Mono,monospace', fontWeight: 700 }}>TRIAL {u.trialDaysLeft}d</span>}
+                        <span style={{ padding: '3px 10px', borderRadius: 12, background: u.plan === 'dominator' ? 'rgba(239,159,39,0.15)' : u.plan === 'performer' ? 'rgba(255,107,74,0.15)' : u.plan === 'player' ? 'rgba(0,240,255,0.15)' : 'rgba(255,255,255,0.06)', color: u.plan === 'dominator' ? '#EF9F27' : u.plan === 'performer' ? '#ff6b4a' : u.plan === 'player' ? '#00f0ff' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, textTransform: 'uppercase' }}>{u.plan}</span>
+                        {u.isOnTrial && u.trialDaysLeft > 0 && <span style={{ padding: '3px 10px', borderRadius: 12, background: 'rgba(29,158,117,0.15)', color: '#1D9E75', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700 }}>TRIAL {u.trialDaysLeft}d</span>}
                       </div>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 10, padding: '12px 0', borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>COLLEGE</div><div style={{ fontSize: 13, color: '#e8f4ff' }}>{u.college}</div></div>
-                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>YEAR</div><div style={{ fontSize: 13, color: '#e8f4ff' }}>{u.year}</div></div>
-                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>DOMAIN</div><div style={{ fontSize: 13, color: '#e8f4ff' }}>{u.domain}</div></div>
-                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>SCORE</div><div style={{ fontSize: 13, color: '#7b5cff', fontWeight: 700 }}>{u.score}</div></div>
-                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>DAY</div><div style={{ fontSize: 13, color: '#1D9E75' }}>{u.day}</div></div>
-                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>STREAK</div><div style={{ fontSize: 13, color: '#EF9F27' }}>{u.streak}d</div></div>
-                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>LAST ACTIVE</div><div style={{ fontSize: 13, color: u.lastActiveDays > 7 ? '#ff2d78' : '#e8f4ff' }}>{u.lastActiveDays !== null ? u.lastActiveDays + 'd ago' : 'Never'}</div></div>
-                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>JOINED</div><div style={{ fontSize: 13, color: '#e8f4ff' }}>{new Date(u.joined).toLocaleDateString()}</div></div>
+                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>COLLEGE</div><div style={{ fontSize: 13, color: '#e8e8ed' }}>{u.college}</div></div>
+                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>YEAR</div><div style={{ fontSize: 13, color: '#e8e8ed' }}>{u.year}</div></div>
+                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>DOMAIN</div><div style={{ fontSize: 13, color: '#e8e8ed' }}>{u.domain}</div></div>
+                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>SCORE</div><div style={{ fontSize: 13, color: '#ff6b4a', fontWeight: 700 }}>{u.score}</div></div>
+                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>DAY</div><div style={{ fontSize: 13, color: '#1D9E75' }}>{u.day}</div></div>
+                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>STREAK</div><div style={{ fontSize: 13, color: '#EF9F27' }}>{u.streak}d</div></div>
+                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>LAST ACTIVE</div><div style={{ fontSize: 13, color: u.lastActiveDays > 7 ? '#ff2d78' : '#e8e8ed' }}>{u.lastActiveDays !== null ? u.lastActiveDays + 'd ago' : 'Never'}</div></div>
+                      <div><div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>JOINED</div><div style={{ fontSize: 13, color: '#e8e8ed' }}>{new Date(u.joined).toLocaleDateString()}</div></div>
                     </div>
-                    <div style={{ fontSize: 10, color: '#3a4a5a', fontFamily: 'JetBrains Mono,monospace', marginTop: 8, paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.04)' }}>
+                    <div style={{ fontSize: 10, color: '#3a4a5a', fontFamily: 'var(--font-mono)', marginTop: 8, paddingTop: 8, borderTop: '1px solid rgba(255,255,255,0.04)' }}>
                       ID: {u.id} · Hash: {u.passwordHashPreview}
                     </div>
                   </div>
@@ -239,13 +239,13 @@ export default function AdminPage() {
             <div style={{display:'flex', flexDirection:'column', gap:8}}>
               {(data?.topStudents||[]).map((u,i) => (
                 <div key={i} onClick={() => loadUser(u.id)} style={{...card, border:`1px solid ${i<3?'rgba(239,159,39,0.2)':'rgba(255,255,255,0.04)'}`, display:'flex', alignItems:'center', gap:14, cursor:'pointer', flexWrap:'wrap'}}>
-                  <div style={{width:32, height:32, borderRadius:8, background:i===0?'#EF9F27':i===1?'#888':i===2?'#D85A30':'rgba(255,255,255,0.05)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Syne,sans-serif', fontSize:14, fontWeight:700, color:i<3?'#020812':'#5a7a9a', flexShrink:0}}>{i+1}</div>
+                  <div style={{width:32, height:32, borderRadius:8, background:i===0?'#EF9F27':i===1?'#888':i===2?'#D85A30':'rgba(255,255,255,0.05)', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'var(--font-heading)', fontSize:14, fontWeight:700, color:i<3?'#020812':'#5a7a9a', flexShrink:0}}>{i+1}</div>
                   <div style={{flex:1, minWidth:140}}>
-                    <div style={{fontSize:14, fontWeight:600, color:'#e8f4ff'}}>{u.name}</div>
+                    <div style={{fontSize:14, fontWeight:600, color:'#e8e8ed'}}>{u.name}</div>
                     <div style={{fontSize:11, color:'#5a7a9a'}}>{u.email} · {u.subscription_plan||'free'}</div>
                   </div>
                   <div style={{textAlign:'right'}}>
-                    <div style={{fontFamily:'Syne,sans-serif', fontSize:18, fontWeight:800, color:'#EF9F27'}}>{u.score} pts</div>
+                    <div style={{fontFamily:'var(--font-heading)', fontSize:18, fontWeight:800, color:'#EF9F27'}}>{u.score} pts</div>
                     <div style={{fontSize:11, color:'#5a7a9a', ...mono}}>Day {u.day} · {u.streak}🔥</div>
                   </div>
                 </div>
@@ -262,7 +262,7 @@ export default function AdminPage() {
               {(data?.inactiveUsers||[]).map((u,i) => (
                 <div key={i} onClick={() => loadUser(u.id)} style={{...card, border:'1px solid rgba(255,45,120,0.08)', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:10, cursor:'pointer'}}>
                   <div>
-                    <div style={{fontSize:13, fontWeight:600, color:'#e8f4ff'}}>{u.name||'Unknown'}</div>
+                    <div style={{fontSize:13, fontWeight:600, color:'#e8e8ed'}}>{u.name||'Unknown'}</div>
                     <div style={{fontSize:11, color:'#5a7a9a'}}>{u.email}</div>
                   </div>
                   <div style={{textAlign:'right'}}>
@@ -284,7 +284,7 @@ export default function AdminPage() {
                 {label:'Paid Users', value:Object.entries(data?.planBreakdown||{}).filter(([k])=>k!=='spectator'&&k!=='free').reduce((s,[,v])=>s+v,0), color:'#00f0ff'},
               ].map(s => (
                 <div key={s.label} style={{...card, textAlign:'center', border:`1px solid ${s.color}20`}}>
-                  <div style={{fontFamily:'Syne,sans-serif', fontSize:28, fontWeight:800, color:s.color}}>{s.value}</div>
+                  <div style={{fontFamily:'var(--font-heading)', fontSize:28, fontWeight:800, color:s.color}}>{s.value}</div>
                   <div style={{fontSize:11, color:'#5a7a9a', marginTop:4, ...mono}}>{s.label}</div>
                 </div>
               ))}
@@ -296,10 +296,10 @@ export default function AdminPage() {
                 : (data?.payments||[]).map((p,i) => (
                   <div key={i} style={{display:'flex', justifyContent:'space-between', alignItems:'center', padding:'12px 16px', borderBottom:'1px solid rgba(255,255,255,0.02)', flexWrap:'wrap', gap:8}}>
                     <div>
-                      <div style={{fontSize:13, color:'#e8f4ff', textTransform:'capitalize'}}>{p.plan||'Unknown'}</div>
+                      <div style={{fontSize:13, color:'#e8e8ed', textTransform:'capitalize'}}>{p.plan||'Unknown'}</div>
                       <div style={{fontSize:11, color:'#5a7a9a', ...mono}}>{p.updated_at ? new Date(p.updated_at).toLocaleDateString('en-IN') : '—'}</div>
                     </div>
-                    <div style={{fontFamily:'Syne,sans-serif', fontSize:16, fontWeight:700, color:'#1D9E75'}}>₹{p.amount||0}</div>
+                    <div style={{fontFamily:'var(--font-heading)', fontSize:16, fontWeight:700, color:'#1D9E75'}}>₹{p.amount||0}</div>
                   </div>
                 ))
               }
@@ -310,7 +310,7 @@ export default function AdminPage() {
         {/* USER DETAIL */}
         {tab === 'user_detail' && userDetail && (
           <div>
-            <button onClick={() => setTab('users')} style={{background:'transparent', border:'none', color:'#00f0ff', cursor:'pointer', fontSize:13, fontFamily:'Syne,sans-serif', fontWeight:600, marginBottom:16}}>← Back to Users</button>
+            <button onClick={() => setTab('users')} style={{background:'transparent', border:'none', color:'#00f0ff', cursor:'pointer', fontSize:13, fontFamily:'var(--font-heading)', fontWeight:600, marginBottom:16}}>← Back to Users</button>
             <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:16}}>
               <div style={{...card, border:'1px solid rgba(0,240,255,0.1)'}}>
                 <div style={{...mono, fontSize:10, color:'#00f0ff', letterSpacing:2, marginBottom:14}}>STUDENT PROFILE</div>
@@ -326,7 +326,7 @@ export default function AdminPage() {
                 ].map(([label,val]) => (
                   <div key={label} style={{display:'flex', justifyContent:'space-between', padding:'8px 0', borderBottom:'1px solid rgba(255,255,255,0.03)'}}>
                     <span style={{fontSize:12, color:'#5a7a9a', ...mono}}>{label}</span>
-                    <span style={{fontSize:12, color:'#e8f4ff', fontWeight:600}}>{val||'N/A'}</span>
+                    <span style={{fontSize:12, color:'#e8e8ed', fontWeight:600}}>{val||'N/A'}</span>
                   </div>
                 ))}
                 
@@ -341,7 +341,7 @@ export default function AdminPage() {
                     <button onClick={() => revokeTrial(userDetail.user.id)} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid rgba(255,45,120,0.3)', background: 'rgba(255,45,120,0.1)', color: '#ff2d78', cursor: 'pointer', fontSize: 12 }}>
                       Revoke trial
                     </button>
-                    <select onChange={(e) => setPlan(userDetail.user.id, e.target.value)} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)', color: '#e8f4ff', fontSize: 12 }}>
+                    <select onChange={(e) => setPlan(userDetail.user.id, e.target.value)} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.02)', color: '#e8e8ed', fontSize: 12 }}>
                       <option value="">Set plan...</option>
                       <option value="spectator">Spectator (free)</option>
                       <option value="player">Player (₹99)</option>

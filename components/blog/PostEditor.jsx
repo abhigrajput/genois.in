@@ -230,18 +230,18 @@ export default function PostEditor({ postId = null }) {
 
   if (loading) {
     return (
-      <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center', fontFamily: 'Outfit,sans-serif' }}>
+      <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center', fontFamily: 'var(--font-body)' }}>
         Loading article data...
       </div>
     );
   }
 
   return (
-    <div style={{ fontFamily: 'Outfit,sans-serif', width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
+    <div style={{ fontFamily: 'var(--font-body)', width: '100%', maxWidth: '1200px', margin: '0 auto' }}>
       {/* Editor Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '16px', marginBottom: '24px', flexWrap: 'wrap' }}>
         <div>
-          <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: '24px', fontWeight: 800, color: '#e8f4ff', margin: 0 }}>
+          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '24px', fontWeight: 800, color: '#e8e8ed', margin: 0 }}>
             {currentId ? '✏️ Edit DSA Publication' : '📝 Draft New Article'}
           </h1>
           <p style={{ color: '#5a7a9a', fontSize: '13px', marginTop: '4px' }}>
@@ -269,7 +269,7 @@ export default function PostEditor({ postId = null }) {
           <button 
             onClick={() => handleSave('published')}
             disabled={saving}
-            style={{ padding: '10px 22px', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 0 12px rgba(0, 240, 255, 0.1)' }}
+            style={{ padding: '10px 22px', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 0 12px rgba(0, 240, 255, 0.1)' }}
           >
             🚀 Publish Article
           </button>
@@ -280,13 +280,13 @@ export default function PostEditor({ postId = null }) {
       <div style={{ display: 'flex', borderBottom: '1px solid rgba(0,240,255,0.1)', marginBottom: '24px', gap: '16px' }}>
         <button 
           onClick={() => setActiveTab('edit')}
-          style={{ padding: '10px 16px', background: 'transparent', border: 'none', borderBottom: `2px solid ${activeTab === 'edit' ? '#00f0ff' : 'transparent'}`, color: activeTab === 'edit' ? '#00f0ff' : '#5a7a9a', fontFamily: 'Syne,sans-serif', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
+          style={{ padding: '10px 16px', background: 'transparent', border: 'none', borderBottom: `2px solid ${activeTab === 'edit' ? '#00f0ff' : 'transparent'}`, color: activeTab === 'edit' ? '#00f0ff' : '#5a7a9a', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
         >
           📝 Write Content
         </button>
         <button 
           onClick={() => setActiveTab('preview')}
-          style={{ padding: '10px 16px', background: 'transparent', border: 'none', borderBottom: `2px solid ${activeTab === 'preview' ? '#00f0ff' : 'transparent'}`, color: activeTab === 'preview' ? '#00f0ff' : '#5a7a9a', fontFamily: 'Syne,sans-serif', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
+          style={{ padding: '10px 16px', background: 'transparent', border: 'none', borderBottom: `2px solid ${activeTab === 'preview' ? '#00f0ff' : 'transparent'}`, color: activeTab === 'preview' ? '#00f0ff' : '#5a7a9a', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
         >
           👁️ Live Preview
         </button>
@@ -304,15 +304,15 @@ export default function PostEditor({ postId = null }) {
             />
           )}
           <div style={{ display: 'flex', gap: '10px', marginBottom: '12px' }}>
-            <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '12px', background: 'rgba(0,240,255,0.1)', color: '#00f0ff', fontFamily: 'JetBrains Mono,monospace', fontWeight: 'bold' }}>
+            <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '12px', background: 'rgba(0,240,255,0.1)', color: '#00f0ff', fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>
               {topic.toUpperCase()}
             </span>
-            <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '12px', background: 'rgba(29,158,117,0.1)', color: '#1d9e75', fontFamily: 'JetBrains Mono,monospace', fontWeight: 'bold' }}>
+            <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '12px', background: 'rgba(29,158,117,0.1)', color: '#1d9e75', fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>
               {difficulty.toUpperCase()}
             </span>
           </div>
-          <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: '38px', fontWeight: 800, color: '#e8f4ff', margin: '0 0 12px 0', lineHeight: '1.2' }}>{title || 'Untitled Post'}</h1>
-          <p style={{ fontSize: '17px', color: '#8a9ab0', lineHeight: '1.6', margin: '0 0 24px 0', fontFamily: 'Outfit,sans-serif', borderLeft: '3px solid #7b5cff', paddingLeft: '16px' }}>{excerpt || 'Post excerpt goes here...'}</p>
+          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '38px', fontWeight: 800, color: '#e8e8ed', margin: '0 0 12px 0', lineHeight: '1.2' }}>{title || 'Untitled Post'}</h1>
+          <p style={{ fontSize: '17px', color: '#8a9ab0', lineHeight: '1.6', margin: '0 0 24px 0', fontFamily: 'var(--font-body)', borderLeft: '3px solid #ff6b4a', paddingLeft: '16px' }}>{excerpt || 'Post excerpt goes here...'}</p>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '12px', color: '#5a7a9a', marginBottom: '32px', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '16px' }}>
             <span>⏱ {calculateReadTime()} min read</span>
@@ -326,7 +326,7 @@ export default function PostEditor({ postId = null }) {
 
           {cppCode && (
             <div style={{ marginTop: '40px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#00f0ff', fontFamily: 'Syne,sans-serif', fontSize: '18px', fontWeight: 700, marginBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#00f0ff', fontFamily: 'var(--font-heading)', fontSize: '18px', fontWeight: 700, marginBottom: '12px' }}>
                 <span>{'{ }'}</span> C++ Implementation
               </div>
               <MarkdownRenderer content={`\`\`\`cpp\n${cppCode}\n\`\`\``} />
@@ -340,19 +340,19 @@ export default function PostEditor({ postId = null }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', background: '#070f1f', border: '1px solid rgba(0,240,255,0.05)', borderRadius: '12px', padding: '20px' }}>
             {/* Title */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', gridColumn: '1 / -1' }}>
-              <label style={{ fontSize: '12px', fontFamily: 'JetBrains Mono,monospace', color: '#5a7a9a', fontWeight: 'bold' }}>ARTICLE TITLE</label>
+              <label style={{ fontSize: '12px', fontFamily: 'var(--font-mono)', color: '#5a7a9a', fontWeight: 'bold' }}>ARTICLE TITLE</label>
               <input 
                 type="text" 
                 value={title} 
                 onChange={(e) => handleFieldChange(setTitle, e.target.value)}
                 placeholder="How to implement AVL Trees from scratch..."
-                style={{ background: '#0a0a0f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '8px', padding: '12px 16px', color: '#e8f4ff', fontSize: '15px', fontWeight: 'bold', outline: 'none' }}
+                style={{ background: '#0a0a0f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '8px', padding: '12px 16px', color: '#e8e8ed', fontSize: '15px', fontWeight: 'bold', outline: 'none' }}
               />
             </div>
 
             {/* Slug */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={{ fontSize: '12px', fontFamily: 'JetBrains Mono,monospace', color: '#5a7a9a', fontWeight: 'bold' }}>URL SLUG</label>
+              <label style={{ fontSize: '12px', fontFamily: 'var(--font-mono)', color: '#5a7a9a', fontWeight: 'bold' }}>URL SLUG</label>
               <input 
                 type="text" 
                 value={slug} 
@@ -361,17 +361,17 @@ export default function PostEditor({ postId = null }) {
                   handleFieldChange(setSlug, e.target.value.toLowerCase().replace(/\s+/g, '-'));
                 }}
                 placeholder="avl-trees-implementation"
-                style={{ background: '#0a0a0f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#00f0ff', fontFamily: 'JetBrains Mono,monospace', fontSize: '13px', outline: 'none' }}
+                style={{ background: '#0a0a0f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#00f0ff', fontFamily: 'var(--font-mono)', fontSize: '13px', outline: 'none' }}
               />
             </div>
 
             {/* Topic dropdown */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={{ fontSize: '12px', fontFamily: 'JetBrains Mono,monospace', color: '#5a7a9a', fontWeight: 'bold' }}>TOPIC CATEGORY</label>
+              <label style={{ fontSize: '12px', fontFamily: 'var(--font-mono)', color: '#5a7a9a', fontWeight: 'bold' }}>TOPIC CATEGORY</label>
               <select 
                 value={topic} 
                 onChange={(e) => handleFieldChange(setTopic, e.target.value)}
-                style={{ background: '#0a0a0f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#e8f4ff', outline: 'none', cursor: 'pointer' }}
+                style={{ background: '#0a0a0f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#e8e8ed', outline: 'none', cursor: 'pointer' }}
               >
                 {TOPIC_OPTIONS.map(opt => (
                   <option key={opt.value} value={opt.value} style={{ background: '#070f1f' }}>{opt.label}</option>
@@ -381,11 +381,11 @@ export default function PostEditor({ postId = null }) {
 
             {/* Difficulty select */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={{ fontSize: '12px', fontFamily: 'JetBrains Mono,monospace', color: '#5a7a9a', fontWeight: 'bold' }}>DIFFICULTY LEVEL</label>
+              <label style={{ fontSize: '12px', fontFamily: 'var(--font-mono)', color: '#5a7a9a', fontWeight: 'bold' }}>DIFFICULTY LEVEL</label>
               <select 
                 value={difficulty} 
                 onChange={(e) => handleFieldChange(setDifficulty, e.target.value)}
-                style={{ background: '#0a0a0f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#e8f4ff', outline: 'none', cursor: 'pointer' }}
+                style={{ background: '#0a0a0f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#e8e8ed', outline: 'none', cursor: 'pointer' }}
               >
                 {DIFFICULTY_OPTIONS.map(opt => (
                   <option key={opt.value} value={opt.value} style={{ background: '#070f1f' }}>{opt.label}</option>
@@ -395,37 +395,37 @@ export default function PostEditor({ postId = null }) {
 
             {/* Cover Image */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={{ fontSize: '12px', fontFamily: 'JetBrains Mono,monospace', color: '#5a7a9a', fontWeight: 'bold' }}>COVER IMAGE URL</label>
+              <label style={{ fontSize: '12px', fontFamily: 'var(--font-mono)', color: '#5a7a9a', fontWeight: 'bold' }}>COVER IMAGE URL</label>
               <input 
                 type="text" 
                 value={coverImage} 
                 onChange={(e) => handleFieldChange(setCoverImage, e.target.value)}
                 placeholder="https://images.unsplash.com/photo-..."
-                style={{ background: '#0a0a0f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#e8f4ff', fontSize: '13px', outline: 'none' }}
+                style={{ background: '#0a0a0f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#e8e8ed', fontSize: '13px', outline: 'none' }}
               />
             </div>
 
             {/* Tags */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label style={{ fontSize: '12px', fontFamily: 'JetBrains Mono,monospace', color: '#5a7a9a', fontWeight: 'bold' }}>TAGS (Comma Separated)</label>
+              <label style={{ fontSize: '12px', fontFamily: 'var(--font-mono)', color: '#5a7a9a', fontWeight: 'bold' }}>TAGS (Comma Separated)</label>
               <input 
                 type="text" 
                 value={tags} 
                 onChange={(e) => handleFieldChange(setTags, e.target.value)}
                 placeholder="avl tree, BST, self-balancing, trees"
-                style={{ background: '#0a0a0f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#e8f4ff', fontSize: '13px', outline: 'none' }}
+                style={{ background: '#0a0a0f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#e8e8ed', fontSize: '13px', outline: 'none' }}
               />
             </div>
 
             {/* Read Time Info */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', justifyContent: 'center' }}>
-              <span style={{ fontSize: '11px', fontFamily: 'JetBrains Mono,monospace', color: '#5a7a9a' }}>ESTIMATED READ TIME</span>
+              <span style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', color: '#5a7a9a' }}>ESTIMATED READ TIME</span>
               <span style={{ fontSize: '15px', color: '#00f0ff', fontWeight: 'bold' }}>⏱ {calculateReadTime()} Minute{calculateReadTime() > 1 ? 's' : ''}</span>
             </div>
 
             {/* Excerpt */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', gridColumn: '1 / -1' }}>
-              <label style={{ fontSize: '12px', fontFamily: 'JetBrains Mono,monospace', color: '#5a7a9a', fontWeight: 'bold' }}>EXCERPT (Short Catchy Description)</label>
+              <label style={{ fontSize: '12px', fontFamily: 'var(--font-mono)', color: '#5a7a9a', fontWeight: 'bold' }}>EXCERPT (Short Catchy Description)</label>
               <textarea 
                 value={excerpt} 
                 onChange={(e) => handleFieldChange(setExcerpt, e.target.value)}
@@ -454,14 +454,14 @@ export default function PostEditor({ postId = null }) {
                   key={t.label} 
                   onClick={t.action}
                   title={`${t.label} (Shortcuts active)`}
-                  style={{ background: 'transparent', border: 'none', color: '#00f0ff', padding: '6px 12px', borderRadius: '4px', fontSize: '12px', cursor: 'pointer', fontFamily: 'JetBrains Mono,monospace', fontWeight: 'bold', transition: 'background 0.1s' }}
+                  style={{ background: 'transparent', border: 'none', color: '#00f0ff', padding: '6px 12px', borderRadius: '4px', fontSize: '12px', cursor: 'pointer', fontFamily: 'var(--font-mono)', fontWeight: 'bold', transition: 'background 0.1s' }}
                   onMouseOver={(e) => e.target.style.background = 'rgba(0,240,255,0.08)'}
                   onMouseOut={(e) => e.target.style.background = 'transparent'}
                 >
                   {t.icon}
                 </button>
               ))}
-              <span style={{ fontSize: '11px', color: '#5a7a9a', marginLeft: 'auto', alignSelf: 'center', fontFamily: 'JetBrains Mono,monospace' }}>
+              <span style={{ fontSize: '11px', color: '#5a7a9a', marginLeft: 'auto', alignSelf: 'center', fontFamily: 'var(--font-mono)' }}>
                 Ctrl+B (Bold) · Ctrl+I (Italic) · Ctrl+K (Code block)
               </span>
             </div>
@@ -473,20 +473,20 @@ export default function PostEditor({ postId = null }) {
               onChange={(e) => handleFieldChange(setContent, e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="# Introduce your topic here&#10;&#10;Explain the concepts, logic, and complexity. Use **bold** styling or - bullet points where helpful.&#10;&#10;## Subtitle Section..."
-              style={{ background: '#0a0a0f', border: 'none', padding: '16px 20px', color: '#c9d1d9', fontSize: '15px', fontFamily: 'JetBrains Mono,monospace', outline: 'none', height: '400px', resize: 'vertical', lineHeight: '1.6' }}
+              style={{ background: '#0a0a0f', border: 'none', padding: '16px 20px', color: '#c9d1d9', fontSize: '15px', fontFamily: 'var(--font-mono)', outline: 'none', height: '400px', resize: 'vertical', lineHeight: '1.6' }}
             />
           </div>
 
           {/* Dedicated C++ Code Editor Section */}
-          <div style={{ display: 'flex', flexDirection: 'column', border: '1px solid rgba(123,92,255,0.2)', borderRadius: '12px', overflow: 'hidden', background: '#070f1f' }}>
-            <div style={{ padding: '8px 16px', background: 'rgba(123,92,255,0.08)', borderBottom: '1px solid rgba(123,92,255,0.15)', color: '#7b5cff', fontFamily: 'Syne,sans-serif', fontSize: '13px', fontWeight: 'bold' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', border: '1px solid rgba(255,107,74,0.2)', borderRadius: '12px', overflow: 'hidden', background: '#070f1f' }}>
+            <div style={{ padding: '8px 16px', background: 'rgba(255,107,74,0.08)', borderBottom: '1px solid rgba(255,107,74,0.15)', color: '#ff6b4a', fontFamily: 'var(--font-heading)', fontSize: '13px', fontWeight: 'bold' }}>
               ⚡ C++ IMPLEMENTATION CODE BLOCK (Optional - Will appear fully formatted at post bottom)
             </div>
             <textarea 
               value={cppCode}
               onChange={(e) => handleFieldChange(setCppCode, e.target.value)}
               placeholder={`#include <iostream>\nusing namespace std;\n\n// Write your core C++ implementation here...`}
-              style={{ background: '#0a0a0f', border: 'none', padding: '16px 20px', color: '#00f0ff', fontSize: '13px', fontFamily: 'JetBrains Mono,monospace', outline: 'none', height: '240px', resize: 'vertical', lineHeight: '1.6' }}
+              style={{ background: '#0a0a0f', border: 'none', padding: '16px 20px', color: '#00f0ff', fontSize: '13px', fontFamily: 'var(--font-mono)', outline: 'none', height: '240px', resize: 'vertical', lineHeight: '1.6' }}
             />
           </div>
         </div>

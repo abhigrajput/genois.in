@@ -27,16 +27,16 @@ export default function WelcomePage() {
   const current = STEPS[step] || STEPS[0];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#020812', color: '#e8f4ff', fontFamily: 'Outfit,sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+    <div style={{ minHeight: '100vh', background: '#020812', color: '#e8e8ed', fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
       <div style={{ maxWidth: 480, width: '100%', textAlign: 'center' }}>
 
-        <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 22, fontWeight: 800, marginBottom: 32 }}>
-          <span style={{ color: '#00f0ff' }}>GEN</span><span style={{ color: '#e8f4ff' }}>OIS</span>
+        <div style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 800, marginBottom: 32 }}>
+          <span style={{ color: '#00f0ff' }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
         </div>
 
         <div style={{ fontSize: 64, marginBottom: 20, transition: 'all 0.3s' }}>{current.icon}</div>
 
-        <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 26, fontWeight: 800, color: '#e8f4ff', marginBottom: 16, lineHeight: 1.2 }}>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: '#e8e8ed', marginBottom: 16, lineHeight: 1.2 }}>
           {current.title}
         </h1>
 
@@ -51,16 +51,16 @@ export default function WelcomePage() {
         </div>
 
         {step < STEPS.length - 1 ? (
-          <button onClick={() => setStep(s => s + 1)} style={{ width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700 }}>
+          <button onClick={() => setStep(s => s + 1)} style={{ width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700 }}>
             Next →
           </button>
         ) : (
-          <Link href="/diagnostic" style={{ display: 'block', width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, textDecoration: 'none', textAlign: 'center', boxSizing: 'border-box' }}>
+          <Link href="/diagnostic" style={{ display: 'block', width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, textDecoration: 'none', textAlign: 'center', boxSizing: 'border-box' }}>
             Start Day 1 — Let us Go 🚀
           </Link>
         )}
 
-        <p style={{ marginTop: 16, color: '#3a4a5a', fontSize: 12, fontFamily: 'JetBrains Mono,monospace' }}>
+        <p style={{ marginTop: 16, color: '#3a4a5a', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
           {user?.name ? `${user.name} · ` : ''}{user?.domain_slug?.toUpperCase()} · 30 days free
         </p>
       </div>

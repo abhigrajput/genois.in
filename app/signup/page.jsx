@@ -7,10 +7,10 @@ import { signIn } from 'next-auth/react';
 import { trackSignup } from '@/lib/analytics';
 import { MessageCircle } from 'lucide-react';
 
-const PURPLE = '#6366f1';
-const PURPLE_LIGHT = '#818cf8';
-const BG = '#0d0d14';
-const CARD = '#13131f';
+const PURPLE = '#00d9a3';
+const PURPLE_LIGHT = '#2ee6b0';
+const BG = '#0a0a0f';
+const CARD = '#12121a';
 const MUTED = '#8b93a1';
 
 // State machine
@@ -301,11 +301,11 @@ export default function SignupPage() {
   const isCreating = step === 'creating';
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: BG, fontFamily: 'Outfit,sans-serif' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: BG, fontFamily: 'var(--font-body)' }}>
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid rgba(99,102,241,0.1)', flexShrink: 0 }}>
-        <Link href="/" style={{ textDecoration: 'none', fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 24, letterSpacing: 0.5 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 20px', borderBottom: '1px solid rgba(0,217,163,0.1)', flexShrink: 0 }}>
+        <Link href="/" style={{ textDecoration: 'none', fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 24, letterSpacing: 0.5 }}>
           <span style={{ color: PURPLE }}>GEN</span><span style={{ color: '#f8fafc' }}>OIS</span>
         </Link>
         <Link href="/login" style={{ color: PURPLE_LIGHT, textDecoration: 'none', fontWeight: 600, fontSize: 14 }}>Sign in →</Link>
@@ -315,17 +315,17 @@ export default function SignupPage() {
       {!started && (
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '32px 20px' }}>
           <div style={{ width: '100%', maxWidth: 420, textAlign: 'center' }}>
-            <div style={{ width: 72, height: 72, borderRadius: '50%', margin: '0 auto 20px', background: `linear-gradient(135deg, ${PURPLE}, #4f46e5)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 34, color: '#fff', boxShadow: '0 12px 36px rgba(99,102,241,0.4)' }}>G</div>
-            <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 26, fontWeight: 800, color: '#f8fafc', margin: '0 0 10px' }}>Let&apos;s set you up</h1>
+            <div style={{ width: 72, height: 72, borderRadius: '50%', margin: '0 auto 20px', background: `linear-gradient(135deg, ${PURPLE}, #00b389)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 34, color: '#0a0a0f', boxShadow: '0 12px 36px rgba(0,217,163,0.4)' }}>G</div>
+            <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: '#f8fafc', margin: '0 0 10px' }}>Let&apos;s set you up</h1>
             <p style={{ color: MUTED, fontSize: 15, lineHeight: 1.6, margin: '0 0 28px' }}>
               No boring forms. Just a quick chat and your free Dominator account is ready. Shall we begin?
             </p>
 
             <button onClick={beginChat} style={{
               width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer',
-              background: `linear-gradient(135deg, ${PURPLE}, #4f46e5)`, color: '#fff',
-              fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700,
-              boxShadow: '0 8px 24px rgba(99,102,241,0.32)', marginBottom: 20,
+              background: `linear-gradient(135deg, ${PURPLE}, #00b389)`, color: '#0a0a0f',
+              fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700,
+              boxShadow: '0 8px 24px rgba(0,217,163,0.32)', marginBottom: 20,
             }}>
               <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}><MessageCircle size={18} strokeWidth={2} /> Start the chat</span>
             </button>
@@ -334,7 +334,7 @@ export default function SignupPage() {
 
             <button onClick={handleGoogleSignup} disabled={googleLoading} type="button" style={{
               width: '100%', padding: '12px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)',
-              background: '#fff', color: '#1f2937', fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 600,
+              background: '#fff', color: '#1f2937', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 600,
               cursor: googleLoading ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               gap: 10, transition: 'all 0.2s', opacity: googleLoading ? 0.7 : 1,
             }}>
@@ -359,12 +359,12 @@ export default function SignupPage() {
             {messages.map((msg, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: msg.from === 'ai' ? 'flex-start' : 'flex-end', alignItems: 'flex-end', gap: 8 }}>
                 {msg.from === 'ai' && (
-                  <div style={{ width: 30, height: 30, borderRadius: '50%', flexShrink: 0, background: `linear-gradient(135deg, ${PURPLE}, #4f46e5)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 14, color: '#fff' }}>G</div>
+                  <div style={{ width: 30, height: 30, borderRadius: '50%', flexShrink: 0, background: `linear-gradient(135deg, ${PURPLE}, #00b389)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 14, color: '#0a0a0f' }}>G</div>
                 )}
                 <div style={{
                   maxWidth: '78%', padding: '10px 14px', borderRadius: msg.from === 'ai' ? '4px 14px 14px 14px' : '14px 4px 14px 14px',
-                  background: msg.from === 'ai' ? 'rgba(99,102,241,0.16)' : CARD,
-                  border: msg.from === 'ai' ? '1px solid rgba(99,102,241,0.28)' : '1px solid rgba(255,255,255,0.08)',
+                  background: msg.from === 'ai' ? 'rgba(0,217,163,0.16)' : CARD,
+                  border: msg.from === 'ai' ? '1px solid rgba(0,217,163,0.28)' : '1px solid rgba(255,255,255,0.08)',
                   color: '#f1f5f9', fontSize: 14.5, lineHeight: 1.55, whiteSpace: 'pre-wrap', wordBreak: 'break-word',
                 }}>
                   {msg.text || '​'}
@@ -374,8 +374,8 @@ export default function SignupPage() {
 
             {typing && (
               <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'flex-end', gap: 8 }}>
-                <div style={{ width: 30, height: 30, borderRadius: '50%', flexShrink: 0, background: `linear-gradient(135deg, ${PURPLE}, #4f46e5)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 14, color: '#fff' }}>G</div>
-                <div style={{ padding: '12px 16px', borderRadius: '4px 14px 14px 14px', background: 'rgba(99,102,241,0.16)', border: '1px solid rgba(99,102,241,0.28)', display: 'flex', gap: 4 }}>
+                <div style={{ width: 30, height: 30, borderRadius: '50%', flexShrink: 0, background: `linear-gradient(135deg, ${PURPLE}, #00b389)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 14, color: '#0a0a0f' }}>G</div>
+                <div style={{ padding: '12px 16px', borderRadius: '4px 14px 14px 14px', background: 'rgba(0,217,163,0.16)', border: '1px solid rgba(0,217,163,0.28)', display: 'flex', gap: 4 }}>
                   <span className="gen-dot" style={{ animationDelay: '0s' }} />
                   <span className="gen-dot" style={{ animationDelay: '0.2s' }} />
                   <span className="gen-dot" style={{ animationDelay: '0.4s' }} />
@@ -385,7 +385,7 @@ export default function SignupPage() {
 
             {isCreating && !typing && (
               <div style={{ display: 'flex', justifyContent: 'center', padding: 16 }}>
-                <div style={{ width: 32, height: 32, border: `3px solid rgba(99,102,241,0.25)`, borderTopColor: PURPLE, borderRadius: '50%', animation: 'gen-spin 0.8s linear infinite' }} />
+                <div style={{ width: 32, height: 32, border: `3px solid rgba(0,217,163,0.25)`, borderTopColor: PURPLE, borderRadius: '50%', animation: 'gen-spin 0.8s linear infinite' }} />
               </div>
             )}
           </div>
@@ -404,7 +404,7 @@ export default function SignupPage() {
 
           {/* Input bar */}
           {showInput && (
-            <div style={{ padding: '12px 16px', borderTop: '1px solid rgba(99,102,241,0.1)', display: 'flex', gap: 10, alignItems: 'center', flexShrink: 0 }}>
+            <div style={{ padding: '12px 16px', borderTop: '1px solid rgba(0,217,163,0.1)', display: 'flex', gap: 10, alignItems: 'center', flexShrink: 0 }}>
               <input
                 ref={inputRef}
                 type={step === 'password' ? 'password' : step === 'email' ? 'email' : 'text'}
@@ -414,14 +414,14 @@ export default function SignupPage() {
                 placeholder={placeholders[step]}
                 autoComplete={step === 'password' ? 'new-password' : step === 'email' ? 'email' : 'off'}
                 style={{
-                  flex: 1, padding: '13px 16px', borderRadius: 24, border: '1px solid rgba(99,102,241,0.25)',
-                  background: 'rgba(255,255,255,0.04)', color: '#f8fafc', fontSize: 15, fontFamily: 'Outfit,sans-serif', outline: 'none',
+                  flex: 1, padding: '13px 16px', borderRadius: 24, border: '1px solid rgba(0,217,163,0.25)',
+                  background: 'rgba(255,255,255,0.04)', color: '#f8fafc', fontSize: 15, fontFamily: 'var(--font-body)', outline: 'none',
                 }}
               />
               <button onClick={submitTyped} aria-label="Send" style={{
                 width: 46, height: 46, borderRadius: '50%', border: 'none', cursor: 'pointer', flexShrink: 0,
-                background: `linear-gradient(135deg, ${PURPLE}, #4f46e5)`, color: '#fff', fontSize: 18,
-                display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 18px rgba(99,102,241,0.34)',
+                background: `linear-gradient(135deg, ${PURPLE}, #00b389)`, color: '#0a0a0f', fontSize: 18,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 6px 18px rgba(0,217,163,0.34)',
               }}>↑</button>
             </div>
           )}
@@ -433,9 +433,9 @@ export default function SignupPage() {
         @keyframes gen-bounce { 0%,80%,100% { transform: translateY(0); opacity:.5 } 40% { transform: translateY(-5px); opacity:1 } }
         .gen-dot { width:7px; height:7px; border-radius:50%; background:${PURPLE_LIGHT}; display:inline-block; animation: gen-bounce 1.2s infinite ease-in-out; }
         .gen-chip {
-          padding: 9px 16px; border-radius: 22px; border: 1px solid rgba(99,102,241,0.35);
-          background: rgba(99,102,241,0.08); color: #c7d2fe; font-size: 13.5px; font-weight: 600;
-          font-family: Outfit, sans-serif; cursor: pointer; transition: all 0.15s;
+          padding: 9px 16px; border-radius: 22px; border: 1px solid rgba(0,217,163,0.35);
+          background: rgba(0,217,163,0.08); color: #c7d2fe; font-size: 13.5px; font-weight: 600;
+          font-family: var(--font-body); cursor: pointer; transition: all 0.15s;
         }
         .gen-chip:hover { background: ${PURPLE}; color: #fff; transform: translateY(-1px); }
       `}</style>

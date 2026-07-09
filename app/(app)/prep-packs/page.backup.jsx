@@ -70,11 +70,11 @@ export default function PrepPacksPage() {
   if (selectedPack && packContent) {
     const company = COMPANIES.find(c => c.id === selectedPack);
     return (
-      <div style={{ maxWidth: 780, margin: '0 auto', fontFamily: 'Outfit,sans-serif' }}>
+      <div style={{ maxWidth: 780, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
           <button onClick={() => { setSelectedPack(null); setPackContent(null); }} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#00f0ff', fontSize: 18, padding: 0 }}>←</button>
           <div>
-            <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 22, fontWeight: 800, color: '#e8f4ff', margin: 0 }}>
+            <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 800, color: '#e8e8ed', margin: 0 }}>
               {packContent.logo} {packContent.company} Prep Pack
             </h1>
             <p style={{ color: '#5a7a9a', fontSize: 13, margin: 0 }}>{packContent.testName}</p>
@@ -82,24 +82,24 @@ export default function PrepPacksPage() {
         </div>
 
         <div style={{ background: '#070f1f', border: `1px solid ${company?.color}30`, borderRadius: 14, padding: 20, marginBottom: 20 }}>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: company?.color, letterSpacing: 2, marginBottom: 10 }}>OVERVIEW</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: company?.color, letterSpacing: 2, marginBottom: 10 }}>OVERVIEW</div>
           <p style={{ color: '#c8d8e8', fontSize: 14, lineHeight: 1.8, margin: 0 }}>{packContent.overview}</p>
         </div>
 
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 14 }}>EXAM SECTIONS</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 14 }}>EXAM SECTIONS</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {packContent.sections.map((s, i) => (
               <div key={i} style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 12, padding: 20 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-                  <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, color: '#e8f4ff' }}>{s.name}</div>
-                  <div style={{ padding: '3px 10px', borderRadius: 20, background: `${company?.color}15`, color: company?.color, fontSize: 11, fontFamily: 'JetBrains Mono,monospace', fontWeight: 700 }}>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: '#e8e8ed' }}>{s.name}</div>
+                  <div style={{ padding: '3px 10px', borderRadius: 20, background: `${company?.color}15`, color: company?.color, fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
                     {s.weight}
                   </div>
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
                   {s.topics.map((t, ti) => (
-                    <span key={ti} style={{ padding: '3px 10px', borderRadius: 20, background: 'rgba(255,255,255,0.04)', color: '#8a9ab0', fontSize: 12, fontFamily: 'JetBrains Mono,monospace' }}>{t}</span>
+                    <span key={ti} style={{ padding: '3px 10px', borderRadius: 20, background: 'rgba(255,255,255,0.04)', color: '#8a9ab0', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{t}</span>
                   ))}
                 </div>
                 <div style={{ padding: '10px 14px', background: 'rgba(0,240,255,0.04)', borderRadius: 8, fontSize: 13, color: '#5a7a9a', lineHeight: 1.6 }}>
@@ -111,11 +111,11 @@ export default function PrepPacksPage() {
         </div>
 
         <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 14, padding: 20, marginBottom: 20 }}>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#1D9E75', letterSpacing: 2, marginBottom: 14 }}>WINNING STRATEGY</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#1D9E75', letterSpacing: 2, marginBottom: 14 }}>WINNING STRATEGY</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {packContent.strategy.map((s, i) => (
               <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                <span style={{ color: '#1D9E75', fontFamily: 'Syne,sans-serif', fontWeight: 800, flexShrink: 0 }}>{i + 1}.</span>
+                <span style={{ color: '#1D9E75', fontFamily: 'var(--font-heading)', fontWeight: 800, flexShrink: 0 }}>{i + 1}.</span>
                 <span style={{ fontSize: 14, color: '#c8d8e8', lineHeight: 1.6 }}>{s}</span>
               </div>
             ))}
@@ -124,11 +124,11 @@ export default function PrepPacksPage() {
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 20 }}>
           <div style={{ background: '#070f1f', border: '1px solid rgba(239,159,39,0.2)', borderRadius: 12, padding: 16 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#EF9F27', letterSpacing: 2, marginBottom: 8 }}>CUTOFF</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#EF9F27', letterSpacing: 2, marginBottom: 8 }}>CUTOFF</div>
             <p style={{ color: '#c8d8e8', fontSize: 13, lineHeight: 1.6, margin: 0 }}>{packContent.cutoff}</p>
           </div>
-          <div style={{ background: '#070f1f', border: '1px solid rgba(123,92,255,0.2)', borderRadius: 12, padding: 16 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#7b5cff', letterSpacing: 2, marginBottom: 8 }}>TIMELINE</div>
+          <div style={{ background: '#070f1f', border: '1px solid rgba(255,107,74,0.2)', borderRadius: 12, padding: 16 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#ff6b4a', letterSpacing: 2, marginBottom: 8 }}>TIMELINE</div>
             <p style={{ color: '#c8d8e8', fontSize: 13, lineHeight: 1.6, margin: 0 }}>{packContent.timeline}</p>
           </div>
         </div>
@@ -137,9 +137,9 @@ export default function PrepPacksPage() {
   }
 
   return (
-    <div style={{ maxWidth: 780, margin: '0 auto', fontFamily: 'Outfit,sans-serif' }}>
+    <div style={{ maxWidth: 780, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 4 }}>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 4 }}>
           🏢 Company Prep Packs
         </h1>
         <p style={{ color: '#5a7a9a', fontSize: 13 }}>
@@ -148,7 +148,7 @@ export default function PrepPacksPage() {
       </div>
 
       {loading ? (
-        <div style={{ color: '#5a7a9a', textAlign: 'center', padding: 40, fontFamily: 'JetBrains Mono,monospace' }}>Loading...</div>
+        <div style={{ color: '#5a7a9a', textAlign: 'center', padding: 40, fontFamily: 'var(--font-mono)' }}>Loading...</div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {COMPANIES.map(c => {
@@ -164,23 +164,23 @@ export default function PrepPacksPage() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
                       <span style={{ fontSize: 28 }}>{c.logo}</span>
                       <div>
-                        <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 800, color: '#e8f4ff' }}>{c.name}</div>
+                        <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 800, color: '#e8e8ed' }}>{c.name}</div>
                         <div style={{ fontSize: 12, color: '#5a7a9a' }}>{c.fullName}</div>
                       </div>
                       {isPurchased && (
-                        <span style={{ padding: '3px 10px', borderRadius: 20, background: 'rgba(29,158,117,0.15)', color: '#1D9E75', fontSize: 10, fontFamily: 'JetBrains Mono,monospace', fontWeight: 700 }}>
+                        <span style={{ padding: '3px 10px', borderRadius: 20, background: 'rgba(29,158,117,0.15)', color: '#1D9E75', fontSize: 10, fontFamily: 'var(--font-mono)', fontWeight: 700 }}>
                           ✓ UNLOCKED
                         </span>
                       )}
                     </div>
 
-                    <div style={{ fontSize: 12, color: '#5a7a9a', marginBottom: 12, fontFamily: 'JetBrains Mono,monospace' }}>
+                    <div style={{ fontSize: 12, color: '#5a7a9a', marginBottom: 12, fontFamily: 'var(--font-mono)' }}>
                       {c.test} · {c.students}
                     </div>
 
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                       {c.highlights.map((h, i) => (
-                        <span key={i} style={{ padding: '3px 10px', borderRadius: 20, background: 'rgba(255,255,255,0.04)', color: '#8a9ab0', fontSize: 11, fontFamily: 'JetBrains Mono,monospace' }}>
+                        <span key={i} style={{ padding: '3px 10px', borderRadius: 20, background: 'rgba(255,255,255,0.04)', color: '#8a9ab0', fontSize: 11, fontFamily: 'var(--font-mono)' }}>
                           {h}
                         </span>
                       ))}
@@ -189,14 +189,14 @@ export default function PrepPacksPage() {
 
                   <div style={{ textAlign: 'right', flexShrink: 0 }}>
                     {isPurchased ? (
-                      <button onClick={() => viewPack(c.id)} disabled={loadingContent} style={{ padding: '12px 24px', borderRadius: 10, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${c.color},${c.color}99)`, color: '#fff', fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700 }}>
+                      <button onClick={() => viewPack(c.id)} disabled={loadingContent} style={{ padding: '12px 24px', borderRadius: 10, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${c.color},${c.color}99)`, color: '#fff', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
                         {loadingContent && selectedPack === c.id ? 'Loading...' : 'View Pack →'}
                       </button>
                     ) : (
                       <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 4 }}>₹199</div>
-                        <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', marginBottom: 10 }}>one time</div>
-                        <div style={{ padding: '12px 24px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)', color: '#3a4a5a', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700, textAlign: 'center' }}>
+                        <div style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 4 }}>₹199</div>
+                        <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', marginBottom: 10 }}>one time</div>
+                        <div style={{ padding: '12px 24px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)', color: '#3a4a5a', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700, textAlign: 'center' }}>
                           🔧 Coming Soon
                         </div>
                       </div>
@@ -212,7 +212,7 @@ export default function PrepPacksPage() {
       <div style={{ marginTop: 24, background: '#070f1f', border: '1px solid rgba(0,240,255,0.06)', borderRadius: 14, padding: 20, textAlign: 'center' }}>
         <div style={{ color: '#5a7a9a', fontSize: 13, lineHeight: 1.7 }}>
           One time purchase · Lifetime access · Updated every 6 months<br />
-          <span style={{ color: '#3a4a5a', fontSize: 11, fontFamily: 'JetBrains Mono,monospace' }}>Secure payment via Razorpay</span>
+          <span style={{ color: '#3a4a5a', fontSize: 11, fontFamily: 'var(--font-mono)' }}>Secure payment via Razorpay</span>
         </div>
       </div>
     </div>

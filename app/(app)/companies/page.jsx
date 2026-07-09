@@ -24,13 +24,13 @@ export default function CompaniesPage() {
   if (loading) return <div style={{ padding: 40, textAlign: 'center', color: '#5a7a9a' }}>Loading...</div>;
 
   return (
-    <div style={{ fontFamily: 'Outfit,sans-serif', maxWidth: 1100, paddingBottom: 60 }}>
-      <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 26, fontWeight: 800, color: '#e8f4ff', marginBottom: 4 }}>🎯 Company Prep</h1>
+    <div style={{ fontFamily: 'var(--font-body)', maxWidth: 1100, paddingBottom: 60 }}>
+      <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: '#e8e8ed', marginBottom: 4 }}>🎯 Company Prep</h1>
       <p style={{ color: '#5a7a9a', fontSize: 13, marginBottom: 20 }}>Detailed prep guide for top tech companies. Pick your target.</p>
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
         {['all', 'service', 'product', 'startup'].map(t => (
-          <button key={t} onClick={() => setFilter(t)} style={{ padding: '7px 14px', borderRadius: 20, border: `1px solid ${filter === t ? 'rgba(0,240,255,0.4)' : 'rgba(255,255,255,0.08)'}`, background: filter === t ? 'rgba(0,240,255,0.08)' : 'transparent', color: filter === t ? '#00f0ff' : '#8a9ab0', cursor: 'pointer', fontSize: 12, fontFamily: 'Syne,sans-serif', fontWeight: 600, textTransform: 'capitalize' }}>
+          <button key={t} onClick={() => setFilter(t)} style={{ padding: '7px 14px', borderRadius: 20, border: `1px solid ${filter === t ? 'rgba(0,240,255,0.4)' : 'rgba(255,255,255,0.08)'}`, background: filter === t ? 'rgba(0,240,255,0.08)' : 'transparent', color: filter === t ? '#00f0ff' : '#8a9ab0', cursor: 'pointer', fontSize: 12, fontFamily: 'var(--font-heading)', fontWeight: 600, textTransform: 'capitalize' }}>
             {t === 'all' ? 'All' : TIER_LABELS[t]}
           </button>
         ))}
@@ -42,7 +42,7 @@ export default function CompaniesPage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
               <div style={{ fontSize: 32 }}>{c.logo}</div>
               <div>
-                <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#e8f4ff' }}>{c.name}</div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#e8e8ed' }}>{c.name}</div>
                 <div style={{ fontSize: 11, color: '#5a7a9a', textTransform: 'uppercase', letterSpacing: 1 }}>{TIER_LABELS[c.tier]}</div>
               </div>
             </div>

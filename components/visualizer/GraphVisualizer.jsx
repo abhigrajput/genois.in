@@ -80,7 +80,7 @@ export default function GraphVisualizer() {
   const reset = () => { setEdges(INIT_EDGES); setSelectedEdge(null); setMessage('Reset to default graph.'); };
 
   const SVG_W = 600, SVG_H = 320;
-  const COLORS = ['#00f0ff','#7b5cff','#1d9e75','#ef9f27','#ff2d78','#378ADD'];
+  const COLORS = ['#00f0ff','#ff6b4a','#1d9e75','#ef9f27','#ff2d78','#378ADD'];
 
   function midPoint(u, v) {
     const nu = nodes[u], nv = nodes[v];
@@ -99,19 +99,19 @@ export default function GraphVisualizer() {
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
           { label: 'Vertices', value: nodes.length, color: '#00f0ff' },
-          { label: 'Edges', value: edges.length, color: '#7b5cff' },
+          { label: 'Edges', value: edges.length, color: '#ff6b4a' },
           { label: 'Type', value: directed ? 'Directed' : 'Undirected', color: '#ef9f27' },
           { label: 'Selected Edge', value: selectedEdge !== null ? `${edges.find(e=>e.id===selectedEdge)?.u}→${edges.find(e=>e.id===selectedEdge)?.v}` : '—', color: '#1d9e75' },
         ].map(s => (
           <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
       {message && (
-        <div style={{ background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#00f0ff' }}>▶ {message}</div>
+        <div style={{ background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00f0ff' }}>▶ {message}</div>
       )}
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
@@ -142,7 +142,7 @@ export default function GraphVisualizer() {
                   <rect x={mid.x - 12} y={mid.y - 10} width={24} height={18} rx={4}
                     fill={isSel ? 'rgba(0,240,255,0.2)' : 'rgba(6,15,30,0.85)'} stroke={isSel ? '#00f0ff' : 'rgba(0,240,255,0.15)'} strokeWidth={1} />
                   <text x={mid.x} y={mid.y + 4} textAnchor="middle"
-                    style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, fontWeight: 700, fill: isSel ? '#00f0ff' : '#5a7a9a' }}>{e.w}</text>
+                    style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, fill: isSel ? '#00f0ff' : '#5a7a9a' }}>{e.w}</text>
                 </g>
               );
             })}
@@ -150,7 +150,7 @@ export default function GraphVisualizer() {
               <g key={n.id}>
                 <circle cx={n.x} cy={n.y} r={22} fill="#0d1a2a" stroke={COLORS[n.id]} strokeWidth={2} />
                 <text x={n.x} y={n.y + 5} textAnchor="middle"
-                  style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 14, fontWeight: 700, fill: COLORS[n.id] }}>{n.id}</text>
+                  style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, fill: COLORS[n.id] }}>{n.id}</text>
               </g>
             ))}
           </svg>
@@ -159,24 +159,24 @@ export default function GraphVisualizer() {
         {/* Right: adj list + matrix */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 12, minWidth: 200 }}>
           <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 10, padding: 12 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>ADJ LIST</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>ADJ LIST</div>
             {adjList.map((nbrs, i) => (
               <div key={i} style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 3 }}>
-                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: COLORS[i], minWidth: 16, fontWeight: 700 }}>{i}:</span>
-                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a' }}>{nbrs.map(n=>`${n.to}(${n.w})`).join(', ') || '—'}</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: COLORS[i], minWidth: 16, fontWeight: 700 }}>{i}:</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a' }}>{nbrs.map(n=>`${n.to}(${n.w})`).join(', ') || '—'}</span>
               </div>
             ))}
           </div>
 
           <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 10, padding: 12 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>ADJ MATRIX</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>ADJ MATRIX</div>
             <div style={{ overflowX: 'auto' }}>
               <table style={{ borderCollapse: 'collapse' }}>
                 <tbody>
                   {adjMatrix.map((row, i) => (
                     <tr key={i}>
                       {row.map((v, j) => (
-                        <td key={j} style={{ width: 28, height: 24, textAlign: 'center', fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: v !== '∞' && v !== 0 ? '#00f0ff' : i === j ? '#ef9f27' : '#2a3a4a', border: '1px solid rgba(0,240,255,0.08)', background: 'rgba(0,0,0,0.3)' }}>{v}</td>
+                        <td key={j} style={{ width: 28, height: 24, textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: 10, color: v !== '∞' && v !== 0 ? '#00f0ff' : i === j ? '#ef9f27' : '#2a3a4a', border: '1px solid rgba(0,240,255,0.08)', background: 'rgba(0,0,0,0.3)' }}>{v}</td>
                       ))}
                     </tr>
                   ))}
@@ -189,10 +189,10 @@ export default function GraphVisualizer() {
 
       {/* Controls */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-        <button onClick={() => setDirected(d => !d)} style={btn(directed ? '#ef9f27' : '#7b5cff')}>{directed ? 'Directed ✓' : 'Undirected'}</button>
+        <button onClick={() => setDirected(d => !d)} style={btn(directed ? '#ef9f27' : '#ff6b4a')}>{directed ? 'Directed ✓' : 'Undirected'}</button>
         <div style={{ display:'flex', gap:4, alignItems:'center' }}>
           <input type="number" value={addU} onChange={e=>setAddU(e.target.value)} placeholder="U" style={inputStyle} />
-          <span style={{ color:'#5a7a9a', fontFamily:'JetBrains Mono,monospace' }}>→</span>
+          <span style={{ color:'#5a7a9a', fontFamily:'var(--font-mono)' }}>→</span>
           <input type="number" value={addV} onChange={e=>setAddV(e.target.value)} placeholder="V" style={inputStyle} />
           <input type="number" value={addW} onChange={e=>setAddW(e.target.value)} placeholder="W" style={inputStyle} />
           <button onClick={addEdge} style={btn('#1d9e75')}>Add Edge</button>
@@ -206,6 +206,6 @@ export default function GraphVisualizer() {
   );
 }
 function btn(color) {
-  return { padding:'8px 16px', borderRadius:8, border:`1px solid ${color}30`, background:`${color}10`, color, fontFamily:'Syne,sans-serif', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' };
+  return { padding:'8px 16px', borderRadius:8, border:`1px solid ${color}30`, background:`${color}10`, color, fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' };
 }
-const inputStyle = { background:'rgba(0,240,255,0.04)', border:'1px solid rgba(0,240,255,0.2)', borderRadius:8, padding:'6px 10px', color:'#e8f4ff', fontFamily:'JetBrains Mono,monospace', fontSize:12, outline:'none', width:56 };
+const inputStyle = { background:'rgba(0,240,255,0.04)', border:'1px solid rgba(0,240,255,0.2)', borderRadius:8, padding:'6px 10px', color:'#e8e8ed', fontFamily:'var(--font-mono)', fontSize:12, outline:'none', width:56 };

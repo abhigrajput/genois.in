@@ -13,7 +13,7 @@ function YouTubeEmbed({ url, title }) {
       display: 'inline-flex', alignItems: 'center', gap: 8,
       padding: '12px 20px', borderRadius: 10, textDecoration: 'none',
       background: 'rgba(0,255,136,0.1)', border: '1px solid rgba(0,255,136,0.3)',
-      color: '#00ff88', fontFamily: 'Outfit,sans-serif', fontWeight: 600, fontSize: 14,
+      color: '#00ff88', fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 14,
     }}>▶ Watch on YouTube →</a>
   );
   return (
@@ -34,7 +34,7 @@ const STEPS = ['video','resource','coding','test','notes'];
 const STEP_LABELS = { video:'Watch Video', resource:'Read Resource', coding:'Coding Challenge', test:'Daily Test', notes:'AI Notes' };
 
 const ACTION_BTN_STYLE = {
-  background: 'linear-gradient(135deg, #00f0ff, #7b5cff)',
+  background: 'linear-gradient(135deg, #00f0ff, #ff6b4a)',
   color: '#020812',
   fontWeight: 700,
   padding: '14px 28px',
@@ -230,7 +230,7 @@ export default function DailyRoadmapPage() {
   }
 
   return (
-    <div className="w-full space-y-6" style={{ fontFamily: 'Outfit,sans-serif' }}>
+    <div className="w-full space-y-6" style={{ fontFamily: 'var(--font-body)' }}>
       
       {/* Top Banner Area */}
       <div style={{
@@ -238,14 +238,14 @@ export default function DailyRoadmapPage() {
         borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '16px'
       }}>
         <div>
-          <h1 className="text-2xl font-bold text-dark" style={{ fontFamily: 'Syne,sans-serif' }}>Day {currentDay} — {roadmapItem?.topic}</h1>
+          <h1 className="text-2xl font-bold text-dark" style={{ fontFamily: 'var(--font-heading)' }}>Day {currentDay} — {roadmapItem?.topic}</h1>
           <p className="text-sm text-gray-400 mt-1">Week {currentWeek} · {roadmapItem?.difficulty} · Follow the flow in order</p>
         </div>
         <div style={{
           background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)',
           borderRadius: '12px', padding: '8px 16px', textAlign: 'right'
         }}>
-          <div style={{ fontSize: '11px', color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>GENERATION LAYER</div>
+          <div style={{ fontSize: '11px', color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>GENERATION LAYER</div>
           <div style={{ fontSize: '13px', fontWeight: 700, color: '#00f0ff', textTransform: 'uppercase' }}>{daily.generatedBy || 'Supabase Cache'}</div>
         </div>
       </div>
@@ -261,7 +261,7 @@ export default function DailyRoadmapPage() {
             <div style={{
               width: '100%', padding: '16px', borderRadius: '12px',
               background: 'rgba(29,158,117,0.1)', border: '1px solid #1D9E75',
-              boxShadow: '0 0 20px rgba(29,158,117,0.2)', color: '#e8f4ff', textAlign: 'center'
+              boxShadow: '0 0 20px rgba(29,158,117,0.2)', color: '#e8e8ed', textAlign: 'center'
             }}>
               <div style={{ fontSize: '18px', fontWeight: 'bold' }}>🎉 Day {currentDay} Complete! You earned 100 points!</div>
               <div style={{ fontSize: '14px', color: '#1D9E75', marginTop: '4px' }}>Day {newDay} is now unlocked</div>
@@ -285,14 +285,14 @@ export default function DailyRoadmapPage() {
 
               <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
                 <span style={{
-                  background: 'rgba(123,92,255,0.15)', border: '1px solid rgba(123,92,255,0.3)',
+                  background: 'rgba(255,107,74,0.15)', border: '1px solid rgba(255,107,74,0.3)',
                   color: '#9d85ff', fontSize: '11px', fontWeight: 700, padding: '4px 10px',
-                  borderRadius: '20px', textTransform: 'uppercase', fontFamily: 'JetBrains Mono,monospace'
+                  borderRadius: '20px', textTransform: 'uppercase', fontFamily: 'var(--font-mono)'
                 }}>🚀 Project Week! Time to Build</span>
                 <span style={{ fontSize: '13px', color: '#5a7a9a', fontWeight: 600 }}>⏱️ Est: {project.estimated_hours || 20} Hours</span>
               </div>
 
-              <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#e8f4ff', fontFamily: 'Syne,sans-serif' }}>{project.title}</h2>
+              <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#e8e8ed', fontFamily: 'var(--font-heading)' }}>{project.title}</h2>
               <p style={{ fontSize: '14px', color: '#8aa2b9', marginTop: '6px', lineHeight: 1.6 }}>{project.description}</p>
 
               {/* Steps Accordion */}
@@ -305,7 +305,7 @@ export default function DailyRoadmapPage() {
                       border: '1px solid rgba(255,255,255,0.04)', borderRadius: '8px', padding: '10px 14px',
                       fontSize: '13px', color: '#c8d8e8'
                     }}>
-                      <span style={{ color: '#00f0ff', fontWeight: 700, fontFamily: 'JetBrains Mono,monospace' }}>0{idx+1}</span>
+                      <span style={{ color: '#00f0ff', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>0{idx+1}</span>
                       <span>{step}</span>
                     </div>
                   ))}
@@ -317,7 +317,7 @@ export default function DailyRoadmapPage() {
                 marginTop: '24px', borderTop: '1px solid rgba(255,255,255,0.06)',
                 paddingTop: '20px'
               }}>
-                <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#e8f4ff', marginBottom: '12px' }}>Submit Your Code</h3>
+                <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#e8e8ed', marginBottom: '12px' }}>Submit Your Code</h3>
                 
                 {projectProgress?.status === 'submitted' && (
                   <div style={{
@@ -331,7 +331,7 @@ export default function DailyRoadmapPage() {
                 {projectProgress?.status === 'reviewed' && aiFeedbackParsed && (
                   <div style={{
                     background: 'rgba(29,158,117,0.05)', border: '1px solid rgba(29,158,117,0.2)',
-                    borderRadius: '12px', padding: '16px', color: '#e8f4ff'
+                    borderRadius: '12px', padding: '16px', color: '#e8e8ed'
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                       <span style={{ fontSize: '14px', color: '#1D9E75', fontWeight: 700 }}>✅ AI Assessment Complete</span>
@@ -362,7 +362,7 @@ export default function DailyRoadmapPage() {
                         placeholder="https://github.com/yourusername/your-project"
                         style={{
                           width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid rgba(0,240,255,0.15)',
-                          background: 'rgba(255,255,255,0.03)', color: '#e8f4ff', fontSize: '13px', outline: 'none'
+                          background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: '13px', outline: 'none'
                         }} />
                     </div>
                     <div>
@@ -371,12 +371,12 @@ export default function DailyRoadmapPage() {
                         placeholder="Brief notes about your tech stack or challenges faced..."
                         style={{
                           width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid rgba(0,240,255,0.15)',
-                          background: 'rgba(255,255,255,0.03)', color: '#e8f4ff', fontSize: '13px', outline: 'none', resize: 'none'
+                          background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: '13px', outline: 'none', resize: 'none'
                         }} />
                     </div>
                     <button type="submit" disabled={submittingProject} style={{
                       padding: '12px', borderRadius: '8px', border: 'none', fontWeight: 700,
-                      background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812',
+                      background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812',
                       cursor: 'pointer', transition: 'all 0.2s'
                     }}>
                       {submittingProject ? 'Submitting Code...' : 'Submit Repository for AI Audit →'}
@@ -452,10 +452,10 @@ export default function DailyRoadmapPage() {
                 {codingTest ? (
                   <>
                     <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 12, padding: 16 }}>
-                      <div style={{ fontWeight: 600, color: '#e8f4ff', marginBottom: 6, fontSize: 15 }}>{codingTest.title}</div>
+                      <div style={{ fontWeight: 600, color: '#e8e8ed', marginBottom: 6, fontSize: 15 }}>{codingTest.title}</div>
                       <p style={{ fontSize: 13, color: '#c8d8e8', lineHeight: 1.7 }}>{codingTest.problem}</p>
                       {codingTest.example_input && (
-                        <div style={{ marginTop: 12, fontSize: 12, fontFamily: 'JetBrains Mono,monospace', background: 'rgba(0,0,0,0.4)', borderRadius: 8, padding: 10 }}>
+                        <div style={{ marginTop: 12, fontSize: 12, fontFamily: 'var(--font-mono)', background: 'rgba(0,0,0,0.4)', borderRadius: 8, padding: 10 }}>
                           <div style={{ color: '#5a7a9a' }}>Input: <span style={{ color: '#00f0ff' }}>{codingTest.example_input}</span></div>
                           <div style={{ color: '#5a7a9a' }}>Output: <span style={{ color: '#1D9E75' }}>{codingTest.example_output}</span></div>
                         </div>
@@ -543,14 +543,14 @@ export default function DailyRoadmapPage() {
                     </button>
                   : <div style={{
                       background: '#0a1628',
-                      color: '#e8f4ff',
+                      color: '#e8e8ed',
                       border: '1px solid rgba(0,240,255,0.08)',
                       borderRadius: 12,
                       padding: 20,
                       fontSize: 14,
                       lineHeight: 1.9,
                       whiteSpace: 'pre-wrap',
-                      fontFamily: 'Outfit,sans-serif',
+                      fontFamily: 'var(--font-body)',
                     }}>{note.content}</div>}
                 {isTaskDone('notes') && <div className="text-success text-sm font-medium">✓ Completed!</div>}
               </div>
@@ -577,8 +577,8 @@ export default function DailyRoadmapPage() {
               borderRadius: '16px', padding: '20px'
             }}>
               <h3 style={{
-                fontSize: '14px', fontWeight: 800, color: '#e8f4ff', marginBottom: '14px',
-                fontFamily: 'Syne,sans-serif', textTransform: 'uppercase', letterSpacing: '1px'
+                fontSize: '14px', fontWeight: 800, color: '#e8e8ed', marginBottom: '14px',
+                fontFamily: 'var(--font-heading)', textTransform: 'uppercase', letterSpacing: '1px'
               }}>🎯 Daily Objectives</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {objectives.map((obj, i) => (
@@ -602,8 +602,8 @@ export default function DailyRoadmapPage() {
               borderRadius: '16px', padding: '20px'
             }}>
               <h3 style={{
-                fontSize: '14px', fontWeight: 800, color: '#e8f4ff', marginBottom: '12px',
-                fontFamily: 'Syne,sans-serif', textTransform: 'uppercase', letterSpacing: '1px'
+                fontSize: '14px', fontWeight: 800, color: '#e8e8ed', marginBottom: '12px',
+                fontFamily: 'var(--font-heading)', textTransform: 'uppercase', letterSpacing: '1px'
               }}>💡 Key Concepts</h3>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                 {keyConcepts.map((concept, i) => (
@@ -629,8 +629,8 @@ export default function DailyRoadmapPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
                 <span style={{ fontSize: '16px' }}>💻</span>
                 <h3 style={{
-                  fontSize: '14px', fontWeight: 800, color: '#e8f4ff',
-                  fontFamily: 'Syne,sans-serif', textTransform: 'uppercase', letterSpacing: '1px'
+                  fontSize: '14px', fontWeight: 800, color: '#e8e8ed',
+                  fontFamily: 'var(--font-heading)', textTransform: 'uppercase', letterSpacing: '1px'
                 }}>Coding Problem</h3>
               </div>
               <p style={{ fontSize: '13px', color: '#c8d8e8', lineHeight: 1.5, marginBottom: '14px' }}>

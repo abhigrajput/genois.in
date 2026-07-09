@@ -184,7 +184,7 @@ export default function CertificatePage() {
   }
 
   if (loading) return (
-    <div style={{ padding: 60, textAlign: 'center', color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', fontSize: 12 }}>
+    <div style={{ padding: 60, textAlign: 'center', color: '#5a7a9a', fontFamily: 'var(--font-mono)', fontSize: 12 }}>
       Loading certificates...
     </div>
   );
@@ -199,14 +199,14 @@ export default function CertificatePage() {
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
           <div style={{ flex: 1 }}>
             <div style={{ fontSize: 36, marginBottom: 10 }}>{cert ? '🏆' : '🔒'}</div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 800, color: '#e8f4ff', marginBottom: 6 }}>{title}</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800, color: '#e8e8ed', marginBottom: 6 }}>{title}</div>
             <div style={{ fontSize: 13, color: '#8a9ab0', lineHeight: 1.6 }}>{desc}</div>
           </div>
           {cert && (
             <button
               onClick={() => generatePDF(cert)}
               disabled={generating === cert.type}
-              style={{ padding: '12px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', background: generating === cert.type ? 'rgba(239,159,39,0.3)' : 'linear-gradient(135deg,#EF9F27,#D85A30)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700, flexShrink: 0, transition: 'all 0.2s' }}
+              style={{ padding: '12px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', background: generating === cert.type ? 'rgba(239,159,39,0.3)' : 'linear-gradient(135deg,#EF9F27,#D85A30)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700, flexShrink: 0, transition: 'all 0.2s' }}
             >
               {generating === cert.type ? '⏳ Generating...' : '⬇ Download PDF'}
             </button>
@@ -215,7 +215,7 @@ export default function CertificatePage() {
 
         {cert ? (
           <div style={{ background: 'rgba(239,159,39,0.06)', border: '1px solid rgba(239,159,39,0.15)', borderRadius: 12, padding: 18 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#EF9F27', letterSpacing: 2, marginBottom: 12 }}>CERTIFICATE DETAILS</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#EF9F27', letterSpacing: 2, marginBottom: 12 }}>CERTIFICATE DETAILS</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 12 }}>
               {[
                 { label: 'RECIPIENT', value: cert.recipientName },
@@ -226,8 +226,8 @@ export default function CertificatePage() {
                 { label: 'CERT ID', value: (cert.certId || '').substring(0, 20) + '...' },
               ].map((item, i) => (
                 <div key={i}>
-                  <div style={{ fontSize: 9, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', marginBottom: 4, letterSpacing: 1 }}>{item.label}</div>
-                  <div style={{ fontSize: 12, color: '#e8f4ff', fontFamily: 'Outfit,sans-serif' }}>{item.value}</div>
+                  <div style={{ fontSize: 9, color: '#5a7a9a', fontFamily: 'var(--font-mono)', marginBottom: 4, letterSpacing: 1 }}>{item.label}</div>
+                  <div style={{ fontSize: 12, color: '#e8e8ed', fontFamily: 'var(--font-body)' }}>{item.value}</div>
                 </div>
               ))}
             </div>
@@ -235,18 +235,18 @@ export default function CertificatePage() {
         ) : (
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-              <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>PROGRESS TO UNLOCK</span>
-              <span style={{ fontSize: 11, color: '#00f0ff', fontFamily: 'JetBrains Mono,monospace' }}>{current}/{threshold} {unit}</span>
+              <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>PROGRESS TO UNLOCK</span>
+              <span style={{ fontSize: 11, color: '#00f0ff', fontFamily: 'var(--font-mono)' }}>{current}/{threshold} {unit}</span>
             </div>
             <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 99, height: 8, marginBottom: 10 }}>
-              <div style={{ background: 'linear-gradient(90deg,#00f0ff,#7b5cff)', borderRadius: 99, height: 8, width: `${pct}%`, transition: 'width 1s ease' }} />
+              <div style={{ background: 'linear-gradient(90deg,#00f0ff,#ff6b4a)', borderRadius: 99, height: 8, width: `${pct}%`, transition: 'width 1s ease' }} />
             </div>
             <div style={{ fontSize: 12, color: '#5a7a9a' }}>
               {threshold - current > 0
                 ? `Need ${Math.max(0, threshold - current)} more ${unit} to unlock`
                 : 'Criteria met — certificate available!'}
             </div>
-            {certErr && <div style={{ fontSize: 11, color: '#ff2d78', marginTop: 6, fontFamily: 'JetBrains Mono,monospace' }}>{certErr}</div>}
+            {certErr && <div style={{ fontSize: 11, color: '#ff2d78', marginTop: 6, fontFamily: 'var(--font-mono)' }}>{certErr}</div>}
           </div>
         )}
       </div>
@@ -254,10 +254,10 @@ export default function CertificatePage() {
   };
 
   return (
-    <div style={{ fontFamily: 'Outfit,sans-serif', width: '100%', paddingBottom: 60 }}>
+    <div style={{ fontFamily: 'var(--font-body)', width: '100%', paddingBottom: 60 }}>
       <div style={{ marginBottom: 32 }}>
-        <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 8 }}>ACHIEVEMENTS</div>
-        <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 26, fontWeight: 800, color: '#e8f4ff', marginBottom: 8, margin: 0 }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 8 }}>ACHIEVEMENTS</div>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: '#e8e8ed', marginBottom: 8, margin: 0 }}>
           My Certificates
         </h1>
         <p style={{ color: '#5a7a9a', fontSize: 13, marginTop: 8, marginBottom: 0 }}>
@@ -289,7 +289,7 @@ export default function CertificatePage() {
       </div>
 
       <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 14, padding: 24 }}>
-        <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, color: '#e8f4ff', marginBottom: 16 }}>
+        <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: '#e8e8ed', marginBottom: 16 }}>
           💡 How to earn certificates faster
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 10 }}>

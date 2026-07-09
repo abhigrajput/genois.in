@@ -60,13 +60,13 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
   };
 
   return (
-    <div style={{ fontFamily: 'Outfit,sans-serif', width: '100%' }}>
+    <div style={{ fontFamily: 'var(--font-body)', width: '100%' }}>
       {taskDescription && (
         <div style={{ background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 10, padding: '12px 16px', marginBottom: 14 }}>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 6 }}>TASK</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 6 }}>TASK</div>
           <div style={{ fontSize: 14, color: '#c8d8e8', lineHeight: 1.6 }}>{taskDescription}</div>
           {expectedOutput && (
-            <div style={{ marginTop: 8, fontSize: 12, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>
+            <div style={{ marginTop: 8, fontSize: 12, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>
               Expected output: <span style={{ color: '#1D9E75' }}>{expectedOutput}</span>
             </div>
           )}
@@ -76,7 +76,7 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 8 }}>
         <div style={{ display: 'flex', gap: 6 }}>
           {LANGUAGES.map(l => (
-            <button key={l} onClick={() => changeLanguage(l)} style={{ padding: '5px 12px', borderRadius: 20, border: `1px solid ${language === l ? 'rgba(0,240,255,0.4)' : 'rgba(255,255,255,0.08)'}`, background: language === l ? 'rgba(0,240,255,0.08)' : 'transparent', color: language === l ? '#00f0ff' : '#5a7a9a', cursor: 'pointer', fontSize: 11, fontFamily: 'JetBrains Mono,monospace' }}>
+            <button key={l} onClick={() => changeLanguage(l)} style={{ padding: '5px 12px', borderRadius: 20, border: `1px solid ${language === l ? 'rgba(0,240,255,0.4)' : 'rgba(255,255,255,0.08)'}`, background: language === l ? 'rgba(0,240,255,0.08)' : 'transparent', color: language === l ? '#00f0ff' : '#5a7a9a', cursor: 'pointer', fontSize: 11, fontFamily: 'var(--font-mono)' }}>
               {LANGUAGE_LABELS[l]}
             </button>
           ))}
@@ -102,9 +102,9 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
           borderRadius: 10,
           border: '1px solid rgba(0,240,255,0.1)',
           background: '#050d1a',
-          color: '#e8f4ff',
+          color: '#e8e8ed',
           fontSize: 13,
-          fontFamily: 'JetBrains Mono,monospace',
+          fontFamily: 'var(--font-mono)',
           outline: 'none',
           resize: 'vertical',
           boxSizing: 'border-box',
@@ -125,8 +125,8 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
 
       {showStdin && (
         <div style={{ marginTop: 8 }}>
-          <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', marginBottom: 4 }}>STDIN (input for your program)</div>
-          <textarea value={stdin} onChange={e => setStdin(e.target.value)} rows={3} placeholder="Enter program input here..." style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.1)', background: '#050d1a', color: '#e8f4ff', fontSize: 12, fontFamily: 'JetBrains Mono,monospace', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }} />
+          <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', marginBottom: 4 }}>STDIN (input for your program)</div>
+          <textarea value={stdin} onChange={e => setStdin(e.target.value)} rows={3} placeholder="Enter program input here..." style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.1)', background: '#050d1a', color: '#e8e8ed', fontSize: 12, fontFamily: 'var(--font-mono)', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }} />
         </div>
       )}
 
@@ -138,7 +138,7 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
           cursor: running || isCompleted || !runEligible ? 'not-allowed' : 'pointer',
           background: isCompleted ? 'rgba(29,158,117,0.2)' : !runEligible ? 'rgba(255,255,255,0.07)' : running ? 'rgba(0,240,255,0.15)' : 'linear-gradient(135deg,#00f0ff,#1D9E75)',
           color: isCompleted ? '#1D9E75' : !runEligible ? '#555' : '#020812',
-          fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700,
+          fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700,
           transition: 'all 0.4s ease',
         }}>
         {isCompleted ? '✓ Code Submitted' : !runEligible ? `⏳ Read problem for ${runTimeLeft}s before running` : running ? '⚙️ Running...' : '▶ Run Code'}
@@ -149,12 +149,12 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 16 }}>{result.passed ? '✅' : '❌'}</span>
-              <span style={{ fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700, color: statusColors[result.status] || '#5a7a9a' }}>
+              <span style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: statusColors[result.status] || '#5a7a9a' }}>
                 {result.statusDescription || result.status?.replace(/_/g, ' ').toUpperCase()}
               </span>
             </div>
             {result.time && (
-              <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>
+              <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>
                 {result.time}s · {result.memory}KB
               </span>
             )}
@@ -162,22 +162,22 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
 
           {result.stdout && (
             <div style={{ marginBottom: 10 }}>
-              <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1, marginBottom: 4 }}>OUTPUT</div>
-              <pre style={{ background: 'rgba(0,0,0,0.3)', padding: '10px 12px', borderRadius: 6, fontSize: 12, color: '#1D9E75', fontFamily: 'JetBrains Mono,monospace', margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{result.stdout}</pre>
+              <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 4 }}>OUTPUT</div>
+              <pre style={{ background: 'rgba(0,0,0,0.3)', padding: '10px 12px', borderRadius: 6, fontSize: 12, color: '#1D9E75', fontFamily: 'var(--font-mono)', margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{result.stdout}</pre>
             </div>
           )}
 
           {result.stderr && (
             <div style={{ marginBottom: 10 }}>
-              <div style={{ fontSize: 10, color: '#ff2d78', fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1, marginBottom: 4 }}>ERROR</div>
-              <pre style={{ background: 'rgba(255,45,120,0.05)', padding: '10px 12px', borderRadius: 6, fontSize: 12, color: '#ff2d78', fontFamily: 'JetBrains Mono,monospace', margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{result.stderr}</pre>
+              <div style={{ fontSize: 10, color: '#ff2d78', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 4 }}>ERROR</div>
+              <pre style={{ background: 'rgba(255,45,120,0.05)', padding: '10px 12px', borderRadius: 6, fontSize: 12, color: '#ff2d78', fontFamily: 'var(--font-mono)', margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{result.stderr}</pre>
             </div>
           )}
 
           {result.compile_output && (
             <div>
-              <div style={{ fontSize: 10, color: '#EF9F27', fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1, marginBottom: 4 }}>COMPILE OUTPUT</div>
-              <pre style={{ background: 'rgba(239,159,39,0.05)', padding: '10px 12px', borderRadius: 6, fontSize: 12, color: '#EF9F27', fontFamily: 'JetBrains Mono,monospace', margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{result.compile_output}</pre>
+              <div style={{ fontSize: 10, color: '#EF9F27', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 4 }}>COMPILE OUTPUT</div>
+              <pre style={{ background: 'rgba(239,159,39,0.05)', padding: '10px 12px', borderRadius: 6, fontSize: 12, color: '#EF9F27', fontFamily: 'var(--font-mono)', margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{result.compile_output}</pre>
             </div>
           )}
         </div>

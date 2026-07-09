@@ -74,17 +74,17 @@ export default function PWAInstallPrompt() {
       >
         ×
       </button>
-      <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, color: '#e8f4ff', marginBottom: 6 }}>
+      <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: '#e8e8ed', marginBottom: 6 }}>
         📱 Install GENOIS
       </div>
       <div style={{ fontSize: 12, color: '#8a9ab0', marginBottom: 14, lineHeight: 1.5 }}>
         Add to home screen for instant access. Works offline.
       </div>
       <div style={{ display: 'flex', gap: 8 }}>
-        <button onClick={handleInstall} style={{ flex: 1, padding: '10px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 12, fontWeight: 700 }}>
+        <button onClick={handleInstall} style={{ flex: 1, padding: '10px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 700 }}>
           Install
         </button>
-        <button onClick={handleDismiss} style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', background: 'transparent', color: '#5a7a9a', fontFamily: 'Syne,sans-serif', fontSize: 12, fontWeight: 600 }}>
+        <button onClick={handleDismiss} style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', background: 'transparent', color: '#5a7a9a', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 600 }}>
           Later
         </button>
       </div>

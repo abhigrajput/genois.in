@@ -30,7 +30,7 @@ export default function LegendPage() {
   }, [ready, token]);
 
   if (loading) return (
-    <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center', fontFamily: 'JetBrains Mono,monospace' }}>
+    <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center', fontFamily: 'var(--font-mono)' }}>
       Checking eligibility...
     </div>
   );
@@ -38,48 +38,48 @@ export default function LegendPage() {
   // NOT ELIGIBLE — show locked page with progress
   if (!data?.isEligible && !data?.isLegend) {
     return (
-      <div style={{ maxWidth: 680, margin: '0 auto', fontFamily: 'Outfit,sans-serif' }}>
+      <div style={{ maxWidth: 680, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
 
         <div style={{ textAlign: 'center', marginBottom: 36 }}>
           <div style={{ fontSize: 56, marginBottom: 12 }}>🔒</div>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#7b5cff', letterSpacing: 2, marginBottom: 12 }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#ff6b4a', letterSpacing: 2, marginBottom: 12 }}>
             HIDDEN PLAN — INVITE ONLY
           </div>
-          <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 28, fontWeight: 800, color: '#e8f4ff', marginBottom: 8 }}>
+          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>
             Legend Access
           </h1>
           <p style={{ color: '#5a7a9a', fontSize: 15, marginBottom: 4 }}>
             This plan is not shown on the pricing page.
           </p>
           <p style={{ color: '#5a7a9a', fontSize: 15 }}>
-            It unlocks only when you reach a GENOIS score of <span style={{ color: '#7b5cff', fontWeight: 700 }}>1500 points</span>.
+            It unlocks only when you reach a GENOIS score of <span style={{ color: '#ff6b4a', fontWeight: 700 }}>1500 points</span>.
           </p>
         </div>
 
         {/* Progress to unlock */}
-        <div style={{ background: '#070f1f', border: '1px solid rgba(123,92,255,0.2)', borderRadius: 16, padding: 28, marginBottom: 24, position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#7b5cff,transparent)' }} />
+        <div style={{ background: '#070f1f', border: '1px solid rgba(255,107,74,0.2)', borderRadius: 16, padding: 28, marginBottom: 24, position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#ff6b4a,transparent)' }} />
 
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
             <div>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#7b5cff', letterSpacing: 2, marginBottom: 6 }}>YOUR PROGRESS TO LEGEND</div>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 32, fontWeight: 800, color: '#e8f4ff' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#ff6b4a', letterSpacing: 2, marginBottom: 6 }}>YOUR PROGRESS TO LEGEND</div>
+              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 32, fontWeight: 800, color: '#e8e8ed' }}>
                 {data?.currentScore} <span style={{ fontSize: 16, color: '#5a7a9a', fontWeight: 400 }}>/ 1500 pts</span>
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 40, fontWeight: 800, color: '#7b5cff' }}>
+              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 40, fontWeight: 800, color: '#ff6b4a' }}>
                 {data?.progressPercent}%
               </div>
-              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>complete</div>
+              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>complete</div>
             </div>
           </div>
 
           <div style={{ height: 10, background: 'rgba(255,255,255,0.06)', borderRadius: 5, marginBottom: 12, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${data?.progressPercent}%`, background: 'linear-gradient(90deg,#7b5cff,#00f0ff)', borderRadius: 5, transition: 'width 0.5s', boxShadow: '0 0 10px rgba(123,92,255,0.5)' }} />
+            <div style={{ height: '100%', width: `${data?.progressPercent}%`, background: 'linear-gradient(90deg,#ff6b4a,#00f0ff)', borderRadius: 5, transition: 'width 0.5s', boxShadow: '0 0 10px rgba(255,107,74,0.5)' }} />
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>
             <span>Current: {data?.currentScore} pts</span>
             <span>{data?.pointsNeeded} pts to unlock</span>
           </div>
@@ -87,46 +87,46 @@ export default function LegendPage() {
 
         {/* How to earn points fast */}
         <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 14, padding: 20, marginBottom: 24 }}>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 14 }}>HOW TO REACH 1500 FASTER</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 14 }}>HOW TO REACH 1500 FASTER</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
               { action: 'Complete all 5 daily tasks', points: '+80 pts/day', color: '#00f0ff' },
               { action: 'Score 100% on daily test', points: '+30 pts', color: '#1D9E75' },
               { action: 'Win a duel', points: '+50 pts', color: '#ff2d78' },
-              { action: 'Complete a project', points: '+40 pts', color: '#7b5cff' },
+              { action: 'Complete a project', points: '+40 pts', color: '#ff6b4a' },
               { action: 'Maintain 7 day streak', points: '+bonus pts', color: '#EF9F27' },
             ].map((s, i) => (
               <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: 'rgba(255,255,255,0.02)', borderRadius: 8 }}>
                 <span style={{ fontSize: 13, color: '#c8d8e8' }}>{s.action}</span>
-                <span style={{ fontSize: 12, fontFamily: 'Syne,sans-serif', fontWeight: 700, color: s.color }}>{s.points}</span>
+                <span style={{ fontSize: 12, fontFamily: 'var(--font-heading)', fontWeight: 700, color: s.color }}>{s.points}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Preview of legend features — blurred */}
-        <div style={{ background: '#070f1f', border: '1px solid rgba(123,92,255,0.1)', borderRadius: 14, padding: 20, position: 'relative', overflow: 'hidden' }}>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(255,107,74,0.1)', borderRadius: 14, padding: 20, position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', inset: 0, background: 'rgba(2,8,18,0.7)', backdropFilter: 'blur(4px)', zIndex: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: 14 }}>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 32, marginBottom: 8 }}>🔒</div>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#7b5cff' }}>
+              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#ff6b4a' }}>
                 Reach 1500 pts to unlock
               </div>
             </div>
           </div>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 14 }}>LEGEND FEATURES</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 14 }}>LEGEND FEATURES</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 10 }}>
             {LEGEND_FEATURES.slice(0, 4).map((f, i) => (
               <div key={i} style={{ padding: '12px', background: 'rgba(255,255,255,0.02)', borderRadius: 10 }}>
                 <div style={{ fontSize: 20, marginBottom: 4 }}>{f.icon}</div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#e8f4ff' }}>{f.title}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#e8e8ed' }}>{f.title}</div>
               </div>
             ))}
           </div>
         </div>
 
         <div style={{ textAlign: 'center', marginTop: 20 }}>
-          <button onClick={() => router.push('/roadmap')} style={{ padding: '13px 32px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#7b5cff,#00f0ff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700 }}>
+          <button onClick={() => router.push('/roadmap')} style={{ padding: '13px 32px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#ff6b4a,#00f0ff)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 }}>
             Start Grinding →
           </button>
         </div>
@@ -136,18 +136,18 @@ export default function LegendPage() {
 
   // ELIGIBLE — show unlock page
   return (
-    <div style={{ maxWidth: 680, margin: '0 auto', fontFamily: 'Outfit,sans-serif' }}>
+    <div style={{ maxWidth: 680, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
 
       <div style={{ textAlign: 'center', marginBottom: 36 }}>
         <div style={{ fontSize: 56, marginBottom: 12 }}>👑</div>
-        <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#7b5cff', letterSpacing: 2, marginBottom: 12 }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#ff6b4a', letterSpacing: 2, marginBottom: 12 }}>
           YOU EARNED THIS
         </div>
-        <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 32, fontWeight: 800, marginBottom: 8, background: 'linear-gradient(135deg,#7b5cff,#00f0ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 32, fontWeight: 800, marginBottom: 8, background: 'linear-gradient(135deg,#ff6b4a,#00f0ff)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
           Legend Access Unlocked
         </h1>
         <p style={{ color: '#5a7a9a', fontSize: 15, marginBottom: 4 }}>
-          Your GENOIS score is <span style={{ color: '#7b5cff', fontWeight: 700 }}>{data?.currentScore} pts</span>.
+          Your GENOIS score is <span style={{ color: '#ff6b4a', fontWeight: 700 }}>{data?.currentScore} pts</span>.
         </p>
         <p style={{ color: '#5a7a9a', fontSize: 15 }}>
           You are in the top 1% of engineers on GENOIS.
@@ -155,27 +155,27 @@ export default function LegendPage() {
       </div>
 
       {/* Legend features */}
-      <div style={{ background: 'linear-gradient(135deg,rgba(123,92,255,0.06),rgba(0,240,255,0.03))', border: '1px solid rgba(123,92,255,0.25)', borderRadius: 16, padding: 28, marginBottom: 24, position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg,transparent,#7b5cff,#00f0ff,transparent)' }} />
+      <div style={{ background: 'linear-gradient(135deg,rgba(255,107,74,0.06),rgba(0,240,255,0.03))', border: '1px solid rgba(255,107,74,0.25)', borderRadius: 16, padding: 28, marginBottom: 24, position: 'relative', overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg,transparent,#ff6b4a,#00f0ff,transparent)' }} />
 
-        <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#7b5cff', letterSpacing: 2, marginBottom: 20 }}>LEGEND PLAN INCLUDES</div>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#ff6b4a', letterSpacing: 2, marginBottom: 20 }}>LEGEND PLAN INCLUDES</div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 12, marginBottom: 28 }}>
           {LEGEND_FEATURES.map((f, i) => (
-            <div key={i} style={{ display: 'flex', gap: 12, padding: '14px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(123,92,255,0.1)' }}>
+            <div key={i} style={{ display: 'flex', gap: 12, padding: '14px', background: 'rgba(255,255,255,0.03)', borderRadius: 10, border: '1px solid rgba(255,107,74,0.1)' }}>
               <span style={{ fontSize: 22, flexShrink: 0 }}>{f.icon}</span>
               <div>
-                <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700, color: '#e8f4ff', marginBottom: 3 }}>{f.title}</div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700, color: '#e8e8ed', marginBottom: 3 }}>{f.title}</div>
                 <div style={{ fontSize: 12, color: '#5a7a9a', lineHeight: 1.5 }}>{f.desc}</div>
               </div>
             </div>
           ))}
         </div>
 
-        <div style={{ textAlign: 'center', padding: '20px', background: 'rgba(123,92,255,0.06)', borderRadius: 12, marginBottom: 20 }}>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 36, fontWeight: 800, color: '#7b5cff', marginBottom: 4 }}>₹999</div>
-          <div style={{ fontSize: 13, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', marginBottom: 4 }}>/month</div>
-          <div style={{ fontSize: 12, color: '#3a4a5a', fontFamily: 'JetBrains Mono,monospace' }}>Only available to students with 1500+ GENOIS score</div>
+        <div style={{ textAlign: 'center', padding: '20px', background: 'rgba(255,107,74,0.06)', borderRadius: 12, marginBottom: 20 }}>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 36, fontWeight: 800, color: '#ff6b4a', marginBottom: 4 }}>₹999</div>
+          <div style={{ fontSize: 13, color: '#5a7a9a', fontFamily: 'var(--font-mono)', marginBottom: 4 }}>/month</div>
+          <div style={{ fontSize: 12, color: '#3a4a5a', fontFamily: 'var(--font-mono)' }}>Only available to students with 1500+ GENOIS score</div>
         </div>
 
         {data?.isLegend ? (
@@ -186,19 +186,19 @@ export default function LegendPage() {
               cursor: 'default',
               background: 'rgba(29,158,117,0.2)',
               color: '#1D9E75',
-              fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 800,
+              fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 800,
               boxShadow: 'none',
             }}>
             ✓ You are a Legend
           </button>
         ) : (
-          <div style={{ padding: '12px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)', color: '#3a4a5a', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700, textAlign: 'center' }}>
+          <div style={{ padding: '12px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)', color: '#3a4a5a', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700, textAlign: 'center' }}>
             🔧 Coming Soon
           </div>
         )}
       </div>
 
-      <p style={{ textAlign: 'center', color: '#3a4a5a', fontSize: 12, fontFamily: 'JetBrains Mono,monospace' }}>
+      <p style={{ textAlign: 'center', color: '#3a4a5a', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
         This plan is never advertised publicly. You found it by grinding.
       </p>
     </div>

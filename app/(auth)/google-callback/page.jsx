@@ -70,13 +70,13 @@ export default function GoogleCallbackPage() {
     <div style={{
       minHeight: '100vh', background: '#020812',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontFamily: 'Outfit,sans-serif',
+      fontFamily: 'var(--font-body)',
     }}>
       <div style={{ textAlign: 'center' }}>
         <div style={{ fontSize: 48, marginBottom: 16 }}>
           {status === 'unauthenticated' ? '❌' : '🔄'}
         </div>
-        <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, color: '#e8f4ff', marginBottom: 8 }}>
+        <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, color: '#e8e8ed', marginBottom: 8 }}>
           {message}
         </div>
         <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginTop: 16 }}>

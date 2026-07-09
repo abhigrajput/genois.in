@@ -7,12 +7,12 @@ import toast from 'react-hot-toast';
 const CARD = '#070f1f';
 const INPUT = '#050d1a';
 const CYAN = '#00f0ff';
-const PURPLE = '#7b5cff';
+const PURPLE = '#ff6b4a';
 const GREEN = '#1D9E75';
 const RED = '#ff2d78';
 const AMBER = '#EF9F27';
 const MUTED = '#5a7a9a';
-const LIGHT = '#e8f4ff';
+const LIGHT = '#e8e8ed';
 const SOFT = '#c8d8e8';
 
 const TOTAL_QUESTIONS = 10;
@@ -52,11 +52,11 @@ function Bar({ label, value }) {
   const c = barColor(value);
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-      <div style={{ width: 130, fontSize: 12, color: SOFT, fontFamily: 'JetBrains Mono,monospace' }}>{label}</div>
+      <div style={{ width: 130, fontSize: 12, color: SOFT, fontFamily: 'var(--font-mono)' }}>{label}</div>
       <div style={{ flex: 1, height: 8, background: 'rgba(255,255,255,0.06)', borderRadius: 4, overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${value}%`, background: c, borderRadius: 4, transition: 'width .5s' }} />
       </div>
-      <div style={{ width: 54, textAlign: 'right', fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 15, color: c }}>{value}<span style={{ fontSize: 10, color: MUTED }}>/100</span></div>
+      <div style={{ width: 54, textAlign: 'right', fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 15, color: c }}>{value}<span style={{ fontSize: 10, color: MUTED }}>/100</span></div>
     </div>
   );
 }
@@ -415,7 +415,7 @@ export default function VoiceInterviewPage() {
     <div style={{
       background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.4)',
       borderRadius: 10, padding: '12px 18px', marginBottom: 16,
-      color: '#fbbf24', fontSize: 13, fontFamily: 'Outfit,sans-serif', lineHeight: 1.6,
+      color: '#ffb020', fontSize: 13, fontFamily: 'var(--font-body)', lineHeight: 1.6,
     }}>
       🎤 <strong>Microphone blocked.</strong> To fix: Click the <strong>🔒 lock icon</strong> in Chrome’s address bar → Find “Microphone” → Set to <strong>“Allow”</strong> → Refresh this page.
     </div>
@@ -427,10 +427,10 @@ export default function VoiceInterviewPage() {
   if (status === 'loadingQ' || status === 'evaluating') {
     const evaluating = status === 'evaluating';
     return (
-      <div style={{ color: MUTED, padding: 80, textAlign: 'center', fontFamily: 'Outfit,sans-serif' }}>
+      <div style={{ color: MUTED, padding: 80, textAlign: 'center', fontFamily: 'var(--font-body)' }}>
         <style dangerouslySetInnerHTML={{ __html: keyframes }} />
         <div style={{ width: 46, height: 46, margin: '0 auto 18px', border: `3px solid rgba(0,240,255,.15)`, borderTopColor: CYAN, borderRadius: '50%', animation: 'vi-spin .8s linear infinite' }} />
-        <div style={{ fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 16, color: LIGHT }}>
+        <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, color: LIGHT }}>
           {evaluating ? 'Interviewer is evaluating your answer…' : 'Interviewer is thinking…'}
         </div>
         <div style={{ fontSize: 13, marginTop: 6 }}>{evaluating ? 'Scoring accuracy, clarity & confidence' : `Preparing question ${Math.min(questions.length + 1, TOTAL_QUESTIONS)} of ${TOTAL_QUESTIONS}`}</div>
@@ -442,7 +442,7 @@ export default function VoiceInterviewPage() {
   if (status === 'question' && currentQ) {
     const enough = liveWords >= MIN_WORDS;
     return (
-      <div style={{ maxWidth: 760, margin: '0 auto', fontFamily: 'Outfit,sans-serif', paddingBottom: 'calc(120px + env(safe-area-inset-bottom))' }}>
+      <div style={{ maxWidth: 760, margin: '0 auto', fontFamily: 'var(--font-body)', paddingBottom: 'calc(120px + env(safe-area-inset-bottom))' }}>
         <style dangerouslySetInnerHTML={{ __html: keyframes }} />
 
         {/* interviewer bar */}
@@ -450,13 +450,13 @@ export default function VoiceInterviewPage() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 40, height: 40, borderRadius: '50%', background: `linear-gradient(135deg,${CYAN},${PURPLE})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🤖</div>
             <div>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 15, color: LIGHT }}>AI Interviewer · {company}</div>
-              <div style={{ fontSize: 11, color: MUTED, fontFamily: 'JetBrains Mono,monospace' }}>{MODES.find(m => m.key === mode)?.label} mode</div>
+              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 15, color: LIGHT }}>AI Interviewer · {company}</div>
+              <div style={{ fontSize: 11, color: MUTED, fontFamily: 'var(--font-mono)' }}>{MODES.find(m => m.key === mode)?.label} mode</div>
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 16, color: CYAN }}>Q{qIndex + 1} / {TOTAL_QUESTIONS}</div>
-            <div style={{ fontSize: 11, color: MUTED, fontFamily: 'JetBrains Mono,monospace' }}>⏱ {Math.floor(elapsed / 60)}:{String(elapsed % 60).padStart(2, '0')}</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 16, color: CYAN }}>Q{qIndex + 1} / {TOTAL_QUESTIONS}</div>
+            <div style={{ fontSize: 11, color: MUTED, fontFamily: 'var(--font-mono)' }}>⏱ {Math.floor(elapsed / 60)}:{String(elapsed % 60).padStart(2, '0')}</div>
           </div>
         </div>
 
@@ -470,16 +470,16 @@ export default function VoiceInterviewPage() {
         {/* question */}
         <div style={{ background: CARD, border: `1px solid ${CYAN}1a`, borderRadius: 16, padding: '24px 22px', marginBottom: 22 }}>
           <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-            <span style={{ fontSize: 9, padding: '3px 9px', borderRadius: 10, background: `${PURPLE}1a`, color: PURPLE, fontFamily: 'JetBrains Mono,monospace', textTransform: 'uppercase' }}>{currentQ.type}</span>
-            <span style={{ fontSize: 9, padding: '3px 9px', borderRadius: 10, background: `${AMBER}1a`, color: AMBER, fontFamily: 'JetBrains Mono,monospace', textTransform: 'uppercase' }}>{currentQ.difficulty}</span>
+            <span style={{ fontSize: 9, padding: '3px 9px', borderRadius: 10, background: `${PURPLE}1a`, color: PURPLE, fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>{currentQ.type}</span>
+            <span style={{ fontSize: 9, padding: '3px 9px', borderRadius: 10, background: `${AMBER}1a`, color: AMBER, fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>{currentQ.difficulty}</span>
           </div>
-          <div style={{ fontSize: 'clamp(17px,3.6vw,23px)', color: LIGHT, lineHeight: 1.55, fontWeight: 500, fontFamily: 'Syne,sans-serif' }}>{currentQ.question}</div>
+          <div style={{ fontSize: 'clamp(17px,3.6vw,23px)', color: LIGHT, lineHeight: 1.55, fontWeight: 500, fontFamily: 'var(--font-heading)' }}>{currentQ.question}</div>
           <button
             onClick={() => speakQuestion(currentQ?.question)}
             style={{
-              background: 'transparent', border: '1px solid rgba(99,102,241,0.3)',
-              borderRadius: 8, padding: '6px 14px', color: '#818cf8',
-              fontFamily: 'Outfit,sans-serif', fontSize: 12, cursor: 'pointer',
+              background: 'transparent', border: '1px solid rgba(0,217,163,0.3)',
+              borderRadius: 8, padding: '6px 14px', color: '#2ee6b0',
+              fontFamily: 'var(--font-body)', fontSize: 12, cursor: 'pointer',
               marginTop: 12, display: 'flex', alignItems: 'center', gap: 6,
             }}
           >
@@ -502,14 +502,14 @@ export default function VoiceInterviewPage() {
               }}>
               <span style={{ fontSize: 40 }}>🎤</span>
             </button>
-            <div style={{ marginTop: 12, fontFamily: 'JetBrains Mono,monospace', fontSize: 13, color: isListening ? RED : MUTED }}>
+            <div style={{ marginTop: 12, fontFamily: 'var(--font-mono)', fontSize: 13, color: isListening ? RED : MUTED }}>
               {isListening ? (<span><span style={{ animation: 'vi-blink 1s infinite' }}>🔴</span> Recording… tap to stop</span>) : (transcript ? 'Tap to add more' : 'Tap to answer out loud')}
             </div>
           </div>
         ) : (
           <div style={{ marginBottom: 18 }}>
-            <div style={{ fontSize: 12, color: AMBER, marginBottom: 8, fontFamily: 'JetBrains Mono,monospace' }}>⚠️ Voice input isn’t supported here — type your answer instead (Chrome recommended).</div>
-            <textarea value={transcript} onChange={e => setTranscript(e.target.value)} rows={6} placeholder="Type your answer…" style={{ width: '100%', padding: 14, borderRadius: 10, border: `1px solid ${CYAN}1f`, background: INPUT, color: LIGHT, fontSize: 14, fontFamily: 'Outfit,sans-serif', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.6 }} />
+            <div style={{ fontSize: 12, color: AMBER, marginBottom: 8, fontFamily: 'var(--font-mono)' }}>⚠️ Voice input isn’t supported here — type your answer instead (Chrome recommended).</div>
+            <textarea value={transcript} onChange={e => setTranscript(e.target.value)} rows={6} placeholder="Type your answer…" style={{ width: '100%', padding: 14, borderRadius: 10, border: `1px solid ${CYAN}1f`, background: INPUT, color: LIGHT, fontSize: 14, fontFamily: 'var(--font-body)', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.6 }} />
           </div>
         )}
 
@@ -525,12 +525,12 @@ export default function VoiceInterviewPage() {
 
         {/* word count + submit */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-          <div style={{ fontSize: 13, fontWeight: 600, fontFamily: 'JetBrains Mono,monospace', color: liveWords < MIN_WORDS ? RED : liveWords <= 20 ? AMBER : GREEN }}>
+          <div style={{ fontSize: 13, fontWeight: 600, fontFamily: 'var(--font-mono)', color: liveWords < MIN_WORDS ? RED : liveWords <= 20 ? AMBER : GREEN }}>
             {liveWords} words {enough ? '✓' : `· need ${MIN_WORDS}+`}
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
-            {(transcript || interim) && <button onClick={() => { finalTranscriptRef.current = ''; setTranscript(''); setInterim(''); }} style={{ padding: '11px 16px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: MUTED, cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 13 }}>Clear</button>}
-            <button onClick={submitAnswer} disabled={!enough} style={{ padding: '11px 22px', borderRadius: 10, border: 'none', cursor: enough ? 'pointer' : 'not-allowed', background: enough ? `linear-gradient(135deg,${GREEN},${CYAN})` : 'rgba(255,255,255,0.06)', color: enough ? '#020812' : MUTED, fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14 }}>Submit Answer →</button>
+            {(transcript || interim) && <button onClick={() => { finalTranscriptRef.current = ''; setTranscript(''); setInterim(''); }} style={{ padding: '11px 16px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: MUTED, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13 }}>Clear</button>}
+            <button onClick={submitAnswer} disabled={!enough} style={{ padding: '11px 22px', borderRadius: 10, border: 'none', cursor: enough ? 'pointer' : 'not-allowed', background: enough ? `linear-gradient(135deg,${GREEN},${CYAN})` : 'rgba(255,255,255,0.06)', color: enough ? '#020812' : MUTED, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>Submit Answer →</button>
           </div>
         </div>
       </div>
@@ -542,13 +542,13 @@ export default function VoiceInterviewPage() {
     const ev = currentEval;
     const isLast = qIndex + 1 >= TOTAL_QUESTIONS;
     return (
-      <div style={{ maxWidth: 720, margin: '0 auto', fontFamily: 'Outfit,sans-serif' }}>
+      <div style={{ maxWidth: 720, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
         <div style={{ background: CARD, border: `1px solid ${gradeColor(ev.grade)}33`, borderRadius: 16, padding: 24, marginBottom: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, flexWrap: 'wrap', gap: 10 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: MUTED, letterSpacing: 1.5 }}>QUESTION {qIndex + 1} / {TOTAL_QUESTIONS} · {currentQ?.type?.toUpperCase()}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: MUTED, letterSpacing: 1.5 }}>QUESTION {qIndex + 1} / {TOTAL_QUESTIONS} · {currentQ?.type?.toUpperCase()}</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-              <span style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 30, color: gradeColor(ev.grade) }}>{ev.grade}</span>
-              <span style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 22, color: LIGHT }}>{ev.overallScore}<span style={{ fontSize: 12, color: MUTED }}>/100</span></span>
+              <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 30, color: gradeColor(ev.grade) }}>{ev.grade}</span>
+              <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 22, color: LIGHT }}>{ev.overallScore}<span style={{ fontSize: 12, color: MUTED }}>/100</span></span>
             </div>
           </div>
           <Bar label="Technical Accuracy" value={ev.technicalAccuracy} />
@@ -561,13 +561,13 @@ export default function VoiceInterviewPage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: 12, marginBottom: 14 }}>
           {ev.strengths?.length > 0 && (
             <div style={{ background: CARD, border: `1px solid ${GREEN}26`, borderRadius: 12, padding: 16 }}>
-              <div style={{ fontSize: 10, color: GREEN, marginBottom: 8, fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1 }}>✓ WHAT WORKED</div>
+              <div style={{ fontSize: 10, color: GREEN, marginBottom: 8, fontFamily: 'var(--font-mono)', letterSpacing: 1 }}>✓ WHAT WORKED</div>
               {ev.strengths.map((s, i) => <div key={i} style={{ fontSize: 13, color: SOFT, padding: '3px 0' }}>• {s}</div>)}
             </div>
           )}
           {ev.improvements?.length > 0 && (
             <div style={{ background: CARD, border: `1px solid ${RED}26`, borderRadius: 12, padding: 16 }}>
-              <div style={{ fontSize: 10, color: RED, marginBottom: 8, fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1 }}>⚠ IMPROVE</div>
+              <div style={{ fontSize: 10, color: RED, marginBottom: 8, fontFamily: 'var(--font-mono)', letterSpacing: 1 }}>⚠ IMPROVE</div>
               {ev.improvements.map((s, i) => <div key={i} style={{ fontSize: 13, color: SOFT, padding: '3px 0' }}>• {s}</div>)}
             </div>
           )}
@@ -575,12 +575,12 @@ export default function VoiceInterviewPage() {
 
         {ev.idealAnswer && (
           <div style={{ background: CARD, border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: 16, marginBottom: 18 }}>
-            <div style={{ fontSize: 10, color: PURPLE, marginBottom: 8, fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1 }}>💡 WHAT A STRONG ANSWER COVERS</div>
+            <div style={{ fontSize: 10, color: PURPLE, marginBottom: 8, fontFamily: 'var(--font-mono)', letterSpacing: 1 }}>💡 WHAT A STRONG ANSWER COVERS</div>
             <div style={{ fontSize: 13, color: SOFT, lineHeight: 1.7 }}>{ev.idealAnswer}</div>
           </div>
         )}
 
-        <button onClick={continueNext} style={{ width: '100%', padding: 15, borderRadius: 12, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${CYAN},${PURPLE})`, color: '#020812', fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 15 }}>
+        <button onClick={continueNext} style={{ width: '100%', padding: 15, borderRadius: 12, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${CYAN},${PURPLE})`, color: '#020812', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15 }}>
           {isLast ? 'See Final Results 🎉' : `Continue to Q${qIndex + 2} →`}
         </button>
       </div>
@@ -590,47 +590,47 @@ export default function VoiceInterviewPage() {
   // ── final summary ──────────────────────────────────────────────────────
   if (status === 'complete' && summary) {
     return (
-      <div style={{ maxWidth: 760, margin: '0 auto', fontFamily: 'Outfit,sans-serif' }}>
+      <div style={{ maxWidth: 760, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
         {/* shareable card */}
         <div ref={shareRef} style={{ background: 'linear-gradient(160deg,#0a1428,#020812)', border: `1px solid ${CYAN}26`, borderRadius: 18, padding: 28, marginBottom: 18, position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg,${CYAN},${PURPLE},${RED})` }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 18, color: LIGHT, letterSpacing: 1 }}>GEN<span style={{ color: CYAN }}>OIS</span></div>
-            <div style={{ fontSize: 10, color: MUTED, fontFamily: 'JetBrains Mono,monospace' }}>VOICE MOCK INTERVIEW</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 18, color: LIGHT, letterSpacing: 1 }}>GEN<span style={{ color: CYAN }}>OIS</span></div>
+            <div style={{ fontSize: 10, color: MUTED, fontFamily: 'var(--font-mono)' }}>VOICE MOCK INTERVIEW</div>
           </div>
           <div style={{ textAlign: 'center', padding: '6px 0 14px' }}>
             <div style={{ fontSize: 13, color: SOFT, marginBottom: 6 }}>{userName ? `${userName} completed a` : 'Completed a'} <b style={{ color: LIGHT }}>{company}</b> mock interview</div>
             <div style={{ display: 'inline-flex', alignItems: 'baseline', gap: 10 }}>
-              <span style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 64, color: gradeColor(summary.grade), lineHeight: 1 }}>{summary.overall}</span>
+              <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 64, color: gradeColor(summary.grade), lineHeight: 1 }}>{summary.overall}</span>
               <span style={{ fontSize: 20, color: MUTED }}>/100</span>
-              <span style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 30, color: gradeColor(summary.grade), marginLeft: 6 }}>{summary.grade}</span>
+              <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 30, color: gradeColor(summary.grade), marginLeft: 6 }}>{summary.grade}</span>
             </div>
-            {percentile != null && <div style={{ marginTop: 10, fontSize: 13, color: GREEN, fontFamily: 'JetBrains Mono,monospace' }}>Beat {percentile}% of students</div>}
+            {percentile != null && <div style={{ marginTop: 10, fontSize: 13, color: GREEN, fontFamily: 'var(--font-mono)' }}>Beat {percentile}% of students</div>}
           </div>
           <div style={{ display: 'flex', gap: 18, justifyContent: 'center', marginTop: 8 }}>
             {[['Technical', summary.ta], ['Comm.', summary.cc], ['Confidence', summary.cs]].map(([l, v]) => (
               <div key={l} style={{ textAlign: 'center' }}>
-                <div style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 18, color: barColor(v) }}>{v}</div>
-                <div style={{ fontSize: 9, color: MUTED, fontFamily: 'JetBrains Mono,monospace' }}>{l}</div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 18, color: barColor(v) }}>{v}</div>
+                <div style={{ fontSize: 9, color: MUTED, fontFamily: 'var(--font-mono)' }}>{l}</div>
               </div>
             ))}
           </div>
-          <div style={{ textAlign: 'center', marginTop: 16, fontSize: 10, color: MUTED, fontFamily: 'JetBrains Mono,monospace' }}>genois.in/voice-interview</div>
+          <div style={{ textAlign: 'center', marginTop: 16, fontSize: 10, color: MUTED, fontFamily: 'var(--font-mono)' }}>genois.in/voice-interview</div>
         </div>
 
         {/* breakdown */}
         <div style={{ background: CARD, border: `1px solid ${CYAN}14`, borderRadius: 14, padding: 20, marginBottom: 14 }}>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: MUTED, letterSpacing: 2, marginBottom: 14 }}>CATEGORY BREAKDOWN</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: MUTED, letterSpacing: 2, marginBottom: 14 }}>CATEGORY BREAKDOWN</div>
           <Bar label="Technical Accuracy" value={summary.ta} />
           <Bar label="Communication" value={summary.cc} />
           <Bar label="Confidence" value={summary.cs} />
           <div style={{ display: 'flex', gap: 12, marginTop: 14, flexWrap: 'wrap' }}>
             <div style={{ flex: 1, minWidth: 180, background: `${GREEN}0d`, border: `1px solid ${GREEN}26`, borderRadius: 10, padding: 12 }}>
-              <div style={{ fontSize: 10, color: GREEN, fontFamily: 'JetBrains Mono,monospace' }}>TOP STRENGTH</div>
+              <div style={{ fontSize: 10, color: GREEN, fontFamily: 'var(--font-mono)' }}>TOP STRENGTH</div>
               <div style={{ fontSize: 14, color: LIGHT, fontWeight: 600, marginTop: 4 }}>{summary.top}</div>
             </div>
             <div style={{ flex: 1, minWidth: 180, background: `${RED}0d`, border: `1px solid ${RED}26`, borderRadius: 10, padding: 12 }}>
-              <div style={{ fontSize: 10, color: RED, fontFamily: 'JetBrains Mono,monospace' }}>MAIN GAP</div>
+              <div style={{ fontSize: 10, color: RED, fontFamily: 'var(--font-mono)' }}>MAIN GAP</div>
               <div style={{ fontSize: 14, color: LIGHT, fontWeight: 600, marginTop: 4 }}>{summary.gap}</div>
             </div>
           </div>
@@ -638,9 +638,9 @@ export default function VoiceInterviewPage() {
 
         {/* actions */}
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
-          <button onClick={() => setShowDetails(d => !d)} style={{ flex: 1, minWidth: 150, padding: 13, borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: SOFT, cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontWeight: 600, fontSize: 14 }}>{showDetails ? 'Hide Feedback' : 'View Detailed Feedback'}</button>
-          <button onClick={shareScore} disabled={sharing} style={{ flex: 1, minWidth: 150, padding: 13, borderRadius: 12, border: 'none', background: `linear-gradient(135deg,${PURPLE},${CYAN})`, color: '#020812', cursor: sharing ? 'wait' : 'pointer', fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14 }}>{sharing ? 'Generating…' : 'Share Score 📤'}</button>
-          <button onClick={retake} style={{ flex: 1, minWidth: 150, padding: 13, borderRadius: 12, border: 'none', background: `linear-gradient(135deg,${GREEN},${CYAN})`, color: '#020812', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14 }}>Retake Interview</button>
+          <button onClick={() => setShowDetails(d => !d)} style={{ flex: 1, minWidth: 150, padding: 13, borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: SOFT, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14 }}>{showDetails ? 'Hide Feedback' : 'View Detailed Feedback'}</button>
+          <button onClick={shareScore} disabled={sharing} style={{ flex: 1, minWidth: 150, padding: 13, borderRadius: 12, border: 'none', background: `linear-gradient(135deg,${PURPLE},${CYAN})`, color: '#020812', cursor: sharing ? 'wait' : 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>{sharing ? 'Generating…' : 'Share Score 📤'}</button>
+          <button onClick={retake} style={{ flex: 1, minWidth: 150, padding: 13, borderRadius: 12, border: 'none', background: `linear-gradient(135deg,${GREEN},${CYAN})`, color: '#020812', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>Retake Interview</button>
         </div>
 
         {showDetails && (
@@ -652,7 +652,7 @@ export default function VoiceInterviewPage() {
                 <div key={i} style={{ background: CARD, border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12, padding: 16 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, marginBottom: 8 }}>
                     <div style={{ fontSize: 13, color: LIGHT, fontWeight: 600, lineHeight: 1.5 }}>Q{i + 1}. {q.question}</div>
-                    <div style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 16, color: gradeColor(e.grade), flexShrink: 0 }}>{e.overallScore}</div>
+                    <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 16, color: gradeColor(e.grade), flexShrink: 0 }}>{e.overallScore}</div>
                   </div>
                   {e.verdict && <div style={{ fontSize: 12, color: MUTED, lineHeight: 1.6 }}>{e.verdict}</div>}
                 </div>
@@ -666,9 +666,9 @@ export default function VoiceInterviewPage() {
 
   // ── selection screen (idle) ──────────────────────────────────────────────
   return (
-    <div style={{ maxWidth: 760, margin: '0 auto', fontFamily: 'Outfit,sans-serif' }}>
+    <div style={{ maxWidth: 760, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
       <div style={{ marginBottom: 22 }}>
-        <h1 style={{ fontFamily: 'Syne,sans-serif', fontWeight: 800, fontSize: 27, color: LIGHT, margin: '0 0 6px' }}>🎤 Voice Mock Interview</h1>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 27, color: LIGHT, margin: '0 0 6px' }}>🎤 Voice Mock Interview</h1>
         <p style={{ color: MUTED, fontSize: 13.5, lineHeight: 1.6, margin: 0 }}>Practice <b style={{ color: SOFT }}>speaking</b> your answers out loud — not typing. The AI plays a tough interviewer and scores you on accuracy, clarity, and confidence. 10 questions.</p>
       </div>
 
@@ -680,39 +680,39 @@ export default function VoiceInterviewPage() {
         </div>
       )}
 
-      <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: CYAN, letterSpacing: 2, marginBottom: 12 }}>1 · PICK A MODE</div>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: CYAN, letterSpacing: 2, marginBottom: 12 }}>1 · PICK A MODE</div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(210px,1fr))', gap: 12, marginBottom: 24 }}>
         {MODES.map(m => {
           const sel = mode === m.key;
           return (
             <div key={m.key} onClick={() => setMode(m.key)} style={{ background: CARD, border: `2px solid ${sel ? CYAN + '55' : 'rgba(255,255,255,0.06)'}`, borderRadius: 14, padding: 18, cursor: 'pointer', transition: 'border-color .2s' }}>
               <div style={{ fontSize: 24, marginBottom: 8 }}>{m.icon}</div>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 15, color: sel ? CYAN : LIGHT, marginBottom: 4 }}>{m.label}</div>
+              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15, color: sel ? CYAN : LIGHT, marginBottom: 4 }}>{m.label}</div>
               <div style={{ fontSize: 12, color: MUTED, lineHeight: 1.5 }}>{m.desc}</div>
             </div>
           );
         })}
       </div>
 
-      <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: CYAN, letterSpacing: 2, marginBottom: 12 }}>2 · TARGET COMPANY</div>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: CYAN, letterSpacing: 2, marginBottom: 12 }}>2 · TARGET COMPANY</div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
         {COMPANIES.map(c => (
-          <button key={c} onClick={() => setCompany(c)} style={{ padding: '8px 16px', borderRadius: 20, border: 'none', cursor: 'pointer', background: company === c ? CYAN : 'rgba(255,255,255,0.05)', color: company === c ? '#020812' : MUTED, fontFamily: 'Syne,sans-serif', fontWeight: 600, fontSize: 13 }}>{c}</button>
+          <button key={c} onClick={() => setCompany(c)} style={{ padding: '8px 16px', borderRadius: 20, border: 'none', cursor: 'pointer', background: company === c ? CYAN : 'rgba(255,255,255,0.05)', color: company === c ? '#020812' : MUTED, fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 13 }}>{c}</button>
         ))}
       </div>
-      <input value={COMPANIES.includes(company) ? '' : company} onChange={e => setCompany(e.target.value)} placeholder="…or type any company" style={{ width: '100%', maxWidth: 280, padding: '9px 14px', borderRadius: 10, border: `1px solid ${CYAN}1f`, background: INPUT, color: LIGHT, fontSize: 13, fontFamily: 'Outfit,sans-serif', boxSizing: 'border-box', marginBottom: 24 }} />
+      <input value={COMPANIES.includes(company) ? '' : company} onChange={e => setCompany(e.target.value)} placeholder="…or type any company" style={{ width: '100%', maxWidth: 280, padding: '9px 14px', borderRadius: 10, border: `1px solid ${CYAN}1f`, background: INPUT, color: LIGHT, fontSize: 13, fontFamily: 'var(--font-body)', boxSizing: 'border-box', marginBottom: 24 }} />
 
-      <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: CYAN, letterSpacing: 2, marginBottom: 12 }}>3 · YOU</div>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: CYAN, letterSpacing: 2, marginBottom: 12 }}>3 · YOU</div>
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 28, alignItems: 'center' }}>
-        <input value={domain} onChange={e => setDomain(e.target.value)} placeholder="Your domain" style={{ flex: 1, minWidth: 200, padding: '9px 14px', borderRadius: 10, border: `1px solid ${CYAN}1f`, background: INPUT, color: LIGHT, fontSize: 13, fontFamily: 'Outfit,sans-serif', boxSizing: 'border-box' }} />
+        <input value={domain} onChange={e => setDomain(e.target.value)} placeholder="Your domain" style={{ flex: 1, minWidth: 200, padding: '9px 14px', borderRadius: 10, border: `1px solid ${CYAN}1f`, background: INPUT, color: LIGHT, fontSize: 13, fontFamily: 'var(--font-body)', boxSizing: 'border-box' }} />
         <div style={{ display: 'flex', gap: 6 }}>
           {['Fresher', 'Mid', 'Senior'].map(l => (
-            <button key={l} onClick={() => setLevel(l)} style={{ padding: '9px 14px', borderRadius: 10, border: 'none', cursor: 'pointer', background: level === l ? PURPLE : 'rgba(255,255,255,0.05)', color: level === l ? '#fff' : MUTED, fontFamily: 'Syne,sans-serif', fontWeight: 600, fontSize: 13 }}>{l}</button>
+            <button key={l} onClick={() => setLevel(l)} style={{ padding: '9px 14px', borderRadius: 10, border: 'none', cursor: 'pointer', background: level === l ? PURPLE : 'rgba(255,255,255,0.05)', color: level === l ? '#fff' : MUTED, fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 13 }}>{l}</button>
           ))}
         </div>
       </div>
 
-      <button onClick={startInterview} style={{ width: '100%', padding: 16, borderRadius: 12, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${CYAN},${PURPLE})`, color: '#020812', fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 16 }}>
+      <button onClick={startInterview} style={{ width: '100%', padding: 16, borderRadius: 12, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${CYAN},${PURPLE})`, color: '#020812', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16 }}>
         Start {company || ''} Voice Interview 🎤
       </button>
     </div>

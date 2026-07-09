@@ -181,11 +181,11 @@ export default function DSAGuidePage() {
   if (result) {
     const lang = LANGUAGES[result];
     return (
-      <div style={{ maxWidth: 760, margin: '0 auto', fontFamily: 'Outfit,sans-serif' }}>
+      <div style={{ maxWidth: 760, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
 
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#00f0ff', letterSpacing: 2, marginBottom: 10 }}>RECOMMENDATION</div>
-          <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 26, fontWeight: 800, color: '#e8f4ff' }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00f0ff', letterSpacing: 2, marginBottom: 10 }}>RECOMMENDATION</div>
+          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: '#e8e8ed' }}>
             Do your DSA in <span style={{ color: lang.color }}>{lang.name}</span>
           </h1>
           <p style={{ color: '#5a7a9a', fontSize: 14, marginTop: 8 }}>Based on your level, goals and available time.</p>
@@ -194,22 +194,22 @@ export default function DSAGuidePage() {
         <div style={{ background: `linear-gradient(135deg,${lang.color}10,transparent)`, border: `2px solid ${lang.color}30`, borderRadius: 16, padding: 28, marginBottom: 20, textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg,transparent,${lang.color},transparent)` }} />
           <div style={{ fontSize: 64, marginBottom: 12 }}>{lang.icon}</div>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 36, fontWeight: 800, color: lang.color, marginBottom: 10 }}>{lang.name}</div>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 36, fontWeight: 800, color: lang.color, marginBottom: 10 }}>{lang.name}</div>
           <div style={{ color: '#8a9ab0', fontSize: 14, lineHeight: 1.7 }}>{lang.bestFor}</div>
-          <div style={{ marginTop: 12, display: 'inline-flex', gap: 12, padding: '8px 16px', background: 'rgba(255,255,255,0.04)', borderRadius: 20, fontSize: 12, fontFamily: 'JetBrains Mono,monospace' }}>
+          <div style={{ marginTop: 12, display: 'inline-flex', gap: 12, padding: '8px 16px', background: 'rgba(255,255,255,0.04)', borderRadius: 20, fontSize: 12, fontFamily: 'var(--font-mono)' }}>
             <span style={{ color: '#5a7a9a' }}>Time to master: <strong style={{ color: lang.color }}>{lang.timeToMaster}</strong></span>
           </div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 12, marginBottom: 20 }}>
           <div style={{ background: '#070f1f', border: '1px solid rgba(29,158,117,0.15)', borderRadius: 12, padding: 20 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#1D9E75', letterSpacing: 2, marginBottom: 12 }}>✓ WHY THIS WORKS FOR YOU</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#1D9E75', letterSpacing: 2, marginBottom: 12 }}>✓ WHY THIS WORKS FOR YOU</div>
             {lang.pros.map((p, i) => (
               <div key={i} style={{ fontSize: 13, color: '#c8d8e8', padding: '6px 0', lineHeight: 1.5 }}>• {p}</div>
             ))}
           </div>
           <div style={{ background: '#070f1f', border: '1px solid rgba(239,159,39,0.12)', borderRadius: 12, padding: 20 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#EF9F27', letterSpacing: 2, marginBottom: 12 }}>⚠️ KEEP IN MIND</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#EF9F27', letterSpacing: 2, marginBottom: 12 }}>⚠️ KEEP IN MIND</div>
             {lang.cons.map((c, i) => (
               <div key={i} style={{ fontSize: 13, color: '#8a9ab0', padding: '6px 0', lineHeight: 1.5 }}>• {c}</div>
             ))}
@@ -217,35 +217,35 @@ export default function DSAGuidePage() {
         </div>
 
         <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 20, marginBottom: 20 }}>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 12 }}>COMPANIES THAT USE {lang.name.toUpperCase()}</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 12 }}>COMPANIES THAT USE {lang.name.toUpperCase()}</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {lang.companies.map((c, i) => (
-              <span key={i} style={{ fontSize: 12, padding: '5px 12px', borderRadius: 20, background: `${lang.color}12`, color: lang.color, fontFamily: 'Syne,sans-serif', fontWeight: 600 }}>{c}</span>
+              <span key={i} style={{ fontSize: 12, padding: '5px 12px', borderRadius: 20, background: `${lang.color}12`, color: lang.color, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>{c}</span>
             ))}
           </div>
         </div>
 
-        <div style={{ background: '#070f1f', border: '1px solid rgba(123,92,255,0.12)', borderRadius: 12, padding: 20, marginBottom: 20 }}>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#7b5cff', letterSpacing: 2, marginBottom: 14 }}>START HERE — FREE RESOURCES</div>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(255,107,74,0.12)', borderRadius: 12, padding: 20, marginBottom: 20 }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#ff6b4a', letterSpacing: 2, marginBottom: 14 }}>START HERE — FREE RESOURCES</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {lang.resources.map((r, i) => (
-              <a key={i} href={r.link} target="_blank" rel="noreferrer" style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(123,92,255,0.06)', border: '1px solid rgba(123,92,255,0.1)', color: '#c8d8e8', textDecoration: 'none', fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <a key={i} href={r.link} target="_blank" rel="noreferrer" style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(255,107,74,0.06)', border: '1px solid rgba(255,107,74,0.1)', color: '#c8d8e8', textDecoration: 'none', fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span>📚 {r.name}</span>
-                <span style={{ color: '#7b5cff', fontSize: 12 }}>→</span>
+                <span style={{ color: '#ff6b4a', fontSize: 12 }}>→</span>
               </a>
             ))}
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: 10 }}>
-          <button onClick={() => { setStep(0); setAnswers({}); setResult(null); }} style={{ flex: 1, padding: '13px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 14 }}>Retake Quiz</button>
-          <button onClick={() => { document.getElementById('dsa-roadmap-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} style={{ flex: 2, padding: '13px', borderRadius: 10, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${lang.color},${lang.color}99)`, color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700 }}>
+          <button onClick={() => { setStep(0); setAnswers({}); setResult(null); }} style={{ flex: 1, padding: '13px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 14 }}>Retake Quiz</button>
+          <button onClick={() => { document.getElementById('dsa-roadmap-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }} style={{ flex: 2, padding: '13px', borderRadius: 10, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${lang.color},${lang.color}99)`, color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
             Start DSA Roadmap →
           </button>
         </div>
 
         <div id="dsa-roadmap-section" style={{ marginTop: 32, scrollMarginTop: 20 }}>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#00f0ff', letterSpacing: 2, marginBottom: 14 }}>90-DAY DSA ROADMAP</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00f0ff', letterSpacing: 2, marginBottom: 14 }}>90-DAY DSA ROADMAP</div>
           <div style={{ fontSize: 13, color: '#5a7a9a', marginBottom: 20 }}>
             Follow this 12-week roadmap in {lang.name}. Dedicate 2-3 hours daily. 300 problems total.
           </div>
@@ -257,17 +257,17 @@ export default function DSAGuidePage() {
                 <div key={i} style={{ background: '#070f1f', border: `1px solid ${diffColor}15`, borderRadius: 12, padding: 16 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 8 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{ width: 32, height: 32, borderRadius: 8, background: `${diffColor}15`, color: diffColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700 }}>W{week.week}</div>
-                      <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, color: '#e8f4ff' }}>{week.title}</div>
+                      <div style={{ width: 32, height: 32, borderRadius: 8, background: `${diffColor}15`, color: diffColor, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700 }}>W{week.week}</div>
+                      <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: '#e8e8ed' }}>{week.title}</div>
                     </div>
                     <div style={{ display: 'flex', gap: 6 }}>
-                      <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: `${diffColor}12`, color: diffColor, fontFamily: 'JetBrains Mono,monospace' }}>{week.difficulty.toUpperCase()}</span>
-                      <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: 'rgba(255,255,255,0.04)', color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>{week.problemCount} PROBLEMS</span>
+                      <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: `${diffColor}12`, color: diffColor, fontFamily: 'var(--font-mono)' }}>{week.difficulty.toUpperCase()}</span>
+                      <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 10, background: 'rgba(255,255,255,0.04)', color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>{week.problemCount} PROBLEMS</span>
                     </div>
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                     {week.topics.map((t, ti) => (
-                      <span key={ti} style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: 'rgba(255,255,255,0.03)', color: '#8a9ab0', fontFamily: 'JetBrains Mono,monospace' }}>{t}</span>
+                      <span key={ti} style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: 'rgba(255,255,255,0.03)', color: '#8a9ab0', fontFamily: 'var(--font-mono)' }}>{t}</span>
                     ))}
                   </div>
                 </div>
@@ -275,8 +275,8 @@ export default function DSAGuidePage() {
             })}
           </div>
 
-          <div style={{ background: 'linear-gradient(135deg,rgba(0,240,255,0.06),rgba(123,92,255,0.02))', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 12, padding: 18, marginTop: 16, textAlign: 'center' }}>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700, color: '#00f0ff', marginBottom: 6 }}>90 Days. 300 Problems. 1 Job.</div>
+          <div style={{ background: 'linear-gradient(135deg,rgba(0,240,255,0.06),rgba(255,107,74,0.02))', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 12, padding: 18, marginTop: 16, textAlign: 'center' }}>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: '#00f0ff', marginBottom: 6 }}>90 Days. 300 Problems. 1 Job.</div>
             <div style={{ fontSize: 12, color: '#5a7a9a' }}>Consistency beats intensity. Do 3-4 problems daily in {lang.name}.</div>
           </div>
         </div>
@@ -287,22 +287,22 @@ export default function DSAGuidePage() {
 
   const q = QUESTIONS[step];
   return (
-    <div style={{ maxWidth: 640, margin: '0 auto', fontFamily: 'Outfit,sans-serif' }}>
+    <div style={{ maxWidth: 640, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
       <div style={{ marginBottom: 24 }}>
-        <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#00f0ff', letterSpacing: 2, marginBottom: 6 }}>DSA LANGUAGE RECOMMENDER</div>
-        <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 22, fontWeight: 800, color: '#e8f4ff' }}>Which language should you use for DSA?</h1>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00f0ff', letterSpacing: 2, marginBottom: 6 }}>DSA LANGUAGE RECOMMENDER</div>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 800, color: '#e8e8ed' }}>Which language should you use for DSA?</h1>
       </div>
 
       <div style={{ marginBottom: 24 }}>
-        <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#5a7a9a', letterSpacing: 2, marginBottom: 12, textAlign: 'center' }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#5a7a9a', letterSpacing: 2, marginBottom: 12, textAlign: 'center' }}>
           QUESTION {step + 1} OF {QUESTIONS.length}
         </div>
         <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${((step + 1) / QUESTIONS.length) * 100}%`, background: 'linear-gradient(90deg,#00f0ff,#7b5cff)', borderRadius: 3, transition: 'width 0.3s' }} />
+          <div style={{ height: '100%', width: `${((step + 1) / QUESTIONS.length) * 100}%`, background: 'linear-gradient(90deg,#00f0ff,#ff6b4a)', borderRadius: 3, transition: 'width 0.3s' }} />
         </div>
       </div>
 
-      <h2 style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 700, color: '#e8f4ff', marginBottom: 20, textAlign: 'center' }}>{q.question}</h2>
+      <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 700, color: '#e8e8ed', marginBottom: 20, textAlign: 'center' }}>{q.question}</h2>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {q.options.map(opt => {
@@ -316,7 +316,7 @@ export default function DSAGuidePage() {
       </div>
 
       {step > 0 && (
-        <button onClick={() => setStep(s => s - 1)} style={{ marginTop: 20, background: 'transparent', border: 'none', color: '#5a7a9a', cursor: 'pointer', fontSize: 13, fontFamily: 'Syne,sans-serif' }}>
+        <button onClick={() => setStep(s => s - 1)} style={{ marginTop: 20, background: 'transparent', border: 'none', color: '#5a7a9a', cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-heading)' }}>
           ← Previous Question
         </button>
       )}

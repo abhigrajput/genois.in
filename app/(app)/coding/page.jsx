@@ -80,7 +80,7 @@ export default function CodingPage() {
   const card = { background:'#070f1f', border:'1px solid rgba(0,240,255,0.1)', borderRadius:14, padding:20, marginBottom:16 };
 
   if (!ready || pageLoading) return (
-    <div style={{textAlign:'center',paddingTop:80,color:'#5a7a9a',fontFamily:'JetBrains Mono,monospace',fontSize:13}}>
+    <div style={{textAlign:'center',paddingTop:80,color:'#5a7a9a',fontFamily:'var(--font-mono)',fontSize:13}}>
       Loading challenge...
     </div>
   );
@@ -89,15 +89,15 @@ export default function CodingPage() {
     <div style={{width:'100%', maxWidth: 1600, margin: '0 auto'}}>
       <div style={{...card,textAlign:'center',padding:48}}>
         <div style={{fontSize:48,marginBottom:16}}>{'{}'}</div>
-        <div style={{color:'#e8f4ff',fontSize:16,fontWeight:600,marginBottom:8}}>No coding challenge loaded</div>
+        <div style={{color:'#e8e8ed',fontSize:16,fontWeight:600,marginBottom:8}}>No coding challenge loaded</div>
         <div style={{color:'#5a7a9a',fontSize:13}}>Visit Daily Roadmap first to initialize today&apos;s challenge</div>
       </div>
     </div>
   );
 
   return (
-    <div style={{width:'100%', maxWidth: 1600, margin: '0 auto', fontFamily:'Outfit,sans-serif'}}>
-      <h1 style={{fontFamily:'Syne,sans-serif',fontSize:24,fontWeight:800,color:'#e8f4ff',marginBottom:6}}>Coding Challenge</h1>
+    <div style={{width:'100%', maxWidth: 1600, margin: '0 auto', fontFamily:'var(--font-body)'}}>
+      <h1 style={{fontFamily:'var(--font-heading)',fontSize:24,fontWeight:800,color:'#e8e8ed',marginBottom:6}}>Coding Challenge</h1>
       <p style={{color:'#5a7a9a',fontSize:13,marginBottom:20}}>Day {currentDay} · Submit your solution for AI review</p>
 
       <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
@@ -109,8 +109,8 @@ export default function CodingPage() {
         onClick={() => { setCurrentTestIndex(i); setCodingTest(codingTests[i]); setResult(null); setCode('// Write your solution here\n\n'); setCodeEligible(false); setCodeTimeLeft(30); }}
         style={{
           padding:'8px 16px',borderRadius:8,border:'none',cursor:'pointer',
-          fontFamily:'Syne,sans-serif',fontSize:12,fontWeight:600,
-          background: currentTestIndex===i ? 'linear-gradient(135deg,#00f0ff,#7b5cff)' : 'rgba(255,255,255,0.05)',
+          fontFamily:'var(--font-heading)',fontSize:12,fontWeight:600,
+          background: currentTestIndex===i ? 'linear-gradient(135deg,#00f0ff,#ff6b4a)' : 'rgba(255,255,255,0.05)',
           color: currentTestIndex===i ? '#020812' : '#5a7a9a',
         }}>
         Problem {i+1} {t.difficulty ? '· '+t.difficulty : ''}
@@ -119,11 +119,11 @@ export default function CodingPage() {
   </div>
 )}
           <div style={card}>
-            <div style={{fontFamily:'Syne,sans-serif',fontSize:16,fontWeight:700,color:'#e8f4ff',marginBottom:8}}>{codingTest.title}</div>
-            <span style={{fontSize:11,fontFamily:'JetBrains Mono,monospace',color:'#1D9E75',background:'rgba(29,158,117,0.1)',padding:'2px 10px',borderRadius:20}}>{codingTest.difficulty}</span>
+            <div style={{fontFamily:'var(--font-heading)',fontSize:16,fontWeight:700,color:'#e8e8ed',marginBottom:8}}>{codingTest.title}</div>
+            <span style={{fontSize:11,fontFamily:'var(--font-mono)',color:'#1D9E75',background:'rgba(29,158,117,0.1)',padding:'2px 10px',borderRadius:20}}>{codingTest.difficulty}</span>
             <div style={{fontSize:13,color:'#c8d8e8',lineHeight:1.7,marginTop:12,marginBottom:16}}>{codingTest.problem}</div>
             {codingTest.example_input && (
-              <div style={{background:'rgba(0,0,0,0.4)',borderRadius:8,padding:12,fontFamily:'JetBrains Mono,monospace',fontSize:12}}>
+              <div style={{background:'rgba(0,0,0,0.4)',borderRadius:8,padding:12,fontFamily:'var(--font-mono)',fontSize:12}}>
                 <div style={{color:'#5a7a9a',marginBottom:4}}>Input: <span style={{color:'#00f0ff'}}>{codingTest.example_input}</span></div>
                 <div style={{color:'#5a7a9a'}}>Output: <span style={{color:'#1D9E75'}}>{codingTest.example_output}</span></div>
               </div>
@@ -132,7 +132,7 @@ export default function CodingPage() {
 
           {(codingTest.hints||[]).length > 0 && (
             <div style={card}>
-              <div style={{fontSize:13,fontWeight:600,color:'#EF9F27',marginBottom:10,fontFamily:'Syne,sans-serif'}}>Hints (costs 2 pts each)</div>
+              <div style={{fontSize:13,fontWeight:600,color:'#EF9F27',marginBottom:10,fontFamily:'var(--font-heading)'}}>Hints (costs 2 pts each)</div>
               {hintIndex === -1 ? (
                 <button onClick={() => setHintIndex(0)} style={{padding:'8px 16px',borderRadius:8,border:'1px solid rgba(239,159,39,0.3)',background:'transparent',color:'#EF9F27',cursor:'pointer',fontSize:12}}>
                   Show Hint 1

@@ -56,11 +56,11 @@ export default function ChallengesPage() {
     const questions = challenge.questions || [];
 
     return (
-      <div style={{ fontFamily: 'Outfit,sans-serif', width: '100%' }}>
+      <div style={{ fontFamily: 'var(--font-body)', width: '100%' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <button onClick={() => setActiveChallenge(null)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#00f0ff', fontSize: 20, padding: 0, lineHeight: 1 }}>←</button>
           <div style={{ flex: 1 }}>
-            <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 800, color: '#e8f4ff', margin: 0, marginBottom: 2 }}>{challenge.title}</h1>
+            <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 800, color: '#e8e8ed', margin: 0, marginBottom: 2 }}>{challenge.title}</h1>
             <div style={{ fontSize: 12, color: '#5a7a9a' }}>{challenge.companyName} · {questions.length} questions</div>
           </div>
         </div>
@@ -68,11 +68,11 @@ export default function ChallengesPage() {
         {submitted && result ? (
           <div style={{ textAlign: 'center', padding: '60px 20px' }}>
             <div style={{ fontSize: 64, marginBottom: 16 }}>{result.score >= 80 ? '🏆' : result.score >= 60 ? '💪' : '📚'}</div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 52, fontWeight: 800, color: result.score >= 80 ? '#1D9E75' : result.score >= 60 ? '#00f0ff' : '#ff2d78', marginBottom: 8 }}>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 52, fontWeight: 800, color: result.score >= 80 ? '#1D9E75' : result.score >= 60 ? '#00f0ff' : '#ff2d78', marginBottom: 8 }}>
               {result.score}%
             </div>
             <div style={{ fontSize: 15, color: '#5a7a9a', marginBottom: 12 }}>Your Score</div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 700, color: '#EF9F27', marginBottom: 28 }}>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 700, color: '#EF9F27', marginBottom: 28 }}>
               Rank #{result.rank} of {result.totalAttempts} students
             </div>
             {result.score >= 80 && (
@@ -80,14 +80,14 @@ export default function ChallengesPage() {
                 🎉 You scored 80%+! +50 GENOIS points awarded. The company may reach out!
               </div>
             )}
-            <button onClick={() => setActiveChallenge(null)} style={{ padding: '12px 32px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700 }}>
+            <button onClick={() => setActiveChallenge(null)} style={{ padding: '12px 32px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
               Back to Challenges →
             </button>
           </div>
         ) : challengeData.myAttempt ? (
           <div style={{ textAlign: 'center', padding: 60 }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 700, color: '#1D9E75', marginBottom: 8 }}>Already Attempted</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 700, color: '#1D9E75', marginBottom: 8 }}>Already Attempted</div>
             <div style={{ color: '#5a7a9a', fontSize: 14 }}>Your score: {challengeData.myAttempt.score}% · Rank #{challengeData.myRank}</div>
           </div>
         ) : (
@@ -98,7 +98,7 @@ export default function ChallengesPage() {
 
             {questions.map((q, i) => (
               <div key={i} style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.06)', borderRadius: 12, padding: 20, marginBottom: 14 }}>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#e8f4ff', marginBottom: 12 }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#e8e8ed', marginBottom: 12 }}>
                   Q{i + 1}. {q.question}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -107,12 +107,12 @@ export default function ChallengesPage() {
                     const isSelected = answers[i] === opt;
                     return (
                       <button key={oi} onClick={() => setAnswers(p => ({ ...p, [i]: opt }))} style={{ padding: '10px 14px', borderRadius: 8, cursor: 'pointer', textAlign: 'left', border: `1px solid ${isSelected ? 'rgba(0,240,255,0.4)' : 'rgba(255,255,255,0.06)'}`, background: isSelected ? 'rgba(0,240,255,0.06)' : 'transparent', color: isSelected ? '#00f0ff' : '#c8d8e8', fontSize: 13 }}>
-                        <span style={{ color: '#5a7a9a', marginRight: 8, fontFamily: 'JetBrains Mono,monospace' }}>{letters[oi]}.</span>{opt}
+                        <span style={{ color: '#5a7a9a', marginRight: 8, fontFamily: 'var(--font-mono)' }}>{letters[oi]}.</span>{opt}
                       </button>
                     );
                   })}
                 </div>
-                <div style={{ marginTop: 8, fontSize: 11, color: '#3a4a5a', fontFamily: 'JetBrains Mono,monospace' }}>
+                <div style={{ marginTop: 8, fontSize: 11, color: '#3a4a5a', fontFamily: 'var(--font-mono)' }}>
                   {q.points || 20} points
                 </div>
               </div>
@@ -121,7 +121,7 @@ export default function ChallengesPage() {
             <div style={{ marginBottom: 12, fontSize: 13, color: '#5a7a9a', textAlign: 'center' }}>
               {Object.keys(answers).length}/{questions.length} answered
             </div>
-            <button onClick={submitChallenge} disabled={submitting} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: submitting ? 'rgba(0,240,255,0.2)' : 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700 }}>
+            <button onClick={submitChallenge} disabled={submitting} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: submitting ? 'rgba(0,240,255,0.2)' : 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 }}>
               {submitting ? 'Submitting...' : `Submit Challenge →`}
             </button>
           </div>
@@ -131,9 +131,9 @@ export default function ChallengesPage() {
   }
 
   return (
-    <div style={{ fontFamily: 'Outfit,sans-serif', width: '100%' }}>
+    <div style={{ fontFamily: 'var(--font-body)', width: '100%' }}>
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 4 }}>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 4 }}>
           🏢 Company Challenges
         </h1>
         <p style={{ color: '#5a7a9a', fontSize: 13 }}>
@@ -142,11 +142,11 @@ export default function ChallengesPage() {
       </div>
 
       {loading ? (
-        <div style={{ padding: 60, textAlign: 'center', color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>Loading challenges...</div>
+        <div style={{ padding: 60, textAlign: 'center', color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>Loading challenges...</div>
       ) : challenges.length === 0 ? (
         <div style={{ padding: 48, textAlign: 'center', background: '#070f1f', border: '1px solid rgba(0,240,255,0.06)', borderRadius: 14 }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>🏢</div>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: '#e8f4ff', marginBottom: 8 }}>No challenges yet</div>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: '#e8e8ed', marginBottom: 8 }}>No challenges yet</div>
           <div style={{ color: '#5a7a9a', fontSize: 14 }}>Companies will post challenges here soon. Check back daily.</div>
         </div>
       ) : (
@@ -157,31 +157,31 @@ export default function ChallengesPage() {
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, flexWrap: 'wrap' }}>
-                    <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#e8f4ff' }}>{c.title}</div>
-                    {c.myAttempt && <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'rgba(29,158,117,0.15)', color: '#1D9E75', fontFamily: 'JetBrains Mono,monospace' }}>✓ ATTEMPTED</span>}
+                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#e8e8ed' }}>{c.title}</div>
+                    {c.myAttempt && <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'rgba(29,158,117,0.15)', color: '#1D9E75', fontFamily: 'var(--font-mono)' }}>✓ ATTEMPTED</span>}
                   </div>
                   <div style={{ fontSize: 13, color: '#5a7a9a', marginBottom: 10 }}>{c.companyName} · {c.companyLocation}</div>
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                    <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'rgba(0,240,255,0.06)', color: '#00f0ff', fontFamily: 'JetBrains Mono,monospace' }}>{c.domain?.toUpperCase()}</span>
-                    <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: `${DIFF_COLORS[c.difficulty] || '#EF9F27'}15`, color: DIFF_COLORS[c.difficulty] || '#EF9F27', fontFamily: 'JetBrains Mono,monospace' }}>{c.difficulty?.toUpperCase()}</span>
-                    <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'rgba(255,255,255,0.04)', color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>{c.questions?.length || 5} QUESTIONS</span>
+                    <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'rgba(0,240,255,0.06)', color: '#00f0ff', fontFamily: 'var(--font-mono)' }}>{c.domain?.toUpperCase()}</span>
+                    <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: `${DIFF_COLORS[c.difficulty] || '#EF9F27'}15`, color: DIFF_COLORS[c.difficulty] || '#EF9F27', fontFamily: 'var(--font-mono)' }}>{c.difficulty?.toUpperCase()}</span>
+                    <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'rgba(255,255,255,0.04)', color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>{c.questions?.length || 5} QUESTIONS</span>
                   </div>
                 </div>
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
                   {c.myAttempt ? (
                     <div>
-                      <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 22, fontWeight: 800, color: '#1D9E75' }}>{c.myAttempt.score}%</div>
-                      <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>your score</div>
+                      <div style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 800, color: '#1D9E75' }}>{c.myAttempt.score}%</div>
+                      <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>your score</div>
                     </div>
                   ) : (
-                    <button onClick={() => openChallenge(c.id)} style={{ padding: '10px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700 }}>
+                    <button onClick={() => openChallenge(c.id)} style={{ padding: '10px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700 }}>
                       Attempt →
                     </button>
                   )}
                 </div>
               </div>
               {c.deadline && (
-                <div style={{ marginTop: 10, fontSize: 11, color: '#3a4a5a', fontFamily: 'JetBrains Mono,monospace' }}>
+                <div style={{ marginTop: 10, fontSize: 11, color: '#3a4a5a', fontFamily: 'var(--font-mono)' }}>
                   Deadline: {new Date(c.deadline).toLocaleDateString('en-IN')}
                 </div>
               )}

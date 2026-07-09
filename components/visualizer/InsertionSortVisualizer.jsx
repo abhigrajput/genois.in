@@ -121,7 +121,7 @@ function barColor(idx, step) {
   if (idx < step.sortedUpto && !step.comparing?.includes(idx) && !step.shifting?.includes(idx)) return '#1d9e75';
   if (idx === step.placed) return '#1d9e75';
   if (step.shifting?.includes(idx)) return '#378ADD';
-  if (step.comparing?.includes(idx)) return '#7b5cff';
+  if (step.comparing?.includes(idx)) return '#ff6b4a';
   if (idx === step.key) return '#ef9f27';
   return '#1a2a3a';
 }
@@ -168,11 +168,11 @@ export default function InsertionSortVisualizer() {
           { label:'Key Value', value: current?.keyVal > 0 ? current.keyVal : '-', color:'#ef9f27' },
           { label:'Comparisons', value: current?.comparisons ?? 0, color:'#00f0ff' },
           { label:'Shifts', value: current?.shifts ?? 0, color:'#378ADD' },
-          { label:'Time', value:'O(n²)', color:'#7b5cff' },
+          { label:'Time', value:'O(n²)', color:'#ff6b4a' },
         ].map(s => (
           <div key={s.label} style={{ background:'rgba(10,15,30,0.8)', border:`1px solid ${s.color}20`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
-            <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
-            <div style={{ fontFamily:'Syne,sans-serif', fontSize:20, fontWeight:700, color:s.color }}>{s.value}</div>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
+            <div style={{ fontFamily:'var(--font-heading)', fontSize:20, fontWeight:700, color:s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
@@ -180,7 +180,7 @@ export default function InsertionSortVisualizer() {
       <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
         {displayArr.map((v, i) => (
           <div key={i} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, flex:1, maxWidth:60 }}>
-            <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:barColor(i, current) }}>{v}</span>
+            <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:barColor(i, current) }}>{v}</span>
             <div style={{ width:'100%', borderRadius:'4px 4px 0 0', height:`${(v / maxVal) * 160}px`, background:barColor(i, current), transition:'all 0.3s ease', minHeight:4,
               boxShadow: i === current?.key ? `0 0 14px #ef9f2780` : 'none',
             }} />
@@ -196,10 +196,10 @@ export default function InsertionSortVisualizer() {
       />
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
-        {[['#1d9e75','Sorted'],['#ef9f27','Key Element'],['#378ADD','Shifting'],['#7b5cff','Comparing']].map(([c,l]) => (
+        {[['#1d9e75','Sorted'],['#ef9f27','Key Element'],['#378ADD','Shifting'],['#ff6b4a','Comparing']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:2, background:c }}/>
-            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'Outfit,sans-serif' }}>{l}</span>
+            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>

@@ -141,15 +141,15 @@ export default function BubbleSortVisualizer() {
         {[
           { label: 'Comparisons', value: current?.comparisons ?? 0, color: '#00f0ff' },
           { label: 'Swaps', value: current?.swaps ?? 0, color: '#ef9f27' },
-          { label: 'Time', value: 'O(n²)', color: '#7b5cff' },
+          { label: 'Time', value: 'O(n²)', color: '#ff6b4a' },
           { label: 'Space', value: 'O(1)', color: '#1d9e75' },
         ].map(s => (
           <div key={s.label} style={{
             background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`,
             borderRadius: 8, padding: '8px 16px', minWidth: 100,
           }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 700, color: s.color }}>{s.value}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
@@ -162,7 +162,7 @@ export default function BubbleSortVisualizer() {
       }}>
         {displayArr.map((v, i) => (
           <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: 1, maxWidth: 60 }}>
-            <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: barColor(i, current || {}) }}>{v}</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: barColor(i, current || {}) }}>{v}</span>
             <div style={{
               width: '100%', borderRadius: '4px 4px 0 0',
               height: `${(v / maxVal) * 160}px`,
@@ -187,7 +187,7 @@ export default function BubbleSortVisualizer() {
         {[['#1a2a3a','Unsorted'],['#00f0ff','Comparing'],['#1d9e75','Sorted']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:2, background:c, border:`1px solid ${c}` }}/>
-            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'Outfit,sans-serif' }}>{l}</span>
+            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>

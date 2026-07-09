@@ -64,7 +64,7 @@ export default function NotificationBell({ token }) {
           cursor: 'pointer',
           padding: 8,
           position: 'relative',
-          color: '#e8f4ff',
+          color: '#e8e8ed',
           fontSize: 20,
           lineHeight: 1,
           display: 'flex',
@@ -88,7 +88,7 @@ export default function NotificationBell({ token }) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontFamily: 'JetBrains Mono,monospace',
+            fontFamily: 'var(--font-mono)',
           }}>
             {unread > 9 ? '9+' : unread}
           </span>
@@ -113,9 +113,9 @@ export default function NotificationBell({ token }) {
           opacity: 1,
         }}>
           <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700, color: '#e8f4ff' }}>Notifications</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: '#e8e8ed' }}>Notifications</div>
             {unread > 0 && (
-              <button onClick={markAllRead} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#00f0ff', fontSize: 11, fontFamily: 'JetBrains Mono,monospace' }}>
+              <button onClick={markAllRead} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#00f0ff', fontSize: 11, fontFamily: 'var(--font-mono)' }}>
                 Mark all read
               </button>
             )}
@@ -131,9 +131,9 @@ export default function NotificationBell({ token }) {
                 <div key={n.id} style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.03)', background: n.read ? 'transparent' : 'rgba(0,240,255,0.03)', display: 'flex', gap: 12, cursor: 'pointer' }}>
                   <div style={{ fontSize: 22, flexShrink: 0 }}>{n.icon || '🔔'}</div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#e8f4ff', marginBottom: 3 }}>{n.title}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#e8e8ed', marginBottom: 3 }}>{n.title}</div>
                     <div style={{ fontSize: 12, color: '#8a9ab0', lineHeight: 1.5, marginBottom: 4 }}>{n.message}</div>
-                    <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>{timeAgo(n.sent_at)}</div>
+                    <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>{timeAgo(n.sent_at)}</div>
                   </div>
                   {!n.read && <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#00f0ff', flexShrink: 0, marginTop: 6 }} />}
                 </div>
@@ -141,7 +141,7 @@ export default function NotificationBell({ token }) {
             )}
           </div>
           <div style={{ padding: '10px 16px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-            <button onClick={() => { setOpen(false); router.push('/notifications'); }} style={{ width: '100%', background: 'transparent', border: 'none', cursor: 'pointer', color: '#00f0ff', fontSize: 12, fontFamily: 'Syne,sans-serif', fontWeight: 600, padding: '6px' }}>
+            <button onClick={() => { setOpen(false); router.push('/notifications'); }} style={{ width: '100%', background: 'transparent', border: 'none', cursor: 'pointer', color: '#00f0ff', fontSize: 12, fontFamily: 'var(--font-heading)', fontWeight: 600, padding: '6px' }}>
               View all & Settings →
             </button>
           </div>

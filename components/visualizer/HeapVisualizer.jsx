@@ -166,31 +166,31 @@ export default function HeapVisualizer() {
           { label: 'Size', value: heap.length, color: '#00f0ff' },
           { label: 'Min (root)', value: heap[0] ?? '-', color: '#1d9e75' },
           { label: 'Phase', value: current?.phase ?? '—', color: '#ef9f27' },
-          { label: 'Type', value: 'Min-Heap', color: '#7b5cff' },
+          { label: 'Type', value: 'Min-Heap', color: '#ff6b4a' },
         ].map(s => (
           <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
       {current?.label && (
-        <div style={{ background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#00f0ff' }}>▶ {current.label}</div>
+        <div style={{ background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00f0ff' }}>▶ {current.label}</div>
       )}
 
       {/* Array view */}
       <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 10, padding: '12px 16px' }}>
-        <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>ARRAY REPRESENTATION</div>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>ARRAY REPRESENTATION</div>
         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
           {displayHeap.map((v, i) => {
             const color = nodeColor(i, current);
             return (
               <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
                 <div style={{ width: 44, height: 44, borderRadius: 8, background: color === '#1a2a3a' ? '#0d1a2a' : color + '22', border: `2px solid ${color}`, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.3s ease', boxShadow: current?.highlight?.includes(i) ? `0 0 12px ${color}80` : 'none' }}>
-                  <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 14, fontWeight: 700, color }}>{v}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color }}>{v}</span>
                 </div>
-                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#2a3a4a' }}>[{i}]</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#2a3a4a' }}>[{i}]</span>
               </div>
             );
           })}
@@ -215,7 +215,7 @@ export default function HeapVisualizer() {
               <g key={i}>
                 {isHl && <circle cx={x} cy={y} r={24} fill="none" stroke={color} strokeWidth={1} opacity={0.4} />}
                 <circle cx={x} cy={y} r={20} fill={color === '#1a2a3a' ? '#0d1a2a' : color + '22'} stroke={color} strokeWidth={isHl ? 2.5 : 1.5} style={{ transition: 'all 0.3s ease' }} />
-                <text x={x} y={y + 5} textAnchor="middle" style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 13, fontWeight: 700, fill: color, transition: 'fill 0.3s ease' }}>{v}</text>
+                <text x={x} y={y + 5} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, fill: color, transition: 'fill 0.3s ease' }}>{v}</text>
               </g>
             );
           })}
@@ -232,10 +232,10 @@ export default function HeapVisualizer() {
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
         <button onClick={doInsert} style={btn('#00f0ff')}>Insert Random</button>
         <button onClick={doExtract} style={btn('#ef9f27')}>Extract Min</button>
-        <button onClick={() => setIsPlaying(p => !p)} style={btn('#7b5cff')}>{isPlaying ? '⏸ Pause' : '▶ Play'}</button>
+        <button onClick={() => setIsPlaying(p => !p)} style={btn('#ff6b4a')}>{isPlaying ? '⏸ Pause' : '▶ Play'}</button>
         <div style={{ display: 'flex', gap: 4 }}>
           {[1,2,3,4].map(s => (
-            <button key={s} onClick={() => setSpeed(s)} style={{ padding:'3px 10px', borderRadius:6, border: speed===s?'1px solid #00f0ff':'1px solid rgba(0,240,255,0.15)', background: speed===s?'rgba(0,240,255,0.12)':'transparent', color: speed===s?'#00f0ff':'#5a7a9a', fontSize:11, fontFamily:'JetBrains Mono,monospace', cursor:'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
+            <button key={s} onClick={() => setSpeed(s)} style={{ padding:'3px 10px', borderRadius:6, border: speed===s?'1px solid #00f0ff':'1px solid rgba(0,240,255,0.15)', background: speed===s?'rgba(0,240,255,0.12)':'transparent', color: speed===s?'#00f0ff':'#5a7a9a', fontSize:11, fontFamily:'var(--font-mono)', cursor:'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
           ))}
         </div>
         <button onClick={reset} style={btn('#ff2d78')}>↺ Reset</button>
@@ -245,7 +245,7 @@ export default function HeapVisualizer() {
         {[['#00f0ff','Selected'],['#ef9f27','Swapping'],['#1d9e75','Placed']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:2, background:c+'44', border:`2px solid ${c}` }}/>
-            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'Outfit,sans-serif' }}>{l}</span>
+            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>
@@ -254,5 +254,5 @@ export default function HeapVisualizer() {
   );
 }
 function btn(color) {
-  return { padding:'8px 16px', borderRadius:8, border:`1px solid ${color}30`, background:`${color}10`, color, fontFamily:'Syne,sans-serif', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' };
+  return { padding:'8px 16px', borderRadius:8, border:`1px solid ${color}30`, background:`${color}10`, color, fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' };
 }

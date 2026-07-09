@@ -198,18 +198,18 @@ export default function LinkedListVisualizer() {
         {[
           { label:'Size', value:nodes.length, color:'#00f0ff' },
           { label:'Head', value:nodes.length > 0 ? nodes[0].val : 'null', color:'#1d9e75' },
-          { label:'Tail', value:nodes.length > 0 ? nodes[nodes.length-1].val : 'null', color:'#7b5cff' },
+          { label:'Tail', value:nodes.length > 0 ? nodes[nodes.length-1].val : 'null', color:'#ff6b4a' },
           { label:'Time (search)', value:'O(n)', color:'#ef9f27' },
         ].map(s => (
           <div key={s.label} style={{ background:'rgba(10,15,30,0.8)', border:`1px solid ${s.color}20`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
-            <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
-            <div style={{ fontFamily:'Syne,sans-serif', fontSize:20, fontWeight:700, color:s.color }}>{s.value}</div>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
+            <div style={{ fontFamily:'var(--font-heading)', fontSize:20, fontWeight:700, color:s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
       {message && (
-        <div style={{ background:'rgba(0,240,255,0.05)', border:'1px solid rgba(0,240,255,0.15)', borderRadius:8, padding:'8px 14px', fontFamily:'JetBrains Mono,monospace', fontSize:12, color:'#00f0ff' }}>
+        <div style={{ background:'rgba(0,240,255,0.05)', border:'1px solid rgba(0,240,255,0.15)', borderRadius:8, padding:'8px 14px', fontFamily:'var(--font-mono)', fontSize:12, color:'#00f0ff' }}>
           ▶ {message}
         </div>
       )}
@@ -217,14 +217,14 @@ export default function LinkedListVisualizer() {
       {/* Visual linked list */}
       <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:12, padding:'32px 20px', minHeight:160, overflowX:'auto' }}>
         {nodes.length === 0 ? (
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:80, fontFamily:'JetBrains Mono,monospace', fontSize:12, color:'#2a3a4a' }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:80, fontFamily:'var(--font-mono)', fontSize:12, color:'#2a3a4a' }}>
             head → null
           </div>
         ) : (
           <div style={{ display:'flex', alignItems:'center', gap:0, width:'max-content' }}>
             {/* Head label */}
             <div style={{ display:'flex', flexDirection:'column', alignItems:'center', marginRight:12 }}>
-              <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:9, color:'#1d9e75' }}>head</span>
+              <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'#1d9e75' }}>head</span>
               <span style={{ color:'#1d9e75', fontSize:16 }}>↓</span>
             </div>
 
@@ -239,24 +239,24 @@ export default function LinkedListVisualizer() {
                   {/* Node box */}
                   <div style={{
                     display:'flex', flexDirection:'column',
-                    border: isActive ? '2px solid #00f0ff' : isHead ? '2px solid #1d9e75' : isTail ? '2px solid #7b5cff' : '1px solid rgba(0,240,255,0.25)',
+                    border: isActive ? '2px solid #00f0ff' : isHead ? '2px solid #1d9e75' : isTail ? '2px solid #ff6b4a' : '1px solid rgba(0,240,255,0.25)',
                     borderRadius: 10, overflow:'hidden',
                     boxShadow: isActive ? '0 0 20px rgba(0,240,255,0.4)' : 'none',
                     transition:'all 0.3s ease',
                     minWidth: 72,
                   }}>
                     {/* Labels */}
-                    <div style={{ display:'flex', fontSize:7, fontFamily:'JetBrains Mono,monospace', borderBottom:'1px solid rgba(0,240,255,0.1)', background:'rgba(0,240,255,0.03)' }}>
+                    <div style={{ display:'flex', fontSize:7, fontFamily:'var(--font-mono)', borderBottom:'1px solid rgba(0,240,255,0.1)', background:'rgba(0,240,255,0.03)' }}>
                       <span style={{ flex:1, textAlign:'center', padding:'2px 0', color:'#5a7a9a', borderRight:'1px solid rgba(0,240,255,0.1)' }}>data</span>
                       <span style={{ flex:1, textAlign:'center', padding:'2px 0', color:'#5a7a9a' }}>next</span>
                     </div>
                     {/* Values */}
                     <div style={{ display:'flex', background:'rgba(10,20,40,0.8)' }}>
                       <div style={{ flex:1, padding:'10px 8px', textAlign:'center', borderRight:'1px solid rgba(0,240,255,0.1)' }}>
-                        <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:16, fontWeight:700, color: isActive ? '#00f0ff' : isHead ? '#1d9e75' : '#e8f4ff' }}>{node.val}</span>
+                        <span style={{ fontFamily:'var(--font-mono)', fontSize:16, fontWeight:700, color: isActive ? '#00f0ff' : isHead ? '#1d9e75' : '#e8e8ed' }}>{node.val}</span>
                       </div>
                       <div style={{ flex:1, padding:'10px 4px', textAlign:'center' }}>
-                        <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color: isTail ? '#ff2d78' : '#5a7a9a' }}>
+                        <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color: isTail ? '#ff2d78' : '#5a7a9a' }}>
                           {isTail ? 'null' : '→'}
                         </span>
                       </div>
@@ -264,7 +264,7 @@ export default function LinkedListVisualizer() {
                     {/* Index label */}
                     {(isHead || isTail) && (
                       <div style={{ padding:'2px 0', textAlign:'center', background:'rgba(0,0,0,0.2)' }}>
-                        <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:7, color: isHead ? '#1d9e75' : '#7b5cff' }}>
+                        <span style={{ fontFamily:'var(--font-mono)', fontSize:7, color: isHead ? '#1d9e75' : '#ff6b4a' }}>
                           {isHead && isTail ? 'head/tail' : isHead ? 'head' : 'tail'}
                         </span>
                       </div>
@@ -286,7 +286,7 @@ export default function LinkedListVisualizer() {
             {/* null terminator */}
             <div style={{ display:'flex', alignItems:'center', marginLeft:8 }}>
               <div style={{ width:20, height:2, background:'rgba(255,45,120,0.3)' }}/>
-              <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:12, color:'#ff2d78', marginLeft:4 }}>null</span>
+              <span style={{ fontFamily:'var(--font-mono)', fontSize:12, color:'#ff2d78', marginLeft:4 }}>null</span>
             </div>
           </div>
         )}
@@ -295,12 +295,12 @@ export default function LinkedListVisualizer() {
       <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
         {[
           { label:'Insert Head', action:insertHead, color:'#1d9e75', bg:'rgba(29,158,117,0.08)', border:'rgba(29,158,117,0.25)' },
-          { label:'Insert Tail', action:insertTail, color:'#7b5cff', bg:'rgba(123,92,255,0.08)', border:'rgba(123,92,255,0.25)' },
+          { label:'Insert Tail', action:insertTail, color:'#ff6b4a', bg:'rgba(255,107,74,0.08)', border:'rgba(255,107,74,0.25)' },
           { label:'Delete Head', action:deleteHead, color:'#ff2d78', bg:'rgba(255,45,120,0.08)', border:'rgba(255,45,120,0.25)' },
           { label:'Delete Tail', action:deleteTail, color:'#ef9f27', bg:'rgba(239,159,39,0.08)', border:'rgba(239,159,39,0.25)' },
           { label:'Traverse', action:traverse, color:'#00f0ff', bg:'rgba(0,240,255,0.08)', border:'rgba(0,240,255,0.25)' },
         ].map(b => (
-          <button key={b.label} onClick={b.action} style={{ padding:'8px 16px', borderRadius:8, border:`1px solid ${b.border}`, background:b.bg, color:b.color, fontFamily:'Syne,sans-serif', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' }}>{b.label}</button>
+          <button key={b.label} onClick={b.action} style={{ padding:'8px 16px', borderRadius:8, border:`1px solid ${b.border}`, background:b.bg, color:b.color, fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' }}>{b.label}</button>
         ))}
       </div>
 

@@ -41,7 +41,7 @@ export default function PublicPageSidebar({ currentPath }) {
 
   if (!open) {
     return (
-      <button onClick={() => setOpen(true)} style={{ position: 'fixed', top: 70, left: 10, zIndex: 90, padding: '8px 12px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', background: 'rgba(7,15,31,0.95)', color: '#00f0ff', cursor: 'pointer', fontSize: 14, fontFamily: 'Syne,sans-serif', fontWeight: 600 }}>
+      <button onClick={() => setOpen(true)} style={{ position: 'fixed', top: 70, left: 10, zIndex: 90, padding: '8px 12px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', background: 'rgba(7,15,31,0.95)', color: '#00f0ff', cursor: 'pointer', fontSize: 14, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
         ☰ Menu
       </button>
     );
@@ -54,9 +54,9 @@ export default function PublicPageSidebar({ currentPath }) {
       </div>
       {NAV_GROUPS.map(g => (
         <div key={g.title} style={{ marginBottom: 16 }}>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#3a4a5a', letterSpacing: 2, padding: '6px 16px' }}>{g.title}</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#3a4a5a', letterSpacing: 2, padding: '6px 16px' }}>{g.title}</div>
           {g.items.map(item => (
-            <Link key={item.href} href={item.href} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px', color: currentPath === item.href ? '#00f0ff' : '#8a9ab0', textDecoration: 'none', fontSize: 13, fontFamily: 'Outfit,sans-serif', background: currentPath === item.href ? 'rgba(0,240,255,0.06)' : 'transparent' }}>
+            <Link key={item.href} href={item.href} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 16px', color: currentPath === item.href ? '#00f0ff' : '#8a9ab0', textDecoration: 'none', fontSize: 13, fontFamily: 'var(--font-body)', background: currentPath === item.href ? 'rgba(0,240,255,0.06)' : 'transparent' }}>
               <span style={{ fontSize: 16 }}>{item.icon}</span>
               {item.label}
             </Link>

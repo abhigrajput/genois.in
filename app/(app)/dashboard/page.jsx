@@ -19,12 +19,12 @@ function YouTubeEmbed({ url, title }) {
     <a href={url} target="_blank" rel="noopener noreferrer" style={{
       display: 'inline-flex', alignItems: 'center', gap: 8,
       padding: '12px 20px', borderRadius: 10, textDecoration: 'none',
-      background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)',
-      color: '#6366f1', fontFamily: 'Outfit,sans-serif', fontWeight: 600, fontSize: 14,
+      background: 'rgba(0,217,163,0.1)', border: '1px solid rgba(0,217,163,0.3)',
+      color: '#00d9a3', fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 14,
     }}>▶ Watch on YouTube →</a>
   );
   return (
-    <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(99,102,241,0.15)' }}>
+    <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(0,217,163,0.15)' }}>
       <iframe
         src={embedUrl}
         title={title || 'Video'}
@@ -37,13 +37,13 @@ function YouTubeEmbed({ url, title }) {
   );
 }
 
-const G = '#6366f1'
-const G10 = 'rgba(99,102,241,0.1)'
-const G20 = 'rgba(99,102,241,0.2)'
-const AMBER = '#fbbf24'
-const BG = '#0d0d14'
-const BG2 = '#13131f'
-const BG3 = '#1a1a2e'
+const G = '#00d9a3'
+const G10 = 'rgba(0,217,163,0.1)'
+const G20 = 'rgba(0,217,163,0.2)'
+const AMBER = '#ffb020'
+const BG = '#0a0a0f'
+const BG2 = '#12121a'
+const BG3 = '#1a1a26'
 
 const TASK_BITS = { video: 1, resource: 2, coding: 4, test: 8, notes: 16 }
 const TASK_META = [
@@ -71,8 +71,8 @@ function DayRing({ day, size = 72 }) {
           style={{ transition: 'stroke-dashoffset 0.8s ease' }} />
       </svg>
       <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: size > 60 ? 20 : 14, fontWeight: 700, color: G, lineHeight: 1 }}>{day}</span>
-        <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#444', marginTop: 1 }}>/ 365</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: size > 60 ? 20 : 14, fontWeight: 700, color: G, lineHeight: 1 }}>{day}</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#444', marginTop: 1 }}>/ 365</span>
       </div>
     </div>
   )
@@ -84,7 +84,7 @@ function Skel({ h = 60, w = '100%' }) {
 
 function Confetti({ show }) {
   if (!show) return null
-  const colors = [G, AMBER, '#818cf8', '#ff69b4', '#ffffff', '#7b5cff']
+  const colors = [G, AMBER, '#2ee6b0', '#ff69b4', '#ffffff', '#ff6b4a']
   const particles = Array.from({ length: 24 }, (_, i) => {
     const angle = (i / 24) * 360
     const dist = 80 + (i % 4) * 30
@@ -113,7 +113,7 @@ function FloatAnim({ items }) {
       {items.map(a => (
         <div key={a.id} className="pts-float" style={{
           position: 'fixed', bottom: '25%', left: '55%',
-          fontFamily: 'JetBrains Mono,monospace', fontSize: 20, fontWeight: 800,
+          fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 800,
           color: G, zIndex: 9999,
           transform: 'translateX(-50%)',
         }}>{a.text}</div>
@@ -382,14 +382,14 @@ export default function DashboardPage() {
     const btnStyle = {
       display: 'inline-flex', alignItems: 'center', gap: 8,
       padding: '10px 20px', borderRadius: 8, border: 'none', cursor: done ? 'default' : 'pointer',
-      background: done ? 'rgba(99,102,241,0.1)' : G, color: done ? G : '#fff',
-      fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14, transition: 'all 0.2s',
+      background: done ? 'rgba(0,217,163,0.1)' : G, color: done ? G : '#0a0a0f',
+      fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14, transition: 'all 0.2s',
       opacity: done ? 0.7 : 1,
     }
 
     if (activeTask === 'video') return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {video?.title && <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 600, color: '#e8f4ff' }}>{video.title}</div>}
+        {video?.title && <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 600, color: '#e8e8ed' }}>{video.title}</div>}
         {video?.description && <div style={{ fontSize: 12, color: '#6b7a8d', lineHeight: 1.6 }}>{video.description}</div>}
         {video?.url
           ? <YouTubeEmbed url={video.url} title={video.title} />
@@ -402,8 +402,8 @@ export default function DashboardPage() {
               padding: '11px 20px', borderRadius: 8, border: 'none',
               cursor: videoEligible ? 'pointer' : 'not-allowed',
               background: videoEligible ? G : 'rgba(255,255,255,0.06)',
-              color: videoEligible ? '#fff' : '#555',
-              fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14,
+              color: videoEligible ? '#0a0a0f' : '#555',
+              fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14,
               transition: 'all 0.4s ease', width: '100%',
             }}>
             {videoEligible ? 'Mark Video as Watched' : 'Watch 30 seconds to unlock...'}
@@ -414,14 +414,14 @@ export default function DashboardPage() {
 
     if (activeTask === 'resource') return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {resource?.title && <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 600, color: '#e8f4ff' }}>{resource.title}</div>}
+        {resource?.title && <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 600, color: '#e8e8ed' }}>{resource.title}</div>}
         <div style={{ display: 'flex', gap: 10 }}>
           {resource?.url && (
-            <a href={resource.url} target="_blank" rel="noopener noreferrer" style={{ ...btnStyle, background: done ? 'rgba(99,102,241,0.1)' : G, color: done ? G : '#fff', textDecoration: 'none' }}>
+            <a href={resource.url} target="_blank" rel="noopener noreferrer" style={{ ...btnStyle, background: done ? 'rgba(0,217,163,0.1)' : G, color: done ? G : '#0a0a0f', textDecoration: 'none' }}>
               <BookOpen size={16} strokeWidth={2} /> Open Resource
             </a>
           )}
-          {!done && <button onClick={() => completeTask('resource')} style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${G20}`, background: 'transparent', color: G, cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontWeight: 600, fontSize: 14 }}>Mark Complete</button>}
+          {!done && <button onClick={() => completeTask('resource')} style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${G20}`, background: 'transparent', color: G, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14 }}>Mark Complete</button>}
         </div>
       </div>
     )
@@ -431,22 +431,22 @@ export default function DashboardPage() {
       return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            {coding?.title && <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 14, fontWeight: 700, color: G }}>{coding.title}</div>}
+            {coding?.title && <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: G }}>{coding.title}</div>}
             <span style={{ padding: '2px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: `${DIFF_COLORS[diff]}20`, color: DIFF_COLORS[diff], border: `1px solid ${DIFF_COLORS[diff]}40` }}>{diff}</span>
           </div>
           {coding?.description && <div style={{ fontSize: 12, color: '#6b7a8d', lineHeight: 1.6 }}>{coding.description}</div>}
           {coding?.codeSnippet && (
-            <pre style={{ background: '#0d0d14', border: `1px solid rgba(99,102,241,0.15)`, borderRadius: 8, padding: '12px 14px', fontSize: 11, color: G, fontFamily: 'JetBrains Mono,monospace', overflow: 'auto', maxHeight: 100, margin: 0 }}>
+            <pre style={{ background: '#0a0a0f', border: `1px solid rgba(0,217,163,0.15)`, borderRadius: 8, padding: '12px 14px', fontSize: 11, color: G, fontFamily: 'var(--font-mono)', overflow: 'auto', maxHeight: 100, margin: 0 }}>
               {coding.codeSnippet}
             </pre>
           )}
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             {coding?.url && (
-              <a href={coding.url} target="_blank" rel="noopener noreferrer" style={{ ...btnStyle, background: done ? 'rgba(99,102,241,0.1)' : G, color: done ? G : '#fff', textDecoration: 'none' }}>
+              <a href={coding.url} target="_blank" rel="noopener noreferrer" style={{ ...btnStyle, background: done ? 'rgba(0,217,163,0.1)' : G, color: done ? G : '#0a0a0f', textDecoration: 'none' }}>
                 <Code2 size={16} strokeWidth={2} /> Solve Problem →
               </a>
             )}
-            {!done && <button onClick={() => completeTask('coding')} style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${G20}`, background: 'transparent', color: G, cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontWeight: 600, fontSize: 14 }}>Mark Complete</button>}
+            {!done && <button onClick={() => completeTask('coding')} style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${G20}`, background: 'transparent', color: G, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14 }}>Mark Complete</button>}
           </div>
         </div>
       )
@@ -455,7 +455,7 @@ export default function DashboardPage() {
     if (activeTask === 'test') return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         <div style={{ fontSize: 13, color: '#6b7a8d' }}>Take today&apos;s test to earn bonus points and test your understanding.</div>
-        <Link href="/tests" style={{ ...btnStyle, background: done ? 'rgba(99,102,241,0.1)' : G, color: done ? G : '#fff', textDecoration: 'none', alignSelf: 'flex-start' }}>
+        <Link href="/tests" style={{ ...btnStyle, background: done ? 'rgba(0,217,163,0.1)' : G, color: done ? G : '#0a0a0f', textDecoration: 'none', alignSelf: 'flex-start' }}>
           <ClipboardCheck size={16} strokeWidth={2} /> Take Today&apos;s Test →
         </Link>
       </div>
@@ -464,7 +464,7 @@ export default function DashboardPage() {
     if (activeTask === 'notes') return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {notes?.content ? (
-          <div style={{ background: '#0d0d14', border: `1px solid rgba(99,102,241,0.12)`, borderRadius: 8, padding: '12px 14px', fontSize: 12, color: '#aab', lineHeight: 1.7, maxHeight: 140, overflow: 'auto', fontFamily: 'Outfit,sans-serif' }}>
+          <div style={{ background: '#0a0a0f', border: `1px solid rgba(0,217,163,0.12)`, borderRadius: 8, padding: '12px 14px', fontSize: 12, color: '#aab', lineHeight: 1.7, maxHeight: 140, overflow: 'auto', fontFamily: 'var(--font-body)' }}>
             {notes.content}
           </div>
         ) : (
@@ -476,7 +476,7 @@ export default function DashboardPage() {
           </button>
         )}
         {notes?.content && !done && (
-          <button onClick={() => completeTask('notes')} style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${G20}`, background: 'transparent', color: G, cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontWeight: 600, fontSize: 14, alignSelf: 'flex-start' }}>Mark Complete</button>
+          <button onClick={() => completeTask('notes')} style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${G20}`, background: 'transparent', color: G, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14, alignSelf: 'flex-start' }}>Mark Complete</button>
         )}
       </div>
     )
@@ -485,7 +485,7 @@ export default function DashboardPage() {
   }
 
   const cardBase = {
-    background: BG2, border: `1px solid rgba(99,102,241,0.12)`, borderRadius: 14,
+    background: BG2, border: `1px solid rgba(0,217,163,0.12)`, borderRadius: 14,
     padding: 20, position: 'relative', overflow: 'hidden',
   }
 
@@ -501,12 +501,12 @@ export default function DashboardPage() {
         <div style={{ background: 'rgba(255,50,50,0.08)', border: '1px solid rgba(255,50,50,0.3)', borderRadius: 10, padding: '12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <Mail size={16} strokeWidth={2} color="#ff6b6b" style={{ flexShrink: 0 }} />
-            <span style={{ fontFamily: 'Outfit,sans-serif', fontSize: 13, color: '#ff6b6b' }}>Please verify your email to unlock all features</span>
+            <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#ff6b6b' }}>Please verify your email to unlock all features</span>
           </div>
           <button onClick={async () => {
             try { await fetch('/api/auth/resend-verification', { method: 'POST', headers: { Authorization: 'Bearer ' + token } }); toast.success('Verification email sent!') }
             catch { toast.error('Failed to send') }
-          }} style={{ padding: '6px 14px', borderRadius: 8, border: 'none', background: '#ff4545', color: '#fff', fontFamily: 'Syne,sans-serif', fontSize: 12, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}>
+          }} style={{ padding: '6px 14px', borderRadius: 8, border: 'none', background: '#ff4545', color: '#fff', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}>
             Resend →
           </button>
         </div>
@@ -516,52 +516,52 @@ export default function DashboardPage() {
       {streakAtRisk && (
         <div style={{ background: 'rgba(251,191,36,0.07)', border: `1px solid rgba(251,191,36,0.3)`, borderRadius: 10, padding: '10px 20px', display: 'flex', alignItems: 'center', gap: 10 }}>
           <AlertTriangle size={18} strokeWidth={2} color={AMBER} style={{ flexShrink: 0 }} />
-          <span style={{ fontFamily: 'Outfit,sans-serif', fontSize: 13, color: AMBER }}>Complete at least 1 task to keep your streak alive tonight!</span>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: AMBER }}>Complete at least 1 task to keep your streak alive tonight!</span>
         </div>
       )}
 
       {/* Admin link */}
       {isAdmin && (
-        <a href="/admin" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 8, background: 'rgba(99,102,241,0.08)', border: `1px solid ${G20}`, color: G, textDecoration: 'none', fontSize: 12, fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, alignSelf: 'flex-start' }}><Settings size={14} strokeWidth={2} /> Admin Dashboard →</a>
+        <a href="/admin" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 8, background: 'rgba(0,217,163,0.08)', border: `1px solid ${G20}`, color: G, textDecoration: 'none', fontSize: 12, fontFamily: 'var(--font-mono)', fontWeight: 700, alignSelf: 'flex-start' }}><Settings size={14} strokeWidth={2} /> Admin Dashboard →</a>
       )}
 
       {/* DSA Diagnostic banner */}
       {user?.domain_slug === 'dsa' && analytics?.diagnosticStatus === false && (
-        <div onClick={() => router.push('/diagnostic')} style={{ ...cardBase, cursor: 'pointer', borderColor: `rgba(99,102,241,0.3)` }}>
+        <div onClick={() => router.push('/diagnostic')} style={{ ...cardBase, cursor: 'pointer', borderColor: `rgba(0,217,163,0.3)` }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: G, letterSpacing: 2, marginBottom: 4 }}><Target size={12} strokeWidth={2} /> RECOMMENDED</div>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, color: '#e8f4ff' }}>Take DSA Diagnostic to get your level →</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-mono)', fontSize: 10, color: G, letterSpacing: 2, marginBottom: 4 }}><Target size={12} strokeWidth={2} /> RECOMMENDED</div>
+              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: '#e8e8ed' }}>Take DSA Diagnostic to get your level →</div>
               <div style={{ fontSize: 12, color: '#6b7a8d', marginTop: 2 }}>15 questions · 10 min · Sets your personalized track</div>
             </div>
-            <div style={{ padding: '8px 18px', borderRadius: 8, background: G, color: '#fff', fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 13 }}>Start Now →</div>
+            <div style={{ padding: '8px 18px', borderRadius: 8, background: G, color: '#0a0a0f', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 13 }}>Start Now →</div>
           </div>
         </div>
       )}
 
       {/* ── HERO STATS BAR ── */}
-      <div className="stats-bar" style={{ background: BG2, borderRadius: 14, border: `1px solid rgba(99,102,241,0.12)`, padding: isMobile ? '12px 14px' : '16px 24px', display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: isMobile ? 10 : 16 }}>
+      <div className="stats-bar" style={{ background: BG2, borderRadius: 14, border: `1px solid rgba(0,217,163,0.12)`, padding: isMobile ? '12px 14px' : '16px 24px', display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: isMobile ? 10 : 16 }}>
         {/* Day */}
         <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 14 }}>
           <DayRing day={currentDay} size={isMobile ? 52 : 68} />
           <div>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 2 }}>CURRENT DAY</div>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#888' }}>{Math.round((currentDay / 365) * 100)}% complete</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 2 }}>CURRENT DAY</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#888' }}>{Math.round((currentDay / 365) * 100)}% complete</div>
           </div>
         </div>
 
         {/* Streak */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderLeft: `1px solid rgba(255,255,255,0.06)`, paddingLeft: 16 }}>
           <div>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 4 }}>STREAK</div>
-            <div className={streak >= 7 ? 'pulse-amber' : ''} style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'JetBrains Mono,monospace', fontSize: 28, fontWeight: 800, color: streak > 0 ? AMBER : '#444', lineHeight: 1 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 4 }}>STREAK</div>
+            <div className={streak >= 7 ? 'pulse-amber' : ''} style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 800, color: streak > 0 ? AMBER : '#444', lineHeight: 1 }}>
               {streak > 0 && <Flame size={24} strokeWidth={2} color={AMBER} />}{streak > 0 ? `${streak}` : '0'}
             </div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: streak > 0 ? AMBER : '#555', marginTop: 2 }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-mono)', fontSize: 10, color: streak > 0 ? AMBER : '#555', marginTop: 2 }}>
               {streak === 0 ? 'Start today!' : streak >= 30 ? <><Flame size={11} strokeWidth={2} color={AMBER} /> ON FIRE</> : 'days'}
             </div>
             {streakAtRisk && streak > 0 && doneTasks === 0 && (
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#ff4545', marginTop: 2 }}><AlertTriangle size={10} strokeWidth={2} /> AT RISK</div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-mono)', fontSize: 9, color: '#ff4545', marginTop: 2 }}><AlertTriangle size={10} strokeWidth={2} /> AT RISK</div>
             )}
           </div>
         </div>
@@ -569,27 +569,27 @@ export default function DashboardPage() {
         {/* Score */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderLeft: isMobile ? 'none' : `1px solid rgba(255,255,255,0.06)`, paddingLeft: isMobile ? 0 : 16 }}>
           <div>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 4 }}>SCORE</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'JetBrains Mono,monospace', fontSize: isMobile ? 20 : 26, fontWeight: 800, color: G, lineHeight: 1 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 4 }}>SCORE</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-mono)', fontSize: isMobile ? 20 : 26, fontWeight: 800, color: G, lineHeight: 1 }}>
               <Zap size={isMobile ? 18 : 22} strokeWidth={2} color={G} /> {totalScore.toLocaleString()}
             </div>
             {doneTasks > 0 && (
-              <div style={{ display: 'inline-block', marginTop: 3, padding: '1px 8px', borderRadius: 20, background: 'rgba(99,102,241,0.12)', border: `1px solid ${G20}`, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G }}>
+              <div style={{ display: 'inline-block', marginTop: 3, padding: '1px 8px', borderRadius: 20, background: 'rgba(0,217,163,0.12)', border: `1px solid ${G20}`, fontFamily: 'var(--font-mono)', fontSize: 9, color: G }}>
                 +{doneTasks * 20} today
               </div>
             )}
-            {doneTasks === 0 && <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#555', marginTop: 2 }}>0 today</div>}
+            {doneTasks === 0 && <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#555', marginTop: 2 }}>0 today</div>}
           </div>
         </div>
 
         {/* Rank */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderLeft: `1px solid rgba(255,255,255,0.06)`, paddingLeft: 16 }}>
           <div>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 4 }}>RANK</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'Syne,sans-serif', fontSize: isMobile ? 20 : 26, fontWeight: 800, color: '#e8f4ff', lineHeight: 1 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 4 }}>RANK</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-heading)', fontSize: isMobile ? 20 : 26, fontWeight: 800, color: '#e8e8ed', lineHeight: 1 }}>
               <Trophy size={isMobile ? 18 : 22} strokeWidth={2} color={G} /> {myRank ? `#${myRank}` : '--'}
             </div>
-            {percentile && <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, marginTop: 3 }}>Top {100 - percentile}%</div>}
+            {percentile && <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: G, marginTop: 3 }}>Top {100 - percentile}%</div>}
           </div>
         </div>
       </div>
@@ -601,14 +601,16 @@ export default function DashboardPage() {
         <div style={{ flex: isMobile ? 'none' : '3 1 0', width: isMobile ? '100%' : undefined, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
 
           {/* TODAY'S MISSION CARD */}
-          <div style={{ ...cardBase, border: `1px solid rgba(99,102,241,0.25)`, boxShadow: '0 0 24px rgba(99,102,241,0.05)' }}>
+          <div style={{ ...cardBase, border: `1px solid rgba(0,217,163,0.25)`, boxShadow: '0 0 24px rgba(0,217,163,0.05)' }}>
+            {/* Coral accent stripe — marks the day's focus */}
+            <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: 3, background: '#ff6b4a' }} />
             {/* Header */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: G, letterSpacing: 2, fontWeight: 700 }}>TODAY&apos;S MISSION</span>
-                <span style={{ padding: '2px 10px', borderRadius: 20, background: G10, border: `1px solid ${G20}`, fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: G }}>DAY {currentDay}</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: G, letterSpacing: 2, fontWeight: 700 }}>TODAY&apos;S MISSION</span>
+                <span style={{ padding: '2px 10px', borderRadius: 20, background: G10, border: `1px solid ${G20}`, fontFamily: 'var(--font-mono)', fontSize: 10, color: G }}>DAY {currentDay}</span>
               </div>
-              <Link href="/roadmap" style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: G, textDecoration: 'none', border: `1px solid ${G20}`, padding: '3px 10px', borderRadius: 20 }}>
+              <Link href="/roadmap" style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: G, textDecoration: 'none', border: `1px solid ${G20}`, padding: '3px 10px', borderRadius: 20 }}>
                 Full Roadmap →
               </Link>
             </div>
@@ -616,18 +618,18 @@ export default function DashboardPage() {
             {/* PROJECT DAY */}
             {isProjectDay ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 800, color: '#e8f4ff' }}>{project?.title || 'Project Day'}</div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 800, color: '#e8e8ed' }}>{project?.title || 'Project Day'}</div>
                 {project?.description && <div style={{ fontSize: 13, color: '#6b7a8d', lineHeight: 1.7 }}>{project.description}</div>}
                 {project?.estimatedHours && (
-                  <span style={{ alignSelf: 'flex-start', padding: '3px 10px', borderRadius: 20, background: 'rgba(251,191,36,0.1)', border: `1px solid rgba(251,191,36,0.3)`, fontSize: 11, color: AMBER, fontFamily: 'JetBrains Mono,monospace' }}>
+                  <span style={{ alignSelf: 'flex-start', padding: '3px 10px', borderRadius: 20, background: 'rgba(251,191,36,0.1)', border: `1px solid rgba(251,191,36,0.3)`, fontSize: 11, color: AMBER, fontFamily: 'var(--font-mono)' }}>
                     ~{project.estimatedHours}h estimated
                   </span>
                 )}
                 {project?.steps?.length > 0 && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                     {project.steps.map((s, i) => (
-                      <div key={i} style={{ display: 'flex', gap: 10, padding: '8px 12px', background: '#0d0d14', borderRadius: 8, border: '1px solid rgba(255,255,255,0.04)' }}>
-                        <span style={{ color: G, fontSize: 12, fontWeight: 700, fontFamily: 'JetBrains Mono,monospace', flexShrink: 0 }}>{i + 1}.</span>
+                      <div key={i} style={{ display: 'flex', gap: 10, padding: '8px 12px', background: '#0a0a0f', borderRadius: 8, border: '1px solid rgba(255,255,255,0.04)' }}>
+                        <span style={{ color: G, fontSize: 12, fontWeight: 700, fontFamily: 'var(--font-mono)', flexShrink: 0 }}>{i + 1}.</span>
                         <span style={{ fontSize: 13, color: '#aab' }}>{s}</span>
                       </div>
                     ))}
@@ -635,21 +637,21 @@ export default function DashboardPage() {
                 )}
                 <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                   {project?.githubUrl && (
-                    <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" style={{ padding: '10px 20px', borderRadius: 8, background: G, color: '#fff', fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
+                    <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" style={{ padding: '10px 20px', borderRadius: 8, background: G, color: '#0a0a0f', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
                       Submit on GitHub →
                     </a>
                   )}
-                  <input value={githubInput} onChange={e => setGithubInput(e.target.value)} placeholder="Your GitHub repo URL..." style={{ flex: 1, minWidth: 200, padding: '10px 14px', borderRadius: 8, border: `1px solid rgba(99,102,241,0.2)`, background: '#0d0d14', color: '#e8f4ff', fontSize: 13, fontFamily: 'Outfit,sans-serif', outline: 'none' }} />
+                  <input value={githubInput} onChange={e => setGithubInput(e.target.value)} placeholder="Your GitHub repo URL..." style={{ flex: 1, minWidth: 200, padding: '10px 14px', borderRadius: 8, border: `1px solid rgba(0,217,163,0.2)`, background: '#0a0a0f', color: '#e8e8ed', fontSize: 13, fontFamily: 'var(--font-body)', outline: 'none' }} />
                 </div>
               </div>
             ) : (
               <>
                 {/* Topic header */}
                 <div style={{ marginBottom: 16 }}>
-                  <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 800, color: '#e8f4ff', marginBottom: 8 }}>{topic}</div>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>{topic}</div>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <span style={{ padding: '3px 10px', borderRadius: 20, background: 'rgba(123,92,255,0.1)', border: '1px solid rgba(123,92,255,0.25)', fontSize: 11, color: '#7b5cff', fontFamily: 'JetBrains Mono,monospace' }}>Week {week}</span>
-                    <span style={{ padding: '3px 10px', borderRadius: 20, background: G10, border: `1px solid ${G20}`, fontSize: 11, color: G, fontFamily: 'JetBrains Mono,monospace' }}>{level}</span>
+                    <span style={{ padding: '3px 10px', borderRadius: 20, background: 'rgba(255,107,74,0.1)', border: '1px solid rgba(255,107,74,0.25)', fontSize: 11, color: '#ff6b4a', fontFamily: 'var(--font-mono)' }}>Week {week}</span>
+                    <span style={{ padding: '3px 10px', borderRadius: 20, background: G10, border: `1px solid ${G20}`, fontSize: 11, color: G, fontFamily: 'var(--font-mono)' }}>{level}</span>
                   </div>
                 </div>
 
@@ -661,7 +663,7 @@ export default function DashboardPage() {
                     return (
                       <button key={tm.type} onClick={() => setActiveTask(tm.type)}
                         className={isDone ? 'task-pill-done' : isActive ? 'task-pill-active' : 'task-pill-pending'}
-                        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 20, fontFamily: 'Outfit,sans-serif', fontSize: 13, fontWeight: 600, border: 'none', transition: 'all 0.2s' }}>
+                        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 20, fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, border: 'none', transition: 'all 0.2s' }}>
                         <tm.icon size={14} strokeWidth={2} />
                         <span>{tm.label}</span>
                         {isDone && <Check size={12} strokeWidth={2.5} />}
@@ -671,18 +673,18 @@ export default function DashboardPage() {
                 </div>
 
                 {/* Active task content */}
-                <div style={{ background: '#0d0d14', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '16px', marginBottom: 16, minHeight: 80 }}>
+                <div style={{ background: '#0a0a0f', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '16px', marginBottom: 16, minHeight: 80 }}>
                   <TaskContent />
                 </div>
 
                 {/* Progress bar */}
                 <div style={{ marginBottom: 14 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#6b7a8d' }}>{doneTasks} / 5 tasks done</span>
-                    {allDone && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: G }}><Check size={12} strokeWidth={2.5} /> ALL DONE</span>}
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#6b7a8d' }}>{doneTasks} / 5 tasks done</span>
+                    {allDone && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-mono)', fontSize: 10, color: G }}><Check size={12} strokeWidth={2.5} /> ALL DONE</span>}
                   </div>
                   <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${(doneTasks / 5) * 100}%`, background: `linear-gradient(90deg, ${G}, #818cf8)`, borderRadius: 3, transition: 'width 0.5s ease' }} />
+                    <div style={{ height: '100%', width: `${(doneTasks / 5) * 100}%`, background: `linear-gradient(90deg, ${G}, #2ee6b0)`, borderRadius: 3, transition: 'width 0.5s ease' }} />
                   </div>
                 </div>
 
@@ -690,7 +692,7 @@ export default function DashboardPage() {
                 <button
                   onClick={() => { if (allDone) router.push('/roadmap'); else if (nextTask) { setActiveTask(nextTask.type); completeTask(nextTask.type) } }}
                   className={allDone ? 'pulse-amber' : ''}
-                  style={{ width: '100%', padding: '14px', borderRadius: 10, border: 'none', cursor: 'pointer', background: allDone ? `linear-gradient(135deg, ${AMBER}, #f59e0b)` : G, color: allDone ? '#000' : '#fff', fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 800, letterSpacing: 0.5, transition: 'all 0.2s' }}>
+                  style={{ width: '100%', padding: '14px', borderRadius: 10, border: 'none', cursor: 'pointer', background: allDone ? `linear-gradient(135deg, ${AMBER}, #ffb020)` : G, color: '#0a0a0f', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 800, letterSpacing: 0.5, transition: 'all 0.2s' }}>
                   {allDone ? 'Day Complete! See Tomorrow →' : `Start ${nextTask?.label || 'Next'} →`}
                 </button>
               </>
@@ -702,64 +704,64 @@ export default function DashboardPage() {
 
             {/* Week Progress */}
             <div style={cardBase}>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 10 }}>WEEK PROGRESS</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 10 }}>WEEK PROGRESS</div>
               <div style={{ display: 'flex', gap: 6, justifyContent: 'space-between' }}>
                 {weekDays.map((d, i) => {
                   const dayNum = weekStart + i
                   const isToday = dayNum === currentDay
                   const isPast = dayNum < currentDay
-                  const bg = isToday ? G : isPast ? 'rgba(99,102,241,0.4)' : 'rgba(255,255,255,0.04)'
+                  const bg = isToday ? G : isPast ? 'rgba(0,217,163,0.4)' : 'rgba(255,255,255,0.04)'
                   const border = isToday ? `2px solid ${G}` : 'none'
                   return (
                     <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: '50%', background: bg, border, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: isToday ? '#fff' : isPast ? G : '#444', transition: 'all 0.2s' }}>
+                      <div style={{ width: 28, height: 28, borderRadius: '50%', background: bg, border, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: isToday ? '#0a0a0f' : isPast ? G : '#444', transition: 'all 0.2s' }}>
                         {isToday ? '●' : isPast ? '✓' : ''}
                       </div>
-                      <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, color: isToday ? G : '#444' }}>{d}</span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: isToday ? G : '#444' }}>{d}</span>
                     </div>
                   )
                 })}
               </div>
-              <div style={{ marginTop: 8, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555' }}>
+              <div style={{ marginTop: 8, fontFamily: 'var(--font-mono)', fontSize: 9, color: '#555' }}>
                 Week {week} · Day {currentDay}
               </div>
             </div>
 
             {/* Streak Calendar */}
             <div style={cardBase}>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 10 }}>30-DAY STREAK</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 10 }}>30-DAY STREAK</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 3 }}>
                 {cal30.map((d, i) => {
                   const isToday = i === 29 || d.isToday
                   const count = d.count ?? (d.done ? 1 : 0)
-                  const bg = isToday ? G : count >= 3 ? 'rgba(99,102,241,0.7)' : count >= 2 ? 'rgba(99,102,241,0.45)' : count >= 1 ? 'rgba(99,102,241,0.25)' : 'rgba(255,255,255,0.03)'
+                  const bg = isToday ? G : count >= 3 ? 'rgba(0,217,163,0.7)' : count >= 2 ? 'rgba(0,217,163,0.45)' : count >= 1 ? 'rgba(0,217,163,0.25)' : 'rgba(255,255,255,0.03)'
                   return (
                     <div key={i} className="streak-day" style={{ aspectRatio: '1', background: bg, borderRadius: 2, border: isToday ? `1px solid ${G}` : 'none', position: 'relative' }} />
                   )
                 })}
               </div>
               <div style={{ marginTop: 6, display: 'flex', gap: 6, alignItems: 'center' }}>
-                <div style={{ width: 8, height: 8, background: 'rgba(99,102,241,0.25)', borderRadius: 1 }} />
-                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, color: '#555' }}>less</span>
+                <div style={{ width: 8, height: 8, background: 'rgba(0,217,163,0.25)', borderRadius: 1 }} />
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#555' }}>less</span>
                 <div style={{ width: 8, height: 8, background: G, borderRadius: 1 }} />
-                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, color: '#555' }}>more</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#555' }}>more</span>
               </div>
             </div>
 
             {/* Quick Access */}
             <div style={cardBase}>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 10 }}>QUICK ACCESS</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 10 }}>QUICK ACCESS</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
                 {[
                   { href: '/chatbot', icon: Bot, label: 'AI Mentor' },
                   { href: '/dsa-visualizer', icon: Play, label: 'Visualizer' },
                   { href: '/voice-interview', icon: Mic, label: 'Voice Sim' },
                 ].map(q => (
-                  <Link key={q.href} href={q.href} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 6px', borderRadius: 8, background: '#0d0d14', border: '1px solid rgba(255,255,255,0.04)', textDecoration: 'none', transition: 'all 0.2s' }}
+                  <Link key={q.href} href={q.href} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 6px', borderRadius: 8, background: '#0a0a0f', border: '1px solid rgba(255,255,255,0.04)', textDecoration: 'none', transition: 'all 0.2s' }}
                     onMouseEnter={e => { e.currentTarget.style.background = G10; e.currentTarget.style.borderColor = G20 }}
-                    onMouseLeave={e => { e.currentTarget.style.background = '#0d0d14'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.04)' }}>
+                    onMouseLeave={e => { e.currentTarget.style.background = '#0a0a0f'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.04)' }}>
                     <q.icon size={20} strokeWidth={1.8} color="#888" />
-                    <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#888' }}>{q.label}</span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#888' }}>{q.label}</span>
                   </Link>
                 ))}
               </div>
@@ -773,17 +775,17 @@ export default function DashboardPage() {
           {/* Card: AI Mentor Insight — one personalized nudge, refreshes daily */}
           <div style={{
             position: 'relative', borderRadius: 14, padding: 1,
-            background: `linear-gradient(135deg, ${G}, #7b5cff, #818cf8)`,
+            background: `linear-gradient(135deg, ${G}, #ff6b4a, #2ee6b0)`,
           }}>
             <div style={{ background: BG2, borderRadius: 13, padding: 18 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 10 }}>
-                <div style={{ width: 24, height: 24, borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(123,92,255,0.15)', border: '1px solid rgba(123,92,255,0.3)' }}>
-                  <Brain size={14} strokeWidth={2} color="#a78bfa" />
+                <div style={{ width: 24, height: 24, borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,107,74,0.15)', border: '1px solid rgba(255,107,74,0.3)' }}>
+                  <Brain size={14} strokeWidth={2} color="#ff8a6f" />
                 </div>
-                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#a78bfa', letterSpacing: 2, fontWeight: 700 }}>YOUR AI MENTOR</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#ff8a6f', letterSpacing: 2, fontWeight: 700 }}>YOUR AI MENTOR</span>
               </div>
               {insight ? (
-                <div style={{ fontFamily: 'Outfit,sans-serif', fontSize: 13.5, color: '#dfe6f0', lineHeight: 1.6 }}>{insight}</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, color: '#dfe6f0', lineHeight: 1.6 }}>{insight}</div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <Skel h={14} /><Skel h={14} w="75%" />
@@ -804,11 +806,11 @@ export default function DashboardPage() {
 
             if (!profileComplete) return (
               <div style={{ ...cardBase, border: '1px solid rgba(251,191,36,0.3)', background: 'rgba(251,191,36,0.04)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: AMBER, letterSpacing: 2, marginBottom: 8 }}><AlertTriangle size={11} strokeWidth={2} /> PLACEMENT PROFILE</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-mono)', fontSize: 9, color: AMBER, letterSpacing: 2, marginBottom: 8 }}><AlertTriangle size={11} strokeWidth={2} /> PLACEMENT PROFILE</div>
                 <div style={{ fontSize: 13, color: '#9ba8b5', lineHeight: 1.6, marginBottom: 12 }}>
                   Complete your profile for personalized AI content — target companies, CGPA, and weak areas.
                 </div>
-                <a href="/profile" style={{ display: 'inline-block', padding: '8px 16px', borderRadius: 8, background: AMBER, color: '#000', fontFamily: 'Syne,sans-serif', fontWeight: 700, fontSize: 12, textDecoration: 'none' }}>
+                <a href="/profile" style={{ display: 'inline-block', padding: '8px 16px', borderRadius: 8, background: AMBER, color: '#000', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, textDecoration: 'none' }}>
                   Update Profile →
                 </a>
               </div>
@@ -817,27 +819,27 @@ export default function DashboardPage() {
             return (
               <div style={cardBase}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2 }}><Target size={11} strokeWidth={2} /> YOUR PLACEMENT PROFILE</div>
-                  <a href="/profile" style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, textDecoration: 'none' }}>Edit →</a>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-mono)', fontSize: 9, color: G, letterSpacing: 2 }}><Target size={11} strokeWidth={2} /> YOUR PLACEMENT PROFILE</div>
+                  <a href="/profile" style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: G, textDecoration: 'none' }}>Edit →</a>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-                    <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555' }}>TARGET:</span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#555' }}>TARGET:</span>
                     {tc.slice(0, 4).map(c => (
-                      <span key={c} style={{ padding: '2px 8px', borderRadius: 20, background: G10, border: `1px solid ${G20}`, fontSize: 10, color: G, fontFamily: 'JetBrains Mono,monospace' }}>{c}</span>
+                      <span key={c} style={{ padding: '2px 8px', borderRadius: 20, background: G10, border: `1px solid ${G20}`, fontSize: 10, color: G, fontFamily: 'var(--font-mono)' }}>{c}</span>
                     ))}
                     {tc.length > 4 && <span style={{ fontSize: 10, color: '#555' }}>+{tc.length - 4}</span>}
                   </div>
-                  <div style={{ display: 'flex', gap: 12, fontSize: 11, color: '#9ba8b5', fontFamily: 'JetBrains Mono,monospace' }}>
-                    {hasCgpa && <span>CGPA: <span style={{ color: '#e8f4ff' }}>{user.cgpa}</span></span>}
-                    <span>Tier: <span style={{ color: '#e8f4ff' }}>{tier.toUpperCase()}</span></span>
+                  <div style={{ display: 'flex', gap: 12, fontSize: 11, color: '#9ba8b5', fontFamily: 'var(--font-mono)' }}>
+                    {hasCgpa && <span>CGPA: <span style={{ color: '#e8e8ed' }}>{user.cgpa}</span></span>}
+                    <span>Tier: <span style={{ color: '#e8e8ed' }}>{tier.toUpperCase()}</span></span>
                     {urgencyLabel && months && <span>Timeline: <span style={{ color: urgencyLabel === 'CRITICAL' ? '#ff4545' : urgencyLabel === 'URGENT' ? AMBER : G }}>{urgencyLabel}</span></span>}
                   </div>
                   {weak.length > 0 && (
                     <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                      <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555', alignSelf: 'center' }}>WEAK:</span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#555', alignSelf: 'center' }}>WEAK:</span>
                       {weak.slice(0, 3).map(w => (
-                        <span key={w} style={{ padding: '2px 7px', borderRadius: 20, background: 'rgba(251,191,36,0.1)', border: `1px solid rgba(251,191,36,0.25)`, fontSize: 9, color: AMBER, fontFamily: 'JetBrains Mono,monospace' }}>{w}</span>
+                        <span key={w} style={{ padding: '2px 7px', borderRadius: 20, background: 'rgba(251,191,36,0.1)', border: `1px solid rgba(251,191,36,0.25)`, fontSize: 9, color: AMBER, fontFamily: 'var(--font-mono)' }}>{w}</span>
                       ))}
                       {weak.length > 3 && <span style={{ fontSize: 9, color: '#555' }}>+{weak.length - 3}</span>}
                     </div>
@@ -849,7 +851,7 @@ export default function DashboardPage() {
 
           {/* Card 1: Daily Objectives */}
           <div style={cardBase}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}><Target size={11} strokeWidth={2} /> DAILY OBJECTIVES</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-mono)', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}><Target size={11} strokeWidth={2} /> DAILY OBJECTIVES</div>
             {objectives.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {objectives.slice(0, 3).map((obj, i) => (
@@ -857,7 +859,7 @@ export default function DashboardPage() {
                     <div style={{ width: 16, height: 16, borderRadius: 3, border: `1px solid ${G20}`, flexShrink: 0, marginTop: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: G }}>
                       {allDone ? '✓' : ''}
                     </div>
-                    <span style={{ fontSize: 12, color: '#9ba8b5', lineHeight: 1.5, fontFamily: 'Outfit,sans-serif' }}>{obj}</span>
+                    <span style={{ fontSize: 12, color: '#9ba8b5', lineHeight: 1.5, fontFamily: 'var(--font-body)' }}>{obj}</span>
                   </div>
                 ))}
               </div>
@@ -870,11 +872,11 @@ export default function DashboardPage() {
 
           {/* Card 2: Key Concepts */}
           <div style={cardBase}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}><Lightbulb size={11} strokeWidth={2} /> KEY CONCEPTS</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-mono)', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}><Lightbulb size={11} strokeWidth={2} /> KEY CONCEPTS</div>
             {concepts.length > 0 ? (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
                 {concepts.map((c, i) => (
-                  <span key={i} style={{ padding: '4px 10px', borderRadius: 20, border: `1px solid ${G20}`, fontSize: 11, color: G, background: G10, fontFamily: 'Outfit,sans-serif' }}>{c}</span>
+                  <span key={i} style={{ padding: '4px 10px', borderRadius: 20, border: `1px solid ${G20}`, fontSize: 11, color: G, background: G10, fontFamily: 'var(--font-body)' }}>{c}</span>
                 ))}
               </div>
             ) : (
@@ -886,18 +888,18 @@ export default function DashboardPage() {
 
           {/* Card 3: Coding Problem */}
           <div style={cardBase}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}><Rocket size={11} strokeWidth={2} /> CODING PROBLEM</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-mono)', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}><Rocket size={11} strokeWidth={2} /> CODING PROBLEM</div>
             {coding?.title ? (
               <>
-                <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 13, color: G, marginBottom: 6 }}>{coding.title}</div>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: G, marginBottom: 6 }}>{coding.title}</div>
                 {coding.difficulty && (
-                  <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 700, background: `${DIFF_COLORS[coding.difficulty] || AMBER}18`, color: DIFF_COLORS[coding.difficulty] || AMBER, fontFamily: 'JetBrains Mono,monospace', marginBottom: 10, display: 'inline-block' }}>
+                  <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 700, background: `${DIFF_COLORS[coding.difficulty] || AMBER}18`, color: DIFF_COLORS[coding.difficulty] || AMBER, fontFamily: 'var(--font-mono)', marginBottom: 10, display: 'inline-block' }}>
                     {coding.difficulty}
                   </span>
                 )}
                 {coding?.url && (
                   <div style={{ marginTop: 8 }}>
-                    <a href={coding.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: G, fontFamily: 'Syne,sans-serif', fontWeight: 600, textDecoration: 'none' }}>→ Open Problem</a>
+                    <a href={coding.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: G, fontFamily: 'var(--font-heading)', fontWeight: 600, textDecoration: 'none' }}>→ Open Problem</a>
                   </div>
                 )}
               </>
@@ -911,19 +913,19 @@ export default function DashboardPage() {
 
           {/* Card 4: Your Rank */}
           <div style={cardBase}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}><Trophy size={11} strokeWidth={2} /> YOUR RANK</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-mono)', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}><Trophy size={11} strokeWidth={2} /> YOUR RANK</div>
             {lbSlice.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {lbSlice.map((entry, i) => {
                   const isMe = entry.rank === myRank || entry.isMe
                   return (
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 10px', borderRadius: 8, background: isMe ? G10 : 'transparent', border: isMe ? `1px solid ${G20}` : '1px solid transparent', transition: 'all 0.15s' }}>
-                      <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: isMe ? G : '#555', width: 24, textAlign: 'right', flexShrink: 0 }}>#{entry.rank}</span>
-                      <span style={{ flex: 1, fontFamily: 'Outfit,sans-serif', fontSize: 12, color: isMe ? G : '#9ba8b5', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: isMe ? G : '#555', width: 24, textAlign: 'right', flexShrink: 0 }}>#{entry.rank}</span>
+                      <span style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: 12, color: isMe ? G : '#9ba8b5', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {(entry.name || 'Anonymous').slice(0, 12)}
                       </span>
-                      <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: isMe ? G : '#6b7a8d', flexShrink: 0 }}>{entry.score?.toLocaleString()}</span>
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2, fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: AMBER, flexShrink: 0 }}><Flame size={11} strokeWidth={2} color={AMBER} />{entry.streak}</span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: isMe ? G : '#6b7a8d', flexShrink: 0 }}>{entry.score?.toLocaleString()}</span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2, fontFamily: 'var(--font-mono)', fontSize: 10, color: AMBER, flexShrink: 0 }}><Flame size={11} strokeWidth={2} color={AMBER} />{entry.streak}</span>
                     </div>
                   )
                 })}
@@ -933,7 +935,7 @@ export default function DashboardPage() {
                 {[1,2,3].map(i => <Skel key={i} h={32} />)}
               </div>
             )}
-            <Link href="/leaderboard" style={{ display: 'block', marginTop: 10, fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: G, textDecoration: 'none', textAlign: 'center' }}>
+            <Link href="/leaderboard" style={{ display: 'block', marginTop: 10, fontFamily: 'var(--font-mono)', fontSize: 10, color: G, textDecoration: 'none', textAlign: 'center' }}>
               View Full Leaderboard →
             </Link>
           </div>
@@ -941,8 +943,8 @@ export default function DashboardPage() {
       </div>
 
       {/* ── MOTIVATION BAR ── */}
-      <div style={{ background: BG2, border: `1px solid rgba(99,102,241,0.1)`, borderLeft: `3px solid ${G}`, borderRadius: 10, padding: '14px 20px', overflow: 'hidden' }}>
-        <div key={motiveIdx} style={{ fontFamily: 'Outfit,sans-serif', fontSize: 13, color: '#9ba8b5', animation: 'motive-fade 5s ease-out forwards' }}>
+      <div style={{ background: BG2, border: `1px solid rgba(0,217,163,0.1)`, borderLeft: `3px solid ${G}`, borderRadius: 10, padding: '14px 20px', overflow: 'hidden' }}>
+        <div key={motiveIdx} style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#9ba8b5', animation: 'motive-fade 5s ease-out forwards' }}>
           {currentMotive}
         </div>
       </div>

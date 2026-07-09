@@ -409,13 +409,13 @@ export default function AVLTreeVisualizer() {
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
           { label: 'Root Value', value: current.tree ? current.tree.val : '—', color: '#00f0ff' },
-          { label: 'Tree Height', value: current.tree ? current.tree.height : '—', color: '#7b5cff' },
+          { label: 'Tree Height', value: current.tree ? current.tree.height : '—', color: '#ff6b4a' },
           { label: 'Total Nodes', value: Object.keys(positions).length, color: '#1d9e75' },
           { label: 'Balance State', value: current.unbalanced?.length ? 'Rebalancing' : 'Balanced', color: current.unbalanced?.length ? '#ff2d78' : '#1d9e75' },
         ].map(s => (
           <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
@@ -464,12 +464,12 @@ export default function AVLTreeVisualizer() {
                 <g key={node.id}>
                   {glow !== 'none' && <circle cx={x} cy={y} r={22} fill="none" stroke={stroke} strokeWidth={1} opacity={0.3} />}
                   <circle cx={x} cy={y} r={17} fill={bg} stroke={stroke} strokeWidth={2} style={{ transition: 'all 0.35s' }} />
-                  <text x={x} y={y + 4} textAnchor="middle" style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, fill: isUnb ? '#ff2d78' : isComp ? '#00f0ff' : '#e8f4ff', fontWeight: 'bold' }}>
+                  <text x={x} y={y + 4} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fill: isUnb ? '#ff2d78' : isComp ? '#00f0ff' : '#e8e8ed', fontWeight: 'bold' }}>
                     {node.val}
                   </text>
                   
                   {/* Balance Factor Label */}
-                  <text x={x + 22} y={y - 2} style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, fill: Math.abs(bf) > 1 ? '#ff2d78' : '#5a7a9a', fontWeight: Math.abs(bf) > 1 ? 'bold' : 'normal' }}>
+                  <text x={x + 22} y={y - 2} style={{ fontFamily: 'var(--font-mono)', fontSize: 8, fill: Math.abs(bf) > 1 ? '#ff2d78' : '#5a7a9a', fontWeight: Math.abs(bf) > 1 ? 'bold' : 'normal' }}>
                     BF:{bf > 0 ? `+${bf}` : bf}
                   </text>
                 </g>
@@ -477,7 +477,7 @@ export default function AVLTreeVisualizer() {
             })}
           </svg>
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5a7a9a', fontFamily: 'Outfit,sans-serif', fontSize: 13 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5a7a9a', fontFamily: 'var(--font-body)', fontSize: 13 }}>
             Tree is empty. Insert a value to start.
           </div>
         )}
@@ -498,9 +498,9 @@ export default function AVLTreeVisualizer() {
         <button onClick={reset} style={btnStyle('#ff2d78')}>↺ Reset Tree</button>
 
         <div style={{ display: 'flex', gap: 4, alignItems: 'center', marginLeft: 'auto' }}>
-          <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a' }}>SPEED</span>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a' }}>SPEED</span>
           {[1,2,3,4].map(s => (
-            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 9px', borderRadius: 6, border: speed === s ? '1px solid #00f0ff' : '1px solid rgba(0,240,255,0.15)', background: speed === s ? 'rgba(0,240,255,0.12)' : 'transparent', color: speed === s ? '#00f0ff' : '#5a7a9a', fontSize: 11, fontFamily: 'JetBrains Mono,monospace', cursor: 'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
+            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 9px', borderRadius: 6, border: speed === s ? '1px solid #00f0ff' : '1px solid rgba(0,240,255,0.15)', background: speed === s ? 'rgba(0,240,255,0.12)' : 'transparent', color: speed === s ? '#00f0ff' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
           ))}
         </div>
       </div>
@@ -514,7 +514,7 @@ export default function AVLTreeVisualizer() {
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 12, height: 12, borderRadius: 2, background: l.color + '22', border: `1.5px solid ${l.color}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'Outfit,sans-serif' }}>{l.label}</span>
+            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l.label}</span>
           </div>
         ))}
       </div>
@@ -543,8 +543,8 @@ const inpStyle = {
   border: '1px solid rgba(0,240,255,0.2)',
   borderRadius: 8,
   padding: '6px 12px',
-  color: '#e8f4ff',
-  fontFamily: 'JetBrains Mono,monospace',
+  color: '#e8e8ed',
+  fontFamily: 'var(--font-mono)',
   fontSize: 12,
   outline: 'none',
   width: 100,
@@ -556,7 +556,7 @@ const btnStyle = (c) => ({
   border: `1px solid ${c}30`,
   background: `${c}10`,
   color: c,
-  fontFamily: 'Syne,sans-serif',
+  fontFamily: 'var(--font-heading)',
   fontSize: 12,
   fontWeight: 600,
   cursor: 'pointer',

@@ -42,10 +42,10 @@ export default function LeaderboardPage() {
   };
 
   return (
-    <div style={{ width: '100%', maxWidth: 1600, margin: '0 auto', fontFamily: 'Outfit,sans-serif' }}>
+    <div style={{ width: '100%', maxWidth: 1600, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
 
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 4 }}>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 4 }}>
           🏆 Leaderboard
         </h1>
         <p style={{ color: '#5a7a9a', fontSize: 13 }}>
@@ -55,8 +55,8 @@ export default function LeaderboardPage() {
 
       {myRank && (
         <div style={{ background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.2)', borderRadius: 12, padding: '14px 20px', marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ color: '#e8f4ff', fontSize: 14, fontFamily: 'Syne,sans-serif', fontWeight: 600 }}>Your Rank</span>
-          <span style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#00f0ff' }}>#{myRank}</span>
+          <span style={{ color: '#e8e8ed', fontSize: 14, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>Your Rank</span>
+          <span style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#00f0ff' }}>#{myRank}</span>
         </div>
       )}
 
@@ -64,7 +64,7 @@ export default function LeaderboardPage() {
         {TABS.map(t => (
           <button key={t} onClick={() => setTab(t)} style={{
             padding: '8px 20px', borderRadius: 20, border: 'none', cursor: 'pointer',
-            fontFamily: 'Syne,sans-serif', fontSize: 12, fontWeight: 600, textTransform: 'capitalize',
+            fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 600, textTransform: 'capitalize',
             background: tab === t ? '#00f0ff' : 'rgba(255,255,255,0.05)',
             color: tab === t ? '#020812' : '#5a7a9a',
           }}>{t}</button>
@@ -73,16 +73,16 @@ export default function LeaderboardPage() {
 
       <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, overflow: 'hidden' }}>
         <div style={{ padding: '12px 20px', borderBottom: '1px solid rgba(0,240,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1 }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1 }}>
             {tab.toUpperCase()} RANKING
           </span>
-          <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a' }}>
             {data.length} students
           </span>
         </div>
 
         {loading ? (
-          <div style={{ padding: 40, textAlign: 'center', color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', fontSize: 13 }}>
+          <div style={{ padding: 40, textAlign: 'center', color: '#5a7a9a', fontFamily: 'var(--font-mono)', fontSize: 13 }}>
             Loading rankings...
           </div>
         ) : data.length === 0 ? (
@@ -107,33 +107,33 @@ export default function LeaderboardPage() {
                   {rank === 1 ? <span style={{ fontSize: 20 }}>🥇</span>
                     : rank === 2 ? <span style={{ fontSize: 20 }}>🥈</span>
                     : rank === 3 ? <span style={{ fontSize: 20 }}>🥉</span>
-                    : <span style={{ fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700, color: '#3a4a5a' }}>#{rank}</span>}
+                    : <span style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: '#3a4a5a' }}>#{rank}</span>}
                 </div>
 
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 6, marginBottom: 3 }}>
-                    <span style={{ fontSize: 14, fontWeight: 600, color: isMe ? '#e8f4ff' : '#8a9ab0' }}>
+                    <span style={{ fontSize: 14, fontWeight: 600, color: isMe ? '#e8e8ed' : '#8a9ab0' }}>
                       {entry.name} {isMe && <span style={{ color: '#00f0ff', fontSize: 11 }}>(you)</span>}
                     </span>
                     {badge && (
                       <span style={{
                         fontSize: 9, padding: '2px 7px', borderRadius: 20,
                         background: badge.bg, color: badge.color,
-                        fontFamily: 'JetBrains Mono,monospace', fontWeight: 700,
+                        fontFamily: 'var(--font-mono)', fontWeight: 700,
                         border: `1px solid ${badge.border}`,
                       }}>{badge.label}</span>
                     )}
                   </div>
-                  <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>
+                  <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>
                     {entry.college || 'Unknown College'} · {entry.domain || entry.domainSlug}
                   </div>
                 </div>
 
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 800, color: isMe ? '#00f0ff' : '#5a7a9a' }}>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 800, color: isMe ? '#00f0ff' : '#5a7a9a' }}>
                     {entry.totalScore || entry.score || 0}
                   </div>
-                  <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>
+                  <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>
                     Day {entry.currentDay || 1} · 🔥{entry.streak || 0}
                   </div>
                 </div>

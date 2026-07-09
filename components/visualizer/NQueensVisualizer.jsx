@@ -246,18 +246,18 @@ export default function NQueensVisualizer() {
         {[
           { label: 'Board Size (N)', value: `${N}x${N}`, color: '#00f0ff' },
           { label: 'Solutions Found', value: solutions.length, color: '#1d9e75' },
-          { label: 'Step Phase', value: current.status.toUpperCase(), color: '#7b5cff' },
+          { label: 'Step Phase', value: current.status.toUpperCase(), color: '#ff6b4a' },
           { label: 'Library View', value: selectedSolutionIdx >= 0 ? `#${selectedSolutionIdx + 1}` : 'Live Search', color: '#ef9f27' },
         ].map(s => (
           <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
       {/* Description board */}
-      <div style={{ background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#00f0ff' }}>
+      <div style={{ background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00f0ff' }}>
         ▶ {current.description}
       </div>
 
@@ -337,11 +337,11 @@ export default function NQueensVisualizer() {
         {/* Right Side: Solutions repository library */}
         <div style={{ flex: 0.8, minWidth: 200 }}>
           <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 12 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>COMPLETED SOLUTIONS LIBRARY</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>COMPLETED SOLUTIONS LIBRARY</div>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 220, overflowY: 'auto' }}>
               {solutions.length === 0 ? (
-                <div style={{ fontSize: 11, color: '#2a3a4a', fontFamily: 'Outfit,sans-serif', padding: 8 }}>
+                <div style={{ fontSize: 11, color: '#2a3a4a', fontFamily: 'var(--font-body)', padding: 8 }}>
                   Search has not completed yet. Run matching solver.
                 </div>
               ) : (
@@ -353,7 +353,7 @@ export default function NQueensVisualizer() {
                       background: active ? 'rgba(29, 158, 117, 0.12)' : 'rgba(0,240,255,0.02)',
                       border: active ? '1px solid #1d9e75' : '1px solid rgba(0,240,255,0.08)',
                       borderRadius: 6, padding: '6px 10px', width: '100%',
-                      fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: active ? '#1d9e75' : '#5a7a9a',
+                      fontFamily: 'var(--font-mono)', fontSize: 11, color: active ? '#1d9e75' : '#5a7a9a',
                       cursor: 'pointer', transition: 'all 0.15s',
                     }}>
                       <span>Solution #{index + 1}</span>
@@ -384,9 +384,9 @@ export default function NQueensVisualizer() {
 
       {/* Board configuration panel */}
       <div style={{ display: 'flex', gap: 12, alignItems: 'center', background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 12 }}>
-        <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a' }}>BOARD SIZE (N):</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a' }}>BOARD SIZE (N):</span>
         <input type="range" min={4} max={8} value={N} onChange={e => setN(Number(e.target.value))} style={{ width: 100, accentColor: '#00f0ff', cursor: 'pointer' }} />
-        <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 12, color: '#00f0ff', fontWeight: 'bold', minWidth: 20 }}>{N}</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: '#00f0ff', fontWeight: 'bold', minWidth: 20 }}>{N}</span>
 
         <button onClick={rebuild} style={{ ...btnStyle('#ff2d78'), marginLeft: 'auto' }}>↺ Reset Search</button>
       </div>
@@ -400,7 +400,7 @@ export default function NQueensVisualizer() {
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 12, height: 12, borderRadius: 2, background: l.color + '22', border: `1.5px solid ${l.color}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'Outfit,sans-serif' }}>{l.label}</span>
+            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l.label}</span>
           </div>
         ))}
       </div>
@@ -438,7 +438,7 @@ const btnStyle = (c) => ({
   border: `1px solid ${c}30`,
   background: `${c}10`,
   color: c,
-  fontFamily: 'Syne,sans-serif',
+  fontFamily: 'var(--font-heading)',
   fontSize: 11,
   fontWeight: 600,
   cursor: 'pointer',

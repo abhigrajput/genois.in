@@ -135,8 +135,8 @@ export default function TestsPage() {
   const C = { background: '#070f1f', border: '1px solid rgba(0,240,255,0.12)', borderRadius: 14, padding: 24, marginBottom: 16 };
 
   return (
-    <div style={{ width: '100%', maxWidth: 1600, margin: '0 auto', fontFamily: 'Outfit,sans-serif' }}>
-      <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 26, fontWeight: 800, color: '#e8f4ff', marginBottom: 4 }}>Tests</h1>
+    <div style={{ width: '100%', maxWidth: 1600, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
+      <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: '#e8e8ed', marginBottom: 4 }}>Tests</h1>
       <p style={{ color: '#5a7a9a', fontSize: 13, marginBottom: 28 }}>{topic ? 'Today: ' + topic : 'Loading topic...'}</p>
 
       {/* Anti-cheat warning banner */}
@@ -152,7 +152,7 @@ export default function TestsPage() {
           gap: 10,
         }}>
           <span style={{ fontSize: 18 }}>🔒</span>
-          <span style={{ fontSize: 12, color: '#ff2d78', fontFamily: 'JetBrains Mono,monospace' }}>
+          <span style={{ fontSize: 12, color: '#ff2d78', fontFamily: 'var(--font-mono)' }}>
             ANTI-CHEAT ACTIVE — Tab switching and copy-paste are monitored. 3 tab switches = auto zero.
           </span>
         </div>
@@ -184,17 +184,17 @@ export default function TestsPage() {
           ].map(t => (
             <div key={t.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '20px 24px', borderRadius: 12, background: '#070f1f', boxShadow: 'inset 4px 0 0 ' + (t.locked ? '#3a4a5a' : t.color), border: '1px solid rgba(255,255,255,0.06)', opacity: t.locked ? 0.7 : 1 }}>
               <div>
-                <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: t.locked ? '#5a7a9a' : '#e8f4ff', marginBottom: 3 }}>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: t.locked ? '#5a7a9a' : '#e8e8ed', marginBottom: 3 }}>
                   {t.locked ? '🔒 ' : ''}{t.label}
                 </div>
                 <div style={{ fontSize: 12, color: '#5a7a9a' }}>{t.desc}</div>
               </div>
               {t.locked ? (
-                <div style={{ padding: '11px 20px', borderRadius: 8, background: 'rgba(255,255,255,0.04)', color: '#3a4a5a', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600, marginLeft: 16, border: '1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ padding: '11px 20px', borderRadius: 8, background: 'rgba(255,255,255,0.04)', color: '#3a4a5a', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600, marginLeft: 16, border: '1px solid rgba(255,255,255,0.06)' }}>
                   Locked
                 </div>
               ) : (
-                <button onClick={() => startTest(t.id)} style={{ padding: '11px 26px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,' + t.color + ',#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700, marginLeft: 16 }}>
+                <button onClick={() => startTest(t.id)} style={{ padding: '11px 26px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,' + t.color + ',#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, marginLeft: 16 }}>
                   Start →
                 </button>
               )}
@@ -206,23 +206,23 @@ export default function TestsPage() {
       {loading && (
         <div style={{ ...C, textAlign: 'center', padding: 48 }}>
           <div style={{ fontSize: 36, marginBottom: 12 }}>⏳</div>
-          <div style={{ color: '#00f0ff', fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 600 }}>Claude is generating your test...</div>
+          <div style={{ color: '#00f0ff', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 600 }}>Claude is generating your test...</div>
           <div style={{ color: '#5a7a9a', fontSize: 13, marginTop: 6 }}>Takes about 15 seconds</div>
         </div>
       )}
 
       {test && !result && !loading && (
         <div style={C}>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, color: '#00f0ff', marginBottom: 20 }}>{test.topic} · {test.questions?.length} Questions</div>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: '#00f0ff', marginBottom: 20 }}>{test.topic} · {test.questions?.length} Questions</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             {(test.questions || []).map((q, i) => (
               <div key={i}>
-                <div style={{ fontSize: 14, fontWeight: 500, color: '#e8f4ff', marginBottom: 10, lineHeight: 1.6 }}>Q{i + 1}. {q.question}</div>
+                <div style={{ fontSize: 14, fontWeight: 500, color: '#e8e8ed', marginBottom: 10, lineHeight: 1.6 }}>Q{i + 1}. {q.question}</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {(q.options || []).map(opt => (
                     <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 16px', borderRadius: 8, cursor: 'pointer', background: answers[i] === opt[0] ? 'rgba(0,240,255,0.08)' : 'rgba(255,255,255,0.02)', border: '1px solid ' + (answers[i] === opt[0] ? '#00f0ff' : 'rgba(255,255,255,0.06)') }}>
                       <input type="radio" name={'q' + i} value={opt[0]} checked={answers[i] === opt[0]} onChange={e => setAnswers(a => ({ ...a, [i]: e.target.value }))} style={{ accentColor: '#00f0ff' }} />
-                      <span style={{ color: '#e8f4ff', fontSize: 13 }}>{opt}</span>
+                      <span style={{ color: '#e8e8ed', fontSize: 13 }}>{opt}</span>
                     </label>
                   ))}
                 </div>
@@ -230,16 +230,16 @@ export default function TestsPage() {
             ))}
           </div>
           <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
-            <button onClick={() => { setTest(null); setActiveType(null); }} style={{ padding: '12px 20px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 13 }}>← Back</button>
+            <button onClick={() => { setTest(null); setActiveType(null); }} style={{ padding: '12px 20px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13 }}>← Back</button>
             <button
               onClick={() => submitEligible && submitTest()}
               disabled={!submitEligible}
               style={{
                 flex: 1, padding: 13, borderRadius: 8, border: 'none',
                 cursor: submitEligible ? 'pointer' : 'not-allowed',
-                background: submitEligible ? 'linear-gradient(135deg,#00f0ff,#7b5cff)' : 'rgba(255,255,255,0.07)',
+                background: submitEligible ? 'linear-gradient(135deg,#00f0ff,#ff6b4a)' : 'rgba(255,255,255,0.07)',
                 color: submitEligible ? '#020812' : '#555',
-                fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700,
+                fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700,
                 transition: 'all 0.4s ease',
               }}>
               {submitEligible ? 'Submit Test' : `⏳ Read for ${timeLeft}s before submitting`}
@@ -251,7 +251,7 @@ export default function TestsPage() {
       {result && (
         <div style={C}>
           <div style={{ textAlign: 'center', padding: '20px 0 24px' }}>
-            <div style={{ fontSize: 60, fontWeight: 800, fontFamily: 'Syne,sans-serif', color: result.score >= 60 ? '#1D9E75' : '#ff2d78' }}>{result.score}%</div>
+            <div style={{ fontSize: 60, fontWeight: 800, fontFamily: 'var(--font-heading)', color: result.score >= 60 ? '#1D9E75' : '#ff2d78' }}>{result.score}%</div>
             <div style={{ color: result.result === 'passed' ? '#1D9E75' : '#ff2d78', fontSize: 16, fontWeight: 600, marginTop: 4 }}>{result.result === 'passed' ? '✅ Passed!' : '❌ Study more'}</div>
             <div style={{ color: '#5a7a9a', fontSize: 13, marginTop: 6 }}>{result.correct}/{result.total} correct · +{result.pointsEarned} pts</div>
             {result.autoSubmitted && <div style={{ fontSize: 12, color: '#ff2d78', marginTop: 6 }}>Auto-submitted due to tab switching</div>}
@@ -262,17 +262,17 @@ export default function TestsPage() {
               {f.explanation && <div style={{ fontSize: 12, color: '#5a7a9a', marginTop: 3 }}>{f.explanation}</div>}
             </div>
           ))}
-          <button onClick={() => { setTest(null); setResult(null); setAnswers({}); setActiveType(null); }} style={{ marginTop: 12, width: '100%', padding: 12, borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', background: 'transparent', color: '#00f0ff', fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Take Another Test</button>
+          <button onClick={() => { setTest(null); setResult(null); setAnswers({}); setActiveType(null); }} style={{ marginTop: 12, width: '100%', padding: 12, borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', background: 'transparent', color: '#00f0ff', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Take Another Test</button>
         </div>
       )}
 
       {history.length > 0 && !activeType && (
         <div style={C}>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, color: '#e8f4ff', marginBottom: 14 }}>Past Tests</div>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: '#e8e8ed', marginBottom: 14 }}>Past Tests</div>
           {history.slice(0, 8).map((t, i) => (
             <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
               <div>
-                <div style={{ fontSize: 13, color: '#e8f4ff' }}>{t.topic}</div>
+                <div style={{ fontSize: 13, color: '#e8e8ed' }}>{t.topic}</div>
                 <div style={{ fontSize: 11, color: '#5a7a9a', marginTop: 1 }}>{t.type} · {new Date(t.taken_at).toLocaleDateString()}</div>
               </div>
               <div style={{ fontSize: 16, fontWeight: 700, color: t.result === 'passed' ? '#1D9E75' : '#ff2d78' }}>{Math.round(t.score)}%</div>

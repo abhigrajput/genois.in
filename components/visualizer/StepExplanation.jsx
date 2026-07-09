@@ -8,7 +8,7 @@ const STATUS_COLORS = {
   key:      '#ef9f27',
   mismatch: '#ff2d78',
   error:    '#ff2d78',
-  info:     '#7b5cff',
+  info:     '#ff6b4a',
   default:  '#8b949e',
 };
 
@@ -26,7 +26,7 @@ export default function StepExplanation({ stepNumber, totalSteps, explanation, s
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
         <span style={{
-          fontFamily: 'JetBrains Mono,monospace',
+          fontFamily: 'var(--font-mono)',
           fontSize: 10,
           color: color,
           background: `${color}18`,
@@ -48,9 +48,9 @@ export default function StepExplanation({ stepNumber, totalSteps, explanation, s
         }} />
       </div>
       <div style={{
-        fontFamily: 'Outfit,sans-serif',
+        fontFamily: 'var(--font-body)',
         fontSize: 14,
-        color: '#e8f4ff',
+        color: '#e8e8ed',
         lineHeight: 1.65,
       }}>
         {explanation}

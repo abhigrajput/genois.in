@@ -27,8 +27,8 @@ export default function PublicNav() {
       justifyContent: 'space-between',
     }}>
 
-      <Link href="/landing" style={{ fontFamily: 'Syne,sans-serif', fontSize: 22, fontWeight: 800, textDecoration: 'none', flexShrink: 0 }}>
-        <span style={{ color: '#00f0ff' }}>GEN</span><span style={{ color: '#e8f4ff' }}>OIS</span>
+      <Link href="/landing" style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 800, textDecoration: 'none', flexShrink: 0 }}>
+        <span style={{ color: '#00f0ff' }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
       </Link>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -36,7 +36,7 @@ export default function PublicNav() {
         <div style={{ position: 'relative' }}>
           <button
             onClick={() => setLeaderOpen(!leaderOpen)}
-            style={{ padding: '6px 12px', borderRadius: 8, border: 'none', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontSize: 13, fontFamily: 'Syne,sans-serif', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
+            style={{ padding: '6px 12px', borderRadius: 8, border: 'none', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
             Rankings ▾
           </button>
           {leaderOpen && (
@@ -66,7 +66,7 @@ export default function PublicNav() {
                   }}>
                   <span style={{ fontSize: 16 }}>{item.icon}</span>
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#e8f4ff', fontFamily: 'Syne,sans-serif' }}>{item.label}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#e8e8ed', fontFamily: 'var(--font-heading)' }}>{item.label}</div>
                     <div style={{ fontSize: 11, color: '#5a7a9a' }}>{item.desc}</div>
                   </div>
                 </Link>
@@ -76,17 +76,17 @@ export default function PublicNav() {
         </div>
 
         <>
-          <Link href="/login" style={{ padding: '8px 18px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', color: '#e8f4ff', textDecoration: 'none', fontSize: 14, fontFamily: 'Syne,sans-serif', fontWeight: 600 }}>
+          <Link href="/login" style={{ padding: '8px 18px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', color: '#e8e8ed', textDecoration: 'none', fontSize: 14, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
             Login
           </Link>
-          <Link href="/onboarding" style={{ padding: '8px 18px', borderRadius: 8, background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', textDecoration: 'none', fontSize: 14, fontFamily: 'Syne,sans-serif', fontWeight: 700 }}>
+          <Link href="/onboarding" style={{ padding: '8px 18px', borderRadius: 8, background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', textDecoration: 'none', fontSize: 14, fontFamily: 'var(--font-heading)', fontWeight: 700 }}>
             Sign Up Free →
           </Link>
         </>
 
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#e8f4ff', fontSize: 20, padding: 4, display: 'none' }}
+          style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#e8e8ed', fontSize: 20, padding: 4, display: 'none' }}
           id="mobile-btn">
           {menuOpen ? '✕' : '☰'}
         </button>
@@ -105,15 +105,15 @@ export default function PublicNav() {
             { href: '/domain-explorer', label: '🎯 Explore Domains' },
             { href: '/college-war', label: '⚔️ College War' },
           ].map(n => (
-            <Link key={n.href} href={n.href} onClick={() => setMenuOpen(false)} style={{ padding: '10px 14px', borderRadius: 8, color: '#8a9ab0', textDecoration: 'none', fontSize: 15, fontFamily: 'Syne,sans-serif', fontWeight: 600, background: 'rgba(255,255,255,0.02)' }}>
+            <Link key={n.href} href={n.href} onClick={() => setMenuOpen(false)} style={{ padding: '10px 14px', borderRadius: 8, color: '#8a9ab0', textDecoration: 'none', fontSize: 15, fontFamily: 'var(--font-heading)', fontWeight: 600, background: 'rgba(255,255,255,0.02)' }}>
               {n.label}
             </Link>
           ))}
           <>
-            <Link href="/login" onClick={() => setMenuOpen(false)} style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', color: '#e8f4ff', textDecoration: 'none', fontSize: 15, fontFamily: 'Syne,sans-serif', fontWeight: 600, textAlign: 'center' }}>
+            <Link href="/login" onClick={() => setMenuOpen(false)} style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', color: '#e8e8ed', textDecoration: 'none', fontSize: 15, fontFamily: 'var(--font-heading)', fontWeight: 600, textAlign: 'center' }}>
               Login
             </Link>
-            <Link href="/onboarding" onClick={() => setMenuOpen(false)} style={{ padding: '11px 14px', borderRadius: 8, background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', textDecoration: 'none', fontSize: 15, fontFamily: 'Syne,sans-serif', fontWeight: 700, textAlign: 'center' }}>
+            <Link href="/onboarding" onClick={() => setMenuOpen(false)} style={{ padding: '11px 14px', borderRadius: 8, background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', textDecoration: 'none', fontSize: 15, fontFamily: 'var(--font-heading)', fontWeight: 700, textAlign: 'center' }}>
               Sign Up Free →
             </Link>
           </>

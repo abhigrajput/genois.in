@@ -28,9 +28,9 @@ const DIFFICULTY_OPTIONS = [
 ];
 
 const TOPIC_COLORS = {
-  arrays: '#00f0ff', strings: '#7b5cff', linkedlist: '#1d9e75',
+  arrays: '#00f0ff', strings: '#ff6b4a', linkedlist: '#1d9e75',
   trees: '#ef9f27', graphs: '#ff2d78', dp: '#a855f7',
-  greedy: '#f59e0b', sorting: '#06b6d4', searching: '#10b981',
+  greedy: '#ffb020', sorting: '#06b6d4', searching: '#10b981',
   backtracking: '#ec4899', heap: '#f97316', trie: '#8b5cf6',
   'system-design': '#64748b', other: '#6b7280'
 };
@@ -100,7 +100,7 @@ export default function BlogIndex() {
   };
 
   return (
-    <div style={{ color: '#e8f4ff', position: 'relative', overflowX: 'hidden' }}>
+    <div style={{ color: '#e8e8ed', position: 'relative', overflowX: 'hidden' }}>
       {/* Grid background */}
       <div style={{
         position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none',
@@ -108,12 +108,12 @@ export default function BlogIndex() {
         backgroundSize: '60px 60px',
       }}/>
 
-      <main style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1, fontFamily: 'Outfit,sans-serif' }}>
+      <main style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1, fontFamily: 'var(--font-body)' }}>
 
         {/* Hero Section */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px', flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: '36px', fontWeight: 800, color: '#e8f4ff', margin: '0 0 8px 0', letterSpacing: '-1px' }}>
+            <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '36px', fontWeight: 800, color: '#e8e8ed', margin: '0 0 8px 0', letterSpacing: '-1px' }}>
               DSA Blog <span style={{ color: '#00f0ff' }}>— Learn with Examples</span>
             </h1>
             <p style={{ color: '#8a9ab0', fontSize: '14px', margin: 0, lineHeight: '1.6' }}>
@@ -121,7 +121,7 @@ export default function BlogIndex() {
             </p>
           </div>
           {isAuthor && (
-            <Link href="/author/dashboard" style={{ textDecoration: 'none', color: '#ef9f27', background: 'rgba(239,159,39,0.08)', border: '1px solid rgba(239,159,39,0.2)', padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontFamily: 'Syne,sans-serif', fontWeight: 700 }}>
+            <Link href="/author/dashboard" style={{ textDecoration: 'none', color: '#ef9f27', background: 'rgba(239,159,39,0.08)', border: '1px solid rgba(239,159,39,0.2)', padding: '8px 16px', borderRadius: '8px', fontSize: '13px', fontFamily: 'var(--font-heading)', fontWeight: 700 }}>
               ✍️ Write Articles
             </Link>
           )}
@@ -142,7 +142,7 @@ export default function BlogIndex() {
                   border: '1px solid rgba(0,240,255,0.15)',
                   borderRadius: '10px',
                   padding: '12px 16px 12px 40px',
-                  color: '#e8f4ff',
+                  color: '#e8e8ed',
                   fontSize: '14px',
                   outline: 'none',
                   boxSizing: 'border-box'
@@ -159,7 +159,7 @@ export default function BlogIndex() {
                 border: '1px solid rgba(0,240,255,0.15)',
                 borderRadius: '10px',
                 padding: '12px 20px',
-                color: '#e8f4ff',
+                color: '#e8e8ed',
                 outline: 'none',
                 cursor: 'pointer',
                 fontSize: '14px',
@@ -174,7 +174,7 @@ export default function BlogIndex() {
             <button
               type="submit"
               style={{
-                background: 'linear-gradient(135deg,#00f0ff,#7b5cff)',
+                background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)',
                 color: '#020812',
                 border: 'none',
                 borderRadius: '10px',
@@ -182,7 +182,7 @@ export default function BlogIndex() {
                 fontWeight: 700,
                 cursor: 'pointer',
                 fontSize: '14px',
-                fontFamily: 'Syne,sans-serif'
+                fontFamily: 'var(--font-heading)'
               }}
             >
               Search
@@ -191,7 +191,7 @@ export default function BlogIndex() {
 
           {/* Topic Pills */}
           <div>
-            <div style={{ fontSize: '11px', fontFamily: 'JetBrains Mono,monospace', color: '#5a7a9a', letterSpacing: '1px', marginBottom: '10px' }}>FILTER BY ALGORITHM TOPIC</div>
+            <div style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', color: '#5a7a9a', letterSpacing: '1px', marginBottom: '10px' }}>FILTER BY ALGORITHM TOPIC</div>
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
               {TOPICS.map(topic => {
                 const active = activeTopic === topic.value;
@@ -208,7 +208,7 @@ export default function BlogIndex() {
                       color: active ? '#00f0ff' : '#8a9ab0',
                       cursor: 'pointer',
                       transition: 'all 0.15s',
-                      fontFamily: 'Outfit,sans-serif'
+                      fontFamily: 'var(--font-body)'
                     }}
                     onMouseOver={(e) => { if (!active) e.target.style.background = 'rgba(0,240,255,0.05)'; }}
                     onMouseOut={(e) => { if (!active) e.target.style.background = 'rgba(255,255,255,0.02)'; }}
@@ -229,7 +229,7 @@ export default function BlogIndex() {
         ) : posts.length === 0 ? (
           <div style={{ minHeight: '300px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: '#5a7a9a', background: '#070f1f', borderRadius: '16px', border: '1px dashed rgba(0,240,255,0.1)', padding: '40px' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>📭</div>
-            <h3 style={{ color: '#e8f4ff', margin: '0 0 8px 0', fontFamily: 'Syne,sans-serif' }}>No Articles Found</h3>
+            <h3 style={{ color: '#e8e8ed', margin: '0 0 8px 0', fontFamily: 'var(--font-heading)' }}>No Articles Found</h3>
             <p style={{ margin: 0, fontSize: '14px', maxWidth: '360px', textAlign: 'center', lineHeight: 1.5 }}>We couldn&apos;t find any published articles matching your topic or search parameters.</p>
           </div>
         ) : (
@@ -258,20 +258,20 @@ export default function BlogIndex() {
                       ) : (
                         <div style={{ height: '100%', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: `linear-gradient(135deg, ${topicColor}10, #0a0a0f)`, fontSize: '48px' }}>📚</div>
                       )}
-                      <span style={{ position: 'absolute', top: '12px', left: '12px', fontSize: '9px', padding: '3px 8px', borderRadius: '12px', background: 'rgba(2,8,18,0.85)', border: `1px solid ${topicColor}`, color: topicColor, fontFamily: 'JetBrains Mono,monospace', fontWeight: 'bold', letterSpacing: '0.5px' }}>
+                      <span style={{ position: 'absolute', top: '12px', left: '12px', fontSize: '9px', padding: '3px 8px', borderRadius: '12px', background: 'rgba(2,8,18,0.85)', border: `1px solid ${topicColor}`, color: topicColor, fontFamily: 'var(--font-mono)', fontWeight: 'bold', letterSpacing: '0.5px' }}>
                         {post.topic?.toUpperCase()}
                       </span>
                     </div>
 
                     <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', flex: 1 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                        <span style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '12px', background: `${diffColor}15`, color: diffColor, fontFamily: 'JetBrains Mono,monospace', fontWeight: 'bold' }}>
+                        <span style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '12px', background: `${diffColor}15`, color: diffColor, fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>
                           {post.difficulty?.toUpperCase()}
                         </span>
                         <span style={{ fontSize: '11px', color: '#5a7a9a' }}>⏱ {post.read_time || 5} min read</span>
                       </div>
 
-                      <h3 style={{ margin: '0 0 8px 0', fontFamily: 'Syne,sans-serif', fontSize: '17px', fontWeight: 700, color: '#e8f4ff', lineHeight: 1.35 }}>
+                      <h3 style={{ margin: '0 0 8px 0', fontFamily: 'var(--font-heading)', fontSize: '17px', fontWeight: 700, color: '#e8e8ed', lineHeight: 1.35 }}>
                         {post.title}
                       </h3>
 
@@ -291,13 +291,13 @@ export default function BlogIndex() {
 
             {totalPages > 1 && (
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', marginTop: '24px' }}>
-                <button disabled={page === 1} onClick={() => setPage(p => Math.max(1, p - 1))} style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid rgba(0,240,255,0.15)', background: page === 1 ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.03)', color: page === 1 ? '#3a4a5a' : '#00f0ff', cursor: page === 1 ? 'not-allowed' : 'pointer', fontSize: '13px', fontFamily: 'Syne,sans-serif', fontWeight: 600 }}>
+                <button disabled={page === 1} onClick={() => setPage(p => Math.max(1, p - 1))} style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid rgba(0,240,255,0.15)', background: page === 1 ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.03)', color: page === 1 ? '#3a4a5a' : '#00f0ff', cursor: page === 1 ? 'not-allowed' : 'pointer', fontSize: '13px', fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
                   ◀ Previous
                 </button>
-                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: '13px', color: '#5a7a9a' }}>
-                  PAGE <strong style={{ color: '#e8f4ff' }}>{page}</strong> OF <strong style={{ color: '#e8f4ff' }}>{totalPages}</strong>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: '#5a7a9a' }}>
+                  PAGE <strong style={{ color: '#e8e8ed' }}>{page}</strong> OF <strong style={{ color: '#e8e8ed' }}>{totalPages}</strong>
                 </span>
-                <button disabled={page === totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid rgba(0,240,255,0.15)', background: page === totalPages ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.03)', color: page === totalPages ? '#3a4a5a' : '#00f0ff', cursor: page === totalPages ? 'not-allowed' : 'pointer', fontSize: '13px', fontFamily: 'Syne,sans-serif', fontWeight: 600 }}>
+                <button disabled={page === totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid rgba(0,240,255,0.15)', background: page === totalPages ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.03)', color: page === totalPages ? '#3a4a5a' : '#00f0ff', cursor: page === totalPages ? 'not-allowed' : 'pointer', fontSize: '13px', fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
                   Next ▶
                 </button>
               </div>

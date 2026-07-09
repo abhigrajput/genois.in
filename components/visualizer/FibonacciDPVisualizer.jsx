@@ -218,13 +218,13 @@ export default function FibonacciDPVisualizer() {
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
           { label: 'Bottom-up Result', value: current.dp[n] ?? '—', color: '#00f0ff' },
-          { label: 'DP States', value: n + 1, color: '#7b5cff' },
+          { label: 'DP States', value: n + 1, color: '#ff6b4a' },
           { label: 'Time Complexity', value: 'O(n)', color: '#1d9e75' },
           { label: 'Space Complexity', value: 'O(n)', color: '#ef9f27' },
         ].map(s => (
           <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
@@ -233,7 +233,7 @@ export default function FibonacciDPVisualizer() {
         {/* Left Side: Bottom-Up DP Grid */}
         <div style={{ flex: 1.2, minWidth: 280, display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: '24px 16px', position: 'relative' }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 16 }}>BOTTOM-UP DP TABLE (dp[])</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 16 }}>BOTTOM-UP DP TABLE (dp[])</div>
             
             <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', minHeight: 70, alignItems: 'center' }}>
               {current.dp.map((val, idx) => {
@@ -250,8 +250,8 @@ export default function FibonacciDPVisualizer() {
                     position: 'relative', transition: 'all 0.3s ease',
                     boxShadow: isCurrent ? '0 0 12px rgba(0,240,255,0.2)' : 'none',
                   }}>
-                    <span style={{ fontSize: 9, fontFamily: 'JetBrains Mono,monospace', color: '#5a7a9a', position: 'absolute', top: 4 }}>i={idx}</span>
-                    <span style={{ fontSize: 14, fontFamily: 'JetBrains Mono,monospace', fontWeight: 700, color: val === null ? '#2a3a4a' : color, marginTop: 10 }}>
+                    <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: '#5a7a9a', position: 'absolute', top: 4 }}>i={idx}</span>
+                    <span style={{ fontSize: 14, fontFamily: 'var(--font-mono)', fontWeight: 700, color: val === null ? '#2a3a4a' : color, marginTop: 10 }}>
                       {val === null ? '—' : val}
                     </span>
                   </div>
@@ -262,7 +262,7 @@ export default function FibonacciDPVisualizer() {
             {/* Dependency arrows SVG overlay */}
             <div style={{ marginTop: 24, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               {current.dependencies.length > 0 && (
-                <div style={{ display: 'flex', gap: 24, fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#ef9f27' }}>
+                <div style={{ display: 'flex', gap: 24, fontFamily: 'var(--font-mono)', fontSize: 11, color: '#ef9f27' }}>
                   <span>dp[{current.currentIdx - 2}] ({current.dp[current.currentIdx - 2]})</span>
                   <span>+</span>
                   <span>dp[{current.currentIdx - 1}] ({current.dp[current.currentIdx - 1]})</span>
@@ -277,7 +277,7 @@ export default function FibonacciDPVisualizer() {
         {/* Right Side: Recursive call tree representation */}
         <div style={{ flex: 1, minWidth: 280, display: 'flex', flexDirection: 'column' }}>
           <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 16 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>RECURSIVE CALL TREE (Top-Down Memoized)</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>RECURSIVE CALL TREE (Top-Down Memoized)</div>
             <div style={{ overflow: 'auto', display: 'flex', justifyContent: 'center' }}>
               <svg width="500" height="260" style={{ display: 'block' }}>
                 {links.map((link, i) => {
@@ -306,7 +306,7 @@ export default function FibonacciDPVisualizer() {
                         style={{ transition: 'all 0.3s' }}
                       />
                       <text x={node.x} y={node.y + 4} textAnchor="middle"
-                        style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, fill: color, fontWeight: 600 }}>
+                        style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fill: color, fontWeight: 600 }}>
                         {node.label}
                       </text>
                     </g>
@@ -314,7 +314,7 @@ export default function FibonacciDPVisualizer() {
                 })}
               </svg>
             </div>
-            <div style={{ fontSize: 9, fontFamily: 'Outfit,sans-serif', color: '#5a7a9a', marginTop: 4, textAlign: 'center' }}>
+            <div style={{ fontSize: 9, fontFamily: 'var(--font-body)', color: '#5a7a9a', marginTop: 4, textAlign: 'center' }}>
               Node shows required state. Green nodes = solved / retrieved from memo table.
             </div>
           </div>
@@ -338,7 +338,7 @@ export default function FibonacciDPVisualizer() {
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 12, height: 12, borderRadius: 3, background: l.color === '#1a2a3a' ? '#0d1a2a' : l.color + '44', border: `1.5px solid ${l.color}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'Outfit,sans-serif' }}>{l.label}</span>
+            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l.label}</span>
           </div>
         ))}
       </div>

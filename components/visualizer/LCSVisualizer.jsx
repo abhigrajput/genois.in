@@ -209,12 +209,12 @@ export default function LCSVisualizer() {
         {[
           { label: 'LCS Length', value: current.traceback.length ? current.dp[s1.length][s2.length] : '—', color: '#1d9e75' },
           { label: 'LCS Subsequence', value: current.lcsString || '—', color: '#00f0ff' },
-          { label: 'String 1 (S1)', value: s1, color: '#7b5cff' },
+          { label: 'String 1 (S1)', value: s1, color: '#ff6b4a' },
           { label: 'String 2 (S2)', value: s2, color: '#ef9f27' },
         ].map(s => (
           <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 110 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: s.color, wordBreak: 'break-all' }}>{s.value}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: s.color, wordBreak: 'break-all' }}>{s.value}</div>
           </div>
         ))}
       </div>
@@ -223,19 +223,19 @@ export default function LCSVisualizer() {
         {/* Left Side: String Configuration inputs */}
         <div style={{ minWidth: 220, flex: 0.7 }}>
           <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#5a7a9a', letterSpacing: 1 }}>STRING CONFIGURATION</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#5a7a9a', letterSpacing: 1 }}>STRING CONFIGURATION</div>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>S1 (Vertical String)</span>
+              <span style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>S1 (Vertical String)</span>
               <input type="text" value={s1} onChange={e => updateStrings(e.target.value, s2)} style={inpStyle} placeholder="Max 8 chars" />
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>S2 (Horizontal String)</span>
+              <span style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>S2 (Horizontal String)</span>
               <input type="text" value={s2} onChange={e => updateStrings(s1, e.target.value)} style={inpStyle} placeholder="Max 8 chars" />
             </div>
 
-            <button onClick={() => updateStrings('ABCDGH', 'AEDFHR')} style={{ background: 'rgba(0,240,255,0.08)', border: '1px solid rgba(0,240,255,0.2)', borderRadius: 8, color: '#00f0ff', padding: '6px 12px', fontSize: 11, cursor: 'pointer', fontFamily: 'Syne,sans-serif' }}>
+            <button onClick={() => updateStrings('ABCDGH', 'AEDFHR')} style={{ background: 'rgba(0,240,255,0.08)', border: '1px solid rgba(0,240,255,0.2)', borderRadius: 8, color: '#00f0ff', padding: '6px 12px', fontSize: 11, cursor: 'pointer', fontFamily: 'var(--font-heading)' }}>
               🎲 Preset Strings
             </button>
           </div>
@@ -243,9 +243,9 @@ export default function LCSVisualizer() {
 
         {/* Right Side: LCS 2D Grid */}
         <div style={{ flex: 1.5, minWidth: 320, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 16, overflowX: 'auto' }}>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 12 }}>2D LCS COMPILER MATRIX [i][j]</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 12 }}>2D LCS COMPILER MATRIX [i][j]</div>
           
-          <table style={{ borderCollapse: 'collapse', margin: '0 auto', fontFamily: 'JetBrains Mono,monospace', fontSize: 11 }}>
+          <table style={{ borderCollapse: 'collapse', margin: '0 auto', fontFamily: 'var(--font-mono)', fontSize: 11 }}>
             <thead>
               <tr>
                 <th style={{ padding: 6, borderBottom: '2px solid rgba(0,240,255,0.12)' }} />
@@ -322,7 +322,7 @@ export default function LCSVisualizer() {
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 12, height: 12, borderRadius: 2, background: l.color + '22', border: `1.5px solid ${l.color}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'Outfit,sans-serif' }}>{l.label}</span>
+            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l.label}</span>
           </div>
         ))}
       </div>
@@ -358,8 +358,8 @@ const inpStyle = {
   border: '1px solid rgba(0,240,255,0.2)',
   borderRadius: 8,
   padding: '6px 10px',
-  color: '#e8f4ff',
-  fontFamily: 'JetBrains Mono,monospace',
+  color: '#e8e8ed',
+  fontFamily: 'var(--font-mono)',
   fontSize: 12,
   outline: 'none',
 };

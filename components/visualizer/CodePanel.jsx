@@ -67,10 +67,10 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
         gap: 8,
         flexWrap: 'wrap',
       }}>
-        <span style={{ fontSize: 10, color: '#00f0ff', fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1 }}>
+        <span style={{ fontSize: 10, color: '#00f0ff', fontFamily: 'var(--font-mono)', letterSpacing: 1 }}>
           {'{ }'}
         </span>
-        <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#5a7a9a', letterSpacing: 1 }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#5a7a9a', letterSpacing: 1 }}>
           {title}
         </span>
         {isCpp && activeLine >= 0 && (
@@ -78,7 +78,7 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
             marginLeft: 8,
             fontSize: 10,
             color: '#00f0ff',
-            fontFamily: 'JetBrains Mono,monospace',
+            fontFamily: 'var(--font-mono)',
             background: 'rgba(0,240,255,0.1)',
             padding: '2px 8px',
             borderRadius: 4,
@@ -109,10 +109,10 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
                 borderRadius: 20,
                 border: 'none',
                 cursor: 'pointer',
-                fontFamily: 'JetBrains Mono,monospace',
+                fontFamily: 'var(--font-mono)',
                 fontSize: 11,
                 fontWeight: active ? 700 : 500,
-                background: active ? '#6366f1' : 'transparent',
+                background: active ? '#00d9a3' : 'transparent',
                 color: active ? '#fff' : '#5a7a9a',
                 transition: 'all 0.15s',
               }}
@@ -129,7 +129,7 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
           margin: 0,
           padding: '10px 0',
           overflowX: 'auto',
-          fontFamily: 'JetBrains Mono,monospace',
+          fontFamily: 'var(--font-mono)',
           fontSize: 12,
           lineHeight: 1.7,
           maxHeight: 260,
@@ -165,7 +165,7 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
                   <span style={{
                     fontSize: 9,
                     color: '#00f0ff',
-                    fontFamily: 'JetBrains Mono,monospace',
+                    fontFamily: 'var(--font-mono)',
                     background: 'rgba(0,240,255,0.15)',
                     padding: '1px 5px',
                     borderRadius: 3,
@@ -188,7 +188,7 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
         <div style={{
           padding: '28px 16px',
           textAlign: 'center',
-          fontFamily: 'JetBrains Mono,monospace',
+          fontFamily: 'var(--font-mono)',
           fontSize: 12,
           color: '#5a7a9a',
         }}>

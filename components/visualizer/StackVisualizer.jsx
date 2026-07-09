@@ -106,19 +106,19 @@ export default function StackVisualizer() {
         {[
           { label:'Size', value: stack.length, color:'#00f0ff' },
           { label:'Top', value: stack.length > 0 ? stack[stack.length-1] : 'null', color:'#ef9f27' },
-          { label:'Capacity', value: MAX_SIZE, color:'#7b5cff' },
+          { label:'Capacity', value: MAX_SIZE, color:'#ff6b4a' },
           { label:'Empty', value: stack.length === 0 ? 'Yes' : 'No', color:'#1d9e75' },
         ].map(s => (
           <div key={s.label} style={{ background:'rgba(10,15,30,0.8)', border:`1px solid ${s.color}20`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
-            <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
-            <div style={{ fontFamily:'Syne,sans-serif', fontSize:20, fontWeight:700, color:s.color }}>{s.value}</div>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
+            <div style={{ fontFamily:'var(--font-heading)', fontSize:20, fontWeight:700, color:s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
       {/* Message */}
       {message && (
-        <div style={{ background:'rgba(0,240,255,0.05)', border:'1px solid rgba(0,240,255,0.15)', borderRadius:8, padding:'8px 14px', fontFamily:'JetBrains Mono,monospace', fontSize:12, color:'#00f0ff' }}>
+        <div style={{ background:'rgba(0,240,255,0.05)', border:'1px solid rgba(0,240,255,0.15)', borderRadius:8, padding:'8px 14px', fontFamily:'var(--font-mono)', fontSize:12, color:'#00f0ff' }}>
           ▶ {message}
         </div>
       )}
@@ -132,7 +132,7 @@ export default function StackVisualizer() {
             borderRadius: 0, display:'flex', alignItems:'center', justifyContent:'center',
             marginBottom: 0,
           }}>
-            <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'rgba(0,240,255,0.15)' }}>—</span>
+            <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'rgba(0,240,255,0.15)' }}>—</span>
           </div>
         ))}
 
@@ -152,21 +152,21 @@ export default function StackVisualizer() {
               animation: isNew ? 'stackPush 0.35s ease' : 'none',
               boxShadow: isTop ? '0 0 16px rgba(0,240,255,0.15)' : 'none',
             }}>
-              <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:16, fontWeight:600, color: isTop ? '#00f0ff' : '#e8f4ff' }}>{val}</span>
-              {isTop && <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#00f0ff' }}>← TOP</span>}
+              <span style={{ fontFamily:'var(--font-mono)', fontSize:16, fontWeight:600, color: isTop ? '#00f0ff' : '#e8e8ed' }}>{val}</span>
+              {isTop && <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#00f0ff' }}>← TOP</span>}
             </div>
           );
         })}
 
         {stack.length === 0 && (
-          <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:12, color:'#2a3a4a', textAlign:'center', marginBottom:8 }}>
+          <div style={{ fontFamily:'var(--font-mono)', fontSize:12, color:'#2a3a4a', textAlign:'center', marginBottom:8 }}>
             Stack is empty
           </div>
         )}
 
         {/* Bottom label */}
         <div style={{ width:180, height:4, background:'rgba(0,240,255,0.3)', borderRadius:2, marginTop:2 }}/>
-        <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:9, color:'#5a7a9a', marginTop:4 }}>BOTTOM</span>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'#5a7a9a', marginTop:4 }}>BOTTOM</span>
       </div>
 
       {/* Controls */}
@@ -179,7 +179,7 @@ export default function StackVisualizer() {
         ].map(b => (
           <button key={b.label} onClick={b.action} style={{
             padding:'10px 24px', borderRadius:9, border:`1px solid ${b.border}`,
-            background:b.bg, color:b.color, fontFamily:'Syne,sans-serif',
+            background:b.bg, color:b.color, fontFamily:'var(--font-heading)',
             fontSize:14, fontWeight:600, cursor:'pointer', transition:'all 0.15s',
           }}>{b.label}</button>
         ))}

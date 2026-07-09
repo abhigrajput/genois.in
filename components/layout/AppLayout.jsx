@@ -11,13 +11,13 @@ import {
   Flame, LogOut, Menu, X, PanelLeftClose, PanelLeftOpen, FolderGit2, Brain,
 } from 'lucide-react';
 
-const G = '#6366f1';
-const G10 = 'rgba(99,102,241,0.1)';
-const G20 = 'rgba(99,102,241,0.2)';
-const G08 = 'rgba(99,102,241,0.08)';
-const G04 = 'rgba(99,102,241,0.04)';
-const AMBER = '#fbbf24';
-const SB_BG = '#0a0a14';
+const G = '#00d9a3';
+const G10 = 'rgba(0,217,163,0.1)';
+const G20 = 'rgba(0,217,163,0.2)';
+const G08 = 'rgba(0,217,163,0.08)';
+const G04 = 'rgba(0,217,163,0.04)';
+const AMBER = '#ffb020';
+const SB_BG = '#0a0a0f';
 
 // The 11 working features — grouped visually in the sidebar.
 const NAV_ITEMS = [
@@ -44,7 +44,7 @@ const DOMAIN_LABELS = {
 
 function NavItem({ href, label, icon: Icon, active, collapsed }) {
   const [hover, setHover] = useState(false);
-  const iconColor = active ? G : hover ? '#818cf8' : '#6b7280';
+  const iconColor = active ? G : hover ? '#2ee6b0' : '#6b7280';
   return (
     <Link href={href} title={collapsed ? label : undefined}
       style={{
@@ -55,9 +55,10 @@ function NavItem({ href, label, icon: Icon, active, collapsed }) {
         fontSize: 12, fontWeight: active ? 600 : 400,
         background: active ? G08 : hover ? G04 : 'transparent',
         color: active ? G : hover ? '#c0c0c0' : '#6b7a8d',
-        borderLeft: active ? `3px solid ${G}` : '3px solid transparent',
+        borderLeft: active ? `4px solid ${G}` : '4px solid transparent',
+        paddingLeft: collapsed ? 0 : 11,
         textDecoration: 'none', transition: 'all 0.15s',
-        fontFamily: 'Outfit,sans-serif',
+        fontFamily: 'var(--font-body)',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -133,12 +134,12 @@ export default function AppLayout({ children }) {
 
   if (checking) {
     return (
-      <div style={{ minHeight: '100vh', background: '#0d0d14', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ minHeight: '100vh', background: '#0a0a0f', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center' }}>
-          <div className="genois-loading" style={{ fontFamily: 'Syne,sans-serif', fontSize: 28, fontWeight: 800 }}>
-            <span style={{ color: G }}>GEN</span><span style={{ color: '#e8f4ff' }}>OIS</span>
+          <div className="genois-loading" style={{ fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800 }}>
+            <span style={{ color: G }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
           </div>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#444', marginTop: 8, letterSpacing: 2 }}>LOADING...</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#444', marginTop: 8, letterSpacing: 2 }}>LOADING...</div>
         </div>
       </div>
     );
@@ -154,9 +155,9 @@ export default function AppLayout({ children }) {
   const sbWidth = isMobile ? 240 : (collapsed ? 68 : 240);
 
   return (
-    <div style={{ display: 'flex', height: '100vh', background: '#0d0d14', overflow: 'hidden', position: 'relative' }}>
+    <div style={{ display: 'flex', height: '100vh', background: '#0a0a0f', overflow: 'hidden', position: 'relative' }}>
       {/* Matrix grid bg */}
-      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(99,102,241,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(99,102,241,0.02) 1px,transparent 1px)', backgroundSize: '60px 60px' }} />
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(0,217,163,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,217,163,0.02) 1px,transparent 1px)', backgroundSize: '60px 60px' }} />
 
       {/* Mobile overlay */}
       {isMobile && sidebarOpen && (
@@ -173,7 +174,7 @@ export default function AppLayout({ children }) {
         display: isMobile ? (sidebarOpen ? 'flex' : 'none') : 'flex',
         flexDirection: 'column',
         background: SB_BG,
-        borderRight: `1px solid rgba(99,102,241,0.08)`,
+        borderRight: `1px solid rgba(0,217,163,0.08)`,
         overflowY: 'hidden',
         height: '100%',
         transition: 'width 0.2s ease',
@@ -182,8 +183,8 @@ export default function AppLayout({ children }) {
         {/* TOP: Logo + toggle */}
         <div style={{ padding: collapsed ? '16px 0 12px' : '16px 14px 12px', display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between', flexShrink: 0 }}>
           {!collapsed && (
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 800, letterSpacing: -1, lineHeight: 1 }}>
-              <span style={{ color: G }}>GEN</span><span style={{ color: '#e8f4ff' }}>OIS</span>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 800, letterSpacing: -1, lineHeight: 1 }}>
+              <span style={{ color: G }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
             </div>
           )}
           <button onClick={isMobile ? () => setSidebarOpen(false) : toggleCollapsed}
@@ -198,15 +199,15 @@ export default function AppLayout({ children }) {
           <div style={{ display: 'flex', alignItems: 'center', gap: collapsed ? 0 : 10, justifyContent: collapsed ? 'center' : 'flex-start' }}>
             {/* Avatar */}
             <div className={streak > 0 ? 'pulse-amber' : ''}
-              style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, rgba(99,102,241,0.35), rgba(129,140,248,0.12))', border: `2px solid ${G}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 800, color: G, flexShrink: 0 }}>
+              style={{ width: 36, height: 36, borderRadius: '50%', background: 'linear-gradient(135deg, rgba(0,217,163,0.35), rgba(46,230,176,0.12))', border: `2px solid ${G}55`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 800, color: G, flexShrink: 0 }}>
               {initials}
             </div>
             {!collapsed && (
               <div style={{ minWidth: 0 }}>
-                <div style={{ fontFamily: 'Outfit,sans-serif', fontSize: 13, fontWeight: 600, color: '#e8f4ff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.name}</div>
+                <div style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, color: '#e8e8ed', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.name}</div>
                 <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 2 }}>
-                  <span style={{ padding: '1px 7px', borderRadius: 20, background: G10, border: `1px solid ${G20}`, fontSize: 9, color: G, fontFamily: 'JetBrains Mono,monospace', fontWeight: 700 }}>{domainLabel}</span>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#555' }}>D{currentDay} · <Flame size={10} strokeWidth={2} color={AMBER} />{streak}</span>
+                  <span style={{ padding: '1px 7px', borderRadius: 20, background: G10, border: `1px solid ${G20}`, fontSize: 9, color: G, fontFamily: 'var(--font-mono)', fontWeight: 700 }}>{domainLabel}</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontFamily: 'var(--font-mono)', fontSize: 9, color: '#555' }}>D{currentDay} · <Flame size={10} strokeWidth={2} color={AMBER} />{streak}</span>
                 </div>
               </div>
             )}
@@ -223,7 +224,7 @@ export default function AppLayout({ children }) {
           {['LEARN', 'PRACTICE', 'ACCOUNT'].map(group => (
             <div key={group}>
               {!collapsed
-                ? <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, color: '#333', letterSpacing: 2, padding: '10px 8px 4px', fontWeight: 600 }}>{group}</div>
+                ? <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#333', letterSpacing: 2, padding: '10px 8px 4px', fontWeight: 600 }}>{group}</div>
                 : <div style={{ height: 8 }} />}
               {NAV_ITEMS.filter(n => n.group === group).map(n => (
                 <NavItem key={n.href} href={n.href} label={n.label} icon={n.icon} active={pathname === n.href} collapsed={collapsed} />
@@ -233,16 +234,16 @@ export default function AppLayout({ children }) {
         </nav>
 
         {/* SCORE BAR + LOGOUT (bottom) */}
-        <div style={{ padding: collapsed ? '12px 8px' : '12px 14px', borderTop: '1px solid rgba(99,102,241,0.06)', flexShrink: 0 }}>
+        <div style={{ padding: collapsed ? '12px 8px' : '12px 14px', borderTop: '1px solid rgba(0,217,163,0.06)', flexShrink: 0 }}>
           {!collapsed ? (
             <>
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: 6 }}>
-                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: G }}><Zap size={13} strokeWidth={2} color={G} /> {totalScore.toLocaleString()} pts</span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-mono)', fontSize: 11, color: G }}><Zap size={13} strokeWidth={2} color={G} /> {totalScore.toLocaleString()} pts</span>
               </div>
               <div style={{ height: 3, background: 'rgba(255,255,255,0.04)', borderRadius: 2, overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${Math.min(100, (weeklyPts / 500) * 100)}%`, background: `linear-gradient(90deg, ${G}, #818cf8)`, borderRadius: 2, transition: 'width 0.5s' }} />
+                <div style={{ height: '100%', width: `${Math.min(100, (weeklyPts / 500) * 100)}%`, background: `linear-gradient(90deg, ${G}, #2ee6b0)`, borderRadius: 2, transition: 'width 0.5s' }} />
               </div>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 8, color: '#333', marginTop: 4, marginBottom: 10 }}>weekly progress</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#333', marginTop: 4, marginBottom: 10 }}>weekly progress</div>
             </>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 10 }}>
@@ -257,7 +258,7 @@ export default function AppLayout({ children }) {
               width: '100%', padding: collapsed ? '10px 0' : '10px 14px',
               background: 'transparent', border: 'none',
               color: '#6b7280', fontSize: 13,
-              fontFamily: 'Outfit,sans-serif',
+              fontFamily: 'var(--font-body)',
               cursor: 'pointer', borderRadius: 8,
               transition: 'all 0.15s',
             }}
@@ -273,19 +274,19 @@ export default function AppLayout({ children }) {
       {/* MAIN CONTENT */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflow: 'hidden', position: 'relative', zIndex: 1 }}>
         {/* Header */}
-        <header style={{ height: 48, flexShrink: 0, background: 'rgba(13,13,20,0.95)', borderBottom: '1px solid rgba(99,102,241,0.07)', display: 'flex', alignItems: 'center', padding: '0 16px', gap: 10, backdropFilter: 'blur(20px)', overflow: 'visible' }}>
+        <header style={{ height: 48, flexShrink: 0, background: 'rgba(13,13,20,0.95)', borderBottom: '1px solid rgba(0,217,163,0.07)', display: 'flex', alignItems: 'center', padding: '0 16px', gap: 10, backdropFilter: 'blur(20px)', overflow: 'visible' }}>
           <button onClick={() => { if (isMobile) setSidebarOpen(s => !s); else toggleCollapsed(); }}
             style={{ background: 'transparent', border: 'none', color: '#555', cursor: 'pointer', padding: 4, flexShrink: 0, lineHeight: 0, display: 'flex', alignItems: 'center', transition: 'color 0.15s' }}
             onMouseEnter={e => e.currentTarget.style.color = G}
             onMouseLeave={e => e.currentTarget.style.color = '#555'}>
             <Menu size={20} strokeWidth={2} />
           </button>
-          <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#444', letterSpacing: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#444', letterSpacing: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {pathname.replace(/^\//, '').toUpperCase() || 'DASHBOARD'}
           </span>
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 6, flexShrink: 0, alignItems: 'center' }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'JetBrains Mono,monospace', fontSize: 10, background: 'rgba(251,191,36,0.1)', color: AMBER, padding: '3px 8px', borderRadius: 20 }}><Flame size={12} strokeWidth={2} color={AMBER} /> {streak}</span>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'JetBrains Mono,monospace', fontSize: 10, background: 'rgba(99,102,241,0.08)', color: G, padding: '3px 8px', borderRadius: 20 }}><Zap size={12} strokeWidth={2} color={G} /> {totalScore.toLocaleString()}</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-mono)', fontSize: 10, background: 'rgba(251,191,36,0.1)', color: AMBER, padding: '3px 8px', borderRadius: 20 }}><Flame size={12} strokeWidth={2} color={AMBER} /> {streak}</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-mono)', fontSize: 10, background: 'rgba(0,217,163,0.08)', color: G, padding: '3px 8px', borderRadius: 20 }}><Zap size={12} strokeWidth={2} color={G} /> {totalScore.toLocaleString()}</span>
             <div style={{ position: 'relative', zIndex: 9999 }}>
               <NotificationBell token={navToken} />
             </div>

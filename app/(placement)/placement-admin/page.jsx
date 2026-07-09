@@ -34,7 +34,7 @@ function SummaryCard({ label, value, sub, accent }) {
   return (
     <div style={{ background: CARD_BG, border: `1px solid ${BORDER}`, borderRadius: 14, padding: '22px 24px', flex: 1, minWidth: 0 }}>
       <div style={{ fontSize: 11, color: '#4b8a4b', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 8 }}>{label}</div>
-      <div style={{ fontSize: 36, fontWeight: 900, fontFamily: 'JetBrains Mono, monospace', color: accent || G, lineHeight: 1 }}>{value}</div>
+      <div style={{ fontSize: 36, fontWeight: 900, fontFamily: 'var(--font-mono)', color: accent || G, lineHeight: 1 }}>{value}</div>
       {sub && <div style={{ fontSize: 12, color: '#4b8a4b', marginTop: 6 }}>{sub}</div>}
     </div>
   );
@@ -122,7 +122,7 @@ export default function PlacementDashboard() {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', background: BG, display: 'flex', alignItems: 'center', justifyContent: 'center', color: G, fontFamily: 'JetBrains Mono, monospace', fontSize: 18 }}>
+      <div style={{ minHeight: '100vh', background: BG, display: 'flex', alignItems: 'center', justifyContent: 'center', color: G, fontFamily: 'var(--font-mono)', fontSize: 18 }}>
         Loading placement data...
       </div>
     );
@@ -130,7 +130,7 @@ export default function PlacementDashboard() {
 
   if (error) {
     return (
-      <div style={{ minHeight: '100vh', background: BG, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444', fontFamily: 'JetBrains Mono, monospace', fontSize: 16, textAlign: 'center', padding: 24 }}>
+      <div style={{ minHeight: '100vh', background: BG, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444', fontFamily: 'var(--font-mono)', fontSize: 16, textAlign: 'center', padding: 24 }}>
         {error}<br />
         <button onClick={logout} style={{ marginTop: 16, padding: '10px 20px', borderRadius: 8, border: `1px solid ${BORDER}`, background: 'transparent', color: G, cursor: 'pointer', fontSize: 13 }}>Re-login</button>
       </div>
@@ -151,25 +151,25 @@ export default function PlacementDashboard() {
   const inputStyle = {
     background: CARD_BG, border: `1px solid ${BORDER}`, borderRadius: 8,
     color: '#e2ffe2', padding: '9px 13px', fontSize: 13, outline: 'none',
-    fontFamily: 'JetBrains Mono, monospace',
+    fontFamily: 'var(--font-mono)',
   };
   const selectStyle = { ...inputStyle, cursor: 'pointer' };
 
   return (
-    <div style={{ minHeight: '100vh', background: BG, color: '#e2ffe2', fontFamily: 'JetBrains Mono, monospace' }}>
+    <div style={{ minHeight: '100vh', background: BG, color: '#e2ffe2', fontFamily: 'var(--font-mono)' }}>
 
       {/* ── HEADER ── */}
       <header style={{ background: CARD_BG, borderBottom: `1px solid ${BORDER}`, padding: '14px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, position: 'sticky', top: 0, zIndex: 100 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-          <span style={{ fontFamily: 'Syne, sans-serif', fontWeight: 900, fontSize: 22, color: G, letterSpacing: 2 }}>GENOIS</span>
+          <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: 22, color: G, letterSpacing: 2 }}>GENOIS</span>
           <span style={{ color: '#4b8a4b', fontSize: 13 }}>/ Placement Cell Dashboard</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <span style={{ color: '#4b8a4b', fontSize: 12 }}>{new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-          <button onClick={exportCSV} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${BORDER}`, background: 'rgba(0,255,65,0.08)', color: G, cursor: 'pointer', fontSize: 12, fontFamily: 'JetBrains Mono, monospace' }}>
+          <button onClick={exportCSV} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${BORDER}`, background: 'rgba(0,255,65,0.08)', color: G, cursor: 'pointer', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
             Export CSV ↓
           </button>
-          <button onClick={logout} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid rgba(255,80,80,0.2)', background: 'rgba(255,80,80,0.06)', color: '#f87171', cursor: 'pointer', fontSize: 12, fontFamily: 'JetBrains Mono, monospace' }}>
+          <button onClick={logout} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid rgba(255,80,80,0.2)', background: 'rgba(255,80,80,0.06)', color: '#f87171', cursor: 'pointer', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
             Logout
           </button>
         </div>
@@ -329,8 +329,8 @@ export default function PlacementDashboard() {
                       <td style={{ padding: '13px 14px', fontWeight: 600, color: '#e2ffe2', whiteSpace: 'nowrap' }}>{s.name}</td>
                       <td style={{ padding: '13px 14px', color: '#9ca3af', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.college}</td>
                       <td style={{ padding: '13px 14px', color: '#4ade80' }}>{DOMAIN_LABELS[s.domain_slug] || s.domain_slug}</td>
-                      <td style={{ padding: '13px 14px', color: '#e2ffe2', fontFamily: 'JetBrains Mono, monospace' }}>D{s.current_day}</td>
-                      <td style={{ padding: '13px 14px', color: '#e2ffe2', fontFamily: 'JetBrains Mono, monospace' }}>{s.total_score.toLocaleString()}</td>
+                      <td style={{ padding: '13px 14px', color: '#e2ffe2', fontFamily: 'var(--font-mono)' }}>D{s.current_day}</td>
+                      <td style={{ padding: '13px 14px', color: '#e2ffe2', fontFamily: 'var(--font-mono)' }}>{s.total_score.toLocaleString()}</td>
                       <td style={{ padding: '13px 14px', color: s.streak >= 7 ? G : '#9ca3af' }}>{s.streak}🔥</td>
                       <td style={{ padding: '13px 14px' }}><Badge level={s.readinessLevel} /></td>
                       <td style={{ padding: '13px 14px', color: '#9ca3af', maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>

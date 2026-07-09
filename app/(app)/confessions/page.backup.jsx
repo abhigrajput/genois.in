@@ -85,10 +85,10 @@ export default function ConfessionsPage() {
   }
 
   return (
-    <div style={{ maxWidth: 680, margin: '0 auto', fontFamily: 'Outfit,sans-serif' }}>
+    <div style={{ maxWidth: 680, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
       {/* HEADER */}
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 4 }}>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 4 }}>
           🤫 Confession Wall
         </h1>
         <p style={{ color: '#5a7a9a', fontSize: 13 }}>
@@ -105,14 +105,14 @@ export default function ConfessionsPage() {
             border: '1px dashed rgba(0,240,255,0.2)',
             background: 'rgba(0,240,255,0.02)',
             color: '#3a4a5a', cursor: 'pointer', textAlign: 'left',
-            fontSize: 14, fontFamily: 'Outfit,sans-serif',
+            fontSize: 14, fontFamily: 'var(--font-body)',
             marginBottom: 20, transition: 'all 0.2s',
           }}>
           🤫 {placeholder}
         </button>
       ) : (
         <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 14, padding: 20, marginBottom: 20 }}>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 12 }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 12 }}>
             🤫 POST ANONYMOUSLY
           </div>
           <textarea
@@ -125,21 +125,21 @@ export default function ConfessionsPage() {
               width: '100%', padding: '12px 14px', borderRadius: 10,
               border: '1px solid rgba(0,240,255,0.1)',
               background: 'rgba(255,255,255,0.02)',
-              color: '#e8f4ff', fontSize: 14,
-              fontFamily: 'Outfit,sans-serif', outline: 'none',
+              color: '#e8e8ed', fontSize: 14,
+              fontFamily: 'var(--font-body)', outline: 'none',
               resize: 'vertical', boxSizing: 'border-box',
               lineHeight: 1.6,
             }}
           />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 10, flexWrap: 'wrap', gap: 10 }}>
-            <span style={{ fontSize: 11, color: '#3a4a5a', fontFamily: 'JetBrains Mono,monospace' }}>
+            <span style={{ fontSize: 11, color: '#3a4a5a', fontFamily: 'var(--font-mono)' }}>
               {content.length}/500 · 100% anonymous
             </span>
             <div style={{ display: 'flex', gap: 8 }}>
               <button onClick={() => { setShowForm(false); setContent(''); }} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontSize: 13 }}>
                 Cancel
               </button>
-              <button onClick={post} disabled={posting || content.trim().length < 10} style={{ padding: '8px 20px', borderRadius: 8, border: 'none', cursor: 'pointer', background: posting ? 'rgba(0,240,255,0.2)' : 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700 }}>
+              <button onClick={post} disabled={posting || content.trim().length < 10} style={{ padding: '8px 20px', borderRadius: 8, border: 'none', cursor: 'pointer', background: posting ? 'rgba(0,240,255,0.2)' : 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700 }}>
                 {posting ? 'Posting...' : 'Post Anonymously'}
               </button>
             </div>
@@ -155,7 +155,7 @@ export default function ConfessionsPage() {
         ].map(s => (
           <button key={s.key} onClick={() => setSort(s.key)} style={{
             padding: '7px 16px', borderRadius: 20, border: 'none', cursor: 'pointer',
-            fontFamily: 'Syne,sans-serif', fontSize: 12, fontWeight: 600,
+            fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 600,
             background: sort === s.key ? '#00f0ff' : 'rgba(255,255,255,0.05)',
             color: sort === s.key ? '#020812' : '#5a7a9a',
           }}>{s.label}</button>
@@ -164,13 +164,13 @@ export default function ConfessionsPage() {
 
       {/* CONFESSIONS LIST */}
       {loading ? (
-        <div style={{ color: '#5a7a9a', textAlign: 'center', padding: 40, fontFamily: 'JetBrains Mono,monospace' }}>
+        <div style={{ color: '#5a7a9a', textAlign: 'center', padding: 40, fontFamily: 'var(--font-mono)' }}>
           Loading confessions...
         </div>
       ) : confessions.length === 0 ? (
         <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 14, padding: 48, textAlign: 'center' }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>🤫</div>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: '#e8f4ff', marginBottom: 8 }}>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: '#e8e8ed', marginBottom: 8 }}>
             No confessions yet
           </div>
           <div style={{ color: '#5a7a9a', fontSize: 14 }}>
@@ -192,7 +192,7 @@ export default function ConfessionsPage() {
                 <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#EF9F27,transparent)' }} />
               )}
               {c.is_featured && (
-                <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#EF9F27', letterSpacing: 1, marginBottom: 10 }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#EF9F27', letterSpacing: 1, marginBottom: 10 }}>
                   ⭐ TOP CONFESSION THIS WEEK
                 </div>
               )}
@@ -204,11 +204,11 @@ export default function ConfessionsPage() {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   {c.domain_slug && (
-                    <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'rgba(0,240,255,0.06)', color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>
+                    <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'rgba(0,240,255,0.06)', color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>
                       {c.domain_slug.toUpperCase()}
                     </span>
                   )}
-                  <span style={{ fontSize: 11, color: '#3a4a5a', fontFamily: 'JetBrains Mono,monospace' }}>
+                  <span style={{ fontSize: 11, color: '#3a4a5a', fontFamily: 'var(--font-mono)' }}>
                     {timeAgo(c.created_at)}
                   </span>
                 </div>
@@ -220,11 +220,11 @@ export default function ConfessionsPage() {
                     border: `1px solid ${c.hasUpvoted ? 'rgba(0,240,255,0.4)' : 'rgba(255,255,255,0.08)'}`,
                     background: c.hasUpvoted ? 'rgba(0,240,255,0.08)' : 'transparent',
                     color: c.hasUpvoted ? '#00f0ff' : '#5a7a9a',
-                    cursor: 'pointer', fontSize: 13, fontFamily: 'Outfit,sans-serif',
+                    cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-body)',
                     transition: 'all 0.15s',
                   }}>
                   <span>{c.hasUpvoted ? '❤️' : '🤍'}</span>
-                  <span style={{ fontFamily: 'Syne,sans-serif', fontWeight: 600 }}>{c.upvotes}</span>
+                  <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 600 }}>{c.upvotes}</span>
                   <span style={{ fontSize: 11 }}>relatable</span>
                 </button>
               </div>
@@ -233,7 +233,7 @@ export default function ConfessionsPage() {
         </div>
       )}
 
-      <div style={{ marginTop: 24, textAlign: 'center', color: '#3a4a5a', fontSize: 11, fontFamily: 'JetBrains Mono,monospace', lineHeight: 1.7 }}>
+      <div style={{ marginTop: 24, textAlign: 'center', color: '#3a4a5a', fontSize: 11, fontFamily: 'var(--font-mono)', lineHeight: 1.7 }}>
         All confessions are 100% anonymous.<br />
         No names. No emails. No tracking.
       </div>

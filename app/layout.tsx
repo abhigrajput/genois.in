@@ -1,13 +1,14 @@
 import './globals.css';
-import { Syne, Outfit, JetBrains_Mono } from 'next/font/google';
+import { Space_Grotesk, Instrument_Sans, JetBrains_Mono } from 'next/font/google';
 import { Toaster } from 'react-hot-toast';
 import PWAInstallPrompt from '@/components/PWAInstallPrompt';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import SessionProviderWrapper from '@/components/SessionProviderWrapper';
 
-const syne = Syne({ subsets: ['latin'], variable: '--font-syne' });
-const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' });
-const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains' });
+// Distinct pairing — Space Grotesk (geometric display) + Instrument Sans (characterful body).
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-heading', weight: ['400', '500', '600', '700'] });
+const instrumentSans = Instrument_Sans({ subsets: ['latin'], variable: '--font-body' });
+const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 export const metadata = {
   title: 'GENOIS — Career OS for Engineering Students',
@@ -22,13 +23,13 @@ export const metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#6366f1',
+  themeColor: '#00d9a3',
   viewportFit: 'cover', // required so env(safe-area-inset-*) resolves on notched phones
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${syne.variable} ${outfit.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" className={`${spaceGrotesk.variable} ${instrumentSans.variable} ${jetbrainsMono.variable}`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -43,16 +44,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           toastOptions={{
             duration: 3500,
             style: {
-              fontFamily: 'Outfit, sans-serif',
+              fontFamily: 'var(--font-body)',
               fontSize: '14px',
               borderRadius: '10px',
-              background: '#070f1f',
-              color: '#e8f4ff',
-              border: '1px solid rgba(0,240,255,0.15)',
+              background: '#12121a',
+              color: '#e8e8ed',
+              border: '1px solid rgba(0,217,163,0.18)',
               boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
             },
-            success: { iconTheme: { primary: '#1D9E75', secondary: '#020812' } },
-            error:   { iconTheme: { primary: '#ff2d78', secondary: '#020812' } },
+            success: { iconTheme: { primary: '#00d9a3', secondary: '#0a0a0f' } },
+            error:   { iconTheme: { primary: '#ff4d5e', secondary: '#0a0a0f' } },
           }}
         />
         <PWAInstallPrompt />

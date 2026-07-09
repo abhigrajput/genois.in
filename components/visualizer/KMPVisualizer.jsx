@@ -301,12 +301,12 @@ export default function KMPVisualizer() {
         {[
           { label: 'Matches Found', value: current.matchesFound?.length ?? 0, color: '#1d9e75' },
           { label: 'Current Phase', value: current.phase === 'lps' ? 'LPS Construction' : 'Pattern Search', color: '#00f0ff' },
-          { label: 'Text Length', value: txt.length, color: '#7b5cff' },
+          { label: 'Text Length', value: txt.length, color: '#ff6b4a' },
           { label: 'Pattern Length', value: pat.length, color: '#ef9f27' },
         ].map(s => (
           <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 110 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: s.color }}>{s.value}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
@@ -315,7 +315,7 @@ export default function KMPVisualizer() {
         {/* Left Side: LPS Table Display */}
         <div style={{ minWidth: 240, flex: 0.8 }}>
           <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1 }}>LPS / PREFIX TABLE (pi[])</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1 }}>LPS / PREFIX TABLE (pi[])</div>
             
             <div style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
               {pat.split('').map((char, index) => {
@@ -329,8 +329,8 @@ export default function KMPVisualizer() {
                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                     transition: 'all 0.2s',
                   }}>
-                    <span style={{ fontSize: 11, fontWeight: 'bold', color: isLpsActive ? '#00f0ff' : '#e8f4ff' }}>{char}</span>
-                    <span style={{ fontSize: 9, fontFamily: 'JetBrains Mono,monospace', color: isLpsActive ? '#00f0ff' : '#1d9e75' }}>
+                    <span style={{ fontSize: 11, fontWeight: 'bold', color: isLpsActive ? '#00f0ff' : '#e8e8ed' }}>{char}</span>
+                    <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: isLpsActive ? '#00f0ff' : '#1d9e75' }}>
                       {current.lps[index] !== undefined ? current.lps[index] : 0}
                     </span>
                   </div>
@@ -339,7 +339,7 @@ export default function KMPVisualizer() {
             </div>
             
             <div style={{ borderTop: '1px solid rgba(0,240,255,0.05)', paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <span style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>INPUT STRINGS:</span>
+              <span style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>INPUT STRINGS:</span>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <span style={{ fontSize: 9, color: '#5a7a9a' }}>TXT (Text, Max 22 chars):</span>
                 <input type="text" value={txt} onChange={e => handleInputsChange(e.target.value, pat)} style={inpStyle} />
@@ -354,11 +354,11 @@ export default function KMPVisualizer() {
 
         {/* Right Side: Shift Canvas */}
         <div style={{ flex: 1.5, minWidth: 320, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 24, overflowX: 'auto' }}>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1 }}>KMP STRING SHIFT VISUALIZATION</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1 }}>KMP STRING SHIFT VISUALIZATION</div>
 
           {/* Text Row */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#5a7a9a' }}>TEXT INDEXES (i)</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#5a7a9a' }}>TEXT INDEXES (i)</span>
             <div style={{ display: 'flex', gap: 2 }}>
               {txt.split('').map((char, index) => {
                 const isComparing = current.phase === 'search' && current.textIdx === index;
@@ -366,7 +366,7 @@ export default function KMPVisualizer() {
                 
                 let border = '1px solid rgba(0,240,255,0.06)';
                 let bg = 'rgba(10,15,30,0.7)';
-                let col = '#e8f4ff';
+                let col = '#e8e8ed';
 
                 if (isComparing) {
                   border = `2.5px solid ${current.match ? '#1d9e75' : '#ff2d78'}`;
@@ -382,7 +382,7 @@ export default function KMPVisualizer() {
                   <div key={index} style={{
                     width: 26, height: 26, borderRadius: 4, border: border, background: bg,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontFamily: 'JetBrains Mono,monospace', fontSize: 12, fontWeight: 'bold', color: col,
+                    fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 'bold', color: col,
                     transition: 'all 0.25s',
                   }}>
                     {char}
@@ -395,7 +395,7 @@ export default function KMPVisualizer() {
           {/* Pattern Slide Row */}
           {current.phase === 'search' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#5a7a9a' }}>PATTERN ALIGNMENT (j)</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#5a7a9a' }}>PATTERN ALIGNMENT (j)</span>
               
               {/* We apply a margin-left offset representing pattern shift under text */}
               <div style={{
@@ -420,7 +420,7 @@ export default function KMPVisualizer() {
                     <div key={index} style={{
                       width: 26, height: 26, borderRadius: 4, border: border, background: bg,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      fontFamily: 'JetBrains Mono,monospace', fontSize: 12, fontWeight: 'bold', color: col,
+                      fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 'bold', color: col,
                       transition: 'all 0.25s',
                     }}>
                       {char}
@@ -442,7 +442,7 @@ export default function KMPVisualizer() {
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 12, height: 12, borderRadius: 2, background: l.color + '22', border: `1.5px solid ${l.color}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'Outfit,sans-serif' }}>{l.label}</span>
+            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l.label}</span>
           </div>
         ))}
       </div>
@@ -478,8 +478,8 @@ const inpStyle = {
   border: '1px solid rgba(0,240,255,0.2)',
   borderRadius: 8,
   padding: '6px 10px',
-  color: '#e8f4ff',
-  fontFamily: 'JetBrains Mono,monospace',
+  color: '#e8e8ed',
+  fontFamily: 'var(--font-mono)',
   fontSize: 12,
   outline: 'none',
 };

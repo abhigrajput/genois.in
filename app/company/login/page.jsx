@@ -30,14 +30,14 @@ export default function CompanyLoginPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#020812', color: '#e8f4ff', fontFamily: 'Outfit,sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+    <div style={{ minHeight: '100vh', background: '#020812', color: '#e8e8ed', fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
       <div style={{ width: '100%', maxWidth: 420 }}>
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 26, fontWeight: 800, marginBottom: 8 }}>
-            <span style={{ color: '#00f0ff' }}>GEN</span><span style={{ color: '#e8f4ff' }}>OIS</span>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, marginBottom: 8 }}>
+            <span style={{ color: '#00f0ff' }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
             <span style={{ color: '#5a7a9a', fontSize: 16, fontWeight: 400, marginLeft: 8 }}>for Companies</span>
           </div>
-          <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 22, fontWeight: 800, color: '#e8f4ff', marginBottom: 8 }}>Company Login</h1>
+          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>Company Login</h1>
         </div>
 
         <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.12)', borderRadius: 14, padding: 28 }}>
@@ -46,14 +46,14 @@ export default function CompanyLoginPage() {
             { label: 'PASSWORD', value: password, set: setPassword, type: 'password', placeholder: 'Your password' },
           ].map(f => (
             <div key={f.label} style={{ marginBottom: 14 }}>
-              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace', letterSpacing: 1, marginBottom: 6 }}>{f.label}</div>
-              <input type={f.type} value={f.value} onChange={e => f.set(e.target.value)} placeholder={f.placeholder} onKeyDown={e => e.key === 'Enter' && login()} style={{ width: '100%', padding: '11px 14px', borderRadius: 10, border: '1px solid rgba(0,240,255,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8f4ff', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 6 }}>{f.label}</div>
+              <input type={f.type} value={f.value} onChange={e => f.set(e.target.value)} placeholder={f.placeholder} onKeyDown={e => e.key === 'Enter' && login()} style={{ width: '100%', padding: '11px 14px', borderRadius: 10, border: '1px solid rgba(0,240,255,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
             </div>
           ))}
 
           {error && <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(255,45,120,0.1)', border: '1px solid rgba(255,45,120,0.2)', color: '#ff2d78', fontSize: 13, marginBottom: 14 }}>{error}</div>}
 
-          <button onClick={login} disabled={loading} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: loading ? 'rgba(0,240,255,0.2)' : 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, marginBottom: 12 }}>
+          <button onClick={login} disabled={loading} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: loading ? 'rgba(0,240,255,0.2)' : 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, marginBottom: 12 }}>
             {loading ? 'Logging in...' : 'Login →'}
           </button>
 

@@ -44,7 +44,7 @@ export default function SubscriptionPage() {
       name: 'Performer',
       price: '₹299',
       period: '/month',
-      color: '#7b5cff',
+      color: '#ff6b4a',
       badge: 'MOST POPULAR',
       features: [
         'Everything in Player plan',
@@ -82,9 +82,9 @@ export default function SubscriptionPage() {
   ];
 
   return (
-    <div style={{ fontFamily: 'Outfit,sans-serif', width: '100%', paddingBottom: 60 }}>
+    <div style={{ fontFamily: 'var(--font-body)', width: '100%', paddingBottom: 60 }}>
       <div style={{ marginBottom: 32 }}>
-        <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 28, fontWeight: 800, color: '#e8f4ff', marginBottom: 8 }}>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>
           Subscription Plans
         </h1>
         <p style={{ color: '#5a7a9a', fontSize: 14 }}>Pick your level. Cancel anytime.</p>
@@ -93,7 +93,7 @@ export default function SubscriptionPage() {
       <div style={{ background: 'rgba(239,159,39,0.08)', border: '1px solid rgba(239,159,39,0.25)', borderRadius: 14, padding: '16px 20px', marginBottom: 32, display: 'flex', alignItems: 'flex-start', gap: 14 }}>
         <span style={{ fontSize: 28, flexShrink: 0 }}>🔧</span>
         <div>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, color: '#EF9F27', marginBottom: 6 }}>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: '#EF9F27', marginBottom: 6 }}>
             Payments Temporarily Suspended
           </div>
           <div style={{ fontSize: 13, color: '#8a9ab0', lineHeight: 1.7 }}>
@@ -108,14 +108,14 @@ export default function SubscriptionPage() {
         {plans.map(plan => (
           <div key={plan.name} style={{ background: '#070f1f', border: `1px solid ${plan.color}30`, borderRadius: 16, padding: 24, position: 'relative', display: 'flex', flexDirection: 'column' }}>
             {plan.badge && (
-              <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', padding: '4px 14px', borderRadius: 20, background: plan.color, color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 10, fontWeight: 800, letterSpacing: 1, whiteSpace: 'nowrap' }}>
+              <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', padding: '4px 14px', borderRadius: 20, background: plan.color, color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 10, fontWeight: 800, letterSpacing: 1, whiteSpace: 'nowrap' }}>
                 {plan.badge}
               </div>
             )}
             <div style={{ marginBottom: 16 }}>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 800, color: plan.color, marginBottom: 4 }}>{plan.name}</div>
+              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 800, color: plan.color, marginBottom: 4 }}>{plan.name}</div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                <span style={{ fontFamily: 'Syne,sans-serif', fontSize: 32, fontWeight: 900, color: '#e8f4ff' }}>{plan.price}</span>
+                <span style={{ fontFamily: 'var(--font-heading)', fontSize: 32, fontWeight: 900, color: '#e8e8ed' }}>{plan.price}</span>
                 <span style={{ fontSize: 13, color: '#5a7a9a' }}>{plan.period}</span>
               </div>
             </div>
@@ -127,7 +127,7 @@ export default function SubscriptionPage() {
                 </div>
               ))}
             </div>
-            <div style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', textAlign: 'center', color: '#3a4a5a', fontFamily: 'JetBrains Mono,monospace', fontSize: 11, fontWeight: 600, letterSpacing: 1 }}>
+            <div style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', textAlign: 'center', color: '#3a4a5a', fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 600, letterSpacing: 1 }}>
               PAYMENTS SUSPENDED
             </div>
           </div>
@@ -135,7 +135,7 @@ export default function SubscriptionPage() {
       </div>
 
       <div style={{ marginTop: 32, textAlign: 'center' }}>
-        <button onClick={() => router.push('/dashboard')} style={{ padding: '12px 28px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700 }}>
+        <button onClick={() => router.push('/dashboard')} style={{ padding: '12px 28px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
           Back to Dashboard →
         </button>
       </div>

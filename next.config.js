@@ -1,5 +1,7 @@
 const nextConfig = {
   reactStrictMode: true,
+  // Allow building to a dir outside OneDrive (avoids EBUSY sync locks); defaults to .next
+  distDir: process.env.NEXT_DIST_DIR || '.next',
   images: {
     minimumCacheTTL: 60,
   },

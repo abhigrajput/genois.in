@@ -37,7 +37,7 @@ const TRICKS = [
 const TOPICS = ['All', 'Ratio & Proportion', 'Percentage', 'Profit & Loss', 'Speed & Distance', 'Trains', 'Boats', 'Time & Work', 'Interest', 'Numbers', 'HCF & LCM', 'Ages', 'Calendar', 'Clocks', 'P & C', 'Probability', 'Averages', 'Mixtures', 'Partnership', 'Progressions'];
 
 const DIFF_BG = { easy: 'rgba(16,185,129,0.12)', hard: 'rgba(239,68,68,0.12)', medium: 'rgba(245,158,11,0.12)' };
-const DIFF_FG = { easy: '#10b981', hard: '#ef4444', medium: '#f59e0b' };
+const DIFF_FG = { easy: '#10b981', hard: '#ef4444', medium: '#ffb020' };
 
 function ModeTabs({ mode, setMode }) {
   const tabs = [
@@ -45,15 +45,15 @@ function ModeTabs({ mode, setMode }) {
     { key: 'shortcuts', label: 'Shortcuts', icon: BookOpen },
   ];
   return (
-    <div style={{ display: 'inline-flex', gap: 4, padding: 4, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(99,102,241,0.12)', borderRadius: 12, marginBottom: 20 }}>
+    <div style={{ display: 'inline-flex', gap: 4, padding: 4, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(0,217,163,0.12)', borderRadius: 12, marginBottom: 20 }}>
       {tabs.map(t => {
         const active = mode === t.key;
         const Icon = t.icon;
         return (
           <button key={t.key} onClick={() => setMode(t.key)} style={{
             display: 'flex', alignItems: 'center', gap: 7, padding: '8px 16px', borderRadius: 9,
-            border: 'none', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700,
-            background: active ? '#6366f1' : 'transparent', color: active ? '#fff' : '#9ca3af',
+            border: 'none', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700,
+            background: active ? '#00d9a3' : 'transparent', color: active ? '#fff' : '#9ca3af',
           }}>
             <Icon size={15} />{t.label}
           </button>
@@ -83,11 +83,11 @@ function ShortcutsView({ mode, setMode }) {
   }, [search, topic]);
 
   return (
-    <div style={{ fontFamily: 'Outfit,sans-serif', width: '100%' }}>
+    <div style={{ fontFamily: 'var(--font-body)', width: '100%' }}>
       <ModeTabs mode={mode} setMode={setMode} />
 
       <div style={{ marginBottom: 20 }}>
-        <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 28, fontWeight: 800, color: '#e2e8f0', marginBottom: 4 }}>Aptitude Shortcuts</h1>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, color: '#e2e8f0', marginBottom: 4 }}>Aptitude Shortcuts</h1>
         <p style={{ color: '#9ca3af', fontSize: 14 }}>Quick tricks for TCS NQT, Infosys SP, Wipro NLTH</p>
       </div>
 
@@ -99,8 +99,8 @@ function ShortcutsView({ mode, setMode }) {
           placeholder="Search shortcuts, topics, formulas..."
           style={{
             width: '100%', padding: '12px 14px 12px 40px', borderRadius: 12,
-            background: '#13131f', border: '1px solid rgba(99,102,241,0.12)',
-            color: '#e2e8f0', fontSize: 14, fontFamily: 'Outfit,sans-serif', outline: 'none',
+            background: '#12121a', border: '1px solid rgba(0,217,163,0.12)',
+            color: '#e2e8f0', fontSize: 14, fontFamily: 'var(--font-body)', outline: 'none',
           }}
         />
       </div>
@@ -111,43 +111,43 @@ function ShortcutsView({ mode, setMode }) {
           return (
             <button key={tp} onClick={() => setTopic(tp)} style={{
               flexShrink: 0, padding: '7px 14px', borderRadius: 20, cursor: 'pointer',
-              fontSize: 12, fontFamily: 'JetBrains Mono,monospace', whiteSpace: 'nowrap',
-              background: active ? '#6366f1' : 'transparent',
+              fontSize: 12, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap',
+              background: active ? '#00d9a3' : 'transparent',
               color: active ? '#fff' : '#9ca3af',
-              border: active ? '1px solid #6366f1' : '1px solid rgba(99,102,241,0.18)',
+              border: active ? '1px solid #00d9a3' : '1px solid rgba(0,217,163,0.18)',
             }}>{tp}</button>
           );
         })}
       </div>
 
-      <div style={{ fontSize: 12, color: '#6b7280', fontFamily: 'JetBrains Mono,monospace', marginBottom: 14 }}>
+      <div style={{ fontSize: 12, color: '#6b7280', fontFamily: 'var(--font-mono)', marginBottom: 14 }}>
         Showing {filtered.length} of {TRICKS.length} shortcuts
       </div>
 
       {filtered.length === 0 ? (
-        <div style={{ padding: 40, textAlign: 'center', color: '#6b7280', fontFamily: 'JetBrains Mono,monospace', fontSize: 13 }}>
+        <div style={{ padding: 40, textAlign: 'center', color: '#6b7280', fontFamily: 'var(--font-mono)', fontSize: 13 }}>
           No shortcuts match your search.
         </div>
       ) : filtered.map((trick, i) => (
         <div key={i} style={{
-          background: '#13131f',
-          border: '1px solid rgba(99,102,241,0.12)',
+          background: '#12121a',
+          border: '1px solid rgba(0,217,163,0.12)',
           borderRadius: 14, padding: '20px 22px',
           marginBottom: 14,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: 'rgba(99,102,241,0.12)', color: '#818cf8', fontFamily: 'JetBrains Mono,monospace' }}>{trick.topic}</span>
+            <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: 'rgba(0,217,163,0.12)', color: '#2ee6b0', fontFamily: 'var(--font-mono)' }}>{trick.topic}</span>
             <span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 20, background: DIFF_BG[trick.difficulty], color: DIFF_FG[trick.difficulty] }}>{trick.difficulty}</span>
           </div>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 17, fontWeight: 700, color: '#e2e8f0', marginBottom: 8 }}>{trick.title}</div>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 17, fontWeight: 700, color: '#e2e8f0', marginBottom: 8 }}>{trick.title}</div>
           <div style={{ fontSize: 14, color: '#9ca3af', lineHeight: 1.7, marginBottom: 12 }}>{trick.content}</div>
-          <div style={{ background: 'rgba(99,102,241,0.06)', borderRadius: 10, padding: '10px 14px', marginBottom: 10 }}>
-            <span style={{ fontSize: 11, color: '#818cf8', fontFamily: 'JetBrains Mono,monospace' }}>EXAMPLE</span>
+          <div style={{ background: 'rgba(0,217,163,0.06)', borderRadius: 10, padding: '10px 14px', marginBottom: 10 }}>
+            <span style={{ fontSize: 11, color: '#2ee6b0', fontFamily: 'var(--font-mono)' }}>EXAMPLE</span>
             <div style={{ fontSize: 13, color: '#d1d5db', marginTop: 4 }}>{trick.example}</div>
           </div>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {trick.companies.map(c => (
-              <span key={c} style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'rgba(255,255,255,0.04)', color: '#6b7280', fontFamily: 'JetBrains Mono,monospace' }}>{c}</span>
+              <span key={c} style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'rgba(255,255,255,0.04)', color: '#6b7280', fontFamily: 'var(--font-mono)' }}>{c}</span>
             ))}
           </div>
         </div>
@@ -227,28 +227,28 @@ export default function AptitudePage() {
     </PermissionGate>
   );
 
-  if (loading) return <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center', fontFamily: 'JetBrains Mono,monospace' }}>Loading aptitude...</div>;
+  if (loading) return <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center', fontFamily: 'var(--font-mono)' }}>Loading aptitude...</div>;
 
   if (phase === 'loading') return (
-    <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center', fontFamily: 'JetBrains Mono,monospace' }}>
+    <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center', fontFamily: 'var(--font-mono)' }}>
       <div style={{ fontSize: 48, marginBottom: 16 }}>🧠</div>
-      <div style={{ fontSize: 16, color: '#e8f4ff', fontFamily: 'Syne,sans-serif', fontWeight: 700 }}>Generating 10 {activeTopic?.name} questions...</div>
+      <div style={{ fontSize: 16, color: '#e8e8ed', fontFamily: 'var(--font-heading)', fontWeight: 700 }}>Generating 10 {activeTopic?.name} questions...</div>
     </div>
   );
 
   if (phase === 'result' && result) {
     return (
-      <div style={{ maxWidth: 760, margin: '0 auto', fontFamily: 'Outfit,sans-serif' }}>
+      <div style={{ maxWidth: 760, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
         <div style={{ background: '#070f1f', border: `1px solid ${result.score >= 70 ? 'rgba(29,158,117,0.3)' : 'rgba(239,159,39,0.3)'}`, borderRadius: 14, padding: 28, marginBottom: 20, textAlign: 'center' }}>
           <div style={{ fontSize: 56, marginBottom: 12 }}>{result.score >= 85 ? '🏆' : result.score >= 70 ? '✅' : '💪'}</div>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 48, fontWeight: 800, color: result.score >= 70 ? '#1D9E75' : '#EF9F27', lineHeight: 1, marginBottom: 6 }}>{result.score}%</div>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, color: '#e8f4ff', marginBottom: 8 }}>{result.correct}/{result.total} correct</div>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 48, fontWeight: 800, color: result.score >= 70 ? '#1D9E75' : '#EF9F27', lineHeight: 1, marginBottom: 6 }}>{result.score}%</div>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, color: '#e8e8ed', marginBottom: 8 }}>{result.correct}/{result.total} correct</div>
           {result.pointsEarned > 0 && (
-            <div style={{ display: 'inline-block', padding: '6px 14px', borderRadius: 20, background: 'rgba(29,158,117,0.1)', color: '#1D9E75', fontSize: 12, fontFamily: 'JetBrains Mono,monospace' }}>+{result.pointsEarned} pts earned</div>
+            <div style={{ display: 'inline-block', padding: '6px 14px', borderRadius: 20, background: 'rgba(29,158,117,0.1)', color: '#1D9E75', fontSize: 12, fontFamily: 'var(--font-mono)' }}>+{result.pointsEarned} pts earned</div>
           )}
         </div>
 
-        <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 14 }}>ANSWER REVIEW</div>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 14 }}>ANSWER REVIEW</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {result.results.map((r, i) => (
             <div key={i} style={{ background: '#070f1f', border: `1px solid ${r.isCorrect ? 'rgba(29,158,117,0.15)' : 'rgba(255,45,120,0.15)'}`, borderRadius: 10, padding: 14 }}>
@@ -267,7 +267,7 @@ export default function AptitudePage() {
           ))}
         </div>
 
-        <button onClick={() => { setPhase('list'); setActiveTopic(null); setResult(null); }} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700, marginTop: 20 }}>
+        <button onClick={() => { setPhase('list'); setActiveTopic(null); setResult(null); }} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, marginTop: 20 }}>
           Back to Topics →
         </button>
       </div>
@@ -280,23 +280,23 @@ export default function AptitudePage() {
     const answeredCount = Object.keys(answers).length;
 
     return (
-      <div style={{ maxWidth: 740, margin: '0 auto', fontFamily: 'Outfit,sans-serif' }}>
+      <div style={{ maxWidth: 740, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <button onClick={() => { if (confirm('Exit? Progress lost.')) setPhase('list'); }} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#5a7a9a', fontSize: 18 }}>←</button>
             <div>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 15, fontWeight: 700, color: '#e8f4ff' }}>{activeTopic?.name}</div>
-              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>Q{currentQ + 1}/{questions.length} · {answeredCount} answered</div>
+              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: '#e8e8ed' }}>{activeTopic?.name}</div>
+              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>Q{currentQ + 1}/{questions.length} · {answeredCount} answered</div>
             </div>
           </div>
         </div>
 
         <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, marginBottom: 20, overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${((currentQ + 1) / questions.length) * 100}%`, background: 'linear-gradient(90deg,#00f0ff,#7b5cff)', borderRadius: 3, transition: 'width 0.3s' }} />
+          <div style={{ height: '100%', width: `${((currentQ + 1) / questions.length) * 100}%`, background: 'linear-gradient(90deg,#00f0ff,#ff6b4a)', borderRadius: 3, transition: 'width 0.3s' }} />
         </div>
 
         <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24, marginBottom: 18 }}>
-          <div style={{ fontSize: 16, color: '#e8f4ff', lineHeight: 1.75, fontWeight: 500, whiteSpace: 'pre-wrap' }}>{q.question}</div>
+          <div style={{ fontSize: 16, color: '#e8e8ed', lineHeight: 1.75, fontWeight: 500, whiteSpace: 'pre-wrap' }}>{q.question}</div>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
@@ -304,18 +304,18 @@ export default function AptitudePage() {
             const isSelected = answers[currentQ] === opt;
             return (
               <button key={oi} onClick={() => setAnswers(p => ({ ...p, [currentQ]: opt }))} style={{ padding: '13px 16px', borderRadius: 10, cursor: 'pointer', textAlign: 'left', border: `1px solid ${isSelected ? 'rgba(0,240,255,0.5)' : 'rgba(255,255,255,0.06)'}`, background: isSelected ? 'rgba(0,240,255,0.08)' : 'rgba(255,255,255,0.01)', color: isSelected ? '#00f0ff' : '#c8d8e8', fontSize: 14, lineHeight: 1.5 }}>
-                <span style={{ color: isSelected ? '#00f0ff' : '#5a7a9a', marginRight: 10, fontFamily: 'JetBrains Mono,monospace', fontWeight: 700 }}>{letters[oi]}.</span>{opt}
+                <span style={{ color: isSelected ? '#00f0ff' : '#5a7a9a', marginRight: 10, fontFamily: 'var(--font-mono)', fontWeight: 700 }}>{letters[oi]}.</span>{opt}
               </button>
             );
           })}
         </div>
 
         <div style={{ display: 'flex', gap: 10 }}>
-          {currentQ > 0 && <button onClick={() => setCurrentQ(c => c - 1)} style={{ flex: 1, padding: '13px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 14 }}>← Prev</button>}
+          {currentQ > 0 && <button onClick={() => setCurrentQ(c => c - 1)} style={{ flex: 1, padding: '13px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 14 }}>← Prev</button>}
           {currentQ < questions.length - 1 ? (
-            <button onClick={() => setCurrentQ(c => c + 1)} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700 }}>Next →</button>
+            <button onClick={() => setCurrentQ(c => c + 1)} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>Next →</button>
           ) : (
-            <button onClick={submitSession} disabled={submitting} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: submitting ? 'not-allowed' : 'pointer', background: submitting ? 'rgba(0,240,255,0.2)' : 'linear-gradient(135deg,#1D9E75,#00f0ff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700 }}>
+            <button onClick={submitSession} disabled={submitting} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: submitting ? 'not-allowed' : 'pointer', background: submitting ? 'rgba(0,240,255,0.2)' : 'linear-gradient(135deg,#1D9E75,#00f0ff)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
               {submitting ? 'Scoring...' : `Submit ${answeredCount}/${questions.length} →`}
             </button>
           )}
@@ -330,17 +330,17 @@ export default function AptitudePage() {
 
   return (
   <PermissionGate feature="aptitude_training">
-  <div style={{ fontFamily: 'Outfit,sans-serif', width: '100%' }}>
+  <div style={{ fontFamily: 'var(--font-body)', width: '100%' }}>
     <ModeTabs mode={mode} setMode={setMode} />
     <div style={{ marginBottom: 24 }}>
-      <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 26, fontWeight: 800, color: '#e8f4ff', marginBottom: 4 }}>🧠 Aptitude Training</h1>
+      <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: '#e8e8ed', marginBottom: 4 }}>🧠 Aptitude Training</h1>
       <p style={{ color: '#5a7a9a', fontSize: 13 }}>Quant, Logical, Verbal. Crack TCS, Infosys, Wipro placement tests.</p>
     </div>
 
     {!level ? (
-      <div style={{ background: 'linear-gradient(135deg,rgba(0,240,255,0.06),rgba(123,92,255,0.03))', border: '2px solid rgba(0,240,255,0.15)', borderRadius: 14, padding: 24, textAlign: 'center' }}>
+      <div style={{ background: 'linear-gradient(135deg,rgba(0,240,255,0.06),rgba(255,107,74,0.03))', border: '2px solid rgba(0,240,255,0.15)', borderRadius: 14, padding: 24, textAlign: 'center' }}>
         <div style={{ fontSize: 40, marginBottom: 12 }}>🎯</div>
-        <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 800, color: '#e8f4ff', marginBottom: 8 }}>
+        <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>
           Pick your aptitude level
         </div>
         <div style={{ color: '#5a7a9a', fontSize: 13, marginBottom: 20 }}>
@@ -353,7 +353,7 @@ export default function AptitudePage() {
             { key: 'hard', label: '🔥 Advanced', desc: 'Company-level', color: '#ff2d78' },
           ].map(l => (
             <button key={l.key} onClick={() => setLevel(l.key)} style={{ padding: '18px', borderRadius: 10, border: `1px solid ${l.color}30`, background: 'rgba(255,255,255,0.02)', cursor: 'pointer', textAlign: 'center' }}>
-              <div style={{ fontSize: 16, marginBottom: 6, color: l.color, fontFamily: 'Syne,sans-serif', fontWeight: 700 }}>{l.label}</div>
+              <div style={{ fontSize: 16, marginBottom: 6, color: l.color, fontFamily: 'var(--font-heading)', fontWeight: 700 }}>{l.label}</div>
               <div style={{ fontSize: 12, color: '#5a7a9a' }}>{l.desc}</div>
             </button>
           ))}
@@ -362,10 +362,10 @@ export default function AptitudePage() {
     ) : (
       <>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, padding: '10px 16px', background: 'rgba(255,255,255,0.02)', borderRadius: 10 }}>
-          <div style={{ fontSize: 12, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>
+          <div style={{ fontSize: 12, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>
             LEVEL: <span style={{ color: level === 'easy' ? '#1D9E75' : level === 'medium' ? '#EF9F27' : '#ff2d78', fontWeight: 700 }}>{level.toUpperCase()}</span>
           </div>
-          <button onClick={() => setLevel(null)} style={{ background: 'transparent', border: 'none', color: '#00f0ff', cursor: 'pointer', fontSize: 12, fontFamily: 'Syne,sans-serif', fontWeight: 600 }}>
+          <button onClick={() => setLevel(null)} style={{ background: 'transparent', border: 'none', color: '#00f0ff', cursor: 'pointer', fontSize: 12, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
             Change →
           </button>
         </div>
@@ -375,12 +375,12 @@ export default function AptitudePage() {
             { label: 'Sessions', value: progress?.total_sessions ?? 0, color: '#00f0ff' },
             { label: 'Streak', value: '🔥' + (progress?.current_streak ?? 0), color: '#EF9F27' },
             { label: 'Best Quant', value: (progress?.quant_score ?? 0) + '%', color: '#1D9E75' },
-            { label: 'Best Logical', value: (progress?.logical_score ?? 0) + '%', color: '#7b5cff' },
+            { label: 'Best Logical', value: (progress?.logical_score ?? 0) + '%', color: '#ff6b4a' },
             { label: 'Best Verbal', value: (progress?.verbal_score ?? 0) + '%', color: '#EF9F27' },
           ].map(s => (
             <div key={s.label} style={{ background: '#070f1f', border: `1px solid ${s.color}15`, borderRadius: 12, padding: '14px', textAlign: 'center' }}>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 800, color: s.color }}>{s.value}</div>
-              <div style={{ fontSize: 10, color: '#5a7a9a', marginTop: 4, fontFamily: 'JetBrains Mono,monospace' }}>{s.label}</div>
+              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 800, color: s.color }}>{s.value}</div>
+              <div style={{ fontSize: 10, color: '#5a7a9a', marginTop: 4, fontFamily: 'var(--font-mono)' }}>{s.label}</div>
             </div>
           ))}
         </div>
@@ -390,7 +390,7 @@ export default function AptitudePage() {
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
               <span style={{ fontSize: 22 }}>{cat.icon}</span>
               <div>
-                <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: cat.color }}>{cat.label}</div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: cat.color }}>{cat.label}</div>
                 <div style={{ fontSize: 11, color: '#5a7a9a' }}>{cat.description}</div>
               </div>
             </div>
@@ -398,9 +398,9 @@ export default function AptitudePage() {
               {cat.topics.map(topic => (
                 <div key={topic.slug} onClick={() => startTopic(slug, topic)} style={{ background: '#070f1f', border: `1px solid ${cat.color}15`, borderRadius: 10, padding: '14px', cursor: 'pointer' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600, color: '#e8f4ff' }}>{topic.name}</div>
+                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600, color: '#e8e8ed' }}>{topic.name}</div>
                   </div>
-                  <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>10 Q · Start →</div>
+                  <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>10 Q · Start →</div>
                 </div>
               ))}
             </div>

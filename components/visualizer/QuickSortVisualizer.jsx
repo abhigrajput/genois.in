@@ -187,7 +187,7 @@ function barColor(idx, step) {
   if (step.scanning === idx) return '#378ADD';
   if (step.subarray && idx >= step.subarray[0] && idx <= step.subarray[1]) return '#1a2a4a';
   if (step.low != null && idx >= step.low && idx < step.pivot) {
-    if (step.i != null && idx <= step.i) return '#7b5cff';
+    if (step.i != null && idx <= step.i) return '#ff6b4a';
     return '#1a2a3a';
   }
   return '#1a2a3a';
@@ -234,12 +234,12 @@ export default function QuickSortVisualizer() {
         {[
           { label:'Pivot Value', value: current?.pivot != null && !current.done ? displayArr[current.pivot] : '-', color:'#ef9f27' },
           { label:'Phase', value: current?.pivotPlaced != null ? 'Placed' : current?.scanning != null ? 'Scanning' : current?.done ? 'Done' : 'Divide', color:'#00f0ff' },
-          { label:'Avg Time', value:'O(n log n)', color:'#7b5cff' },
+          { label:'Avg Time', value:'O(n log n)', color:'#ff6b4a' },
           { label:'Space', value:'O(log n)', color:'#1d9e75' },
         ].map(s => (
           <div key={s.label} style={{ background:'rgba(10,15,30,0.8)', border:`1px solid ${s.color}20`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
-            <div style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
-            <div style={{ fontFamily:'Syne,sans-serif', fontSize:18, fontWeight:700, color:s.color }}>{s.value}</div>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
+            <div style={{ fontFamily:'var(--font-heading)', fontSize:18, fontWeight:700, color:s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
@@ -247,12 +247,12 @@ export default function QuickSortVisualizer() {
       <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
         {displayArr.map((v, i) => (
           <div key={i} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, flex:1, maxWidth:60 }}>
-            <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:barColor(i, current) }}>{v}</span>
+            <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:barColor(i, current) }}>{v}</span>
             <div style={{ width:'100%', borderRadius:'4px 4px 0 0', height:`${(v / maxVal) * 160}px`, background:barColor(i, current), transition:'all 0.3s ease', minHeight:4,
               boxShadow: current?.pivot === i ? `0 0 16px #ef9f2780` : 'none',
             }} />
             {current?.pivot === i && (
-              <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:9, color:'#ef9f27', marginTop:2 }}>PIVOT</span>
+              <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'#ef9f27', marginTop:2 }}>PIVOT</span>
             )}
           </div>
         ))}
@@ -266,10 +266,10 @@ export default function QuickSortVisualizer() {
       />
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
-        {[['#ef9f27','Pivot'],['#7b5cff','≤ Pivot'],['#378ADD','Scanning'],['#00f0ff','Swapping'],['#1d9e75','Placed']].map(([c,l]) => (
+        {[['#ef9f27','Pivot'],['#ff6b4a','≤ Pivot'],['#378ADD','Scanning'],['#00f0ff','Swapping'],['#1d9e75','Placed']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:2, background:c }}/>
-            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'Outfit,sans-serif' }}>{l}</span>
+            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>

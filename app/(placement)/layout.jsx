@@ -13,7 +13,7 @@ export default function PlacementLayout({ children }) {
   }, [pathname, router]);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#030a03', color: '#e2ffe2', fontFamily: 'JetBrains Mono, monospace' }}>
+    <div style={{ minHeight: '100vh', background: '#030a03', color: '#e2ffe2', fontFamily: 'var(--font-mono)' }}>
       {children}
     </div>
   );

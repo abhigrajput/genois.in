@@ -45,7 +45,7 @@ export default function GlowUpPage() {
   }
 
   if (loading) return (
-    <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center', fontFamily: 'JetBrains Mono,monospace' }}>
+    <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center', fontFamily: 'var(--font-mono)' }}>
       Calculating your glow up...
     </div>
   );
@@ -59,27 +59,27 @@ export default function GlowUpPage() {
 
   if (!data?.isEligible) {
     return (
-      <div style={{ maxWidth: 600, margin: '0 auto', fontFamily: 'Outfit,sans-serif', textAlign: 'center', paddingTop: 60 }}>
+      <div style={{ maxWidth: 600, margin: '0 auto', fontFamily: 'var(--font-body)', textAlign: 'center', paddingTop: 60 }}>
         <div style={{ fontSize: 64, marginBottom: 16 }}>⏳</div>
-        <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 12 }}>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 12 }}>
           Glow Up unlocks at Day 15
         </h1>
         <p style={{ color: '#5a7a9a', fontSize: 15, marginBottom: 8 }}>
           You are on Day {data?.currentDay}. Keep grinding for {15 - (data?.currentDay || 0)} more days.
         </p>
-        <p style={{ color: '#3a4a5a', fontSize: 13, fontFamily: 'JetBrains Mono,monospace' }}>
+        <p style={{ color: '#3a4a5a', fontSize: 13, fontFamily: 'var(--font-mono)' }}>
           At Day 15 and Day 30 your transformation card is generated automatically.
         </p>
         <div style={{ marginTop: 32, background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24 }}>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 16 }}>YOUR PROGRESS SO FAR</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 16 }}>YOUR PROGRESS SO FAR</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
             {[
               { label: 'Current Day', value: data?.currentDay, color: '#00f0ff' },
-              { label: 'Score', value: data?.currentScore, color: '#7b5cff' },
+              { label: 'Score', value: data?.currentScore, color: '#ff6b4a' },
               { label: 'Streak', value: `🔥${data?.streak}`, color: '#EF9F27' },
             ].map(s => (
               <div key={s.label} style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 10, padding: 16, textAlign: 'center' }}>
-                <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 22, fontWeight: 800, color: s.color }}>{s.value}</div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 800, color: s.color }}>{s.value}</div>
                 <div style={{ fontSize: 11, color: '#5a7a9a', marginTop: 4 }}>{s.label}</div>
               </div>
             ))}
@@ -90,8 +90,8 @@ export default function GlowUpPage() {
   }
 
   return (
-    <div style={{ maxWidth: 600, margin: '0 auto', fontFamily: 'Outfit,sans-serif' }}>
-      <h1 style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: '#e8f4ff', marginBottom: 4 }}>
+    <div style={{ maxWidth: 600, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
+      <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 4 }}>
         Your Glow Up 🔥
       </h1>
       <p style={{ color: '#5a7a9a', fontSize: 13, marginBottom: 28 }}>
@@ -113,39 +113,39 @@ export default function GlowUpPage() {
 
         {/* Header */}
         <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 800 }}>
-            <span style={{ color: '#00f0ff' }}>GEN</span><span style={{ color: '#e8f4ff' }}>OIS</span>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800 }}>
+            <span style={{ color: '#00f0ff' }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
           </div>
-          <div style={{ padding: '4px 12px', borderRadius: 20, background: `${domainColor}15`, border: `1px solid ${domainColor}30`, color: domainColor, fontSize: 11, fontFamily: 'JetBrains Mono,monospace', fontWeight: 600 }}>
+          <div style={{ padding: '4px 12px', borderRadius: 20, background: `${domainColor}15`, border: `1px solid ${domainColor}30`, color: domainColor, fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
             DAY {data?.currentDay} GLOW UP
           </div>
         </div>
 
         {/* Name */}
         <div style={{ position: 'relative', zIndex: 1, marginBottom: 24 }}>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 26, fontWeight: 800, color: '#e8f4ff', marginBottom: 4 }}>{data?.name}</div>
-          {data?.college && <div style={{ fontSize: 12, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>{data.college}</div>}
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: '#e8e8ed', marginBottom: 4 }}>{data?.name}</div>
+          {data?.college && <div style={{ fontSize: 12, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>{data.college}</div>}
         </div>
 
         {/* Score transformation */}
         <div style={{ position: 'relative', zIndex: 1, background: 'rgba(255,255,255,0.03)', borderRadius: 14, padding: 20, marginBottom: 20, border: '1px solid rgba(255,255,255,0.06)' }}>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 16 }}>SCORE TRANSFORMATION</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 16 }}>SCORE TRANSFORMATION</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
             <div style={{ textAlign: 'center', flex: 1 }}>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', marginBottom: 4 }}>DAY 1</div>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 28, fontWeight: 800, color: '#3a4a5a' }}>{data?.day1Score}</div>
-              <div style={{ fontSize: 10, color: '#3a4a5a', fontFamily: 'JetBrains Mono,monospace' }}>pts</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 4 }}>DAY 1</div>
+              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, color: '#3a4a5a' }}>{data?.day1Score}</div>
+              <div style={{ fontSize: 10, color: '#3a4a5a', fontFamily: 'var(--font-mono)' }}>pts</div>
             </div>
             <div style={{ fontSize: 24, color: domainColor }}>→</div>
             <div style={{ textAlign: 'center', flex: 1 }}>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', marginBottom: 4 }}>DAY {data?.currentDay}</div>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 36, fontWeight: 800, color: domainColor }}>{data?.currentScore}</div>
-              <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>pts</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 4 }}>DAY {data?.currentDay}</div>
+              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 36, fontWeight: 800, color: domainColor }}>{data?.currentScore}</div>
+              <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>pts</div>
             </div>
             <div style={{ textAlign: 'center', flex: 1 }}>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#1D9E75', marginBottom: 4 }}>GROWTH</div>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 28, fontWeight: 800, color: '#1D9E75' }}>+{data?.scoreImprovement}</div>
-              <div style={{ fontSize: 10, color: '#1D9E75', fontFamily: 'JetBrains Mono,monospace' }}>pts gained</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#1D9E75', marginBottom: 4 }}>GROWTH</div>
+              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, color: '#1D9E75' }}>+{data?.scoreImprovement}</div>
+              <div style={{ fontSize: 10, color: '#1D9E75', fontFamily: 'var(--font-mono)' }}>pts gained</div>
             </div>
           </div>
         </div>
@@ -155,12 +155,12 @@ export default function GlowUpPage() {
           {[
             { label: 'Global Rank', value: `#${data?.currentRank}`, sub: `of ${data?.totalStudents}`, color: '#00f0ff' },
             { label: 'Day Streak', value: `🔥${data?.streak}`, sub: 'days', color: '#EF9F27' },
-            { label: 'Topics Covered', value: data?.topicsCovered, sub: 'topics', color: '#7b5cff' },
+            { label: 'Topics Covered', value: data?.topicsCovered, sub: 'topics', color: '#ff6b4a' },
             { label: 'Tests Taken', value: data?.testsTaken, sub: `avg ${data?.avgTestScore}%`, color: '#1D9E75' },
           ].map(s => (
             <div key={s.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: '14px 16px', border: `1px solid ${s.color}15` }}>
-              <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 9, color: '#5a7a9a', letterSpacing: 1, marginBottom: 6 }}>{s.label.toUpperCase()}</div>
-              <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 22, fontWeight: 800, color: s.color }}>{s.value}</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#5a7a9a', letterSpacing: 1, marginBottom: 6 }}>{s.label.toUpperCase()}</div>
+              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 800, color: s.color }}>{s.value}</div>
               <div style={{ fontSize: 10, color: '#5a7a9a', marginTop: 2 }}>{s.sub}</div>
             </div>
           ))}
@@ -168,21 +168,21 @@ export default function GlowUpPage() {
 
         {/* Quote */}
         <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', padding: '16px', background: `${domainColor}08`, borderRadius: 10, border: `1px solid ${domainColor}15` }}>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700, color: '#e8f4ff', marginBottom: 4 }}>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: '#e8e8ed', marginBottom: 4 }}>
             {data?.currentDay >= 30
               ? `30 days. Real skill. No shortcuts.`
               : `${data?.currentDay} days down. ${30 - data?.currentDay} days to master ${data?.domain?.toUpperCase()}.`}
           </div>
-          <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'JetBrains Mono,monospace' }}>genois.in</div>
+          <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>genois.in</div>
         </div>
       </div>
 
       {/* ACTION BUTTONS */}
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', marginBottom: 12 }}>
-        <button onClick={downloadCard} disabled={downloading} style={{ padding: '13px 24px', borderRadius: 12, border: 'none', cursor: 'pointer', background: downloading ? 'rgba(0,240,255,0.2)' : 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700 }}>
+        <button onClick={downloadCard} disabled={downloading} style={{ padding: '13px 24px', borderRadius: 12, border: 'none', cursor: 'pointer', background: downloading ? 'rgba(0,240,255,0.2)' : 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
           {downloading ? 'Generating...' : '⬇ Download Card'}
         </button>
-        <button onClick={shareWhatsApp} style={{ padding: '13px 24px', borderRadius: 12, border: '1px solid rgba(37,211,102,0.3)', background: 'rgba(37,211,102,0.08)', color: '#25D366', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 600 }}>
+        <button onClick={shareWhatsApp} style={{ padding: '13px 24px', borderRadius: 12, border: '1px solid rgba(37,211,102,0.3)', background: 'rgba(37,211,102,0.08)', color: '#25D366', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 600 }}>
           📱 Share on WhatsApp
         </button>
         <button onClick={() => {
@@ -190,11 +190,11 @@ export default function GlowUpPage() {
             `${data?.currentDay} days on GENOIS. Score: ${data?.day1Score} → ${data?.currentScore} pts. Rank: #${data?.currentRank} of ${data?.totalStudents} engineers. Daily grind hits different. genois.in`
           );
           toast.success('Caption copied!');
-        }} style={{ padding: '13px 24px', borderRadius: 12, border: '1px solid rgba(193,53,132,0.3)', background: 'rgba(193,53,132,0.08)', color: '#C13584', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 600 }}>
+        }} style={{ padding: '13px 24px', borderRadius: 12, border: '1px solid rgba(193,53,132,0.3)', background: 'rgba(193,53,132,0.08)', color: '#C13584', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 600 }}>
           📸 Copy Caption
         </button>
       </div>
-      <p style={{ textAlign: 'center', color: '#3a4a5a', fontSize: 12, fontFamily: 'JetBrains Mono,monospace' }}>
+      <p style={{ textAlign: 'center', color: '#3a4a5a', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
         Download and post as Instagram story or WhatsApp status
       </p>
     </div>

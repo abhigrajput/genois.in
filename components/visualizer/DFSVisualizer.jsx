@@ -84,7 +84,7 @@ function nodeColor(id, step) {
   if (!step) return '#1a2a3a';
   if (step.current === id) return '#00f0ff';
   if (step.checking === id) return '#ef9f27';
-  if (step.stack?.includes(id)) return '#7b5cff';
+  if (step.stack?.includes(id)) return '#ff6b4a';
   if (step.visited?.[id]) return '#1d9e75';
   return '#1a2a3a';
 }
@@ -132,12 +132,12 @@ export default function DFSVisualizer() {
         {[
           { label: 'Source', value: src, color: '#00f0ff' },
           { label: 'Current', value: current?.current >= 0 ? current.current : '-', color: '#00f0ff' },
-          { label: 'Stack Depth', value: current?.stack?.length ?? 0, color: '#7b5cff' },
+          { label: 'Stack Depth', value: current?.stack?.length ?? 0, color: '#ff6b4a' },
           { label: 'Visited', value: current?.visited?.filter(Boolean).length ?? 0, color: '#1d9e75' },
         ].map(s => (
           <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 20, fontWeight: 700, color: s.color }}>{s.value}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
@@ -155,7 +155,7 @@ export default function DFSVisualizer() {
                 <g key={n.id}>
                   {isActive && <circle cx={n.x} cy={n.y+60} r={28} fill="none" stroke="#00f0ff" strokeWidth={1} opacity={0.4} />}
                   <circle cx={n.x} cy={n.y+60} r={22} fill={color==='#1a2a3a'?'#0d1a2a':color+'22'} stroke={color} strokeWidth={isActive?2.5:1.5} style={{ transition:'all 0.3s ease' }} />
-                  <text x={n.x} y={n.y+65} textAnchor="middle" style={{ fontFamily:'JetBrains Mono,monospace', fontSize:14, fontWeight:700, fill:color, transition:'fill 0.3s ease' }}>{n.id}</text>
+                  <text x={n.x} y={n.y+65} textAnchor="middle" style={{ fontFamily:'var(--font-mono)', fontSize:14, fontWeight:700, fill:color, transition:'fill 0.3s ease' }}>{n.id}</text>
                 </g>
               );
             })}
@@ -164,27 +164,27 @@ export default function DFSVisualizer() {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 200 }}>
           {/* Recursion Stack */}
-          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(123,92,255,0.2)', borderRadius: 10, padding: 12 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#7b5cff', letterSpacing: 1, marginBottom: 8 }}>CALL STACK (top→)</div>
+          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(255,107,74,0.2)', borderRadius: 10, padding: 12 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#ff6b4a', letterSpacing: 1, marginBottom: 8 }}>CALL STACK (top→)</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minHeight: 60 }}>
               {[...(current?.stack || [])].reverse().map((v, i) => (
-                <div key={i} style={{ padding: '4px 12px', borderRadius: 6, background: i === 0 ? 'rgba(0,240,255,0.15)' : 'rgba(123,92,255,0.1)', border: `1px solid ${i===0?'rgba(0,240,255,0.3)':'rgba(123,92,255,0.2)'}`, fontFamily: 'JetBrains Mono,monospace', fontSize: 13, fontWeight: 700, color: i === 0 ? '#00f0ff' : '#7b5cff', display: 'flex', justifyContent: 'space-between' }}>
+                <div key={i} style={{ padding: '4px 12px', borderRadius: 6, background: i === 0 ? 'rgba(0,240,255,0.15)' : 'rgba(255,107,74,0.1)', border: `1px solid ${i===0?'rgba(0,240,255,0.3)':'rgba(255,107,74,0.2)'}`, fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: i === 0 ? '#00f0ff' : '#ff6b4a', display: 'flex', justifyContent: 'space-between' }}>
                   <span>dfs({v})</span>
                   {i === 0 && <span style={{ fontSize: 10, opacity: 0.6 }}>← top</span>}
                 </div>
               ))}
               {(!current?.stack || current.stack.length === 0) && (
-                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#2a3a4a' }}>empty</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#2a3a4a' }}>empty</span>
               )}
             </div>
           </div>
           {/* Adj list */}
           <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 10, padding: 12 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>ADJACENCY LIST</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>ADJACENCY LIST</div>
             {ADJ.map((nbrs, i) => (
               <div key={i} style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 3 }}>
-                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: nodeColor(i, current), minWidth: 18, fontWeight: 700 }}>{i}:</span>
-                <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 11, color: '#5a7a9a' }}>[{nbrs.join(', ')}]</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: nodeColor(i, current), minWidth: 18, fontWeight: 700 }}>{i}:</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#5a7a9a' }}>[{nbrs.join(', ')}]</span>
               </div>
             ))}
           </div>
@@ -199,26 +199,26 @@ export default function DFSVisualizer() {
       />
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-        <span style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a' }}>SRC</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a' }}>SRC</span>
         {GRAPH_NODES.map(n => (
-          <button key={n.id} onClick={() => setSrc(n.id)} style={{ padding: '4px 12px', borderRadius: 6, border: `1px solid ${src===n.id?'#7b5cff':'rgba(0,240,255,0.15)'}`, background: src===n.id?'rgba(123,92,255,0.12)':'transparent', color: src===n.id?'#7b5cff':'#5a7a9a', fontSize: 12, fontFamily: 'JetBrains Mono,monospace', cursor: 'pointer' }}>{n.id}</button>
+          <button key={n.id} onClick={() => setSrc(n.id)} style={{ padding: '4px 12px', borderRadius: 6, border: `1px solid ${src===n.id?'#ff6b4a':'rgba(0,240,255,0.15)'}`, background: src===n.id?'rgba(255,107,74,0.12)':'transparent', color: src===n.id?'#ff6b4a':'#5a7a9a', fontSize: 12, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{n.id}</button>
         ))}
-        <button onClick={start} style={btn('#7b5cff')}>▶ Start DFS</button>
+        <button onClick={start} style={btn('#ff6b4a')}>▶ Start DFS</button>
         <button onClick={() => setIsPlaying(p => !p)} style={btn('#00f0ff')}>{isPlaying ? '⏸ Pause' : '▶ Resume'}</button>
         <button onClick={() => setStepIdx(p => Math.min(p+1, steps.length-1))} style={btn('#ef9f27')}>⏭ Step</button>
         <div style={{ display:'flex', gap:4 }}>
           {[1,2,3,4].map(s => (
-            <button key={s} onClick={() => setSpeed(s)} style={{ padding:'3px 10px', borderRadius:6, border: speed===s?'1px solid #7b5cff':'1px solid rgba(0,240,255,0.15)', background: speed===s?'rgba(123,92,255,0.12)':'transparent', color: speed===s?'#7b5cff':'#5a7a9a', fontSize:11, fontFamily:'JetBrains Mono,monospace', cursor:'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
+            <button key={s} onClick={() => setSpeed(s)} style={{ padding:'3px 10px', borderRadius:6, border: speed===s?'1px solid #ff6b4a':'1px solid rgba(0,240,255,0.15)', background: speed===s?'rgba(255,107,74,0.12)':'transparent', color: speed===s?'#ff6b4a':'#5a7a9a', fontSize:11, fontFamily:'var(--font-mono)', cursor:'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
           ))}
         </div>
         <button onClick={reset} style={btn('#ff2d78')}>↺ Reset</button>
       </div>
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
-        {[['#00f0ff','Current'],['#7b5cff','In Call Stack'],['#ef9f27','Checking'],['#1d9e75','Visited']].map(([c,l]) => (
+        {[['#00f0ff','Current'],['#ff6b4a','In Call Stack'],['#ef9f27','Checking'],['#1d9e75','Visited']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:'50%', background:c+'44', border:`2px solid ${c}` }}/>
-            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'Outfit,sans-serif' }}>{l}</span>
+            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>
@@ -227,5 +227,5 @@ export default function DFSVisualizer() {
   );
 }
 function btn(color) {
-  return { padding:'8px 16px', borderRadius:8, border:`1px solid ${color}30`, background:`${color}10`, color, fontFamily:'Syne,sans-serif', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' };
+  return { padding:'8px 16px', borderRadius:8, border:`1px solid ${color}30`, background:`${color}10`, color, fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' };
 }

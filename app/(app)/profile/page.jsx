@@ -152,16 +152,16 @@ export default function ProfilePage() {
   }
 
   const cardStyle = { background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24, marginBottom: 16 };
-  const inpStyle = { width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.12)', background: 'rgba(255,255,255,0.02)', color: '#e8f4ff', fontSize: 14, outline: 'none', fontFamily: 'Outfit,sans-serif', boxSizing: 'border-box' };
-  const btnSecondary = { padding: '9px 18px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', background: 'transparent', color: '#00f0ff', cursor: 'pointer', fontSize: 13, fontFamily: 'Syne,sans-serif', fontWeight: 600 };
+  const inpStyle = { width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.12)', background: 'rgba(255,255,255,0.02)', color: '#e8e8ed', fontSize: 14, outline: 'none', fontFamily: 'var(--font-body)', boxSizing: 'border-box' };
+  const btnSecondary = { padding: '9px 18px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', background: 'transparent', color: '#00f0ff', cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600 };
 
   return (
-    <div style={{ fontFamily: 'Outfit,sans-serif', width: '100%', paddingBottom: 60 }}>
+    <div style={{ fontFamily: 'var(--font-body)', width: '100%', paddingBottom: 60 }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 16, alignItems: 'start' }}>
         
         {/* PUBLIC PROFILE - full width */}
         <div style={{ gridColumn: '1 / -1', background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 20 }}>
-          <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 8 }}>YOUR PUBLIC PROFILE</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 8 }}>YOUR PUBLIC PROFILE</div>
           <div style={{ fontSize: 14, color: '#00f0ff', marginBottom: 14 }}>
             genois.in/u/{user?.name?.toLowerCase().replace(/\s+/g,'-') || 'you'}
           </div>
@@ -170,7 +170,7 @@ export default function ProfilePage() {
               Copy Link
             </button>
             <a href={'/u/'+(user?.name?.toLowerCase().replace(/\s+/g,'-')||'')} target="_blank" rel="noreferrer"
-              style={{ padding: '9px 18px', borderRadius: 8, border: 'none', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', textDecoration: 'none', fontSize: 13, fontFamily: 'Syne,sans-serif', fontWeight: 700 }}>
+              style={{ padding: '9px 18px', borderRadius: 8, border: 'none', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', textDecoration: 'none', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 700 }}>
               View Profile
             </a>
           </div>
@@ -180,11 +180,11 @@ export default function ProfilePage() {
         <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-              <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 700, color: '#020812', fontFamily: 'Syne,sans-serif', flexShrink: 0 }}>
+              <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 700, color: '#020812', fontFamily: 'var(--font-heading)', flexShrink: 0 }}>
                 {(user?.name||'A')[0].toUpperCase()}
               </div>
               <div>
-                <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 18, fontWeight: 700, color: '#e8f4ff' }}>{user?.name || 'Student'}</div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: '#e8e8ed' }}>{user?.name || 'Student'}</div>
                 <div style={{ fontSize: 13, color: '#5a7a9a' }}>{user?.email}</div>
               </div>
             </div>
@@ -198,12 +198,12 @@ export default function ProfilePage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {[{key:'name',label:'NAME'},{key:'college',label:'COLLEGE'},{key:'year',label:'YEAR'}].map(f => (
                 <div key={f.key}>
-                  <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', marginBottom: 6 }}>{f.label}</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 6 }}>{f.label}</div>
                   <input value={form[f.key]} onChange={e => setForm(p => ({...p, [f.key]: e.target.value}))} style={inpStyle} />
                 </div>
               ))}
               <button onClick={saveProfile} disabled={loading}
-                style={{ padding: 12, borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700 }}>
+                style={{ padding: 12, borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
                 {loading ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
@@ -216,8 +216,8 @@ export default function ProfilePage() {
                 {label:'PLAN', value: (user?.subscription_plan||user?.plan||'spectator').toUpperCase()},
               ].map((item,i) => (
                 <div key={i} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: 10 }}>
-                  <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', marginBottom: 4 }}>{item.label}</div>
-                  <div style={{ fontSize: 14, color: '#e8f4ff', fontWeight: 600 }}>{item.value || 'Not set'}</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 4 }}>{item.label}</div>
+                  <div style={{ fontSize: 14, color: '#e8e8ed', fontWeight: 600 }}>{item.value || 'Not set'}</div>
                 </div>
               ))}
             </div>
@@ -226,16 +226,16 @@ export default function ProfilePage() {
 
         {/* PERFORMANCE */}
         <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24 }}>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#e8f4ff', marginBottom: 16 }}>Performance</div>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#e8e8ed', marginBottom: 16 }}>Performance</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
             {[
-              {label:'Total Score', value: score?.total_score||score||0, color:'#7b5cff'},
+              {label:'Total Score', value: score?.total_score||score||0, color:'#ff6b4a'},
               {label:'Current Day', value: progress?.current_day||0, color:'#1D9E75'},
               {label:'Streak', value: (progress?.streak||0)+'d', color:'#EF9F27'},
             ].map((s,i) => (
               <div key={i} style={{ background: s.color+'15', borderRadius: 10, padding: 16, textAlign: 'center' }}>
-                <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 24, fontWeight: 800, color: s.color }}>{s.value}</div>
-                <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', marginTop: 4 }}>{s.label}</div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: s.color }}>{s.value}</div>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginTop: 4 }}>{s.label}</div>
               </div>
             ))}
           </div>
@@ -244,8 +244,8 @@ export default function ProfilePage() {
         {/* SKILL BADGES - full width */}
         <div style={{ gridColumn: '1 / -1', background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24 }}>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: 14 }}>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#e8f4ff' }}>🎖️ Skill Badges</div>
-            <Link href="/badge" style={{ padding:'7px 14px', borderRadius:8, border:'1px solid rgba(0,240,255,0.2)', background:'transparent', color:'#00f0ff', textDecoration:'none', fontSize:12, fontFamily:'Syne,sans-serif', fontWeight:600 }}>Get Verified →</Link>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#e8e8ed' }}>🎖️ Skill Badges</div>
+            <Link href="/badge" style={{ padding:'7px 14px', borderRadius:8, border:'1px solid rgba(0,240,255,0.2)', background:'transparent', color:'#00f0ff', textDecoration:'none', fontSize:12, fontFamily:'var(--font-heading)', fontWeight:600 }}>Get Verified →</Link>
           </div>
           {myBadges.length === 0 ? (
             <div style={{ fontSize:13, color:'#5a7a9a' }}>No active badges yet. <Link href="/badge" style={{ color:'#00f0ff' }}>Start a verification test →</Link></div>
@@ -258,8 +258,8 @@ export default function ProfilePage() {
                 return (
                   <div key={b.id} style={{ display:'flex', alignItems:'center', gap:6, padding:'6px 12px', borderRadius:20, background:`${lc}15`, border:`1px solid ${lc}40` }}>
                     <span style={{ fontSize:14 }}>{ICONS[b.domain] || '🎖️'}</span>
-                    <span style={{ fontSize:12, fontWeight:600, color:lc, fontFamily:'Syne,sans-serif' }}>{b.domain}</span>
-                    <span style={{ fontSize:10, color:'#5a7a9a', fontFamily:'JetBrains Mono,monospace' }}>{b.daysLeft}d</span>
+                    <span style={{ fontSize:12, fontWeight:600, color:lc, fontFamily:'var(--font-heading)' }}>{b.domain}</span>
+                    <span style={{ fontSize:10, color:'#5a7a9a', fontFamily:'var(--font-mono)' }}>{b.daysLeft}d</span>
                   </div>
                 );
               })}
@@ -269,11 +269,11 @@ export default function ProfilePage() {
 
         {/* PLACEMENT PROFILE - full width */}
         <div style={{ gridColumn: '1 / -1', background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24 }}>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#e8f4ff', marginBottom: 4 }}>🎯 Placement Profile</div>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#e8e8ed', marginBottom: 4 }}>🎯 Placement Profile</div>
           <div style={{ fontSize: 12, color: '#5a7a9a', marginBottom: 20 }}>Used by GENOIS AI to personalize your roadmap, chatbot, and company-specific prep.</div>
 
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 10 }}>TARGET COMPANIES</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 10 }}>TARGET COMPANIES</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {PLACEMENT_COMPANIES.map(c => {
                 const sel = placementForm.target_companies.includes(c);
@@ -283,7 +283,7 @@ export default function ProfilePage() {
                     border: `1px solid ${sel ? '#00f0ff' : 'rgba(255,255,255,0.08)'}`,
                     background: sel ? 'rgba(0,240,255,0.08)' : 'transparent',
                     color: sel ? '#00f0ff' : '#5a7a9a',
-                    fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600,
+                    fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600,
                   }}>{c}</button>
                 );
               })}
@@ -291,7 +291,7 @@ export default function ProfilePage() {
           </div>
 
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 10 }}>MONTHS TO PLACEMENT</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 10 }}>MONTHS TO PLACEMENT</div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {MONTH_OPTIONS.map(m => {
                 const sel = placementForm.months_to_placement === m.value;
@@ -301,7 +301,7 @@ export default function ProfilePage() {
                     border: `1px solid ${sel ? '#00f0ff' : 'rgba(255,255,255,0.08)'}`,
                     background: sel ? 'rgba(0,240,255,0.08)' : 'transparent',
                     color: sel ? '#00f0ff' : '#5a7a9a',
-                    fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600,
+                    fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600,
                   }}>{m.label}</button>
                 );
               })}
@@ -309,7 +309,7 @@ export default function ProfilePage() {
           </div>
 
           <div style={{ marginBottom: 20 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 10 }}>WEAK AREAS</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 10 }}>WEAK AREAS</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
               {WEAK_SUBJECTS.map(s => {
                 const sel = placementForm.weak_subjects.includes(s);
@@ -319,7 +319,7 @@ export default function ProfilePage() {
                     border: `1px solid ${sel ? '#00f0ff' : 'rgba(255,255,255,0.08)'}`,
                     background: sel ? 'rgba(0,240,255,0.08)' : 'transparent',
                     color: sel ? '#00f0ff' : '#5a7a9a',
-                    fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600,
+                    fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600,
                   }}>{s}</button>
                 );
               })}
@@ -327,25 +327,25 @@ export default function ProfilePage() {
           </div>
 
           <div style={{ marginBottom: 20, maxWidth: 240 }}>
-            <div style={{ fontFamily: 'JetBrains Mono,monospace', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 6 }}>CGPA</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 6 }}>CGPA</div>
             <input
               type="number" min="0" max="10" step="0.1"
               value={placementForm.cgpa}
               onChange={e => setPlacementForm(p => ({ ...p, cgpa: e.target.value }))}
               placeholder="e.g. 7.2"
-              style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.12)', background: 'rgba(255,255,255,0.02)', color: '#e8f4ff', fontSize: 14, outline: 'none', fontFamily: 'Outfit,sans-serif', boxSizing: 'border-box' }}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.12)', background: 'rgba(255,255,255,0.02)', color: '#e8e8ed', fontSize: 14, outline: 'none', fontFamily: 'var(--font-body)', boxSizing: 'border-box' }}
             />
-            <div style={{ fontSize: 11, color: '#3a4a5a', marginTop: 4, fontFamily: 'JetBrains Mono,monospace' }}>Not shared publicly</div>
+            <div style={{ fontSize: 11, color: '#3a4a5a', marginTop: 4, fontFamily: 'var(--font-mono)' }}>Not shared publicly</div>
           </div>
 
-          <button onClick={savePlacementProfile} disabled={placementLoading} style={{ padding: '10px 24px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#7b5cff)', color: '#020812', fontFamily: 'Syne,sans-serif', fontSize: 14, fontWeight: 700 }}>
+          <button onClick={savePlacementProfile} disabled={placementLoading} style={{ padding: '10px 24px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
             {placementLoading ? 'Saving...' : 'Save Placement Profile'}
           </button>
         </div>
 
         {/* SETTINGS - full width */}
         <div style={{ gridColumn: '1 / -1', background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24 }}>
-          <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#e8f4ff', marginBottom: 16 }}>Settings</div>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#e8e8ed', marginBottom: 16 }}>Settings</div>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             <button onClick={() => setShowDomainModal(true)} style={btnSecondary}>Change Domain</button>
             <button onClick={() => setShowResetModal(true)} style={{ ...btnSecondary, border: '1px solid rgba(255,45,120,0.3)', color: '#ff2d78' }}>Reset Progress</button>
@@ -361,12 +361,12 @@ export default function ProfilePage() {
       {showDomainModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: 16 }}>
           <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 14, padding: 24, maxWidth: 360, width: '100%' }}>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#e8f4ff', marginBottom: 4 }}>Change Domain</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#e8e8ed', marginBottom: 4 }}>Change Domain</div>
             <div style={{ fontSize: 12, color: '#5a7a9a', marginBottom: 16 }}>Resets roadmap to Day 1. Score is kept.</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
               {DOMAINS.map(d => (
                 <button key={d.slug} onClick={() => changeDomain(d.slug)} disabled={loading}
-                  style={{ padding: '10px 12px', borderRadius: 10, border: user?.domain_slug === d.slug ? '1px solid rgba(0,240,255,0.4)' : '1px solid rgba(255,255,255,0.06)', background: user?.domain_slug === d.slug ? 'rgba(0,240,255,0.08)' : 'transparent', color: '#e8f4ff', cursor: 'pointer', textAlign: 'left', fontSize: 13 }}>
+                  style={{ padding: '10px 12px', borderRadius: 10, border: user?.domain_slug === d.slug ? '1px solid rgba(0,240,255,0.4)' : '1px solid rgba(255,255,255,0.06)', background: user?.domain_slug === d.slug ? 'rgba(0,240,255,0.08)' : 'transparent', color: '#e8e8ed', cursor: 'pointer', textAlign: 'left', fontSize: 13 }}>
                   {d.label}
                 </button>
               ))}
@@ -380,11 +380,11 @@ export default function ProfilePage() {
       {showResetModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: 16 }}>
           <div style={{ background: '#070f1f', border: '1px solid rgba(255,45,120,0.2)', borderRadius: 14, padding: 24, maxWidth: 340, width: '100%' }}>
-            <div style={{ fontFamily: 'Syne,sans-serif', fontSize: 16, fontWeight: 700, color: '#ff2d78', marginBottom: 8 }}>Reset All Progress?</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#ff2d78', marginBottom: 8 }}>Reset All Progress?</div>
             <div style={{ fontSize: 13, color: '#5a7a9a', marginBottom: 20 }}>Deletes all scores, tasks and tests. Cannot be undone.</div>
             <div style={{ display: 'flex', gap: 8 }}>
-              <button onClick={() => setShowResetModal(false)} style={{ flex: 1, padding: 10, borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 600 }}>Cancel</button>
-              <button onClick={resetProgress} disabled={loading} style={{ flex: 1, padding: 10, borderRadius: 8, border: 'none', background: '#ff2d78', color: '#fff', cursor: 'pointer', fontFamily: 'Syne,sans-serif', fontSize: 13, fontWeight: 700 }}>{loading ? 'Resetting...' : 'Reset'}</button>
+              <button onClick={() => setShowResetModal(false)} style={{ flex: 1, padding: 10, borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600 }}>Cancel</button>
+              <button onClick={resetProgress} disabled={loading} style={{ flex: 1, padding: 10, borderRadius: 8, border: 'none', background: '#ff2d78', color: '#fff', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700 }}>{loading ? 'Resetting...' : 'Reset'}</button>
             </div>
           </div>
         </div>
