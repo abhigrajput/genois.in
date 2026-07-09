@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { Resend } from 'resend';
@@ -60,14 +61,21 @@ export async function POST(request) {
 
     const supabase = getAdminClient();
 
+    // `.maybeSingle()` returns null (not a PGRST116 "no rows" error) when the
+    // email is free, so a fresh signup doesn't log spurious errors. A friendly,
+    // actionable message + an `code: 'email_exists'` flag lets the client route
+    // the user to login instead of looping them back to the password step.
     const { data: existing } = await supabase
       .from('users')
       .select('id')
       .eq('email', email.toLowerCase())
-      .single();
+      .maybeSingle();
 
     if (existing) {
-      return errorResponse('Email already registered', 409);
+      return NextResponse.json(
+        { success: false, code: 'email_exists', message: 'This email is already registered. Try logging in instead.' },
+        { status: 409 }
+      );
     }
 
     const passwordHash = await bcrypt.hash(password, 12);
@@ -171,6 +179,11 @@ export async function POST(request) {
       supabase.from('scores').insert({ user_id: user.id }),
       supabase.from('progress').insert({
         user_id: user.id,
+        // Advanced students skip the 3 foundation days and start at the BUILD
+        // phase (day 4). Everyone else begins at day 1. Mirrors the roadmap
+        // skip-basics endpoint and curriculumGenerator.difficultyPhase.
+        current_day: level === 'advanced' ? 4 : 1,
+        current_week: 1,
         last_active_date: new Date().toISOString(),
         streak: 0,
       }),

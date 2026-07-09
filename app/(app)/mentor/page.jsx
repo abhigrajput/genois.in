@@ -21,15 +21,41 @@ const QUICK = {
   notes:["Explain my weak topics","Quiz me on today's topic","Key points to remember"],
 };
 
+const STORAGE_KEY = 'genois_mentor_history';
+
 export default function MentorPage() {
   const { userPlan } = usePermission();
   const [mode, setMode] = useState('explain');
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [restored, setRestored] = useState(false);
   const bottomRef = useRef(null);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior:'smooth' }); }, [messages]);
+
+  // Restore mentor conversation on mount (persists across navigation).
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(STORAGE_KEY);
+      if (saved) setMessages(JSON.parse(saved));
+    } catch { /* ignore corrupt/absent storage */ }
+    setRestored(true);
+  }, []);
+
+  // Persist settled messages only, and only after restore, so we never wipe
+  // saved history with the initial empty array.
+  useEffect(() => {
+    if (!restored) return;
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(messages.filter(m => !m.loading)));
+    } catch { /* non-fatal */ }
+  }, [messages, restored]);
+
+  function clearChat() {
+    setMessages([]);
+    try { sessionStorage.removeItem(STORAGE_KEY); } catch {}
+  }
 
   async function send(text) {
     const msg = text || input.trim();
@@ -51,7 +77,15 @@ export default function MentorPage() {
     <PermissionGate feature="ai_mentor">
     <div className="w-full flex flex-col" style={{ maxWidth: 1600, margin: '0 auto', height:'calc(100vh - 120px)' }}>
       <div className="mb-4 flex-shrink-0">
-        <h1 className="text-2xl font-bold mb-3">AI Mentor</h1>
+        <div className="flex items-center justify-between mb-3">
+          <h1 className="text-2xl font-bold">AI Mentor</h1>
+          {messages.length > 0 && (
+            <button onClick={clearChat}
+              className="text-xs font-medium px-3 py-1.5 rounded-full border border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-300 transition-all">
+              Clear chat
+            </button>
+          )}
+        </div>
         <div className="flex gap-2 flex-wrap">
           {MODES.map(m => (
             <button key={m.value} onClick={() => setMode(m.value)}

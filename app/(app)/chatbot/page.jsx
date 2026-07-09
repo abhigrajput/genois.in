@@ -9,14 +9,42 @@ const QUICK = [
   "Best resources for my domain","How to prepare for placements?","SQL vs NoSQL difference"
 ];
 
+const STORAGE_KEY = 'genois_chat_history';
+
 export default function ChatbotPage() {
   const [mode, setMode] = useState('general');
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [restored, setRestored] = useState(false);
   const bottomRef = useRef(null);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior:'smooth' }); }, [messages]);
+
+  // Restore conversation on mount so navigating away and back keeps history.
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(STORAGE_KEY);
+      if (saved) setMessages(JSON.parse(saved));
+    } catch { /* ignore corrupt/absent storage */ }
+    setRestored(true);
+  }, []);
+
+  // Persist after every change — but only once we've restored (so we never
+  // clobber saved history with the initial empty array) and strip the transient
+  // "loading" placeholder so a half-sent turn isn't frozen into storage.
+  useEffect(() => {
+    if (!restored) return;
+    try {
+      const persistable = messages.filter(m => !m.loading);
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(persistable));
+    } catch { /* quota/serialization errors are non-fatal */ }
+  }, [messages, restored]);
+
+  function clearChat() {
+    setMessages([]);
+    try { sessionStorage.removeItem(STORAGE_KEY); } catch {}
+  }
 
   async function send(text) {
     const msg = text || input.trim();
@@ -37,7 +65,15 @@ export default function ChatbotPage() {
   return (
     <div className="w-full flex flex-col" style={{ height:'calc(100vh - 120px)', width: '100%' }}>
       <div className="mb-4 flex-shrink-0">
-        <h1 className="text-2xl font-bold mb-3">AI Chatbot</h1>
+        <div className="flex items-center justify-between mb-3">
+          <h1 className="text-2xl font-bold">AI Chatbot</h1>
+          {messages.length > 0 && (
+            <button onClick={clearChat}
+              className="text-xs font-medium px-3 py-1.5 rounded-full border border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-300 transition-all">
+              Clear chat
+            </button>
+          )}
+        </div>
         <div className="flex gap-2 flex-wrap">
           {MODES.map(m => (
             <button key={m} onClick={() => setMode(m)}

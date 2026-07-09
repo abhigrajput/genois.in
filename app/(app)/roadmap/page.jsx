@@ -45,12 +45,24 @@ const ACTION_BTN_STYLE = {
   cursor: 'pointer'
 };
 
+const MAX_DAY = 365;
+
 export default function DailyRoadmapPage() {
   const { updateProgress } = useAuthStore();
   const [daily, setDaily] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeStep, setActiveStep] = useState(0);
   const [tasks, setTasks] = useState([]);
+
+  // Free navigation: the day currently on screen vs. the user's official day.
+  const [viewDay, setViewDay] = useState(1);
+  const [officialDay, setOfficialDay] = useState(1);
+  const [navLoading, setNavLoading] = useState(false);
+
+  // Roadmap overview (BUG 4) and skip-basics (BUG 6)
+  const [overview, setOverview] = useState(null);
+  const [showOverview, setShowOverview] = useState(false);
+  const [skipping, setSkipping] = useState(false);
 
   const [test, setTest] = useState(null);
   const [testAnswers, setTestAnswers] = useState({});
@@ -76,7 +88,7 @@ export default function DailyRoadmapPage() {
   const [projectProgress, setProjectProgress] = useState(null);
 
   useEffect(() => {
-    loadDaily();
+    loadDay(null); // null → the user's official current day
   }, []);
 
   // 30-second watch gate: enables "Mark as Watched" after user has had the video visible for 30s
@@ -96,16 +108,54 @@ export default function DailyRoadmapPage() {
     }
   }, [daily]);
 
-  async function loadDaily() {
+  // Load a specific day (or null for the official current day) WITHOUT losing
+  // the day-navigation ability. Resets all per-day interaction state so a stale
+  // test/code/note from the previous day doesn't bleed into the new one.
+  async function loadDay(day) {
+    setNavLoading(true);
     try {
-      const res = await roadmapAPI.getDaily();
-      setDaily(res.data);
-      setTasks(res.data.tasks || []);
-      if (res.data.codingTest) setCodingTest(res.data.codingTest);
+      const res = day == null ? await roadmapAPI.getDaily() : await roadmapAPI.getDay(day);
+      const d = res.data;
+      setDaily(d);
+      setTasks(d.tasks || []);
+      setCodingTest(d.codingTest || null);
+      setViewDay(d.currentDay);
+      setOfficialDay(d.officialDay ?? d.currentDay);
+
+      // Reset per-day sub-flows
+      setActiveStep(0);
+      setTest(null); setTestAnswers({}); setTestResult(null);
+      setCode('// Write your solution here\n'); setCodeResult(null);
+      setNote(null);
     } catch (err) {
       toast.error('Failed to load roadmap');
     } finally {
       setLoading(false);
+      setNavLoading(false);
+    }
+  }
+
+  async function openOverview() {
+    setShowOverview(true);
+    if (!overview) {
+      try {
+        const res = await roadmapAPI.getOverview();
+        setOverview(res.data);
+      } catch { toast.error('Could not load roadmap overview'); }
+    }
+  }
+
+  async function handleSkipBasics() {
+    setSkipping(true);
+    try {
+      const res = await roadmapAPI.skipBasics();
+      toast.success(res.data.skipped ? 'Skipped to the BUILD phase 🚀' : 'Already past the basics');
+      updateProgress({ current_day: res.data.currentDay });
+      await loadDay(null);
+    } catch (err) {
+      toast.error(err.message || 'Could not skip basics');
+    } finally {
+      setSkipping(false);
     }
   }
 
@@ -239,16 +289,100 @@ export default function DailyRoadmapPage() {
       }}>
         <div>
           <h1 className="text-2xl font-bold text-dark" style={{ fontFamily: 'var(--font-heading)' }}>Day {currentDay} — {roadmapItem?.topic}</h1>
-          <p className="text-sm text-gray-400 mt-1">Week {currentWeek} · {roadmapItem?.difficulty} · Follow the flow in order</p>
+          <p className="text-sm text-gray-400 mt-1">
+            Week {currentWeek} · {roadmapItem?.difficulty}
+            {viewDay !== officialDay && (
+              <span style={{ color: viewDay < officialDay ? '#1D9E75' : '#ffb020', marginLeft: 8, fontWeight: 600 }}>
+                {viewDay < officialDay ? '· ✓ Completed day (revisiting)' : '· Upcoming — preview'}
+              </span>
+            )}
+          </p>
         </div>
-        <div style={{
-          background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)',
-          borderRadius: '12px', padding: '8px 16px', textAlign: 'right'
-        }}>
-          <div style={{ fontSize: '11px', color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>GENERATION LAYER</div>
-          <div style={{ fontSize: '13px', fontWeight: 700, color: '#00f0ff', textTransform: 'uppercase' }}>{daily.generatedBy || 'Supabase Cache'}</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <button onClick={openOverview} style={{
+            background: 'rgba(0,240,255,0.08)', border: '1px solid rgba(0,240,255,0.25)',
+            borderRadius: '10px', padding: '9px 16px', color: '#00f0ff', fontSize: 13,
+            fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font-heading)', whiteSpace: 'nowrap',
+          }}>🗺 View Full Path</button>
+          <div style={{
+            background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)',
+            borderRadius: '12px', padding: '8px 16px', textAlign: 'right'
+          }}>
+            <div style={{ fontSize: '11px', color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>GENERATION LAYER</div>
+            <div style={{ fontSize: '13px', fontWeight: 700, color: '#00f0ff', textTransform: 'uppercase' }}>{daily.generatedBy || 'Supabase Cache'}</div>
+          </div>
         </div>
       </div>
+
+      {/* ─── DAY NAVIGATION (free browsing) ─── */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <button
+          onClick={() => viewDay > 1 && loadDay(viewDay - 1)}
+          disabled={viewDay <= 1 || navLoading}
+          aria-label="Previous day"
+          style={{
+            flexShrink: 0, width: 36, height: 36, borderRadius: 10, cursor: viewDay <= 1 ? 'not-allowed' : 'pointer',
+            background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
+            color: viewDay <= 1 ? '#3a4a5a' : '#00f0ff', fontSize: 16, fontWeight: 700,
+          }}>‹</button>
+
+        <div style={{ flex: 1, display: 'flex', gap: 6, overflowX: 'auto', padding: '4px 2px' }} className="day-strip">
+          {Array.from({ length: Math.min(MAX_DAY, officialDay + 7) }, (_, i) => i + 1).map(d => {
+            const isCurrent = d === officialDay;
+            const isViewing = d === viewDay;
+            const isDone = d < officialDay;
+            return (
+              <button key={d} onClick={() => loadDay(d)} disabled={navLoading}
+                title={isDone ? `Day ${d} (completed)` : isCurrent ? `Day ${d} (current)` : `Day ${d} (upcoming)`}
+                style={{
+                  flexShrink: 0, minWidth: 44, height: 36, borderRadius: 10, cursor: 'pointer',
+                  fontSize: 12, fontWeight: 700, fontFamily: 'var(--font-mono)',
+                  border: isViewing ? '2px solid #00f0ff' : '1px solid rgba(255,255,255,0.08)',
+                  background: isViewing ? 'rgba(0,240,255,0.12)' : isDone ? 'rgba(29,158,117,0.08)' : 'rgba(255,255,255,0.02)',
+                  color: isViewing ? '#00f0ff' : isDone ? '#1D9E75' : isCurrent ? '#ffb020' : '#5a7a9a',
+                  transition: 'all 0.15s',
+                }}>
+                {isDone ? '✓' : ''}{d}
+              </button>
+            );
+          })}
+        </div>
+
+        <button
+          onClick={() => viewDay < MAX_DAY && loadDay(viewDay + 1)}
+          disabled={viewDay >= MAX_DAY || navLoading}
+          aria-label="Next day"
+          style={{
+            flexShrink: 0, width: 36, height: 36, borderRadius: 10, cursor: viewDay >= MAX_DAY ? 'not-allowed' : 'pointer',
+            background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
+            color: viewDay >= MAX_DAY ? '#3a4a5a' : '#00f0ff', fontSize: 16, fontWeight: 700,
+          }}>›</button>
+
+        {viewDay !== officialDay && (
+          <button onClick={() => loadDay(null)} disabled={navLoading} style={{
+            flexShrink: 0, padding: '0 12px', height: 36, borderRadius: 10, cursor: 'pointer',
+            background: 'rgba(0,240,255,0.08)', border: '1px solid rgba(0,240,255,0.25)',
+            color: '#00f0ff', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap',
+          }}>Jump to today</button>
+        )}
+      </div>
+
+      {/* Skip Basics — only meaningful while the user is still in the foundation phase */}
+      {officialDay <= 3 && (
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10,
+          background: 'rgba(255,176,32,0.06)', border: '1px solid rgba(255,176,32,0.2)',
+          borderRadius: 12, padding: '12px 16px',
+        }}>
+          <div style={{ fontSize: 13, color: '#c8d8e8' }}>
+            <strong style={{ color: '#ffb020' }}>Already know the basics?</strong> Skip the fundamentals and jump straight to Medium/Hard problems.
+          </div>
+          <button onClick={handleSkipBasics} disabled={skipping} style={{
+            flexShrink: 0, padding: '9px 18px', borderRadius: 10, border: 'none', cursor: 'pointer',
+            background: 'linear-gradient(135deg,#ffb020,#ff6b4a)', color: '#020812', fontWeight: 700, fontSize: 13,
+          }}>{skipping ? 'Skipping…' : 'Skip Basics →'}</button>
+        </div>
+      )}
 
       {/* Main Grid: 2 Columns on Desktop */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -652,6 +786,95 @@ export default function DailyRoadmapPage() {
         </div>
 
       </div>
+
+      {/* ─── FULL ROADMAP OVERVIEW MODAL (BUG 4) ─── */}
+      {showOverview && (
+        <div onClick={() => setShowOverview(false)} style={{
+          position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(2,8,18,0.85)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, backdropFilter: 'blur(4px)',
+        }}>
+          <div onClick={e => e.stopPropagation()} style={{
+            width: '100%', maxWidth: 680, maxHeight: '86vh', overflowY: 'auto',
+            background: '#070f1a', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 16, padding: 24,
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+              <div>
+                <h2 style={{ fontSize: 22, fontWeight: 800, color: '#e8e8ed', fontFamily: 'var(--font-heading)' }}>
+                  Your {overview?.domainName || ''} Roadmap
+                </h2>
+                {overview && (
+                  <p style={{ fontSize: 13, color: '#5a7a9a', marginTop: 4 }}>
+                    {overview.totalDays}-day path · ~{overview.dailyMinutes} min/day · progressive difficulty
+                  </p>
+                )}
+              </div>
+              <button onClick={() => setShowOverview(false)} aria-label="Close" style={{
+                background: 'transparent', border: 'none', color: '#5a7a9a', fontSize: 22, cursor: 'pointer', lineHeight: 1,
+              }}>×</button>
+            </div>
+
+            {!overview ? (
+              <div style={{ color: '#5a7a9a', fontSize: 14, padding: '24px 0', textAlign: 'center' }}>Loading your full path…</div>
+            ) : (
+              <>
+                {/* Macro phases */}
+                <div style={{ margin: '18px 0' }}>
+                  <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 10 }}>THE JOURNEY</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                    {overview.macroPhases.map((p, i) => (
+                      <div key={p.key} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '12px 14px' }}>
+                        <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 800, color: '#00f0ff', fontFamily: 'var(--font-mono)', minWidth: 88 }}>{p.key}</span>
+                        <div>
+                          <div style={{ fontSize: 12, color: '#ffb020', fontFamily: 'var(--font-mono)', marginBottom: 2 }}>{p.days}</div>
+                          <div style={{ fontSize: 13, color: '#c8d8e8', lineHeight: 1.5 }}>{p.summary}</div>
+                        </div>
+                        {i < overview.macroPhases.length - 1 && null}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Topic focus per phase */}
+                <div style={{ margin: '18px 0' }}>
+                  <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 10 }}>WHAT YOU&apos;LL COVER</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    {overview.topics.map((t, i) => (
+                      <div key={i} style={{ display: 'flex', gap: 10, fontSize: 12.5, color: '#c8d8e8', lineHeight: 1.5 }}>
+                        <span style={{ flexShrink: 0, color: '#1D9E75', fontFamily: 'var(--font-mono)', minWidth: 52 }}>W{t.weeks}</span>
+                        <span>{t.focus}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Projects */}
+                {overview.projects?.length > 0 && (
+                  <div style={{ margin: '18px 0' }}>
+                    <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 10 }}>PROJECTS YOU&apos;LL BUILD</div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                      {overview.projects.map((p, i) => (
+                        <span key={i} style={{ fontSize: 11.5, color: '#a2b9cd', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: '5px 10px' }}>
+                          W{p.week} · {p.title}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Outcome */}
+                <div style={{ marginTop: 18, background: 'rgba(29,158,117,0.06)', border: '1px solid rgba(29,158,117,0.2)', borderRadius: 12, padding: '14px 16px' }}>
+                  <div style={{ fontSize: 11, color: '#1D9E75', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 6 }}>WHERE YOU&apos;LL LAND</div>
+                  <div style={{ fontSize: 14, color: '#e8e8ed', lineHeight: 1.6 }}>{overview.outcome}</div>
+                </div>
+
+                <button onClick={() => setShowOverview(false)} style={{ ...ACTION_BTN_STYLE, marginTop: 20 }}>
+                  Got it — let&apos;s go →
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
     </div>
   );

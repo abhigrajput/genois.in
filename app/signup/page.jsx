@@ -14,7 +14,14 @@ const CARD = '#12121a';
 const MUTED = '#8b93a1';
 
 // State machine
-const STEPS = ['name', 'email', 'password', 'college', 'domain', 'company', 'creating'];
+const STEPS = ['name', 'email', 'password', 'college', 'domain', 'company', 'level', 'creating'];
+
+// Skill-level choice — drives whether the roadmap starts at fundamentals or the
+// BUILD phase (see /api/roadmap/skip-basics and curriculumGenerator).
+const LEVEL_CHIPS = [
+  { label: '🌱 Start from basics', value: 'beginner' },
+  { label: '⚡ Skip to advanced',  value: 'advanced' },
+];
 
 const DOMAIN_CHIPS = [
   { label: 'DSA',           slug: 'dsa' },
@@ -48,7 +55,9 @@ function aiPrompt(step, data) {
     case 'domain':
       return "Which domain do you want to build your career in?";
     case 'company':
-      return "Last question — what's your target company?";
+      return "What's your target company?";
+    case 'level':
+      return "Last one — are you starting fresh, or should we skip the basics?";
     case 'creating':
       return `Perfect, ${name}. Setting up your account...`;
     default:
@@ -68,13 +77,14 @@ const placeholders = {
 export default function SignupPage() {
   const router = useRouter();
   const [step, setStep] = useState('name');
-  const [data, setData] = useState({ name: '', email: '', password: '', college: '', domain_slug: '', target_companies: [] });
+  const [data, setData] = useState({ name: '', email: '', password: '', college: '', domain_slug: '', target_companies: [], level: 'beginner' });
   const [messages, setMessages] = useState([]); // { from:'ai'|'user', text }
   const [input, setInput] = useState('');
   const [typing, setTyping] = useState(false);
   const [started, setStarted] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [retryPassword, setRetryPassword] = useState(false);
+  const [emailTaken, setEmailTaken] = useState(false);
 
   const scrollRef = useRef(null);
   const inputRef = useRef(null);
@@ -218,6 +228,11 @@ export default function SignupPage() {
     advance('company', company, company, { target_companies: [company] });
   };
 
+  const pickLevel = (chip) => {
+    if (typing) return;
+    advance('level', chip.value, chip.label, { level: chip.value });
+  };
+
   const createAccount = async (finalData) => {
     try {
       console.log('Creating account for:', finalData.name, finalData.email, 'domain:', finalData.domain_slug);
@@ -231,6 +246,7 @@ export default function SignupPage() {
         password: finalData.password,
         college: finalData.college || null,
         domainSlug: finalData.domain_slug || 'fullstack',
+        level: finalData.level || 'beginner',
         target_companies: finalData.target_companies || [],
       };
       console.log('Signup payload:', JSON.stringify({ ...payload, password: '[HIDDEN]' }));
@@ -257,6 +273,14 @@ export default function SignupPage() {
       }
 
       if (!d.success) {
+        // A duplicate email is NOT a password problem — retrying the password
+        // will never help. Route the user toward login instead of looping them
+        // back through the password step.
+        if (d.code === 'email_exists' || res.status === 409) {
+          setEmailTaken(true);
+          pushAI(`${d.message || 'This email is already registered.'} You can log in below.`);
+          return;
+        }
         // Roll back to the password step so the user can fix strength issues —
         // retryPassword keeps us from re-asking college/domain/company.
         setStep('password');
@@ -296,7 +320,7 @@ export default function SignupPage() {
     }
   };
 
-  const showChips = !typing && (step === 'domain' || step === 'company');
+  const showChips = !typing && (step === 'domain' || step === 'company' || step === 'level');
   const showInput = !typing && ['name', 'email', 'password', 'college'].includes(step);
   const isCreating = step === 'creating';
 
@@ -383,9 +407,21 @@ export default function SignupPage() {
               </div>
             )}
 
-            {isCreating && !typing && (
+            {isCreating && !typing && !emailTaken && (
               <div style={{ display: 'flex', justifyContent: 'center', padding: 16 }}>
                 <div style={{ width: 32, height: 32, border: `3px solid rgba(0,217,163,0.25)`, borderTopColor: PURPLE, borderRadius: '50%', animation: 'gen-spin 0.8s linear infinite' }} />
+              </div>
+            )}
+
+            {emailTaken && !typing && (
+              <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 16px 16px' }}>
+                <Link href="/login" style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                  padding: '12px 28px', borderRadius: 12, textDecoration: 'none',
+                  background: `linear-gradient(135deg, ${PURPLE}, #00b389)`, color: '#0a0a0f',
+                  fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700,
+                  boxShadow: '0 8px 24px rgba(0,217,163,0.32)',
+                }}>Go to Login →</Link>
               </div>
             )}
           </div>
@@ -398,6 +434,9 @@ export default function SignupPage() {
               ))}
               {step === 'company' && COMPANY_CHIPS.map((c) => (
                 <button key={c} onClick={() => pickCompany(c)} className="gen-chip">{c}</button>
+              ))}
+              {step === 'level' && LEVEL_CHIPS.map((c) => (
+                <button key={c.value} onClick={() => pickLevel(c)} className="gen-chip">{c.label}</button>
               ))}
             </div>
           )}
