@@ -41,12 +41,12 @@ export async function POST(request) {
       to: user.email,
       subject: 'Verify your GENOIS account',
       html: `
-        <div style="background:#020812;color:#e8f4ff;font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 24px;border-radius:12px;">
-          <div style="font-size:28px;font-weight:800;margin-bottom:8px;"><span style="color:#00f0ff">GEN</span><span>OIS</span></div>
-          <div style="height:2px;background:linear-gradient(90deg,#00f0ff,transparent);margin-bottom:32px;"></div>
-          <h2 style="color:#e8f4ff;margin-bottom:16px;">Verify your email address</h2>
+        <div style="background:#0a0a0f;color:#e8e8ed;font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 24px;border-radius:12px;">
+          <div style="font-size:28px;font-weight:800;margin-bottom:8px;"><span style="color:#00d9a3">GEN</span><span>OIS</span></div>
+          <div style="height:2px;background:linear-gradient(90deg,#00d9a3,transparent);margin-bottom:32px;"></div>
+          <h2 style="color:#e8e8ed;margin-bottom:16px;">Verify your email address</h2>
           <p style="color:#8a9ab0;line-height:1.7;margin-bottom:24px;">Hi ${user.name?.split(' ')[0] || 'Student'}, click the button below to verify your email and unlock all features.</p>
-          <a href="${verifyUrl}" style="display:block;text-align:center;padding:16px;background:linear-gradient(135deg,#00f0ff,#7b5cff);color:#020812;text-decoration:none;border-radius:12px;font-weight:800;font-size:16px;margin-bottom:24px;">Verify Email →</a>
+          <a href="${verifyUrl}" style="display:block;text-align:center;padding:16px;background:linear-gradient(135deg,#00d9a3,#ff6b4a);color:#0a0a0f;text-decoration:none;border-radius:12px;font-weight:800;font-size:16px;margin-bottom:24px;">Verify Email →</a>
           <p style="color:#5a7a9a;font-size:12px;">Link expires in 24 hours. If you did not sign up, ignore this email.</p>
           <p style="color:#3a4a5a;font-size:11px;margin-top:8px;">Or copy: ${verifyUrl}</p>
         </div>

@@ -49,13 +49,13 @@ export async function GET(request) {
           from: 'GENOIS <noreply@genois.in>',
           to: user.email,
           subject: '5 days left in your GENOIS trial',
-          html: `<div style="background:#020812;color:#e8f4ff;font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 24px;border-radius:12px;">
-            <div style="font-size:28px;font-weight:800;"><span style="color:#00f0ff">GEN</span><span>OIS</span></div>
+          html: `<div style="background:#0a0a0f;color:#e8e8ed;font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 24px;border-radius:12px;">
+            <div style="font-size:28px;font-weight:800;"><span style="color:#00d9a3">GEN</span><span>OIS</span></div>
             <h2 style="color:#EF9F27">5 days left</h2>
             <p>Hi ${user.name?.split(' ')[0] || 'there'},</p>
             <p>Your 30-day Dominator trial expires in 5 days.</p>
             <p>You will lose access to DSA roadmap, AI mentor, interview simulator, and all premium features.</p>
-            <a href="https://www.genois.in/subscription" style="display:block;text-align:center;padding:14px;background:linear-gradient(135deg,#00f0ff,#7b5cff);color:#020812;text-decoration:none;border-radius:10px;font-weight:800;margin-top:24px;">Choose Your Plan</a>
+            <a href="https://www.genois.in/subscription" style="display:block;text-align:center;padding:14px;background:linear-gradient(135deg,#00d9a3,#ff6b4a);color:#0a0a0f;text-decoration:none;border-radius:10px;font-weight:800;margin-top:24px;">Choose Your Plan</a>
           </div>`,
         });
         sent5++;
@@ -68,13 +68,13 @@ export async function GET(request) {
           from: 'GENOIS <noreply@genois.in>',
           to: user.email,
           subject: 'Last 2 days of your GENOIS trial',
-          html: `<div style="background:#020812;color:#e8f4ff;font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 24px;border-radius:12px;">
+          html: `<div style="background:#0a0a0f;color:#e8e8ed;font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 24px;border-radius:12px;">
             <div style="font-size:28px;font-weight:800;"><span style="color:#ff2d78">GEN</span><span>OIS</span></div>
             <h2 style="color:#ff2d78">Final reminder</h2>
             <p>Hi ${user.name?.split(' ')[0] || 'there'},</p>
             <p>Your trial ends in 2 days. After that, your account becomes Spectator (free) and most features lock.</p>
             <p>Lock in your progress. Pick a plan now.</p>
-            <a href="https://www.genois.in/subscription" style="display:block;text-align:center;padding:14px;background:linear-gradient(135deg,#ff2d78,#7b5cff);color:#020812;text-decoration:none;border-radius:10px;font-weight:800;margin-top:24px;">Save My Access</a>
+            <a href="https://www.genois.in/subscription" style="display:block;text-align:center;padding:14px;background:linear-gradient(135deg,#ff2d78,#ff6b4a);color:#0a0a0f;text-decoration:none;border-radius:10px;font-weight:800;margin-top:24px;">Save My Access</a>
           </div>`,
         });
         sent2++;

@@ -77,43 +77,43 @@ export async function GET(request) {
           to: user.email,
           subject: `📊 Your weekly GENOIS report — Day ${progress?.current_day || 0}`,
           html: `
-            <div style="background:#020812;color:#e8f4ff;font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 24px;border-radius:12px;">
-              <div style="font-size:28px;font-weight:800;margin-bottom:8px;"><span style="color:#00f0ff">GEN</span>OIS</div>
-              <div style="height:2px;background:linear-gradient(90deg,#00f0ff,transparent);margin-bottom:24px;"></div>
-              <h2 style="color:#00f0ff;margin-bottom:16px;">Hi ${user.name?.split(' ')[0] || 'Student'} 👋</h2>
+            <div style="background:#0a0a0f;color:#e8e8ed;font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 24px;border-radius:12px;">
+              <div style="font-size:28px;font-weight:800;margin-bottom:8px;"><span style="color:#00d9a3">GEN</span>OIS</div>
+              <div style="height:2px;background:linear-gradient(90deg,#00d9a3,transparent);margin-bottom:24px;"></div>
+              <h2 style="color:#00d9a3;margin-bottom:16px;">Hi ${user.name?.split(' ')[0] || 'Student'} 👋</h2>
               <p style="color:#8a9ab0;margin-bottom:20px;">Here's how you did this week:</p>
               
               <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:24px;">
-                <div style="background:#070f1f;border-radius:10px;padding:14px;text-align:center;">
-                  <div style="font-size:22px;font-weight:800;color:#7b5cff;">${progress?.total_score || 0}</div>
+                <div style="background:#12121a;border-radius:10px;padding:14px;text-align:center;">
+                  <div style="font-size:22px;font-weight:800;color:#ff6b4a;">${progress?.total_score || 0}</div>
                   <div style="font-size:10px;color:#5a7a9a;">SCORE</div>
                 </div>
-                <div style="background:#070f1f;border-radius:10px;padding:14px;text-align:center;">
+                <div style="background:#12121a;border-radius:10px;padding:14px;text-align:center;">
                   <div style="font-size:22px;font-weight:800;color:#1D9E75;">${progress?.current_day || 0}</div>
                   <div style="font-size:10px;color:#5a7a9a;">DAY</div>
                 </div>
-                <div style="background:#070f1f;border-radius:10px;padding:14px;text-align:center;">
+                <div style="background:#12121a;border-radius:10px;padding:14px;text-align:center;">
                   <div style="font-size:22px;font-weight:800;color:#EF9F27;">${progress?.streak || 0}d</div>
                   <div style="font-size:10px;color:#5a7a9a;">STREAK</div>
                 </div>
               </div>
 
-              ${userRank ? `<div style="background:linear-gradient(135deg,#00f0ff20,#7b5cff10);border:1px solid #00f0ff40;border-radius:10px;padding:14px;margin-bottom:20px;text-align:center;">
+              ${userRank ? `<div style="background:linear-gradient(135deg,#00d9a320,#ff6b4a10);border:1px solid #00d9a340;border-radius:10px;padding:14px;margin-bottom:20px;text-align:center;">
                 <div style="font-size:11px;color:#5a7a9a;letter-spacing:2px;">YOUR RANK</div>
-                <div style="font-size:24px;font-weight:800;color:#00f0ff;">#${userRank}</div>
+                <div style="font-size:24px;font-weight:800;color:#00d9a3;">#${userRank}</div>
               </div>` : ''}
 
-              <div style="background:#070f1f;border-radius:10px;padding:18px;margin-bottom:20px;">
+              <div style="background:#12121a;border-radius:10px;padding:18px;margin-bottom:20px;">
                 <div style="color:#1D9E75;font-size:11px;letter-spacing:2px;margin-bottom:10px;">🎯 TIPS FOR NEXT WEEK</div>
-                ${tips.map((t, i) => `<div style="padding:6px 0;color:#e8f4ff;font-size:13px;">${i+1}. ${t}</div>`).join('')}
+                ${tips.map((t, i) => `<div style="padding:6px 0;color:#e8e8ed;font-size:13px;">${i+1}. ${t}</div>`).join('')}
               </div>
 
-              <div style="background:#070f1f;border-radius:10px;padding:18px;margin-bottom:20px;">
+              <div style="background:#12121a;border-radius:10px;padding:18px;margin-bottom:20px;">
                 <div style="color:#EF9F27;font-size:11px;letter-spacing:2px;margin-bottom:10px;">🏆 TOP 5 THIS WEEK</div>
-                ${(leaderboard || []).slice(0, 5).map((l, i) => `<div style="padding:5px 0;font-size:12px;color:${l.user_id === user.id ? '#00f0ff' : '#e8f4ff'};">#${i+1} ${l.users?.name || 'Anonymous'} — ${l.total_score} pts</div>`).join('')}
+                ${(leaderboard || []).slice(0, 5).map((l, i) => `<div style="padding:5px 0;font-size:12px;color:${l.user_id === user.id ? '#00d9a3' : '#e8e8ed'};">#${i+1} ${l.users?.name || 'Anonymous'} — ${l.total_score} pts</div>`).join('')}
               </div>
 
-              <a href="https://www.genois.in/dashboard" style="display:block;text-align:center;padding:14px;background:linear-gradient(135deg,#00f0ff,#7b5cff);color:#020812;text-decoration:none;border-radius:10px;font-weight:800;font-size:14px;">Continue Your Journey →</a>
+              <a href="https://www.genois.in/dashboard" style="display:block;text-align:center;padding:14px;background:linear-gradient(135deg,#00d9a3,#ff6b4a);color:#0a0a0f;text-decoration:none;border-radius:10px;font-weight:800;font-size:14px;">Continue Your Journey →</a>
 
               <div style="color:#3a4a5a;font-size:11px;margin-top:24px;text-align:center;">GENOIS · Built for Tier 2/3 Engineers · genois.in</div>
             </div>
