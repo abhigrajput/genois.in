@@ -180,7 +180,16 @@ function DemoTask({ onClose }) {
             {DEMO_TASK.subtasks.map((s, i) => {
               const on = checked[i];
               return (
-                <button key={s.label} onClick={() => toggle(i)} className="gen-press gen-subtask" style={{
+                <button key={s.label} onClick={() => toggle(i)} className="gen-press gen-subtask"
+                  onPointerDown={(e) => {
+                    if (e.pointerType !== 'touch') return;
+                    const el = e.currentTarget;
+                    el.classList.remove('gen-tap');
+                    void el.offsetWidth; // reflow so a rapid re-tap restarts the flash
+                    el.classList.add('gen-tap');
+                  }}
+                  onAnimationEnd={(e) => e.currentTarget.classList.remove('gen-tap')}
+                  style={{
                   display: 'flex', alignItems: 'center', gap: SP.sm, textAlign: 'left', width: '100%',
                   padding: '12px 14px', borderRadius: 12, cursor: 'pointer',
                   background: on ? 'rgba(0,217,163,0.08)' : BG3,
