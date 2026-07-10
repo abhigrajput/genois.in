@@ -600,9 +600,36 @@ select:focus-visible {
   .gen-hero-asym .gen-hero-copy { order: 1; }
 }
 
+/* Information-vs-execution comparison — two columns collapsing to one */
+.gen-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  align-items: stretch;
+}
+@media (max-width: 720px) {
+  .gen-compare { grid-template-columns: 1fr; }
+}
+
+/* Pulsing "live" dot for the interactive demo badge */
+.gen-live-dot {
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #00d9a3;
+  box-shadow: 0 0 0 0 rgba(0,217,163,0.5);
+  animation: gen-live-pulse 1.8s ease-out infinite;
+}
+@keyframes gen-live-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(0,217,163,0.5); }
+  70%  { box-shadow: 0 0 0 6px rgba(0,217,163,0); }
+  100% { box-shadow: 0 0 0 0 rgba(0,217,163,0); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .gen-accent-line { animation: none; }
   [data-reveal] { transition: none; opacity: 1; transform: none; }
   .gen-hero-glow { display: none; }
   .gen-timeline::before { background: rgba(0,217,163,0.3); }
+  .gen-live-dot { animation: none; }
 }
