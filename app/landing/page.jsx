@@ -187,10 +187,10 @@ function DemoTask({ onClose }) {
                   border: `1px solid ${on ? 'rgba(0,217,163,0.35)' : 'rgba(255,255,255,0.06)'}`,
                   transition: 'background 0.2s, border-color 0.2s, box-shadow 0.2s',
                 }}>
-                  <span style={{
+                  <span className="gen-check" style={{
                     width: 22, height: 22, flexShrink: 0, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
                     background: on ? TEAL : 'transparent', border: `1.5px solid ${on ? TEAL : 'rgba(255,255,255,0.2)'}`,
-                    transition: 'background 0.2s, border-color 0.2s',
+                    transition: 'background 0.2s, border-color 0.2s, box-shadow 0.2s',
                   }}>{on && <Check size={14} strokeWidth={3} color={BG} />}</span>
                   <s.icon size={17} strokeWidth={1.8} color={on ? TEAL : MUTED} style={{ flexShrink: 0 }} />
                   <span style={{ flex: 1, minWidth: 0 }}>

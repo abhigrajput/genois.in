@@ -538,8 +538,14 @@ select:focus-visible {
 .gen-subtask:hover {
   box-shadow: inset 0 0 0 1px rgba(0,217,163,0.35), inset 0 0 0 999px rgba(0,217,163,0.05);
 }
+/* …and the checkbox itself lights up: teal ring overlaid on its inline border
+   (inset) plus a soft outer glow — no !important needed. */
+.gen-subtask:hover .gen-check {
+  box-shadow: inset 0 0 0 1.5px rgba(0,217,163,0.8), 0 0 9px rgba(0,217,163,0.3);
+}
 @media (hover: none) {
   .gen-subtask:hover { box-shadow: none; }
+  .gen-subtask:hover .gen-check { box-shadow: none; }
 }
 
 /* Subtle border-gradient card (§4.3) */
