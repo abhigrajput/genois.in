@@ -533,6 +533,15 @@ select:focus-visible {
 .gen-press { transition: transform 0.08s ease; }
 .gen-press:active { transform: scale(0.98); }
 
+/* Demo subtask row — subtle hover: teal ring + faint wash via inset shadow,
+   so it composes over the state-driven inline background without !important. */
+.gen-subtask:hover {
+  box-shadow: inset 0 0 0 1px rgba(0,217,163,0.35), inset 0 0 0 999px rgba(0,217,163,0.05);
+}
+@media (hover: none) {
+  .gen-subtask:hover { box-shadow: none; }
+}
+
 /* Subtle border-gradient card (§4.3) */
 .gen-gradient-border {
   position: relative;

@@ -180,12 +180,12 @@ function DemoTask({ onClose }) {
             {DEMO_TASK.subtasks.map((s, i) => {
               const on = checked[i];
               return (
-                <button key={s.label} onClick={() => toggle(i)} className="gen-press" style={{
+                <button key={s.label} onClick={() => toggle(i)} className="gen-press gen-subtask" style={{
                   display: 'flex', alignItems: 'center', gap: SP.sm, textAlign: 'left', width: '100%',
                   padding: '12px 14px', borderRadius: 12, cursor: 'pointer',
                   background: on ? 'rgba(0,217,163,0.08)' : BG3,
                   border: `1px solid ${on ? 'rgba(0,217,163,0.35)' : 'rgba(255,255,255,0.06)'}`,
-                  transition: 'background 0.2s, border-color 0.2s',
+                  transition: 'background 0.2s, border-color 0.2s, box-shadow 0.2s',
                 }}>
                   <span style={{
                     width: 22, height: 22, flexShrink: 0, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
