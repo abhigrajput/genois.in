@@ -114,7 +114,7 @@ function DemoTask({ onClose }) {
   return (
     <div style={{
       background: BG2, borderRadius: 20, border: `1px solid rgba(0,217,163,0.28)`,
-      padding: 'clamp(18px, 3vw, 26px)', width: '100%', maxWidth: 460,
+      padding: 'clamp(18px, 3vw, 26px)', width: '100%', maxWidth: 'min(460px, calc(100vw - 40px))',
       boxShadow: '0 40px 90px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,217,163,0.05)',
       position: 'relative', textAlign: 'left',
     }}>
@@ -221,7 +221,7 @@ function HeroTeaser({ onStart }) {
   return (
     <div style={{
       background: BG2, borderRadius: 20, border: `1px solid rgba(0,217,163,0.22)`,
-      padding: 'clamp(20px, 3vw, 28px)', width: '100%', maxWidth: 460,
+      padding: 'clamp(20px, 3vw, 28px)', width: '100%', maxWidth: 'min(460px, calc(100vw - 40px))',
       boxShadow: '0 40px 90px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,217,163,0.05)', textAlign: 'left',
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: SP.sm, marginBottom: 18 }}>

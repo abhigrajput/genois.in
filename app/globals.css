@@ -585,17 +585,21 @@ select:focus-visible {
   .gen-timeline::before { display: none; }
 }
 
-/* Asymmetric hero — left column wider than the mockup */
+/* Asymmetric hero — left column wider than the mockup.
+   minmax(0, …) + min-width:0 keep the tracks from expanding to a child's
+   max-content (e.g. the interactive demo card), which would otherwise blow
+   the whole hero past the viewport on narrow screens. */
 .gen-hero-asym {
   display: grid;
-  grid-template-columns: 1.35fr 1fr;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
   gap: 48px;
   align-items: center;
   max-width: 1180px;
   margin: 0 auto;
 }
+.gen-hero-copy, .gen-hero-mockup { min-width: 0; }
 @media (max-width: 900px) {
-  .gen-hero-asym { grid-template-columns: 1fr; gap: 40px; }
+  .gen-hero-asym { grid-template-columns: minmax(0, 1fr); gap: 40px; }
   .gen-hero-asym .gen-hero-mockup { order: 2; transform: none !important; margin: 0 auto; }
   .gen-hero-asym .gen-hero-copy { order: 1; }
 }
