@@ -193,7 +193,7 @@ function DemoTask({ onClose }) {
                     transition: 'background 0.2s, border-color 0.2s',
                   }}>{on && <Check size={14} strokeWidth={3} color={BG} />}</span>
                   <s.icon size={17} strokeWidth={1.8} color={on ? TEAL : MUTED} style={{ flexShrink: 0 }} />
-                  <span style={{ minWidth: 0 }}>
+                  <span style={{ flex: 1, minWidth: 0 }}>
                     <span style={{ display: 'block', fontFamily: 'var(--font-body)', fontSize: 14, fontWeight: 600, color: on ? TEXT : '#cbccd6', textDecoration: on ? 'line-through' : 'none', textDecorationColor: 'rgba(0,217,163,0.5)' }}>{s.label}</span>
                     <span style={{ display: 'block', fontFamily: 'var(--font-mono)', fontSize: 11, color: MUTED, marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.meta}</span>
                   </span>
