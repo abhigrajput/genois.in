@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "smoke": "node scripts/smoke/run.mjs",
+    "smoke:fast": "node scripts/smoke/run.mjs --only dashboard"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
