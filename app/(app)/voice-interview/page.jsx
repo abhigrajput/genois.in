@@ -18,6 +18,48 @@ const SOFT = '#c8d8e8';
 const TOTAL_QUESTIONS = 10;
 const MIN_WORDS = 10;
 
+// Long technical answers can be slow to score; cap the wait so the UI never
+// strands the user on a spinner. Question generation is lighter → shorter cap.
+const EVAL_TIMEOUT_MS = 45000;
+const QUESTION_TIMEOUT_MS = 30000;
+
+// ── shared type shapes (JSDoc — this is a .jsx file, no TS) ─────────────────
+/**
+ * A single turn in the interview conversation. The committed history is built
+ * from these; the interviewer prompt and the candidate answer are distinct.
+ * @typedef {Object} ChatMessage
+ * @property {'interviewer'|'candidate'} role   Who "spoke" this block.
+ * @property {string}  text                     The prompt or the transcribed answer.
+ * @property {number} [questionIndex]           Zero-based question this belongs to.
+ * @property {number} [wordCount]               Words in a candidate answer.
+ */
+
+/**
+ * Everything about the microphone / speech-to-text lifecycle. `committed` is
+ * immutable-from-STT history for the current answer; `interim` is the volatile
+ * live stream that must never overwrite `committed`.
+ * @typedef {Object} AudioState
+ * @property {boolean} supported   Web Speech API present.
+ * @property {boolean} listening   Recognition currently running.
+ * @property {boolean} blocked     Mic permission denied.
+ * @property {string}  committed   Finalized transcript (survives re-renders).
+ * @property {string}  interim     Live, not-yet-confirmed words.
+ */
+
+/**
+ * The scoring returned by /api/interview/evaluate (or the local fallback).
+ * @typedef {Object} EvaluationPayload
+ * @property {number}   technicalAccuracy     0–100.
+ * @property {number}   communicationClarity  0–100.
+ * @property {number}   confidenceScore       0–100.
+ * @property {number}   overallScore          0–100.
+ * @property {string}   grade                 A+ … F.
+ * @property {string[]} [strengths]           What worked.
+ * @property {string[]} [improvements]        What to fix.
+ * @property {string}   [verdict]             One-line summary.
+ * @property {string}   [idealAnswer]         Model-answer coverage notes.
+ */
+
 const MODES = [
   { key: 'technical', icon: '⚙️', label: 'Technical', desc: 'DSA, system design, coding logic, core CS.' },
   { key: 'hr', icon: '💬', label: 'HR / Behavioural', desc: 'Motivation, teamwork, failure, communication.' },
@@ -25,6 +67,32 @@ const MODES = [
 ];
 
 const COMPANIES = ['TCS', 'Infosys', 'Wipro', 'Accenture', 'Cognizant', 'Amazon', 'Microsoft', 'Google', 'Flipkart'];
+
+/**
+ * fetch() with a hard timeout via AbortController. On timeout the thrown error
+ * carries `timedOut: true` so callers can branch to a retry affordance.
+ * @param {string} url
+ * @param {string|null} token
+ * @param {string} method
+ * @param {unknown} body
+ * @param {number} timeoutMs
+ */
+async function apiFetchWithTimeout(url, token, method, body, timeoutMs) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await apiFetch(url, token, method, body, controller.signal);
+  } catch (err) {
+    if (err?.name === 'AbortError') {
+      const e = new Error('The evaluator took too long to respond.');
+      e.timedOut = true;
+      throw e;
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 // Collapse immediate word repetitions ("so so well" → "so well") that the
 // Web Speech API can leave behind when final results overlap. Applied on submit.
@@ -48,6 +116,14 @@ function gradeFromScore(s) {
   if (s >= 65) return 'C+'; if (s >= 55) return 'C'; if (s >= 45) return 'D'; return 'F';
 }
 
+/** @type {EvaluationPayload} — shown only if scoring is unavailable and the user opts in. */
+const ESTIMATED_EVAL = {
+  technicalAccuracy: 70, communicationClarity: 65, confidenceScore: 75,
+  overallScore: 70, grade: 'B',
+  strengths: ['Answer recorded'], improvements: ['Keep practicing'],
+  verdict: 'Good attempt — scoring was unavailable, so this is an estimate.',
+};
+
 function Bar({ label, value }) {
   const c = barColor(value);
   return (
@@ -58,6 +134,19 @@ function Bar({ label, value }) {
       </div>
       <div style={{ width: 54, textAlign: 'right', fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 15, color: c }}>{value}<span style={{ fontSize: 10, color: MUTED }}>/100</span></div>
     </div>
+  );
+}
+
+// A single shimmering placeholder block — used to reserve the result card's
+// footprint while scoring runs, so nothing jumps when the real card mounts.
+function Shimmer({ w = '100%', h = 12, r = 6, style }) {
+  return (
+    <div style={{
+      width: w, height: h, borderRadius: r,
+      background: 'linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.11) 37%, rgba(255,255,255,0.04) 63%)',
+      backgroundSize: '900px 100%', animation: 'vi-shimmer 1.4s linear infinite',
+      ...style,
+    }} />
   );
 }
 
@@ -72,10 +161,10 @@ export default function VoiceInterviewPage() {
   const [userName, setUserName] = useState('');
 
   // session
-  const [status, setStatus] = useState('idle'); // idle | loadingQ | question | evaluating | result | complete
-  const [questions, setQuestions] = useState([]);
-  const [answers, setAnswers] = useState([]);
-  const [evaluations, setEvaluations] = useState([]);
+  const [status, setStatus] = useState('idle'); // idle | loadingQ | question | evaluating | evalFailed | result | complete
+  const [questions, setQuestions] = useState([]);   // immutable, append-only
+  const [answers, setAnswers] = useState([]);        // immutable, append-only
+  const [evaluations, setEvaluations] = useState([]);// immutable, append-only
   const [qIndex, setQIndex] = useState(0);
   const [startTime, setStartTime] = useState(null);
   const [qStartTime, setQStartTime] = useState(null);
@@ -85,13 +174,17 @@ export default function VoiceInterviewPage() {
   const [showDetails, setShowDetails] = useState(false);
   const [sharing, setSharing] = useState(false);
 
+  // evaluation timeout / retry
+  const [pendingAnswer, setPendingAnswer] = useState(null); // { transcript, wordCount } awaiting (re)scoring
+  const [evalError, setEvalError] = useState(null);         // { timedOut, message }
+
   // speech
   const [speechSupported, setSpeechSupported] = useState(true);
   const [isChromium, setIsChromium] = useState(true);
   const [isListening, setIsListening] = useState(false);
   const [micBlocked, setMicBlocked] = useState(false);
-  const [transcript, setTranscript] = useState('');
-  const [interim, setInterim] = useState('');
+  const [transcript, setTranscript] = useState(''); // committed answer text (survives STT stream + re-renders)
+  const [interim, setInterim] = useState('');        // volatile live stream — kept OUT of committed history
   const recognitionRef = useRef(null);
   const finalTranscriptRef = useRef(''); // accumulates confirmed final text — dedup source of truth
   const shareRef = useRef(null);
@@ -208,8 +301,8 @@ export default function VoiceInterviewPage() {
         else interimText += t;
       }
       // Accumulate ONLY the newly-finalized text into a ref, then mirror it into
-      // state. Mutating the ref inside the event handler (not via a functional
-      // state updater) avoids double-appends and overlapping-segment loops.
+      // the COMMITTED transcript state. The volatile interim stream is written to
+      // its own state below and can never overwrite committed history.
       if (finalText) {
         finalTranscriptRef.current += finalText;
         setTranscript(finalTranscriptRef.current.trim());
@@ -279,20 +372,21 @@ export default function VoiceInterviewPage() {
     stopListening();
     finalTranscriptRef.current = '';
     setTranscript(''); setInterim(''); setElapsed(0);
+    setEvalError(null); setPendingAnswer(null);
     setStatus('loadingQ');
     try {
       const prev = questions.map(q => q.question);
-      const r = await apiFetch('/api/interview/questions', token, 'POST', {
+      const r = await apiFetchWithTimeout('/api/interview/questions', token, 'POST', {
         domain, level, targetCompany: company, mode, questionNumber: qNum, previousQuestions: prev,
-      });
+      }, QUESTION_TIMEOUT_MS);
       const q = r.data.question;
-      setQuestions(arr => [...arr, q]);
+      setQuestions(arr => [...arr, q]); // append-only — never replaces history
       speakQuestion(q.question); // 🔊 read the new question aloud (start + every "Next")
       setQIndex(qNum - 1);
       setQStartTime(Date.now());
       setStatus('question');
     } catch (e) {
-      toast.error(e.message || 'Could not load the next question.');
+      toast.error(e.timedOut ? 'Loading the question timed out — check your connection and try again.' : (e.message || 'Could not load the next question.'));
       setStatus(revertStatus);
     }
   }
@@ -300,44 +394,64 @@ export default function VoiceInterviewPage() {
   function startInterview() {
     if (!company.trim()) { toast.error('Pick or type a target company.'); return; }
     setQuestions([]); setAnswers([]); setEvaluations([]); setSummary(null); setPercentile(null); setShowDetails(false);
+    setEvalError(null); setPendingAnswer(null);
     setStartTime(Date.now());
     fetchQuestion(1, 'idle');
   }
 
-  async function submitAnswer() {
+  // Commit one scored turn to immutable, append-only history.
+  function commitEvaluation(answer, evaluation) {
+    setAnswers(arr => [...arr, answer]);
+    setEvaluations(arr => [...arr, evaluation]);
+    setPendingAnswer(null);
+    setEvalError(null);
+    setStatus('result');
+  }
+
+  // Core scoring call — shared by first submit and the retry button.
+  async function runEvaluation(answer) {
+    setEvalError(null);
+    setStatus('evaluating');
+    try {
+      const r = await apiFetchWithTimeout('/api/interview/evaluate', token, 'POST', {
+        question: currentQ.question,
+        answer: answer.transcript,
+        domain,
+        targetCompany: company,
+        questionType: currentQ.type || 'technical',
+        wordCount: answer.wordCount,
+      }, EVAL_TIMEOUT_MS);
+      const evaluation = r?.data?.evaluation;
+      if (!evaluation) throw new Error('Evaluation response was empty');
+      commitEvaluation(answer, evaluation);
+    } catch (e) {
+      // Never strand the user on a spinner: park the answer and surface a
+      // graceful retry screen instead of silently mutating history.
+      console.error('[voice-interview] evaluation failed:', e);
+      setPendingAnswer(answer);
+      setEvalError({
+        timedOut: !!e.timedOut,
+        message: e.timedOut
+          ? 'The evaluator is taking longer than usual (long answers need more time).'
+          : 'The scoring service hiccuped while grading your answer.',
+      });
+      setStatus('evalFailed');
+    }
+  }
+
+  function submitAnswer() {
     const answerText = cleanTranscript(liveText);
     const wc = wordsOf(answerText);
     if (wc < MIN_WORDS) { toast.error(`Speak a bit more — at least ${MIN_WORDS} words (you have ${wc}).`); return; }
     stopListening();
-    setStatus('evaluating');
-    try {
-      const r = await apiFetch('/api/interview/evaluate', token, 'POST', {
-        question: currentQ.question,
-        answer: answerText,
-        domain,
-        targetCompany: company,
-        questionType: currentQ.type || 'technical',
-        wordCount: wc,
-      });
-      const evaluation = r?.data?.evaluation;
-      if (!evaluation) throw new Error('Evaluation response was empty');
-      setAnswers(arr => [...arr, { transcript: answerText, wordCount: wc }]);
-      setEvaluations(arr => [...arr, evaluation]);
-      setStatus('result');
-    } catch (e) {
-      // Don't break the interview if scoring fails — log it and show a fallback score.
-      console.error('[voice-interview] evaluation failed:', e);
-      toast.error('Scoring service hiccuped — showing an estimated score.');
-      const fallback = {
-        technicalAccuracy: 70, communicationClarity: 65, confidenceScore: 75,
-        overallScore: 70, grade: 'B',
-        strengths: ['Answer recorded'], improvements: ['Keep practicing'],
-        verdict: 'Good attempt — scoring was unavailable, so this is an estimate.',
-      };
-      setAnswers(arr => [...arr, { transcript: answerText, wordCount: wc }]);
-      setEvaluations(arr => [...arr, fallback]);
-      setStatus('result');
-    }
+    runEvaluation({ transcript: answerText, wordCount: wc });
+  }
+
+  // "Use estimated score" — accept the fallback so the session can continue.
+  function acceptEstimated() {
+    if (!pendingAnswer) return;
+    toast('Recorded with an estimated score.', { icon: '📝' });
+    commitEvaluation(pendingAnswer, ESTIMATED_EVAL);
   }
 
   async function continueNext() {
@@ -381,6 +495,7 @@ export default function VoiceInterviewPage() {
     finalTranscriptRef.current = '';
     setStatus('idle'); setQuestions([]); setAnswers([]); setEvaluations([]); setQIndex(0);
     setSummary(null); setPercentile(null); setTranscript(''); setInterim(''); setShowDetails(false);
+    setEvalError(null); setPendingAnswer(null);
   }
 
   async function shareScore() {
@@ -409,7 +524,10 @@ export default function VoiceInterviewPage() {
   const keyframes = `
     @keyframes vi-pulse { 0%{box-shadow:0 0 0 0 rgba(255,45,120,.55)} 70%{box-shadow:0 0 0 26px rgba(255,45,120,0)} 100%{box-shadow:0 0 0 0 rgba(255,45,120,0)} }
     @keyframes vi-spin { to { transform: rotate(360deg) } }
-    @keyframes vi-blink { 0%,100%{opacity:1} 50%{opacity:.25} }`;
+    @keyframes vi-blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+    @keyframes vi-shimmer { 0%{background-position:-450px 0} 100%{background-position:450px 0} }
+    @keyframes vi-wave { 0%,100%{transform:scaleY(.35)} 50%{transform:scaleY(1)} }
+    @keyframes vi-fade { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }`;
 
   const micBlockedBanner = micBlocked ? (
     <div style={{
@@ -423,17 +541,70 @@ export default function VoiceInterviewPage() {
 
   if (!ready) return <div style={{ color: MUTED, padding: 60, textAlign: 'center' }}>Loading…</div>;
 
-  // ── loaders ────────────────────────────────────────────────────────────
-  if (status === 'loadingQ' || status === 'evaluating') {
-    const evaluating = status === 'evaluating';
+  // ── question loader (lightweight, themed) ────────────────────────────────
+  if (status === 'loadingQ') {
     return (
       <div style={{ color: MUTED, padding: 80, textAlign: 'center', fontFamily: 'var(--font-body)' }}>
         <style dangerouslySetInnerHTML={{ __html: keyframes }} />
         <div style={{ width: 46, height: 46, margin: '0 auto 18px', border: `3px solid rgba(0,240,255,.15)`, borderTopColor: CYAN, borderRadius: '50%', animation: 'vi-spin .8s linear infinite' }} />
-        <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, color: LIGHT }}>
-          {evaluating ? 'Interviewer is evaluating your answer…' : 'Interviewer is thinking…'}
+        <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, color: LIGHT }}>Interviewer is thinking…</div>
+        <div style={{ fontSize: 13, marginTop: 6 }}>Preparing question {Math.min(questions.length + 1, TOTAL_QUESTIONS)} of {TOTAL_QUESTIONS}</div>
+      </div>
+    );
+  }
+
+  // ── evaluating: polished processing state that RESERVES the result card's
+  //    footprint (min-height) so the real card can't jump the page on arrival.
+  if (status === 'evaluating') {
+    return (
+      <div style={{ maxWidth: 720, margin: '0 auto', fontFamily: 'var(--font-body)', animation: 'vi-fade .3s ease' }}>
+        <style dangerouslySetInnerHTML={{ __html: keyframes }} />
+        <div style={{ background: CARD, border: `1px solid ${CYAN}22`, borderRadius: 16, padding: 24, minHeight: 300, display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22 }}>
+            {/* live audio-style wave = "engine is working", not "app crashed" */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, height: 34, width: 46 }}>
+              {[0, 1, 2, 3, 4].map(i => (
+                <span key={i} style={{ width: 5, height: '100%', borderRadius: 3, background: `linear-gradient(${CYAN},${PURPLE})`, transformOrigin: 'center', animation: `vi-wave 1s ${i * 0.13}s ease-in-out infinite` }} />
+              ))}
+            </div>
+            <div>
+              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, color: LIGHT }}>Interviewer is evaluating your answer…</div>
+              <div style={{ fontSize: 12.5, color: MUTED, marginTop: 3 }}>Scoring accuracy, clarity &amp; confidence. Long answers can take a few seconds.</div>
+            </div>
+          </div>
+          {/* skeleton of the three metric bars */}
+          {[0, 1, 2].map(i => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+              <Shimmer w={130} h={12} />
+              <Shimmer h={8} r={4} style={{ flex: 1 }} />
+              <Shimmer w={40} h={14} />
+            </div>
+          ))}
+          <div style={{ marginTop: 8, display: 'grid', gap: 8 }}>
+            <Shimmer h={12} w="90%" />
+            <Shimmer h={12} w="70%" />
+          </div>
         </div>
-        <div style={{ fontSize: 13, marginTop: 6 }}>{evaluating ? 'Scoring accuracy, clarity & confidence' : `Preparing question ${Math.min(questions.length + 1, TOTAL_QUESTIONS)} of ${TOTAL_QUESTIONS}`}</div>
+      </div>
+    );
+  }
+
+  // ── evaluation failed / timed out: never a dead spinner — always a way out ─
+  if (status === 'evalFailed' && evalError) {
+    return (
+      <div style={{ maxWidth: 640, margin: '0 auto', fontFamily: 'var(--font-body)', animation: 'vi-fade .3s ease' }}>
+        <div style={{ background: CARD, border: `1px solid ${AMBER}44`, borderRadius: 16, padding: 26, minHeight: 300, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <div style={{ fontSize: 34, marginBottom: 12 }}>{evalError.timedOut ? '⏳' : '⚠️'}</div>
+          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 18, color: LIGHT, marginBottom: 8 }}>
+            {evalError.timedOut ? 'Still scoring…' : 'Scoring hiccuped'}
+          </div>
+          <div style={{ fontSize: 14, color: SOFT, lineHeight: 1.6, marginBottom: 6 }}>{evalError.message}</div>
+          <div style={{ fontSize: 12.5, color: MUTED, lineHeight: 1.6, marginBottom: 22 }}>Your answer is safe — nothing was lost. Retry the evaluation, or continue with an estimated score.</div>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <button onClick={() => pendingAnswer && runEvaluation(pendingAnswer)} style={{ flex: 1, minWidth: 160, padding: 14, borderRadius: 12, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${CYAN},${PURPLE})`, color: '#020812', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>↻ Retry evaluation</button>
+            <button onClick={acceptEstimated} style={{ flex: 1, minWidth: 160, padding: 14, borderRadius: 12, border: '1px solid rgba(255,255,255,0.14)', cursor: 'pointer', background: 'transparent', color: SOFT, fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14 }}>Use estimated score</button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -467,8 +638,9 @@ export default function VoiceInterviewPage() {
           <div style={{ height: '100%', width: `${((qIndex + 1) / TOTAL_QUESTIONS) * 100}%`, background: `linear-gradient(90deg,${CYAN},${PURPLE})`, borderRadius: 3, transition: 'width .4s' }} />
         </div>
 
-        {/* question */}
-        <div style={{ background: CARD, border: `1px solid ${CYAN}1a`, borderRadius: 16, padding: '24px 22px', marginBottom: 22 }}>
+        {/* ── interviewer bubble (the prompt) ─────────────────────────────── */}
+        <div style={{ position: 'relative', background: CARD, border: `1px solid ${CYAN}1a`, borderLeft: `3px solid ${CYAN}`, borderRadius: 16, padding: '20px 22px', marginBottom: 18 }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: CYAN, letterSpacing: 1.5, marginBottom: 10, textTransform: 'uppercase' }}>🤖 Interviewer asks</div>
           <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
             <span style={{ fontSize: 9, padding: '3px 9px', borderRadius: 10, background: `${PURPLE}1a`, color: PURPLE, fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>{currentQ.type}</span>
             <span style={{ fontSize: 9, padding: '3px 9px', borderRadius: 10, background: `${AMBER}1a`, color: AMBER, fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>{currentQ.difficulty}</span>
@@ -489,7 +661,8 @@ export default function VoiceInterviewPage() {
 
         {/* mic / transcript */}
         {speechSupported ? (
-          <div style={{ textAlign: 'center', marginBottom: 18 }}>
+          <div style={{ textAlign: 'center', marginBottom: 16 }}>
+            {/* fixed 132px footprint in BOTH states — only colour/animation change */}
             <button
               onClick={() => (isListening ? stopListening() : startListening())}
               style={{
@@ -502,26 +675,37 @@ export default function VoiceInterviewPage() {
               }}>
               <span style={{ fontSize: 40 }}>🎤</span>
             </button>
-            <div style={{ marginTop: 12, fontFamily: 'var(--font-mono)', fontSize: 13, color: isListening ? RED : MUTED }}>
+            {/* reserve one line so the label toggling can't nudge layout */}
+            <div style={{ marginTop: 12, minHeight: 20, fontFamily: 'var(--font-mono)', fontSize: 13, color: isListening ? RED : MUTED }}>
               {isListening ? (<span><span style={{ animation: 'vi-blink 1s infinite' }}>🔴</span> Recording… tap to stop</span>) : (transcript ? 'Tap to add more' : 'Tap to answer out loud')}
             </div>
           </div>
         ) : (
-          <div style={{ marginBottom: 18 }}>
+          <div style={{ marginBottom: 16 }}>
             <div style={{ fontSize: 12, color: AMBER, marginBottom: 8, fontFamily: 'var(--font-mono)' }}>⚠️ Voice input isn’t supported here — type your answer instead (Chrome recommended).</div>
-            <textarea value={transcript} onChange={e => setTranscript(e.target.value)} rows={6} placeholder="Type your answer…" style={{ width: '100%', padding: 14, borderRadius: 10, border: `1px solid ${CYAN}1f`, background: INPUT, color: LIGHT, fontSize: 14, fontFamily: 'var(--font-body)', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.6 }} />
+            <textarea value={transcript} onChange={e => { setTranscript(e.target.value); finalTranscriptRef.current = e.target.value ? e.target.value.trim() + ' ' : ''; }} rows={6} placeholder="Type your answer…" style={{ width: '100%', padding: 14, borderRadius: 10, border: `1px solid ${CYAN}1f`, background: INPUT, color: LIGHT, fontSize: 14, fontFamily: 'var(--font-body)', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.6 }} />
           </div>
         )}
 
-        {/* transcript display */}
-        {(liveText || isListening) && (
-          <div style={{ background: INPUT, border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12, padding: 16, marginBottom: 14, minHeight: 60 }}>
+        {/* ── candidate bubble (the answer) — ALWAYS mounted with a fixed height
+             band so streaming STT text can't make the page jump, and the
+             committed transcript stays visibly distinct from live interim. ── */}
+        <div style={{ background: `linear-gradient(135deg,${GREEN}0e,transparent)`, border: `1px solid ${GREEN}2e`, borderRight: `3px solid ${GREEN}`, borderRadius: 14, padding: 16, marginBottom: 14, minHeight: 96, maxHeight: 240, overflowY: 'auto' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: GREEN, letterSpacing: 1.5, textTransform: 'uppercase' }}>🗣 Your answer</span>
+            {isListening && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: RED }}><span style={{ animation: 'vi-blink 1s infinite' }}>●</span> live</span>}
+          </div>
+          {liveText ? (
             <div style={{ fontSize: 14, lineHeight: 1.7 }}>
               <span style={{ color: SOFT }}>{transcript}</span>
               {interim && <span style={{ color: MUTED, fontStyle: 'italic' }}> {interim}</span>}
             </div>
-          </div>
-        )}
+          ) : (
+            <div style={{ fontSize: 13.5, color: MUTED, fontStyle: 'italic', lineHeight: 1.6 }}>
+              {isListening ? 'Listening… start speaking.' : 'Your spoken answer will appear here as you talk.'}
+            </div>
+          )}
+        </div>
 
         {/* word count + submit */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
@@ -542,8 +726,8 @@ export default function VoiceInterviewPage() {
     const ev = currentEval;
     const isLast = qIndex + 1 >= TOTAL_QUESTIONS;
     return (
-      <div style={{ maxWidth: 720, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
-        <div style={{ background: CARD, border: `1px solid ${gradeColor(ev.grade)}33`, borderRadius: 16, padding: 24, marginBottom: 16 }}>
+      <div style={{ maxWidth: 720, margin: '0 auto', fontFamily: 'var(--font-body)', animation: 'vi-fade .3s ease' }}>
+        <div style={{ background: CARD, border: `1px solid ${gradeColor(ev.grade)}33`, borderRadius: 16, padding: 24, marginBottom: 16, minHeight: 300 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, flexWrap: 'wrap', gap: 10 }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: MUTED, letterSpacing: 1.5 }}>QUESTION {qIndex + 1} / {TOTAL_QUESTIONS} · {currentQ?.type?.toUpperCase()}</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
@@ -643,6 +827,7 @@ export default function VoiceInterviewPage() {
           <button onClick={retake} style={{ flex: 1, minWidth: 150, padding: 13, borderRadius: 12, border: 'none', background: `linear-gradient(135deg,${GREEN},${CYAN})`, color: '#020812', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>Retake Interview</button>
         </div>
 
+        {/* full session transcript — every Q + score persists here */}
         {showDetails && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {questions.map((q, i) => {
@@ -654,6 +839,7 @@ export default function VoiceInterviewPage() {
                     <div style={{ fontSize: 13, color: LIGHT, fontWeight: 600, lineHeight: 1.5 }}>Q{i + 1}. {q.question}</div>
                     <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 16, color: gradeColor(e.grade), flexShrink: 0 }}>{e.overallScore}</div>
                   </div>
+                  {answers[i]?.transcript && <div style={{ fontSize: 12.5, color: SOFT, lineHeight: 1.6, marginBottom: 6, paddingLeft: 10, borderLeft: `2px solid ${GREEN}55` }}>🗣 {answers[i].transcript}</div>}
                   {e.verdict && <div style={{ fontSize: 12, color: MUTED, lineHeight: 1.6 }}>{e.verdict}</div>}
                 </div>
               );
