@@ -6,43 +6,48 @@ import useAuthStore from '@/store/authStore';
 import CodeEditor from '@/components/CodeEditor';
 import { toEmbedUrl } from '@/lib/youtubeEmbed';
 
+// ── Shared Tailwind class tokens (native utilities only) ──
+const CARD =
+  'relative overflow-hidden rounded-2xl border border-primary/10 bg-[#070f1a] p-5';
+const ACTION_BTN =
+  'w-full cursor-pointer rounded-[10px] border-none bg-[linear-gradient(135deg,#00f0ff,#ff6b4a)] px-7 py-3.5 text-[15px] font-bold text-[#020812] transition-all hover:brightness-110 hover:shadow-[0_0_28px_rgba(0,240,255,0.35)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50';
+const EYEBROW =
+  'font-mono text-[11px] font-extrabold uppercase tracking-[1px] text-muted';
+
 function YouTubeEmbed({ url, title }) {
   const embedUrl = toEmbedUrl(url);
-  if (!embedUrl) return (
-    <a href={url} target="_blank" rel="noopener noreferrer" style={{
-      display: 'inline-flex', alignItems: 'center', gap: 8,
-      padding: '12px 20px', borderRadius: 10, textDecoration: 'none',
-      background: 'rgba(0,255,136,0.1)', border: '1px solid rgba(0,255,136,0.3)',
-      color: '#00ff88', fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 14,
-    }}>▶ Watch on YouTube →</a>
-  );
+  if (!embedUrl)
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-2 rounded-[10px] border border-[#00ff88]/30 bg-[#00ff88]/10 px-5 py-3 text-sm font-semibold text-[#00ff88] no-underline transition-all hover:bg-[#00ff88]/20 focus-visible:outline-none"
+      >
+        ▶ Watch on YouTube →
+      </a>
+    );
   return (
-    <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(0,255,136,0.15)' }}>
+    <div className="relative h-0 overflow-hidden rounded-xl border border-primary/15 pb-[56.25%]">
       <iframe
         src={embedUrl}
         title={title || 'Daily Roadmap Video'}
         frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
-        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+        className="absolute left-0 top-0 h-full w-full"
       />
     </div>
   );
 }
 
-const STEPS = ['video','resource','coding','test','notes'];
-const STEP_LABELS = { video:'Watch Video', resource:'Read Resource', coding:'Coding Challenge', test:'Daily Test', notes:'AI Notes' };
-
-const ACTION_BTN_STYLE = {
-  background: 'linear-gradient(135deg, #00f0ff, #ff6b4a)',
-  color: '#020812',
-  fontWeight: 700,
-  padding: '14px 28px',
-  borderRadius: '10px',
-  width: '100%',
-  fontSize: '15px',
-  border: 'none',
-  cursor: 'pointer'
+const STEPS = ['video', 'resource', 'coding', 'test', 'notes'];
+const STEP_LABELS = {
+  video: 'Watch Video',
+  resource: 'Read Resource',
+  coding: 'Coding Challenge',
+  test: 'Daily Test',
+  notes: 'AI Notes',
 };
 
 const MAX_DAY = 365;
@@ -59,7 +64,7 @@ export default function DailyRoadmapPage() {
   const [officialDay, setOfficialDay] = useState(1);
   const [navLoading, setNavLoading] = useState(false);
 
-  // Roadmap overview (BUG 4) and skip-basics (BUG 6)
+  // Roadmap overview (curriculum transparency) and skip-basics bypass
   const [overview, setOverview] = useState(null);
   const [showOverview, setShowOverview] = useState(false);
   const [skipping, setSkipping] = useState(false);
@@ -93,7 +98,10 @@ export default function DailyRoadmapPage() {
 
   // 30-second watch gate: enables "Mark as Watched" after user has had the video visible for 30s
   useEffect(() => {
-    if (activeStep !== 0) { setVideoEligible(false); return; }
+    if (activeStep !== 0) {
+      setVideoEligible(false);
+      return;
+    }
     setVideoEligible(false);
     const timer = setTimeout(() => setVideoEligible(true), 30000);
     return () => clearTimeout(timer);
@@ -124,8 +132,11 @@ export default function DailyRoadmapPage() {
 
       // Reset per-day sub-flows
       setActiveStep(0);
-      setTest(null); setTestAnswers({}); setTestResult(null);
-      setCode('// Write your solution here\n'); setCodeResult(null);
+      setTest(null);
+      setTestAnswers({});
+      setTestResult(null);
+      setCode('// Write your solution here\n');
+      setCodeResult(null);
       setNote(null);
     } catch (err) {
       toast.error('Failed to load roadmap');
@@ -141,7 +152,9 @@ export default function DailyRoadmapPage() {
       try {
         const res = await roadmapAPI.getOverview();
         setOverview(res.data);
-      } catch { toast.error('Could not load roadmap overview'); }
+      } catch {
+        toast.error('Could not load roadmap overview');
+      }
     }
   }
 
@@ -159,14 +172,14 @@ export default function DailyRoadmapPage() {
     }
   }
 
-  const isTaskDone = (type) => tasks.find(t => t.type === type)?.status === 'completed';
+  const isTaskDone = (type) => tasks.find((t) => t.type === type)?.status === 'completed';
 
   async function completeTask(type) {
     try {
       const res = await taskAPI.completeTask({ taskType: type, completed: true, day: daily.currentDay });
-      setTasks(prev => prev.map(t => t.type === type ? { ...t, status: 'completed', score: 20 } : t));
+      setTasks((prev) => prev.map((t) => (t.type === type ? { ...t, status: 'completed', score: 20 } : t)));
       toast.success(`+20 pts!`);
-      
+
       const currentIndex = STEPS.indexOf(type);
       const nextIndex = currentIndex + 1;
       if (nextIndex < STEPS.length) {
@@ -177,9 +190,11 @@ export default function DailyRoadmapPage() {
         const nextDay = daily.currentDay + 1;
         toast.success(`🎉 Day ${daily.currentDay} complete! Day ${nextDay} unlocked!`, { duration: 4000 });
         updateProgress({ current_day: nextDay });
-        setDaily(d => ({ ...d, dayUnlocked: true, newDay: nextDay }));
+        setDaily((d) => ({ ...d, dayUnlocked: true, newDay: nextDay }));
       }
-    } catch (err) { toast.error(err.message); }
+    } catch (err) {
+      toast.error(err.message);
+    }
   }
 
   async function generateTest() {
@@ -187,7 +202,11 @@ export default function DailyRoadmapPage() {
     try {
       const res = await testAPI.generateDaily({ roadmapId: daily.roadmapItem.id, dayNumber: daily.currentDay });
       setTest(res.data);
-    } catch { toast.error('Failed to generate test'); } finally { setTestLoading(false); }
+    } catch {
+      toast.error('Failed to generate test');
+    } finally {
+      setTestLoading(false);
+    }
   }
 
   async function submitTest() {
@@ -198,7 +217,11 @@ export default function DailyRoadmapPage() {
       const res = await testAPI.submit({ testId: test.testId, answers });
       setTestResult(res.data);
       await completeTask('test');
-    } catch { toast.error('Failed to submit test'); } finally { setTestLoading(false); }
+    } catch {
+      toast.error('Failed to submit test');
+    } finally {
+      setTestLoading(false);
+    }
   }
 
   async function submitCode() {
@@ -207,7 +230,11 @@ export default function DailyRoadmapPage() {
       const res = await codingAPI.submit({ codingTestId: codingTest.id, code, language: codeLanguage });
       setCodeResult(res.data);
       await completeTask('coding');
-    } catch { toast.error('Code submission failed'); } finally { setCodeLoading(false); }
+    } catch {
+      toast.error('Code submission failed');
+    } finally {
+      setCodeLoading(false);
+    }
   }
 
   async function generateNotes() {
@@ -216,7 +243,11 @@ export default function DailyRoadmapPage() {
       const res = await notesAPI.generate({ roadmapId: daily.roadmapItem.id, noteType });
       setNote(res.data.note);
       if (!isTaskDone('notes')) await completeTask('notes');
-    } catch { toast.error('Failed to generate notes'); } finally { setNoteLoading(false); }
+    } catch {
+      toast.error('Failed to generate notes');
+    } finally {
+      setNoteLoading(false);
+    }
   }
 
   const submitProject = async (e) => {
@@ -232,7 +263,7 @@ export default function DailyRoadmapPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           projectTitle: daily.project.title,
@@ -240,8 +271,8 @@ export default function DailyRoadmapPage() {
           week: daily.currentWeek,
           domain: daily.roadmapItem.domain_slug,
           notes: projectNotes,
-          projectId: daily.project.id
-        })
+          projectId: daily.project.id,
+        }),
       });
       const data = await res.json();
       if (data.success) {
@@ -249,7 +280,7 @@ export default function DailyRoadmapPage() {
         setProjectProgress({
           status: 'submitted',
           submitted_at: new Date().toISOString(),
-          step_notes: [{ githubUrl: projectUrl, notes: projectNotes }]
+          step_notes: [{ githubUrl: projectUrl, notes: projectNotes }],
         });
       } else {
         toast.error(data.message);
@@ -261,88 +292,110 @@ export default function DailyRoadmapPage() {
     }
   };
 
-  if (loading) return <div className="text-gray-400 text-sm">Loading your roadmap...</div>;
-  if (!daily) return <div className="text-gray-400 text-sm">No roadmap found.</div>;
+  if (loading) return <div className="text-sm text-gray-400">Loading your roadmap...</div>;
+  if (!daily) return <div className="text-sm text-gray-400">No roadmap found.</div>;
 
-  const { roadmapItem, currentDay, currentWeek, dayUnlocked, newDay, objectives, keyConcepts, codingProblem, codingProblemUrl, isProjectDay, project } = daily;
-  const completedCount = tasks.filter(t => t.status === 'completed').length;
+  const {
+    roadmapItem,
+    currentDay,
+    currentWeek,
+    dayUnlocked,
+    newDay,
+    objectives,
+    keyConcepts,
+    codingProblem,
+    codingProblemUrl,
+    isProjectDay,
+    project,
+  } = daily;
+  const completedCount = tasks.filter((t) => t.status === 'completed').length;
 
   // Find dynamic feedback if reviewed
   let aiFeedbackParsed = null;
   if (projectProgress?.ai_feedback) {
     try {
-      aiFeedbackParsed = typeof projectProgress.ai_feedback === 'string' 
-        ? JSON.parse(projectProgress.ai_feedback)
-        : projectProgress.ai_feedback;
+      aiFeedbackParsed =
+        typeof projectProgress.ai_feedback === 'string'
+          ? JSON.parse(projectProgress.ai_feedback)
+          : projectProgress.ai_feedback;
     } catch (e) {
       console.error(e);
     }
   }
 
   return (
-    <div className="w-full space-y-6" style={{ fontFamily: 'var(--font-body)' }}>
-      
+    <div className="w-full space-y-6 font-sans">
       {/* Top Banner Area */}
-      <div style={{
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-        borderBottom: '1px solid rgba(255,255,255,0.06)', paddingBottom: '16px'
-      }}>
+      <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
         <div>
-          <h1 className="text-2xl font-bold text-dark" style={{ fontFamily: 'var(--font-heading)' }}>Day {currentDay} — {roadmapItem?.topic}</h1>
-          <p className="text-sm text-gray-400 mt-1">
+          <h1 className="font-display text-2xl font-bold text-dark">
+            Day {currentDay} — {roadmapItem?.topic}
+          </h1>
+          <p className="mt-1 text-sm text-gray-400">
             Week {currentWeek} · {roadmapItem?.difficulty}
             {viewDay !== officialDay && (
-              <span style={{ color: viewDay < officialDay ? '#1D9E75' : '#ffb020', marginLeft: 8, fontWeight: 600 }}>
+              <span
+                className={`ml-2 font-semibold ${
+                  viewDay < officialDay ? 'text-success' : 'text-[#ffb020]'
+                }`}
+              >
                 {viewDay < officialDay ? '· ✓ Completed day (revisiting)' : '· Upcoming — preview'}
               </span>
             )}
           </p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <button onClick={openOverview} style={{
-            background: 'rgba(0,240,255,0.08)', border: '1px solid rgba(0,240,255,0.25)',
-            borderRadius: '10px', padding: '9px 16px', color: '#00f0ff', fontSize: 13,
-            fontWeight: 700, cursor: 'pointer', fontFamily: 'var(--font-heading)', whiteSpace: 'nowrap',
-          }}>🗺 View Full Path</button>
-          <div style={{
-            background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)',
-            borderRadius: '12px', padding: '8px 16px', textAlign: 'right'
-          }}>
-            <div style={{ fontSize: '11px', color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>GENERATION LAYER</div>
-            <div style={{ fontSize: '13px', fontWeight: 700, color: '#00f0ff', textTransform: 'uppercase' }}>{daily.generatedBy || 'Supabase Cache'}</div>
+        <div className="flex items-center gap-2.5">
+          <button
+            onClick={openOverview}
+            className="cursor-pointer whitespace-nowrap rounded-[10px] border border-primary/25 bg-primary/10 px-4 py-2.5 font-display text-[13px] font-bold text-primary transition-all hover:border-primary/50 hover:bg-primary/20 active:scale-[0.97]"
+          >
+            🗺 View Full Path
+          </button>
+          <div className="rounded-xl border border-primary/15 bg-primary/5 px-4 py-2 text-right">
+            <div className="font-mono text-[11px] text-muted">GENERATION LAYER</div>
+            <div className="text-[13px] font-bold uppercase text-primary">
+              {daily.generatedBy || 'Supabase Cache'}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ─── DAY NAVIGATION (free browsing) ─── */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      {/* ─── DAY NAVIGATION (free browsing — no locked progression) ─── */}
+      <div className="flex items-center gap-2.5">
         <button
           onClick={() => viewDay > 1 && loadDay(viewDay - 1)}
           disabled={viewDay <= 1 || navLoading}
           aria-label="Previous day"
-          style={{
-            flexShrink: 0, width: 36, height: 36, borderRadius: 10, cursor: viewDay <= 1 ? 'not-allowed' : 'pointer',
-            background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
-            color: viewDay <= 1 ? '#3a4a5a' : '#00f0ff', fontSize: 16, fontWeight: 700,
-          }}>‹</button>
+          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] border border-white/[0.08] bg-white/[0.03] text-base font-bold text-primary transition-all hover:enabled:border-primary/40 hover:enabled:bg-primary/10 active:enabled:scale-95 disabled:cursor-not-allowed disabled:text-[#3a4a5a]"
+        >
+          ‹
+        </button>
 
-        <div style={{ flex: 1, display: 'flex', gap: 6, overflowX: 'auto', padding: '4px 2px' }} className="day-strip">
-          {Array.from({ length: Math.min(MAX_DAY, officialDay + 7) }, (_, i) => i + 1).map(d => {
+        <div className="flex flex-1 gap-1.5 overflow-x-auto px-0.5 py-1">
+          {Array.from({ length: Math.min(MAX_DAY, officialDay + 7) }, (_, i) => i + 1).map((d) => {
             const isCurrent = d === officialDay;
             const isViewing = d === viewDay;
             const isDone = d < officialDay;
             return (
-              <button key={d} onClick={() => loadDay(d)} disabled={navLoading}
-                title={isDone ? `Day ${d} (completed)` : isCurrent ? `Day ${d} (current)` : `Day ${d} (upcoming)`}
-                style={{
-                  flexShrink: 0, minWidth: 44, height: 36, borderRadius: 10, cursor: 'pointer',
-                  fontSize: 12, fontWeight: 700, fontFamily: 'var(--font-mono)',
-                  border: isViewing ? '2px solid #00f0ff' : '1px solid rgba(255,255,255,0.08)',
-                  background: isViewing ? 'rgba(0,240,255,0.12)' : isDone ? 'rgba(29,158,117,0.08)' : 'rgba(255,255,255,0.02)',
-                  color: isViewing ? '#00f0ff' : isDone ? '#1D9E75' : isCurrent ? '#ffb020' : '#5a7a9a',
-                  transition: 'all 0.15s',
-                }}>
-                {isDone ? '✓' : ''}{d}
+              <button
+                key={d}
+                onClick={() => loadDay(d)}
+                disabled={navLoading}
+                title={
+                  isDone ? `Day ${d} (completed)` : isCurrent ? `Day ${d} (current)` : `Day ${d} (upcoming)`
+                }
+                className={`h-9 min-w-[44px] flex-shrink-0 cursor-pointer rounded-[10px] font-mono text-xs font-bold transition-all hover:-translate-y-0.5 ${
+                  isViewing
+                    ? 'border-2 border-primary bg-primary/10 text-primary'
+                    : isDone
+                      ? 'border border-white/[0.08] bg-success/[0.08] text-success hover:border-success/40'
+                      : isCurrent
+                        ? 'border border-white/[0.08] bg-white/[0.02] text-[#ffb020] hover:border-[#ffb020]/40'
+                        : 'border border-white/[0.08] bg-white/[0.02] text-muted hover:border-primary/40 hover:text-primary'
+                }`}
+              >
+                {isDone ? '✓' : ''}
+                {d}
               </button>
             );
           })}
@@ -352,94 +405,80 @@ export default function DailyRoadmapPage() {
           onClick={() => viewDay < MAX_DAY && loadDay(viewDay + 1)}
           disabled={viewDay >= MAX_DAY || navLoading}
           aria-label="Next day"
-          style={{
-            flexShrink: 0, width: 36, height: 36, borderRadius: 10, cursor: viewDay >= MAX_DAY ? 'not-allowed' : 'pointer',
-            background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)',
-            color: viewDay >= MAX_DAY ? '#3a4a5a' : '#00f0ff', fontSize: 16, fontWeight: 700,
-          }}>›</button>
+          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] border border-white/[0.08] bg-white/[0.03] text-base font-bold text-primary transition-all hover:enabled:border-primary/40 hover:enabled:bg-primary/10 active:enabled:scale-95 disabled:cursor-not-allowed disabled:text-[#3a4a5a]"
+        >
+          ›
+        </button>
 
         {viewDay !== officialDay && (
-          <button onClick={() => loadDay(null)} disabled={navLoading} style={{
-            flexShrink: 0, padding: '0 12px', height: 36, borderRadius: 10, cursor: 'pointer',
-            background: 'rgba(0,240,255,0.08)', border: '1px solid rgba(0,240,255,0.25)',
-            color: '#00f0ff', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap',
-          }}>Jump to today</button>
+          <button
+            onClick={() => loadDay(null)}
+            disabled={navLoading}
+            className="h-9 flex-shrink-0 cursor-pointer whitespace-nowrap rounded-[10px] border border-primary/25 bg-primary/10 px-3 text-xs font-bold text-primary transition-all hover:border-primary/50 hover:bg-primary/20 active:scale-[0.97]"
+          >
+            Jump to today
+          </button>
         )}
       </div>
 
       {/* Skip Basics — only meaningful while the user is still in the foundation phase */}
       {officialDay <= 3 && (
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10,
-          background: 'rgba(255,176,32,0.06)', border: '1px solid rgba(255,176,32,0.2)',
-          borderRadius: 12, padding: '12px 16px',
-        }}>
-          <div style={{ fontSize: 13, color: '#c8d8e8' }}>
-            <strong style={{ color: '#ffb020' }}>Already know the basics?</strong> Skip the fundamentals and jump straight to Medium/Hard problems.
+        <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-xl border border-[#ffb020]/20 bg-[#ffb020]/[0.06] px-4 py-3">
+          <div className="text-[13px] text-[#c8d8e8]">
+            <strong className="text-[#ffb020]">Already know the basics?</strong> Skip the fundamentals and
+            jump straight to Medium/Hard problems.
           </div>
-          <button onClick={handleSkipBasics} disabled={skipping} style={{
-            flexShrink: 0, padding: '9px 18px', borderRadius: 10, border: 'none', cursor: 'pointer',
-            background: 'linear-gradient(135deg,#ffb020,#ff6b4a)', color: '#020812', fontWeight: 700, fontSize: 13,
-          }}>{skipping ? 'Skipping…' : 'Skip Basics →'}</button>
+          <button
+            onClick={handleSkipBasics}
+            disabled={skipping}
+            className="flex-shrink-0 cursor-pointer rounded-[10px] border-none bg-[linear-gradient(135deg,#ffb020,#ff6b4a)] px-[18px] py-2.5 text-[13px] font-bold text-[#020812] transition-all hover:brightness-110 hover:shadow-[0_0_24px_rgba(255,176,32,0.35)] active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {skipping ? 'Skipping…' : 'Skip Basics →'}
+          </button>
         </div>
       )}
 
       {/* Main Grid: 2 Columns on Desktop */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Left Column: Flow & Tasks (2/3 width) */}
-        <div className="lg:col-span-2 space-y-6">
-          
+        <div className="space-y-6 lg:col-span-2">
           {/* Day Unlock Alerts */}
           {dayUnlocked && (
-            <div style={{
-              width: '100%', padding: '16px', borderRadius: '12px',
-              background: 'rgba(29,158,117,0.1)', border: '1px solid #1D9E75',
-              boxShadow: '0 0 20px rgba(29,158,117,0.2)', color: '#e8e8ed', textAlign: 'center'
-            }}>
-              <div style={{ fontSize: '18px', fontWeight: 'bold' }}>🎉 Day {currentDay} Complete! You earned 100 points!</div>
-              <div style={{ fontSize: '14px', color: '#1D9E75', marginTop: '4px' }}>Day {newDay} is now unlocked</div>
+            <div className="w-full rounded-xl border border-success bg-success/10 p-4 text-center text-dark shadow-[0_0_20px_rgba(29,158,117,0.2)]">
+              <div className="text-lg font-bold">🎉 Day {currentDay} Complete! You earned 100 points!</div>
+              <div className="mt-1 text-sm text-success">Day {newDay} is now unlocked</div>
             </div>
           )}
 
           {/* PROJECT DAY BANNER */}
           {isProjectDay && project && (
-            <div style={{
-              background: 'linear-gradient(135deg, #091322, #070f1a)',
-              border: '1px solid rgba(0,240,255,0.15)',
-              borderRadius: '16px', padding: '24px',
-              backgroundImage: 'linear-gradient(rgba(0,240,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,0.02) 1px,transparent 1px)',
-              backgroundSize: '24px 24px',
-              position: 'relative', overflow: 'hidden'
-            }}>
-              <div style={{
-                position: 'absolute', top: 0, left: 0, right: 0, height: 1,
-                background: 'linear-gradient(90deg,transparent,rgba(0,240,255,0.5),transparent)'
-              }} />
+            <div className="relative overflow-hidden rounded-2xl border border-primary/15 bg-[linear-gradient(135deg,#091322,#070f1a)] p-6">
+              <div className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(0,240,255,0.5),transparent)]" />
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '12px' }}>
-                <span style={{
-                  background: 'rgba(255,107,74,0.15)', border: '1px solid rgba(255,107,74,0.3)',
-                  color: '#9d85ff', fontSize: '11px', fontWeight: 700, padding: '4px 10px',
-                  borderRadius: '20px', textTransform: 'uppercase', fontFamily: 'var(--font-mono)'
-                }}>🚀 Project Week! Time to Build</span>
-                <span style={{ fontSize: '13px', color: '#5a7a9a', fontWeight: 600 }}>⏱️ Est: {project.estimated_hours || 20} Hours</span>
+              <div className="mb-3 flex flex-wrap justify-between gap-2">
+                <span className="rounded-full border border-[#ff6b4a]/30 bg-[#ff6b4a]/15 px-2.5 py-1 font-mono text-[11px] font-bold uppercase text-[#9d85ff]">
+                  🚀 Project Week! Time to Build
+                </span>
+                <span className="text-[13px] font-semibold text-muted">
+                  ⏱️ Est: {project.estimated_hours || 20} Hours
+                </span>
               </div>
 
-              <h2 style={{ fontSize: '20px', fontWeight: 800, color: '#e8e8ed', fontFamily: 'var(--font-heading)' }}>{project.title}</h2>
-              <p style={{ fontSize: '14px', color: '#8aa2b9', marginTop: '6px', lineHeight: 1.6 }}>{project.description}</p>
+              <h2 className="font-display text-xl font-extrabold text-dark">{project.title}</h2>
+              <p className="mt-1.5 text-sm leading-relaxed text-[#8aa2b9]">{project.description}</p>
 
-              {/* Steps Accordion */}
-              <div style={{ marginTop: '20px' }}>
-                <div style={{ fontSize: '13px', color: '#5a7a9a', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>Milestone Steps</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {/* Steps */}
+              <div className="mt-5">
+                <div className="mb-2 text-[13px] font-bold uppercase tracking-[1px] text-muted">
+                  Milestone Steps
+                </div>
+                <div className="flex flex-col gap-1.5">
                   {project.steps?.map((step, idx) => (
-                    <div key={idx} style={{
-                      display: 'flex', gap: '10px', background: 'rgba(255,255,255,0.02)',
-                      border: '1px solid rgba(255,255,255,0.04)', borderRadius: '8px', padding: '10px 14px',
-                      fontSize: '13px', color: '#c8d8e8'
-                    }}>
-                      <span style={{ color: '#00f0ff', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>0{idx+1}</span>
+                    <div
+                      key={idx}
+                      className="flex gap-2.5 rounded-lg border border-white/[0.04] bg-white/[0.02] px-3.5 py-2.5 text-[13px] text-[#c8d8e8]"
+                    >
+                      <span className="font-mono font-bold text-primary">0{idx + 1}</span>
                       <span>{step}</span>
                     </div>
                   ))}
@@ -447,72 +486,73 @@ export default function DailyRoadmapPage() {
               </div>
 
               {/* GitHub Submission Form */}
-              <div style={{
-                marginTop: '24px', borderTop: '1px solid rgba(255,255,255,0.06)',
-                paddingTop: '20px'
-              }}>
-                <h3 style={{ fontSize: '15px', fontWeight: 700, color: '#e8e8ed', marginBottom: '12px' }}>Submit Your Code</h3>
-                
+              <div className="mt-6 border-t border-white/[0.06] pt-5">
+                <h3 className="mb-3 text-[15px] font-bold text-dark">Submit Your Code</h3>
+
                 {projectProgress?.status === 'submitted' && (
-                  <div style={{
-                    background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.2)',
-                    borderRadius: '12px', padding: '14px', color: '#00f0ff', fontSize: '13px'
-                  }}>
-                    ⏳ <strong>Under AI Review:</strong> Your project has been submitted successfully. A senior AI mentor is currently reviewing your GitHub repository. Feedback and score adjustments will appear below in 2-3 minutes!
+                  <div className="rounded-xl border border-primary/20 bg-primary/5 p-3.5 text-[13px] text-primary">
+                    ⏳ <strong>Under AI Review:</strong> Your project has been submitted successfully. A senior
+                    AI mentor is currently reviewing your GitHub repository. Feedback and score adjustments will
+                    appear below in 2-3 minutes!
                   </div>
                 )}
 
                 {projectProgress?.status === 'reviewed' && aiFeedbackParsed && (
-                  <div style={{
-                    background: 'rgba(29,158,117,0.05)', border: '1px solid rgba(29,158,117,0.2)',
-                    borderRadius: '12px', padding: '16px', color: '#e8e8ed'
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                      <span style={{ fontSize: '14px', color: '#1D9E75', fontWeight: 700 }}>✅ AI Assessment Complete</span>
-                      <span style={{
-                        background: 'rgba(29,158,117,0.2)', color: '#1D9E75', fontWeight: 800,
-                        fontSize: '16px', padding: '4px 12px', borderRadius: '8px'
-                      }}>{aiFeedbackParsed.grade} ({aiFeedbackParsed.score}/100)</span>
+                  <div className="rounded-xl border border-success/20 bg-success/5 p-4 text-dark">
+                    <div className="mb-3 flex items-center justify-between">
+                      <span className="text-sm font-bold text-success">✅ AI Assessment Complete</span>
+                      <span className="rounded-lg bg-success/20 px-3 py-1 text-base font-extrabold text-success">
+                        {aiFeedbackParsed.grade} ({aiFeedbackParsed.score}/100)
+                      </span>
                     </div>
-                    <p style={{ fontSize: '13px', color: '#a2b9cd', lineHeight: 1.6, marginBottom: '12px' }}>{aiFeedbackParsed.overall_feedback}</p>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '12px' }}>
+                    <p className="mb-3 text-[13px] leading-relaxed text-[#a2b9cd]">
+                      {aiFeedbackParsed.overall_feedback}
+                    </p>
+                    <div className="grid grid-cols-2 gap-3 text-xs">
                       <div>
-                        <div style={{ fontWeight: 700, color: '#1D9E75', marginBottom: '4px' }}>Strengths</div>
-                        {aiFeedbackParsed.strengths?.slice(0, 2).map((s, i) => <div key={i}>• {s}</div>)}
+                        <div className="mb-1 font-bold text-success">Strengths</div>
+                        {aiFeedbackParsed.strengths?.slice(0, 2).map((s, i) => (
+                          <div key={i}>• {s}</div>
+                        ))}
                       </div>
                       <div>
-                        <div style={{ fontWeight: 700, color: '#ff5c8a', marginBottom: '4px' }}>Improvements</div>
-                        {aiFeedbackParsed.improvements?.slice(0, 2).map((im, i) => <div key={i}>• {im}</div>)}
+                        <div className="mb-1 font-bold text-[#ff5c8a]">Improvements</div>
+                        {aiFeedbackParsed.improvements?.slice(0, 2).map((im, i) => (
+                          <div key={i}>• {im}</div>
+                        ))}
                       </div>
                     </div>
                   </div>
                 )}
 
                 {(!projectProgress || projectProgress.status === 'not_started') && (
-                  <form onSubmit={submitProject} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  <form onSubmit={submitProject} className="flex flex-col gap-3">
                     <div>
-                      <label style={{ display: 'block', fontSize: '11px', color: '#5a7a9a', textTransform: 'uppercase', marginBottom: '4px' }}>GitHub Repository URL</label>
-                      <input type="url" required value={projectUrl} onChange={e => setProjectUrl(e.target.value)}
+                      <label className="mb-1 block text-[11px] uppercase text-muted">
+                        GitHub Repository URL
+                      </label>
+                      <input
+                        type="url"
+                        required
+                        value={projectUrl}
+                        onChange={(e) => setProjectUrl(e.target.value)}
                         placeholder="https://github.com/yourusername/your-project"
-                        style={{
-                          width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid rgba(0,240,255,0.15)',
-                          background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: '13px', outline: 'none'
-                        }} />
+                        className="w-full rounded-lg border border-primary/15 bg-white/[0.03] p-3 text-[13px] text-dark outline-none transition-all focus:border-primary/50 focus:bg-primary/5"
+                      />
                     </div>
                     <div>
-                      <label style={{ display: 'block', fontSize: '11px', color: '#5a7a9a', textTransform: 'uppercase', marginBottom: '4px' }}>Project Notes (Optional)</label>
-                      <textarea value={projectNotes} onChange={e => setProjectNotes(e.target.value)} rows={2}
+                      <label className="mb-1 block text-[11px] uppercase text-muted">
+                        Project Notes (Optional)
+                      </label>
+                      <textarea
+                        value={projectNotes}
+                        onChange={(e) => setProjectNotes(e.target.value)}
+                        rows={2}
                         placeholder="Brief notes about your tech stack or challenges faced..."
-                        style={{
-                          width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid rgba(0,240,255,0.15)',
-                          background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: '13px', outline: 'none', resize: 'none'
-                        }} />
+                        className="w-full resize-none rounded-lg border border-primary/15 bg-white/[0.03] p-3 text-[13px] text-dark outline-none transition-all focus:border-primary/50 focus:bg-primary/5"
+                      />
                     </div>
-                    <button type="submit" disabled={submittingProject} style={{
-                      padding: '12px', borderRadius: '8px', border: 'none', fontWeight: 700,
-                      background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812',
-                      cursor: 'pointer', transition: 'all 0.2s'
-                    }}>
+                    <button type="submit" disabled={submittingProject} className={ACTION_BTN}>
                       {submittingProject ? 'Submitting Code...' : 'Submit Repository for AI Audit →'}
                     </button>
                   </form>
@@ -522,41 +562,58 @@ export default function DailyRoadmapPage() {
           )}
 
           {/* Navigation Steps Tabs */}
-          <div className="flex gap-2 flex-wrap">
-            {STEPS.map((step, i) => (
-              <button key={step} onClick={() => setActiveStep(i)}
-                className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${isTaskDone(step) ? 'bg-success/10 text-success border-success/20' : activeStep === i ? 'bg-primary text-white border-primary' : 'bg-white text-gray-400 border-gray-200'}`}>
-                {isTaskDone(step) ? '✓ ' : ''}{STEP_LABELS[step]}
-              </button>
-            ))}
+          <div className="flex flex-wrap gap-2">
+            {STEPS.map((step, i) => {
+              const done = isTaskDone(step);
+              const active = activeStep === i;
+              return (
+                <button
+                  key={step}
+                  onClick={() => setActiveStep(i)}
+                  className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs font-semibold transition-all active:scale-[0.97] ${
+                    done
+                      ? 'border-success/25 bg-success/10 text-success hover:bg-success/20'
+                      : active
+                        ? 'border-primary bg-primary text-[#020812] shadow-[0_0_16px_rgba(0,240,255,0.3)]'
+                        : 'border-white/[0.08] bg-white/[0.03] text-muted hover:border-primary/40 hover:text-primary'
+                  }`}
+                >
+                  {done ? '✓ ' : ''}
+                  {STEP_LABELS[step]}
+                </button>
+              );
+            })}
           </div>
 
           {/* Main Card View */}
-          <div className="card min-h-64" style={{ width: '100%' }}>
-            
+          <div className="min-h-64 w-full rounded-2xl border border-primary/10 bg-[#070f1a] p-5">
             {activeStep === 0 && (
               <div className="space-y-4">
                 <h3 className="section-title">▶ Watch Video — {roadmapItem?.topic}</h3>
-                <p className="text-sm text-gray-500">Watch the full video below. The completion button unlocks after 30 seconds.</p>
-                {roadmapItem?.video_url
-                  ? <YouTubeEmbed url={roadmapItem.video_url} title={roadmapItem?.topic} />
-                  : <p className="text-sm text-gray-400">No video available for this day.</p>}
+                <p className="text-sm text-muted">
+                  Watch the full video below. The completion button unlocks after 30 seconds.
+                </p>
+                {roadmapItem?.video_url ? (
+                  <YouTubeEmbed url={roadmapItem.video_url} title={roadmapItem?.topic} />
+                ) : (
+                  <p className="text-sm text-gray-400">No video available for this day.</p>
+                )}
                 {!isTaskDone('video') ? (
                   <button
                     onClick={() => videoEligible && completeTask('video')}
                     disabled={!videoEligible}
-                    style={{
-                      ...ACTION_BTN_STYLE,
-                      background: videoEligible ? 'linear-gradient(135deg,#00ff88,#00cc66)' : 'rgba(255,255,255,0.07)',
-                      color: videoEligible ? '#000' : '#666',
-                      cursor: videoEligible ? 'pointer' : 'not-allowed',
-                      border: videoEligible ? 'none' : '1px solid rgba(255,255,255,0.1)',
-                      transition: 'all 0.4s ease',
-                    }}>
-                    {videoEligible ? '✓ Mark Video as Watched' : '⏳ Watch at least 30 seconds to mark complete'}
+                    className={`w-full cursor-pointer rounded-[10px] px-7 py-3.5 text-[15px] font-bold transition-all active:enabled:scale-[0.98] ${
+                      videoEligible
+                        ? 'border-none bg-[linear-gradient(135deg,#00ff88,#00cc66)] text-black hover:brightness-110'
+                        : 'cursor-not-allowed border border-white/10 bg-white/[0.07] text-[#666]'
+                    }`}
+                  >
+                    {videoEligible
+                      ? '✓ Mark Video as Watched'
+                      : '⏳ Watch at least 30 seconds to mark complete'}
                   </button>
                 ) : (
-                  <div className="text-success text-sm font-medium">✓ Completed!</div>
+                  <div className="text-sm font-medium text-success">✓ Completed!</div>
                 )}
               </div>
             )}
@@ -565,18 +622,30 @@ export default function DailyRoadmapPage() {
               <div className="space-y-4">
                 <h3 className="section-title">📖 Read Resource — {roadmapItem?.topic}</h3>
                 <div className="space-y-2">
-                  {[{ label:'Documentation', url: roadmapItem?.resource_url }, { label:'Article', url: roadmapItem?.article_url }]
-                    .filter(r => r.url)
-                    .map(r => (
-                      <a key={r.label} href={r.url} target="_blank" rel="noreferrer"
-                        className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-primary/30 transition-all text-sm text-dark font-medium">
+                  {[
+                    { label: 'Documentation', url: roadmapItem?.resource_url },
+                    { label: 'Article', url: roadmapItem?.article_url },
+                  ]
+                    .filter((r) => r.url)
+                    .map((r) => (
+                      <a
+                        key={r.label}
+                        href={r.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 text-sm font-medium text-dark transition-all hover:border-primary/40 hover:bg-primary/5"
+                      >
                         📚 {r.label} ↗
                       </a>
                     ))}
                 </div>
-                {!isTaskDone('resource')
-                  ? <button onClick={() => completeTask('resource')} style={ACTION_BTN_STYLE}>✓ Mark as Read</button>
-                  : <div className="text-success text-sm font-medium">✓ Completed!</div>}
+                {!isTaskDone('resource') ? (
+                  <button onClick={() => completeTask('resource')} className={ACTION_BTN}>
+                    ✓ Mark as Read
+                  </button>
+                ) : (
+                  <div className="text-sm font-medium text-success">✓ Completed!</div>
+                )}
               </div>
             )}
 
@@ -585,13 +654,17 @@ export default function DailyRoadmapPage() {
                 <h3 className="section-title">{'{ }'} Coding Challenge</h3>
                 {codingTest ? (
                   <>
-                    <div style={{ background: 'rgba(0,0,0,0.3)', borderRadius: 12, padding: 16 }}>
-                      <div style={{ fontWeight: 600, color: '#e8e8ed', marginBottom: 6, fontSize: 15 }}>{codingTest.title}</div>
-                      <p style={{ fontSize: 13, color: '#c8d8e8', lineHeight: 1.7 }}>{codingTest.problem}</p>
+                    <div className="rounded-xl bg-black/30 p-4">
+                      <div className="mb-1.5 text-[15px] font-semibold text-dark">{codingTest.title}</div>
+                      <p className="text-[13px] leading-relaxed text-[#c8d8e8]">{codingTest.problem}</p>
                       {codingTest.example_input && (
-                        <div style={{ marginTop: 12, fontSize: 12, fontFamily: 'var(--font-mono)', background: 'rgba(0,0,0,0.4)', borderRadius: 8, padding: 10 }}>
-                          <div style={{ color: '#5a7a9a' }}>Input: <span style={{ color: '#00f0ff' }}>{codingTest.example_input}</span></div>
-                          <div style={{ color: '#5a7a9a' }}>Output: <span style={{ color: '#1D9E75' }}>{codingTest.example_output}</span></div>
+                        <div className="mt-3 rounded-lg bg-black/40 p-2.5 font-mono text-xs">
+                          <div className="text-muted">
+                            Input: <span className="text-primary">{codingTest.example_input}</span>
+                          </div>
+                          <div className="text-muted">
+                            Output: <span className="text-success">{codingTest.example_output}</span>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -603,16 +676,22 @@ export default function DailyRoadmapPage() {
                       isCompleted={isTaskDone('coding') || !!codeResult}
                     />
                     {codeResult && (
-                      <div className="p-4 rounded-xl bg-gray-50 space-y-2">
+                      <div className="space-y-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
                         <div className="flex gap-2">
-                          <span className={`badge ${codeResult.review?.isCorrect ? 'badge-success' : 'badge-danger'}`}>{codeResult.review?.isCorrect ? 'Correct' : 'Needs Work'}</span>
+                          <span
+                            className={`badge ${codeResult.review?.isCorrect ? 'badge-success' : 'badge-danger'}`}
+                          >
+                            {codeResult.review?.isCorrect ? 'Correct' : 'Needs Work'}
+                          </span>
                           <span className="badge badge-primary">Score: {codeResult.review?.score}/100</span>
                         </div>
-                        <p className="text-sm text-gray-600">{codeResult.review?.feedback}</p>
+                        <p className="text-sm text-[#a2b9cd]">{codeResult.review?.feedback}</p>
                       </div>
                     )}
                   </>
-                ) : <div className="text-gray-400 text-sm">Loading coding challenge...</div>}
+                ) : (
+                  <div className="text-sm text-gray-400">Loading coding challenge...</div>
+                )}
               </div>
             )}
 
@@ -620,7 +699,7 @@ export default function DailyRoadmapPage() {
               <div className="space-y-4">
                 <h3 className="section-title">✎ Daily Test — {roadmapItem?.topic}</h3>
                 {!test && !testResult && (
-                  <button onClick={generateTest} disabled={testLoading} style={ACTION_BTN_STYLE}>
+                  <button onClick={generateTest} disabled={testLoading} className={ACTION_BTN}>
                     {testLoading ? 'Claude is generating...' : 'Generate 5 Questions'}
                   </button>
                 )}
@@ -628,33 +707,69 @@ export default function DailyRoadmapPage() {
                   <div className="space-y-4">
                     {test.questions.map((q, i) => (
                       <div key={i} className="space-y-2">
-                        <p className="text-sm font-medium text-dark">Q{i+1}. {q.question}</p>
+                        <p className="text-sm font-medium text-dark">
+                          Q{i + 1}. {q.question}
+                        </p>
                         <div className="space-y-1">
-                          {q.options.map(opt => (
-                            <label key={opt} className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-all ${testAnswers[i] === opt[0] ? 'border-primary bg-primary/5' : 'border-gray-100 hover:border-gray-200'}`}>
-                              <input type="radio" name={`q${i}`} value={opt[0]} onChange={e => setTestAnswers(a => ({...a, [i]: e.target.value}))} className="text-primary" />
-                              <span className="text-sm">{opt}</span>
+                          {q.options.map((opt) => (
+                            <label
+                              key={opt}
+                              className={`flex cursor-pointer items-center gap-2 rounded-lg border p-2.5 transition-all ${
+                                testAnswers[i] === opt[0]
+                                  ? 'border-primary bg-primary/5'
+                                  : 'border-white/[0.06] hover:border-primary/30'
+                              }`}
+                            >
+                              <input
+                                type="radio"
+                                name={`q${i}`}
+                                value={opt[0]}
+                                onChange={(e) => setTestAnswers((a) => ({ ...a, [i]: e.target.value }))}
+                                className="accent-primary"
+                              />
+                              <span className="text-sm text-[#c8d8e8]">{opt}</span>
                             </label>
                           ))}
                         </div>
                       </div>
                     ))}
-                    <button onClick={submitTest} disabled={testLoading || Object.keys(testAnswers).length < test.questions.length}
-                      style={ACTION_BTN_STYLE}>
+                    <button
+                      onClick={submitTest}
+                      disabled={testLoading || Object.keys(testAnswers).length < test.questions.length}
+                      className={ACTION_BTN}
+                    >
                       {testLoading ? 'Grading...' : 'Submit Test'}
                     </button>
                   </div>
                 )}
                 {testResult && (
                   <div className="space-y-3">
-                    <div className={`text-center p-6 rounded-xl ${testResult.result === 'passed' ? 'bg-success/8' : 'bg-orange-50'}`}>
-                      <div className={`text-4xl font-bold ${testResult.result === 'passed' ? 'text-success' : 'text-orange-500'}`}>{testResult.score}%</div>
-                      <div className="text-sm text-gray-500 mt-1">{testResult.correct}/{testResult.total} correct · {testResult.result === 'passed' ? '✅ Passed!' : '❌ Keep practicing'}</div>
+                    <div
+                      className={`rounded-xl p-6 text-center ${
+                        testResult.result === 'passed' ? 'bg-success/[0.08]' : 'bg-[#ffb020]/[0.08]'
+                      }`}
+                    >
+                      <div
+                        className={`text-4xl font-bold ${
+                          testResult.result === 'passed' ? 'text-success' : 'text-[#ffb020]'
+                        }`}
+                      >
+                        {testResult.score}%
+                      </div>
+                      <div className="mt-1 text-sm text-muted">
+                        {testResult.correct}/{testResult.total} correct ·{' '}
+                        {testResult.result === 'passed' ? '✅ Passed!' : '❌ Keep practicing'}
+                      </div>
                     </div>
                     {testResult.feedback?.map((f, i) => (
-                      <div key={i} className={`p-3 rounded-lg text-sm ${f.isCorrect ? 'bg-success/5 text-success' : 'bg-red-50 text-red-600'}`}>
-                        Q{i+1}: {f.isCorrect ? '✓ Correct' : `✗ Correct: ${f.correctAnswer}`}
-                        {f.explanation && <p className="text-gray-500 text-xs mt-1">{f.explanation}</p>}
+                      <div
+                        key={i}
+                        className={`rounded-lg p-3 text-sm ${
+                          f.isCorrect ? 'bg-success/5 text-success' : 'bg-danger/5 text-danger'
+                        }`}
+                      >
+                        Q{i + 1}: {f.isCorrect ? '✓ Correct' : `✗ Correct: ${f.correctAnswer}`}
+                        {f.explanation && <p className="mt-1 text-xs text-muted">{f.explanation}</p>}
                       </div>
                     ))}
                   </div>
@@ -666,63 +781,61 @@ export default function DailyRoadmapPage() {
               <div className="space-y-4">
                 <h3 className="section-title">≡ AI Study Notes — {roadmapItem?.topic}</h3>
                 <div className="flex gap-2">
-                  {['theory','coding','full','revision'].map(t => (
-                    <button key={t} onClick={() => setNoteType(t)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium capitalize border transition-all ${noteType === t ? 'bg-primary text-white border-primary' : 'bg-white text-gray-400 border-gray-200'}`}>{t}</button>
+                  {['theory', 'coding', 'full', 'revision'].map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setNoteType(t)}
+                      className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs font-medium capitalize transition-all active:scale-[0.97] ${
+                        noteType === t
+                          ? 'border-primary bg-primary text-[#020812]'
+                          : 'border-white/[0.08] bg-white/[0.03] text-muted hover:border-primary/40 hover:text-primary'
+                      }`}
+                    >
+                      {t}
+                    </button>
                   ))}
                 </div>
-                {!note
-                  ? <button onClick={generateNotes} disabled={noteLoading} style={ACTION_BTN_STYLE}>
-                      {noteLoading ? 'Claude is writing notes...' : `Generate ${noteType} notes`}
-                    </button>
-                  : <div style={{
-                      background: '#0a1628',
-                      color: '#e8e8ed',
-                      border: '1px solid rgba(0,240,255,0.08)',
-                      borderRadius: 12,
-                      padding: 20,
-                      fontSize: 14,
-                      lineHeight: 1.9,
-                      whiteSpace: 'pre-wrap',
-                      fontFamily: 'var(--font-body)',
-                    }}>{note.content}</div>}
-                {isTaskDone('notes') && <div className="text-success text-sm font-medium">✓ Completed!</div>}
+                {!note ? (
+                  <button onClick={generateNotes} disabled={noteLoading} className={ACTION_BTN}>
+                    {noteLoading ? 'Claude is writing notes...' : `Generate ${noteType} notes`}
+                  </button>
+                ) : (
+                  <div className="whitespace-pre-wrap rounded-xl border border-primary/[0.08] bg-[#0a1628] p-5 text-sm leading-[1.9] text-dark">
+                    {note.content}
+                  </div>
+                )}
+                {isTaskDone('notes') && <div className="text-sm font-medium text-success">✓ Completed!</div>}
               </div>
             )}
           </div>
 
           {/* Progress Bar */}
           <div className="flex items-center gap-3">
-            <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${(completedCount / 5) * 100}%` }} />
+            <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/[0.06]">
+              <div
+                className="h-full rounded-full bg-primary transition-all"
+                style={{ width: `${(completedCount / 5) * 100}%` }}
+              />
             </div>
-            <span className="text-xs text-gray-400 font-mono whitespace-nowrap">{completedCount}/5 done</span>
+            <span className="whitespace-nowrap font-mono text-xs text-muted">{completedCount}/5 done</span>
           </div>
-
         </div>
 
         {/* Right Column: objectives, key concepts, coding problem (1/3 width) */}
         <div className="space-y-6">
-          
           {/* Daily Objectives Card */}
           {objectives && objectives.length > 0 && (
-            <div style={{
-              background: '#070f1a', border: '1px solid rgba(0,240,255,0.08)',
-              borderRadius: '16px', padding: '20px'
-            }}>
-              <h3 style={{
-                fontSize: '14px', fontWeight: 800, color: '#e8e8ed', marginBottom: '14px',
-                fontFamily: 'var(--font-heading)', textTransform: 'uppercase', letterSpacing: '1px'
-              }}>🎯 Daily Objectives</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div className={CARD}>
+              <h3 className="mb-3.5 font-display text-sm font-extrabold uppercase tracking-[1px] text-dark">
+                🎯 Daily Objectives
+              </h3>
+              <div className="flex flex-col gap-3">
                 {objectives.map((obj, i) => (
-                  <div key={i} style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-                    <span style={{
-                      display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                      width: '20px', height: '20px', borderRadius: '50%', background: 'rgba(0,240,255,0.1)',
-                      color: '#00f0ff', fontSize: '11px', fontWeight: 700, flexShrink: 0
-                    }}>{i+1}</span>
-                    <span style={{ fontSize: '13px', color: '#c8d8e8', lineHeight: 1.5 }}>{obj}</span>
+                  <div key={i} className="flex items-start gap-2.5">
+                    <span className="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-[11px] font-bold text-primary">
+                      {i + 1}
+                    </span>
+                    <span className="text-[13px] leading-normal text-[#c8d8e8]">{obj}</span>
                   </div>
                 ))}
               </div>
@@ -731,20 +844,16 @@ export default function DailyRoadmapPage() {
 
           {/* Key Concepts Card */}
           {keyConcepts && keyConcepts.length > 0 && (
-            <div style={{
-              background: '#070f1a', border: '1px solid rgba(0,240,255,0.08)',
-              borderRadius: '16px', padding: '20px'
-            }}>
-              <h3 style={{
-                fontSize: '14px', fontWeight: 800, color: '#e8e8ed', marginBottom: '12px',
-                fontFamily: 'var(--font-heading)', textTransform: 'uppercase', letterSpacing: '1px'
-              }}>💡 Key Concepts</h3>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+            <div className={CARD}>
+              <h3 className="mb-3 font-display text-sm font-extrabold uppercase tracking-[1px] text-dark">
+                💡 Key Concepts
+              </h3>
+              <div className="flex flex-wrap gap-2">
                 {keyConcepts.map((concept, i) => (
-                  <span key={i} style={{
-                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: '8px', padding: '6px 12px', fontSize: '12px', color: '#a2b9cd'
-                  }}>
+                  <span
+                    key={i}
+                    className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-xs text-[#a2b9cd]"
+                  >
                     #{concept}
                   </span>
                 ))}
@@ -754,93 +863,93 @@ export default function DailyRoadmapPage() {
 
           {/* Coding Problem Spotlight */}
           {codingProblem && (
-            <div style={{
-              background: '#070f1a', border: '1px solid rgba(29,158,117,0.15)',
-              borderRadius: '16px', padding: '20px',
-              backgroundImage: 'linear-gradient(rgba(29,158,117,0.01) 1px,transparent 1px)',
-              backgroundSize: '100% 8px'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                <span style={{ fontSize: '16px' }}>💻</span>
-                <h3 style={{
-                  fontSize: '14px', fontWeight: 800, color: '#e8e8ed',
-                  fontFamily: 'var(--font-heading)', textTransform: 'uppercase', letterSpacing: '1px'
-                }}>Coding Problem</h3>
+            <div className="relative overflow-hidden rounded-2xl border border-success/15 bg-[#070f1a] p-5">
+              <div className="mb-2.5 flex items-center gap-2">
+                <span className="text-base">💻</span>
+                <h3 className="font-display text-sm font-extrabold uppercase tracking-[1px] text-dark">
+                  Coding Problem
+                </h3>
               </div>
-              <p style={{ fontSize: '13px', color: '#c8d8e8', lineHeight: 1.5, marginBottom: '14px' }}>
-                Validate today's skills by solving: <strong style={{ color: '#00f0ff' }}>{codingProblem}</strong>
+              <p className="mb-3.5 text-[13px] leading-normal text-[#c8d8e8]">
+                Validate today's skills by solving: <strong className="text-primary">{codingProblem}</strong>
               </p>
               {codingProblemUrl && (
-                <a href={codingProblemUrl} target="_blank" rel="noreferrer" style={{
-                  display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%',
-                  padding: '10px', borderRadius: '8px', border: 'none', fontWeight: 700,
-                  background: 'rgba(29,158,117,0.12)', border: '1px solid rgba(29,158,117,0.3)',
-                  color: '#1D9E75', textDecoration: 'none', fontSize: '12px', transition: 'all 0.2s'
-                }}>
+                <a
+                  href={codingProblemUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex w-full items-center justify-center rounded-lg border border-success/30 bg-success/[0.12] p-2.5 text-xs font-bold text-success no-underline transition-all hover:bg-success/20"
+                >
                   Practice Problem ↗
                 </a>
               )}
             </div>
           )}
-
         </div>
-
       </div>
 
-      {/* ─── FULL ROADMAP OVERVIEW MODAL (BUG 4) ─── */}
+      {/* ─── FULL ROADMAP OVERVIEW MODAL (curriculum transparency) ─── */}
       {showOverview && (
-        <div onClick={() => setShowOverview(false)} style={{
-          position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(2,8,18,0.85)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, backdropFilter: 'blur(4px)',
-        }}>
-          <div onClick={e => e.stopPropagation()} style={{
-            width: '100%', maxWidth: 680, maxHeight: '86vh', overflowY: 'auto',
-            background: '#070f1a', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 16, padding: 24,
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+        <div
+          onClick={() => setShowOverview(false)}
+          className="fixed inset-0 z-[1000] flex items-center justify-center bg-[#020812]/85 p-4 backdrop-blur-sm"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="max-h-[86vh] w-full max-w-[680px] overflow-y-auto rounded-2xl border border-primary/15 bg-[#070f1a] p-6"
+          >
+            <div className="mb-2 flex items-start justify-between">
               <div>
-                <h2 style={{ fontSize: 22, fontWeight: 800, color: '#e8e8ed', fontFamily: 'var(--font-heading)' }}>
+                <h2 className="font-display text-[22px] font-extrabold text-dark">
                   Your {overview?.domainName || ''} Roadmap
                 </h2>
                 {overview && (
-                  <p style={{ fontSize: 13, color: '#5a7a9a', marginTop: 4 }}>
+                  <p className="mt-1 text-[13px] text-muted">
                     {overview.totalDays}-day path · ~{overview.dailyMinutes} min/day · progressive difficulty
                   </p>
                 )}
               </div>
-              <button onClick={() => setShowOverview(false)} aria-label="Close" style={{
-                background: 'transparent', border: 'none', color: '#5a7a9a', fontSize: 22, cursor: 'pointer', lineHeight: 1,
-              }}>×</button>
+              <button
+                onClick={() => setShowOverview(false)}
+                aria-label="Close"
+                className="cursor-pointer border-none bg-transparent text-[22px] leading-none text-muted transition-colors hover:text-primary"
+              >
+                ×
+              </button>
             </div>
 
             {!overview ? (
-              <div style={{ color: '#5a7a9a', fontSize: 14, padding: '24px 0', textAlign: 'center' }}>Loading your full path…</div>
+              <div className="py-6 text-center text-sm text-muted">Loading your full path…</div>
             ) : (
               <>
                 {/* Macro phases */}
-                <div style={{ margin: '18px 0' }}>
-                  <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 10 }}>THE JOURNEY</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {overview.macroPhases.map((p, i) => (
-                      <div key={p.key} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '12px 14px' }}>
-                        <span style={{ flexShrink: 0, fontSize: 11, fontWeight: 800, color: '#00f0ff', fontFamily: 'var(--font-mono)', minWidth: 88 }}>{p.key}</span>
+                <div className="my-4.5">
+                  <div className={`${EYEBROW} mb-2.5 tracking-[1px]`}>THE JOURNEY</div>
+                  <div className="flex flex-col gap-2">
+                    {overview.macroPhases.map((p) => (
+                      <div
+                        key={p.key}
+                        className="flex items-start gap-3 rounded-[10px] border border-white/[0.05] bg-white/[0.02] px-3.5 py-3"
+                      >
+                        <span className="min-w-[88px] flex-shrink-0 font-mono text-[11px] font-extrabold text-primary">
+                          {p.key}
+                        </span>
                         <div>
-                          <div style={{ fontSize: 12, color: '#ffb020', fontFamily: 'var(--font-mono)', marginBottom: 2 }}>{p.days}</div>
-                          <div style={{ fontSize: 13, color: '#c8d8e8', lineHeight: 1.5 }}>{p.summary}</div>
+                          <div className="mb-0.5 font-mono text-xs text-[#ffb020]">{p.days}</div>
+                          <div className="text-[13px] leading-normal text-[#c8d8e8]">{p.summary}</div>
                         </div>
-                        {i < overview.macroPhases.length - 1 && null}
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* Topic focus per phase */}
-                <div style={{ margin: '18px 0' }}>
-                  <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 10 }}>WHAT YOU&apos;LL COVER</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <div className="my-4.5">
+                  <div className={`${EYEBROW} mb-2.5 tracking-[1px]`}>WHAT YOU&apos;LL COVER</div>
+                  <div className="flex flex-col gap-1.5">
                     {overview.topics.map((t, i) => (
-                      <div key={i} style={{ display: 'flex', gap: 10, fontSize: 12.5, color: '#c8d8e8', lineHeight: 1.5 }}>
-                        <span style={{ flexShrink: 0, color: '#1D9E75', fontFamily: 'var(--font-mono)', minWidth: 52 }}>W{t.weeks}</span>
+                      <div key={i} className="flex gap-2.5 text-[12.5px] leading-normal text-[#c8d8e8]">
+                        <span className="min-w-[52px] flex-shrink-0 font-mono text-success">W{t.weeks}</span>
                         <span>{t.focus}</span>
                       </div>
                     ))}
@@ -849,11 +958,14 @@ export default function DailyRoadmapPage() {
 
                 {/* Projects */}
                 {overview.projects?.length > 0 && (
-                  <div style={{ margin: '18px 0' }}>
-                    <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 10 }}>PROJECTS YOU&apos;LL BUILD</div>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  <div className="my-4.5">
+                    <div className={`${EYEBROW} mb-2.5 tracking-[1px]`}>PROJECTS YOU&apos;LL BUILD</div>
+                    <div className="flex flex-wrap gap-1.5">
                       {overview.projects.map((p, i) => (
-                        <span key={i} style={{ fontSize: 11.5, color: '#a2b9cd', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: '5px 10px' }}>
+                        <span
+                          key={i}
+                          className="rounded-lg border border-white/[0.07] bg-white/[0.03] px-2.5 py-1.5 text-[11.5px] text-[#a2b9cd]"
+                        >
                           W{p.week} · {p.title}
                         </span>
                       ))}
@@ -862,12 +974,12 @@ export default function DailyRoadmapPage() {
                 )}
 
                 {/* Outcome */}
-                <div style={{ marginTop: 18, background: 'rgba(29,158,117,0.06)', border: '1px solid rgba(29,158,117,0.2)', borderRadius: 12, padding: '14px 16px' }}>
-                  <div style={{ fontSize: 11, color: '#1D9E75', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 6 }}>WHERE YOU&apos;LL LAND</div>
-                  <div style={{ fontSize: 14, color: '#e8e8ed', lineHeight: 1.6 }}>{overview.outcome}</div>
+                <div className="mt-4.5 rounded-xl border border-success/20 bg-success/[0.06] px-4 py-3.5">
+                  <div className={`${EYEBROW} mb-1.5 text-success tracking-[1px]`}>WHERE YOU&apos;LL LAND</div>
+                  <div className="text-sm leading-relaxed text-dark">{overview.outcome}</div>
                 </div>
 
-                <button onClick={() => setShowOverview(false)} style={{ ...ACTION_BTN_STYLE, marginTop: 20 }}>
+                <button onClick={() => setShowOverview(false)} className={`${ACTION_BTN} mt-5`}>
                   Got it — let&apos;s go →
                 </button>
               </>
@@ -875,7 +987,6 @@ export default function DailyRoadmapPage() {
           </div>
         </div>
       )}
-
     </div>
   );
 }
