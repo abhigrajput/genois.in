@@ -1,16 +1,29 @@
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
+import { NextResponse } from 'next/server';
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { generateToken } from '@/lib/auth';
-import { successResponse, errorResponse } from '@/lib/response';
+import { successResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse, isLockedOut, recordFailedLogin, clearFailedLogins, lockoutResponse } from '@/lib/rateLimit';
 import { csrfCheck, getClientIp } from '@/lib/security';
 
 // FIX 08: Zod schema
 const LoginSchema = z.object({
-  email: z.string().email('Invalid email format').max(255),
-  password: z.string().min(1, 'Password is required').max(255),
+  email: z.string().email('Please enter a valid email address').max(255),
+  password: z.string().min(1, 'Please enter your password').max(255),
 });
+
+/**
+ * Uniform error envelope. Every failure path returns
+ *   { success: false, code, message }
+ * with a specific, human-readable `message` — never a bare 500, never a raw
+ * stack. `code` is a stable machine key for the client to branch on without
+ * string-matching. The client currently maps on `message` (lib/api.js throws
+ * `Error(data.message)`), so `message` MUST stay user-presentable.
+ */
+function fail(code, message, status) {
+  return NextResponse.json({ success: false, code, message }, { status });
+}
 
 export async function POST(request) {
   // FIX 10: CSRF check
@@ -28,12 +41,19 @@ export async function POST(request) {
 
   try {
     let body;
-    try { body = await request.json(); } catch { return errorResponse('Invalid JSON', 400); }
+    try {
+      body = await request.json();
+    } catch {
+      return fail('invalid_body', 'We could not read your request. Please try again.', 400);
+    }
 
-    // FIX 08: Zod validation
+    // FIX 08: Zod validation — surface the first specific field message.
     const parsed = LoginSchema.safeParse(body);
     if (!parsed.success) {
-      return errorResponse((parsed.error.issues?.[0]?.message || parsed.error.errors?.[0]?.message || "Validation failed"), 400);
+      const msg = parsed.error.issues?.[0]?.message
+        || parsed.error.errors?.[0]?.message
+        || 'Please enter a valid email and password.';
+      return fail('validation', msg, 400);
     }
     const { email, password } = parsed.data;
 
@@ -45,25 +65,33 @@ export async function POST(request) {
       .eq('email', email.toLowerCase())
       .single();
 
-    // FIX 01: Track failed attempts on wrong email/password
+    // FIX 01: Track failed attempts on wrong email/password.
+    // We deliberately return the SAME message/code for "no such user" and "wrong
+    // password" so the endpoint never reveals which emails are registered.
     if (error || !user) {
       await recordFailedLogin(ip);
-      return errorResponse('Invalid email or password', 401);
+      return fail('invalid_credentials', 'That email or password is incorrect.', 401);
+    }
+
+    // Google-only accounts have a sentinel hash and no usable password. Tell the
+    // user how to get in instead of looping them on "incorrect password".
+    if (user.password_hash === 'google_oauth_no_password') {
+      return fail('use_google', 'This account was created with Google. Please use “Continue with Google” to sign in.', 401);
     }
 
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
       // FIX 01: Record failed attempt — result tells us if now locked
-      const fail = await recordFailedLogin(ip);
-      if (fail.locked) return lockoutResponse(fail.remainingMs);
-      return errorResponse('Invalid email or password', 401);
+      const attempt = await recordFailedLogin(ip);
+      if (attempt.locked) return lockoutResponse(attempt.remainingMs);
+      return fail('invalid_credentials', 'That email or password is incorrect.', 401);
     }
 
     // Success — clear any lockout state for this IP
     await clearFailedLogins(ip);
 
     const token = await generateToken({ userId: user.id });
-    const { password_hash: _, ...safeUser } = user;
+    const { password_hash: _drop, ...safeUser } = user;
 
     // Async update last_active (fire-and-forget)
     setTimeout(async () => {
@@ -72,7 +100,10 @@ export async function POST(request) {
       } catch {}
     }, 0);
 
-    // FIX 03: Set httpOnly secure cookie in addition to returning token
+    // FIX 03: Set httpOnly secure cookie in addition to returning the token in
+    // the body. The body token is what the client persists to localStorage +
+    // the (non-httpOnly) middleware cookie; this httpOnly cookie is the
+    // tamper-resistant server-trusted copy.
     const res = successResponse({
       user: {
         ...safeUser,
@@ -90,8 +121,9 @@ export async function POST(request) {
 
     return res;
   } catch (error) {
-    // FIX 09: Never leak internal error details
-    console.error('Login error:', error);
-    return errorResponse('Internal server error', 500);
+    // FIX 09: Never leak internal error details — but never a bare/opaque 500
+    // either. Log the real cause, return a specific human-readable reason.
+    console.error('LOGIN_ERROR:', error);
+    return fail('server_error', 'We hit a snag on our end and could not sign you in. Please try again in a moment.', 500);
   }
 }

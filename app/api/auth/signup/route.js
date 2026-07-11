@@ -5,14 +5,14 @@ import { Resend } from 'resend';
 import crypto from 'crypto';
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { generateToken } from '@/lib/auth';
-import { successResponse, errorResponse } from '@/lib/response';
+import { successResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { csrfCheck, checkPasswordStrength, getClientIp } from '@/lib/security';
 
 // FIX 08: Zod schema
 const SignupSchema = z.object({
   name:          z.string().min(2, 'Name must be at least 2 characters').max(50, 'Name must be at most 50 characters').trim(),
-  email:         z.string().email('Invalid email format').max(255),
+  email:         z.string().email('Please enter a valid email address').max(255),
   password:      z.string().min(8, 'Password must be at least 8 characters').max(128, 'Password must be at most 128 characters'),
   college:       z.string().max(200).optional().nullable(),
   year:          z.string().max(20).optional().nullable(),
@@ -22,6 +22,17 @@ const SignupSchema = z.object({
   referralCode:  z.string().max(50).optional().nullable(),
 });
 
+/**
+ * Uniform error envelope. Every failure path returns
+ *   { success: false, code, message }
+ * with a specific, human-readable `message` and a stable `code`. The signup
+ * client branches on `code` (e.g. 'email_exists' → route to login) and shows
+ * `message` verbatim, so both MUST stay meaningful — never a bare 500.
+ */
+function fail(code, message, status) {
+  return NextResponse.json({ success: false, code, message }, { status });
+}
+
 export async function POST(request) {
   // FIX 10: CSRF check
   const csrf = csrfCheck(request);
@@ -29,7 +40,11 @@ export async function POST(request) {
 
   try {
     let body;
-    try { body = await request.json(); } catch { return errorResponse('Invalid JSON body', 400); }
+    try {
+      body = await request.json();
+    } catch {
+      return fail('invalid_body', 'We could not read your request. Please try again.', 400);
+    }
 
     // Rate limit by IP
     const ip = getClientIp(request);
@@ -38,16 +53,19 @@ export async function POST(request) {
     // FIX 08: Zod validation
     const parsed = SignupSchema.safeParse(body);
     if (!parsed.success) {
-      return errorResponse((parsed.error.issues?.[0]?.message || parsed.error.errors?.[0]?.message || "Validation failed"), 400);
+      const msg = parsed.error.issues?.[0]?.message
+        || parsed.error.errors?.[0]?.message
+        || 'Please check the form and try again.';
+      return fail('validation', msg, 400);
     }
     const { name, email, password, college, year, domainSlug, level, learningSpeed, referralCode } = parsed.data;
 
     const validDomains = ['fullstack','dsa','cybersecurity','aiml','devops','android','datascience','blockchain','gamedev','systemdesign'];
     const resolvedDomain = validDomains.includes(domainSlug) ? domainSlug : 'fullstack';
 
-    // FIX 12: Password strength
+    // FIX 12: Password strength (mirrors the client-side check in signup/page.jsx)
     const pwdError = checkPasswordStrength(password);
-    if (pwdError) return errorResponse(pwdError, 400);
+    if (pwdError) return fail('weak_password', pwdError, 400);
 
     // Fail loud (and logged) if the service-role config is missing — otherwise
     // createClient throws a cryptic error that surfaces as a generic 500.
@@ -56,14 +74,14 @@ export async function POST(request) {
         hasUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
         hasKey: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
       });
-      return errorResponse('Server configuration error', 500);
+      return fail('config_error', 'Sign-up is temporarily unavailable due to a server configuration issue. Please try again shortly.', 500);
     }
 
     const supabase = getAdminClient();
 
     // `.maybeSingle()` returns null (not a PGRST116 "no rows" error) when the
     // email is free, so a fresh signup doesn't log spurious errors. A friendly,
-    // actionable message + an `code: 'email_exists'` flag lets the client route
+    // actionable message + a `code: 'email_exists'` flag lets the client route
     // the user to login instead of looping them back to the password step.
     const { data: existing } = await supabase
       .from('users')
@@ -72,10 +90,7 @@ export async function POST(request) {
       .maybeSingle();
 
     if (existing) {
-      return NextResponse.json(
-        { success: false, code: 'email_exists', message: 'This email is already registered. Try logging in instead.' },
-        { status: 409 }
-      );
+      return fail('email_exists', 'This email is already registered. Try logging in instead.', 409);
     }
 
     const passwordHash = await bcrypt.hash(password, 12);
@@ -111,7 +126,7 @@ export async function POST(request) {
         details: userError.details,
         hint:    userError.hint,
       }));
-      return errorResponse('Account creation failed', 500);
+      return fail('db_error', 'We could not create your account just now. Please try again in a moment.', 500);
     }
 
     // Use email_verify_token column (actual column name in users table)
@@ -140,6 +155,8 @@ export async function POST(request) {
         console.warn('RESEND_API_KEY not configured, skipping email.');
       }
     } catch (e) {
+      // A failed verification email must NEVER fail the signup — the account
+      // exists and the user can request a resend later.
       console.error('Failed to send verification email:', e);
     }
 
@@ -202,12 +219,13 @@ export async function POST(request) {
     });
 
     const token = await generateToken({ userId: user.id });
-    const { password_hash: _, ...safeUser } = user;
+    const { password_hash: _drop, ...safeUser } = user;
 
     return successResponse({ user: safeUser, token }, 'Account created successfully', 201);
   } catch (error) {
-    // FIX 09: Sanitize errors
-    console.error('Signup error:', error);
-    return errorResponse('Internal server error', 500);
+    // FIX 09: Sanitize errors — log the real cause, return a specific,
+    // human-readable reason. Never a bare 500, never a raw stack.
+    console.error('SIGNUP_ERROR:', error);
+    return fail('server_error', 'Something went wrong on our end while creating your account. Please try again in a moment.', 500);
   }
 }
