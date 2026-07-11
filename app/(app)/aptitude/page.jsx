@@ -1,10 +1,16 @@
 'use client';
 import { useState, useEffect, useMemo } from 'react';
-import { useToken, apiFetch } from '@/lib/useApi';
+import { useToken, apiFetch, apiFetchWithTimeout } from '@/lib/useApi';
 import toast from 'react-hot-toast';
 import PermissionGate from '@/components/PermissionGate';
 import { usePermission } from '@/lib/usePermission';
 import { Search, Zap, BookOpen } from 'lucide-react';
+
+// Explicit wall-clock caps so a slow/hung backend can never leave the UI on a
+// dead spinner. The dashboard read is light; AI question-generation is heavy.
+const DASHBOARD_TIMEOUT_MS = 20000;
+const GENERATE_TIMEOUT_MS = 45000;
+const SUBMIT_TIMEOUT_MS = 30000;
 
 const TRICKS = [
   { topic: 'Ratio & Proportion', title: 'Splitting a Number', content: 'To divide N in ratio a:b → First = N×a/(a+b), Second = N×b/(a+b)', example: '720 in 2:3 → 288, 432', companies: ['TCS NQT', 'Infosys SP'], difficulty: 'easy' },
@@ -156,6 +162,26 @@ function ShortcutsView({ mode, setMode }) {
   );
 }
 
+// One recovery surface for every dead-end: a failed dashboard load, a timed-out
+// generation, an empty question set. Always gives the user a way forward.
+function ErrorCard({ icon = '⚠️', title, message, primaryLabel, onPrimary, secondaryLabel, onSecondary }) {
+  return (
+    <div style={{ maxWidth: 560, margin: '40px auto 0', fontFamily: 'var(--font-body)' }}>
+      <div style={{ background: '#070f1f', border: '1px solid rgba(239,159,39,0.28)', borderRadius: 16, padding: 28, textAlign: 'center' }}>
+        <div style={{ fontSize: 34, marginBottom: 12 }}>{icon}</div>
+        <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>{title}</div>
+        <div style={{ fontSize: 14, color: '#c8d8e8', lineHeight: 1.6, marginBottom: 20 }}>{message}</div>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <button onClick={onPrimary} style={{ flex: 1, minWidth: 160, padding: 13, borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>{primaryLabel}</button>
+          {secondaryLabel && (
+            <button onClick={onSecondary} style={{ flex: 1, minWidth: 160, padding: 13, borderRadius: 12, border: '1px solid rgba(255,255,255,0.14)', cursor: 'pointer', background: 'transparent', color: '#c8d8e8', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14 }}>{secondaryLabel}</button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AptitudePage() {
   const { token, ready } = useToken();
   const { userPlan } = usePermission();
@@ -174,6 +200,8 @@ export default function AptitudePage() {
   const [result, setResult] = useState(null);
   const [level, setLevel] = useState(null);
   const [showPlacement, setShowPlacement] = useState(false);
+  const [loadError, setLoadError] = useState(null);  // dashboard `/api/aptitude` failed
+  const [genError, setGenError] = useState(null);     // { timedOut, message } — generation failed
 
   useEffect(() => {
     if (!ready || !token) return;
@@ -181,43 +209,75 @@ export default function AptitudePage() {
   }, [ready, token]);
 
   async function loadData() {
+    setLoadError(null);
     try {
-      const r = await apiFetch('/api/aptitude', token);
+      const r = await apiFetchWithTimeout('/api/aptitude', token, 'GET', undefined, DASHBOARD_TIMEOUT_MS);
+      if (!r?.data) throw new Error('The aptitude service returned nothing.');
       setData(r.data);
+    } catch (e) {
+      // Never silently die on a permanent "Loading…" — record the error so the
+      // render layer can offer a retry. (Refresh-after-submit failures are
+      // harmless here: we keep the last good `data`.)
+      setLoadError(e.timedOut ? 'Loading your aptitude dashboard timed out.' : (e.message || 'Could not load aptitude.'));
+    } finally {
       setLoading(false);
-    } catch { setLoading(false); }
+    }
   }
 
   async function startTopic(category, topic) {
     setActiveCategory(category);
     setActiveTopic(topic);
+    setGenError(null);
     setPhase('loading');
     try {
-      const r = await apiFetch(`/api/aptitude/session?category=${category}&topic=${topic.slug}&difficulty=${level || 'medium'}`, token);
+      const r = await apiFetchWithTimeout(
+        `/api/aptitude/session?category=${category}&topic=${topic.slug}&difficulty=${level || 'medium'}`,
+        token, 'GET', undefined, GENERATE_TIMEOUT_MS,
+      );
+      const qs = r?.data?.questions;
+      // An empty/malformed generation used to fall through to the topic list
+      // silently. Treat "no questions" as a first-class, retry-able failure.
+      if (!Array.isArray(qs) || qs.length === 0) {
+        throw new Error('The generator came back empty — no questions were produced.');
+      }
       setSession(r.data.session);
-      setQuestions(r.data.questions);
+      setQuestions(qs);
       setAnswers({});
       setCurrentQ(0);
       setStartTime(Date.now());
       setResult(null);
       setPhase('test');
-    } catch (e) { toast.error(e.message); setPhase('list'); }
+    } catch (e) {
+      setGenError({
+        timedOut: !!e.timedOut,
+        message: e.timedOut
+          ? 'Question generation is taking longer than usual (the AI is busy).'
+          : (e.message || 'Could not generate this test.'),
+      });
+      setPhase('genError');
+    }
   }
 
   async function submitSession() {
     const timeTaken = Math.round((Date.now() - startTime) / 1000);
     setSubmitting(true);
     try {
-      const r = await apiFetch('/api/aptitude/session', token, 'POST', {
+      const r = await apiFetchWithTimeout('/api/aptitude/session', token, 'POST', {
         sessionId: session.id,
         answers,
         timeTaken,
-      });
+      }, SUBMIT_TIMEOUT_MS);
+      if (!r?.data) throw new Error('Scoring response was empty.');
       setResult(r.data);
       setPhase('result');
       loadData();
-    } catch (e) { toast.error(e.message); }
-    setSubmitting(false);
+    } catch (e) {
+      // Stay on the test with answers intact; re-enable the button so the user
+      // can simply tap Submit again instead of being stuck on "Scoring…".
+      toast.error(e.timedOut ? 'Scoring timed out — your answers are safe, tap Submit again.' : (e.message || 'Could not score this test.'));
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   // Shortcuts is static reference — render instantly, no API dependency (still plan-gated).
@@ -229,11 +289,34 @@ export default function AptitudePage() {
 
   if (loading) return <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center', fontFamily: 'var(--font-mono)' }}>Loading aptitude...</div>;
 
+  // Dashboard load failed → offer a retry instead of a permanent "Loading…".
+  if (loadError && !data) return (
+    <ErrorCard
+      title="Couldn’t load aptitude"
+      message={loadError + ' Check your connection and try again.'}
+      primaryLabel="↻ Retry"
+      onPrimary={() => { setLoading(true); loadData(); }}
+    />
+  );
+
   if (phase === 'loading') return (
     <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center', fontFamily: 'var(--font-mono)' }}>
       <div style={{ fontSize: 48, marginBottom: 16 }}>🧠</div>
       <div style={{ fontSize: 16, color: '#e8e8ed', fontFamily: 'var(--font-heading)', fontWeight: 700 }}>Generating 10 {activeTopic?.name} questions...</div>
     </div>
+  );
+
+  // Generation failed / timed out / came back empty → never a dead spinner.
+  if (phase === 'genError' && genError) return (
+    <ErrorCard
+      icon={genError.timedOut ? '⏳' : '⚠️'}
+      title={genError.timedOut ? 'Still generating…' : 'Generation hiccuped'}
+      message={genError.message + ' Nothing was lost — retry, or pick another topic.'}
+      primaryLabel="↻ Retry"
+      onPrimary={() => activeCategory && activeTopic && startTopic(activeCategory, activeTopic)}
+      secondaryLabel="← Back to topics"
+      onSecondary={() => { setGenError(null); setPhase('list'); setActiveTopic(null); }}
+    />
   );
 
   if (phase === 'result' && result) {
@@ -324,7 +407,14 @@ export default function AptitudePage() {
     );
   }
 
-  if (!data) return <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center' }}>Loading...</div>;
+  if (!data) return (
+    <ErrorCard
+      title="Couldn’t load aptitude"
+      message="The dashboard didn’t come through. Give it another try."
+      primaryLabel="↻ Retry"
+      onPrimary={() => { setLoading(true); loadData(); }}
+    />
+  );
 
   const { progress = {}, categories = {} } = data;
 

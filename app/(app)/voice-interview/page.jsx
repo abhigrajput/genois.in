@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { useToken, apiFetch } from '@/lib/useApi';
+import { useToken, apiFetch, apiFetchWithTimeout } from '@/lib/useApi';
 import toast from 'react-hot-toast';
 
 // ── theme (app-interior palette) ───────────────────────────────────────────
@@ -68,43 +68,46 @@ const MODES = [
 
 const COMPANIES = ['TCS', 'Infosys', 'Wipro', 'Accenture', 'Cognizant', 'Amazon', 'Microsoft', 'Google', 'Flipkart'];
 
-/**
- * fetch() with a hard timeout via AbortController. On timeout the thrown error
- * carries `timedOut: true` so callers can branch to a retry affordance.
- * @param {string} url
- * @param {string|null} token
- * @param {string} method
- * @param {unknown} body
- * @param {number} timeoutMs
- */
-async function apiFetchWithTimeout(url, token, method, body, timeoutMs) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    return await apiFetch(url, token, method, body, controller.signal);
-  } catch (err) {
-    if (err?.name === 'AbortError') {
-      const e = new Error('The evaluator took too long to respond.');
-      e.timedOut = true;
-      throw e;
-    }
-    throw err;
-  } finally {
-    clearTimeout(timer);
-  }
-}
+// apiFetchWithTimeout now lives in lib/useApi.js (shared with the aptitude
+// module) — same AbortController-backed timeout, one implementation.
 
-// Collapse immediate word repetitions ("so so well" → "so well") that the
-// Web Speech API can leave behind when final results overlap. Applied on submit.
+// STT boundary sanitizer — runs once on submit, right before the payload goes
+// to the evaluator. The Web Speech API leaves two artifacts behind when its
+// final results overlap: single-word echoes ("so so well") and repeated
+// bigrams ("the answer the answer"). Both inflate the answer, waste the
+// long-context window, and skew scoring. We also normalize raw spacing.
 function cleanTranscript(text) {
   if (!text) return text;
-  const words = text.split(/\s+/);
-  const cleaned = [];
+  // 1. Normalize whitespace (split on any run of spacing → collapses + trims).
+  const words = text.trim().split(/\s+/).filter(Boolean);
+
+  // 2. Drop immediately-repeated single words (case-insensitive).
+  const deduped = [];
   for (let i = 0; i < words.length; i++) {
     if (i > 0 && words[i].toLowerCase() === words[i - 1].toLowerCase()) continue;
-    cleaned.push(words[i]);
+    deduped.push(words[i]);
   }
-  return cleaned.join(' ');
+
+  // 3. Collapse an immediately-repeated adjacent bigram ("a b a b" → "a b").
+  //    Only touches back-to-back identical pairs, so legitimate prose is safe.
+  const out = [];
+  for (let i = 0; i < deduped.length; i++) {
+    const prevA = out[out.length - 2];
+    const prevB = out[out.length - 1];
+    const curr = deduped[i];
+    const next = deduped[i + 1];
+    if (
+      prevA !== undefined && next !== undefined &&
+      prevA.toLowerCase() === curr.toLowerCase() &&
+      prevB.toLowerCase() === next.toLowerCase()
+    ) {
+      i++; // skip the duplicate bigram's second word too
+      continue;
+    }
+    out.push(curr);
+  }
+
+  return out.join(' ');
 }
 
 const wordsOf = (s) => (s || '').trim().split(/\s+/).filter(Boolean).length;
