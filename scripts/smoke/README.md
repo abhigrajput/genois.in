@@ -46,8 +46,14 @@ are staged, and every stubbed call is a read — **nothing is written to prod**.
 
 | Name | What it proves | Time |
 |------|----------------|------|
-| `aptitude-dashboard-retry` | `GET /api/aptitude` 503 → "Couldn't load aptitude" ErrorCard, and Retry re-fires the request | ~10s |
-| `aptitude-gen-timeout` | `GET /api/aptitude/session` hangs → the deployed 45s `AbortController` fires → ⏳ "Still generating…" card, and Retry re-enters generation | ~60s |
+| `aptitude-dashboard-retry` | `GET /api/aptitude` 503 → "Couldn't load aptitude" ErrorCard, and Retry re-fires the request | ~5s |
+| `aptitude-gen-timeout` | `GET /api/aptitude/session` hangs → the deployed 45s `AbortController` fires → ⏳ "Still generating…" card, and Retry re-enters generation | ~50s |
+| `aptitude-scoring-failure` | `POST /api/aptitude/session` 503 → error toast, Submit un-sticks from "Scoring…" with answers kept, and re-submit re-fires | ~5s |
+| `voice-interview-eval-retry` | `POST /api/interview/evaluate` 503 → "Scoring hiccuped" card (Retry evaluation / Use estimated score), and Retry re-fires | ~5s |
+
+> The voice smoke disables `webkitSpeechRecognition` so the page renders its
+> typed-answer `<textarea>` fallback (headless Chrome exposes the API but never
+> returns speech results). See `disableSpeech` in `lib/fixtures.mjs`.
 
 ## Adding a smoke
 

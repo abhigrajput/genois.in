@@ -144,10 +144,23 @@ export class Session {
     await this.send('Network.setCookie', { name, value, url: base + '/', secure: base.startsWith('https'), sameSite: 'Lax' });
   }
 
+  // Register a script that runs in every new document BEFORE its own JS — the
+  // only reliable way to seed storage / patch globals ahead of the app.
+  async addInitScript(source) {
+    await this.send('Page.addScriptToEvaluateOnNewDocument', { source });
+  }
+
   async seedLocalStorage(key, value) {
-    await this.send('Page.addScriptToEvaluateOnNewDocument', {
-      source: `try{localStorage.setItem(${JSON.stringify(key)}, ${JSON.stringify(value)})}catch(e){}`,
-    });
+    await this.addInitScript(`try{localStorage.setItem(${JSON.stringify(key)}, ${JSON.stringify(value)})}catch(e){}`);
+  }
+
+  // Set an <input>/<textarea> value the way React notices: use the native value
+  // setter (bypassing React's overridden one) then dispatch a bubbling 'input'.
+  async setValue(selector, value) {
+    return this.eval(`(()=>{const el=document.querySelector(${JSON.stringify(selector)});if(!el)return false;
+      const proto=el.tagName==='TEXTAREA'?window.HTMLTextAreaElement.prototype:window.HTMLInputElement.prototype;
+      const setter=Object.getOwnPropertyDescriptor(proto,'value').set;setter.call(el,${JSON.stringify(value)});
+      el.dispatchEvent(new Event('input',{bubbles:true}));return true;})()`);
   }
 
   async navigate(url) { await this.send('Page.navigate', { url }); }

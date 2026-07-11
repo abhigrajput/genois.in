@@ -42,3 +42,10 @@ export function authRoute({ url }) {
   }
   return null;
 }
+
+// Headless Chrome exposes webkitSpeechRecognition but it never produces results,
+// so pages that gate on speech support hang. Removing it makes the voice
+// interview fall back to its typed-answer <textarea>, which we can drive.
+export async function disableSpeech(session) {
+  await session.addInitScript(`try{window.SpeechRecognition=undefined;window.webkitSpeechRecognition=undefined;}catch(e){}`);
+}
