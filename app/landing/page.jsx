@@ -42,10 +42,10 @@ const FEATURES = [
 ];
 
 const PLANS = [
-  { name: 'Spectator', price: '₹0',   cadence: '/forever', desc: 'Explore the platform free.',     features: ['30-day full trial', '1 career domain', 'Daily milestone', 'Daily coding challenge'], cta: 'Start Free',       highlight: false },
-  { name: 'Player',    price: '₹199', cadence: '/month',   desc: 'Get serious about prep.',        features: ['Everything in Spectator', '3 domains at once', 'Daily + weekly tests', 'College leaderboard'],  cta: 'Choose Player',    highlight: false },
-  { name: 'Performer', price: '₹299', cadence: '/month',   desc: 'The complete placement engine.', features: ['Everything in Player', 'All 10 domains', 'AI Mentor — 5 modes', 'Job-Ready badge'],            cta: 'Choose Performer', highlight: true  },
-  { name: 'Dominator', price: '₹499', cadence: '/month',   desc: 'For elite placement goals.',     features: ['Everything in Performer', 'Company-specific prep', 'Priority mentor escalation', 'Shareable report'], cta: 'Go Dominator', highlight: false },
+  { name: 'Spectator', price: '₹0',   cadence: '/forever', desc: 'Explore the platform free.',     features: ['Full engine unlocked 30 days', '1 career domain', 'AI daily milestone', 'Instant AI code review'], cta: 'Start Free',       highlight: false },
+  { name: 'Player',    price: '₹199', cadence: '/month',   desc: 'Get serious about prep.',        features: ['Everything in Spectator', '3 domains at once', 'Skill-identity tracking', 'College leaderboard'],  cta: 'Choose Player',    highlight: false },
+  { name: 'Performer', price: '₹299', cadence: '/month',   desc: 'The complete placement engine.', features: ['Everything in Player', 'AI voice mock interviews', '6-axis skill identity', 'Recruiter profile + Job-Ready badge'], cta: 'Choose Performer', highlight: true  },
+  { name: 'Dominator', price: '₹499', cadence: '/month',   desc: 'For elite placement goals.',     features: ['Everything in Performer', 'GitHub-verified commit sync', 'Company-specific prep (TCS, Infosys…)', 'Direct mentor escalation'], cta: 'Go Dominator', highlight: false },
 ];
 
 // The single day-1 task the interactive demo walks through.
@@ -497,7 +497,7 @@ export default function LandingPage() {
         {/* ═══ PRICING ═══ */}
         <section id="pricing" style={{ padding: 'clamp(56px, 9vw, 88px) clamp(20px, 5vw, 28px)', background: BG2, borderTop: '1px solid rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
           <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-            <SectionHeader eyebrow="Pricing" title="Start free. Upgrade when the streak is real." />
+            <SectionHeader eyebrow="Pricing" title="Start free. Upgrade when the streak is real." sub="Every tier runs on the same engine — live voice interviews, GitHub-verified commits, and a 6-axis skill identity. Not a prompt with a logo on it." />
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 18 }}>
               {PLANS.map((p, i) => (
                 <div key={p.name} data-reveal data-reveal-delay={(i % 4) + 1} style={{
