@@ -51,7 +51,7 @@ export class Session {
     this._port = 0;
   }
 
-  static async launch({ headful = false, base = 9333 } = {}) {
+  static async launch({ headful = false, base = 9333, extraArgs = [] } = {}) {
     const s = new Session();
     // Random-ish port to allow parallel/repeat runs without collisions.
     s._port = base + Math.floor(Math.random() * 400);
@@ -64,6 +64,9 @@ export class Session {
       `--user-data-dir=${profile}`,
       '--no-first-run', '--no-default-browser-check', '--hide-scrollbars',
       '--window-size=1200,900',
+      // Per-call extras — e.g. the fake-media flags that let getUserMedia +
+      // the Web Audio analyser path run without a physical mic.
+      ...extraArgs,
     ];
     s.chrome = spawn(findChrome(), args, { stdio: 'ignore' });
     await waitPort(s._port);
