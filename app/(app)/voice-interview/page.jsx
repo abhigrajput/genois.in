@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 // ── theme (app-interior palette) ───────────────────────────────────────────
 const CARD = '#070f1f';
 const INPUT = '#050d1a';
-const CYAN = '#00d9a3';
+const CYAN = '#00d9a3';   // GENOIS green — kept under its legacy name for the result/summary screens
 const PURPLE = '#ff6b4a';
 const GREEN = '#1D9E75';
 const RED = '#ff2d78';
@@ -14,6 +14,25 @@ const AMBER = '#EF9F27';
 const MUTED = '#5a7a9a';
 const LIGHT = '#e8e8ed';
 const SOFT = '#c8d8e8';
+
+// ── GENOIS green token + Slate context system ──────────────────────────────
+// The waveform, mic pad and live chat matrix run on ONE brand green (#00d9a3)
+// over a Slate-900 master surface with Slate-800 message containers, so the
+// live-interview view reads as a single, high-contrast product surface.
+const GENOIS = '#00d9a3';
+const GENOIS_SOFT = '#8affdf';
+const SLATE_900 = '#0f172a'; // master layout background for the chat matrix
+const SLATE_850 = '#131d33'; // candidate (user) message container
+const SLATE_800 = '#1e293b'; // interviewer (AI mentor) message container
+const SLATE_700 = '#334155'; // container / matrix borders
+const SLATE_600 = '#475569'; // muted accents
+const TXT_WHITE = '#f1f5f9'; // slate-100 — primary text on slate
+const TXT_SLATE = '#cbd5e1'; // slate-300 — secondary text on slate
+const TXT_MUTE = '#94a3b8';  // slate-400 — captions / meta
+
+// 4px-based spacing scale — used exclusively by the mic control pad + chat
+// matrix so vertical rhythm stays consistent from 360px up to desktop.
+const SP = { 1: 4, 2: 8, 3: 12, 4: 16, 5: 20, 6: 24, 7: 28, 8: 32 };
 
 const TOTAL_QUESTIONS = 10;
 const MIN_WORDS = 10;
@@ -127,6 +146,86 @@ const ESTIMATED_EVAL = {
   verdict: 'Good attempt — scoring was unavailable, so this is an estimate.',
 };
 
+// ── Dynamic audio waveform visualizer ──────────────────────────────────────
+// One component, four distinct states, ONE brand green:
+//   • idle       → a calm, near-flat baseline line
+//   • listening  → real-time bars driven by a live Web Audio AnalyserNode
+//   • processing → a self-animating "engine is working" loading wave
+//   • speaking   → high-contrast bars while the AI mentor reads aloud (TTS)
+// Only the `listening` state taps the real microphone stream; the rest are
+// pure CSS keyframe animations, so the visualizer never needs a live analyser
+// to look alive.
+const WAVE_BARS = 24;
+function AudioWaveform({ state, analyserRef }) {
+  const [levels, setLevels] = useState(() => new Array(WAVE_BARS).fill(0.08));
+  const rafRef = useRef(0);
+
+  useEffect(() => {
+    // Only the listening state reads live audio energy. Other states let the
+    // CSS keyframes below drive the bars, so we bail early and reset baseline.
+    if (state !== 'listening') {
+      setLevels(new Array(WAVE_BARS).fill(0.08));
+      return;
+    }
+    const analyser = analyserRef?.current;
+    if (!analyser) return;
+
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    const half = Math.ceil(WAVE_BARS / 2);
+    // Sample the lower ~70% of the spectrum (where speech energy lives) and
+    // mirror it around the centre for a symmetric, "spoken word" bloom.
+    const step = Math.max(1, Math.floor((data.length * 0.7) / half));
+
+    const loop = () => {
+      analyser.getByteFrequencyData(data);
+      const next = new Array(WAVE_BARS).fill(0.08);
+      for (let i = 0; i < half; i++) {
+        let sum = 0;
+        for (let j = 0; j < step; j++) sum += data[i * step + j] || 0;
+        const v = Math.min(1, (sum / step / 255) * 2.1); // normalize + gain
+        const lvl = Math.max(0.08, v);
+        next[half - 1 - i] = lvl;
+        if (half + i < WAVE_BARS) next[half + i] = lvl;
+      }
+      setLevels(next);
+      rafRef.current = requestAnimationFrame(loop);
+    };
+    rafRef.current = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [state, analyserRef]);
+
+  const bars = [];
+  for (let i = 0; i < WAVE_BARS; i++) {
+    let style;
+    if (state === 'listening') {
+      const h = Math.max(6, levels[i] * 100);
+      style = { height: `${h}%`, background: GENOIS, opacity: 0.45 + levels[i] * 0.55, transition: 'height .08s linear' };
+    } else if (state === 'speaking') {
+      style = {
+        height: '100%', transformOrigin: 'center', opacity: 1,
+        background: `linear-gradient(180deg, ${GENOIS_SOFT}, ${GENOIS})`,
+        animation: `vi-wave ${0.62 + (i % 4) * 0.09}s ${i * 0.035}s ease-in-out infinite`,
+      };
+    } else if (state === 'processing') {
+      style = {
+        height: '100%', transformOrigin: 'center', opacity: 0.85,
+        background: `linear-gradient(180deg, ${GENOIS}, ${SLATE_600})`,
+        animation: `vi-wave 1.15s ${i * 0.06}s ease-in-out infinite`,
+      };
+    } else {
+      // idle → a thin, flat baseline line
+      style = { height: '8%', background: `${GENOIS}66`, transition: 'height .3s ease' };
+    }
+    bars.push(<span key={i} style={{ flex: 1, minWidth: 2, maxWidth: 6, borderRadius: 4, alignSelf: 'center', ...style }} />);
+  }
+
+  return (
+    <div aria-hidden style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: SP[1], height: 64, width: '100%', padding: `0 ${SP[2]}px`, boxSizing: 'border-box' }}>
+      {bars}
+    </div>
+  );
+}
+
 function Bar({ label, value }) {
   const c = barColor(value);
   return (
@@ -192,10 +291,32 @@ export default function VoiceInterviewPage() {
   const finalTranscriptRef = useRef(''); // accumulates confirmed final text — dedup source of truth
   const shareRef = useRef(null);
 
+  // live audio (Web Audio) — kept alive ONLY while listening, to drive the
+  // waveform visualizer from the real mic stream. Torn down on every stop.
+  const audioContextRef = useRef(null);
+  const analyserRef = useRef(null);
+  const mediaStreamRef = useRef(null);
+
+  // AI-speaking + interrupt state. The ref shadows the state so the synchronous
+  // recognition.onresult handler can read "is the AI talking right now?"
+  // without a stale closure.
+  const [isAISpeaking, setIsAISpeaking] = useState(false);
+  const isAISpeakingRef = useRef(false);
+  const [interrupting, setInterrupting] = useState(false);
+  const interruptTimerRef = useRef(null);
+
   const currentQ = questions[qIndex];
   const currentEval = evaluations[qIndex];
   const liveText = (transcript + ' ' + interim).trim();
   const liveWords = wordsOf(liveText);
+
+  // Single source of truth for what the visualizer + pad label should show.
+  // Interrupt reads as "listening" because the student is, in fact, now speaking.
+  const waveState = interrupting ? 'listening'
+    : isAISpeaking ? 'speaking'
+    : (status === 'evaluating' || status === 'loadingQ') ? 'processing'
+    : isListening ? 'listening'
+    : 'idle';
 
   // detect speech support + browser
   useEffect(() => {
@@ -222,6 +343,9 @@ export default function VoiceInterviewPage() {
     return () => { window.speechSynthesis?.cancel(); };
   }, []);
 
+  // clear the interrupt-flash timer on unmount so it can't fire after teardown
+  useEffect(() => () => { clearTimeout(interruptTimerRef.current); }, []);
+
   // load profile (name + domain) once
   useEffect(() => {
     if (!ready || !token) return;
@@ -240,14 +364,37 @@ export default function VoiceInterviewPage() {
     return () => clearInterval(id);
   }, [status, qStartTime]);
 
+  // Tear down the live-audio graph (mic tracks + AudioContext) used by the
+  // waveform. Idempotent — safe to call on every stop / unmount.
+  const teardownAudio = useCallback(() => {
+    try { mediaStreamRef.current?.getTracks().forEach(t => t.stop()); } catch {}
+    try { audioContextRef.current?.close(); } catch {}
+    mediaStreamRef.current = null;
+    audioContextRef.current = null;
+    analyserRef.current = null;
+  }, []);
+
   const stopListening = useCallback(() => {
     try { recognitionRef.current && recognitionRef.current.stop(); } catch {}
+    teardownAudio();
     setIsListening(false);
     setInterim('');
-  }, []);
+  }, [teardownAudio]);
 
   // stop mic on unmount
   useEffect(() => () => stopListening(), [stopListening]);
+
+  // The student began talking over the AI mentor's audio — cut the TTS, flash
+  // an "Interrupting AI…" micro-state, and let the answer flow continue. The
+  // flag auto-clears so the pad settles back into the plain listening state.
+  const triggerInterrupt = useCallback(() => {
+    try { window.speechSynthesis?.cancel(); } catch {}
+    isAISpeakingRef.current = false;
+    setIsAISpeaking(false);
+    setInterrupting(true);
+    clearTimeout(interruptTimerRef.current);
+    interruptTimerRef.current = setTimeout(() => setInterrupting(false), 1400);
+  }, []);
 
   const startListening = async () => {
     if (typeof window === 'undefined') return;
@@ -257,11 +404,11 @@ export default function VoiceInterviewPage() {
     // question resets transcript to '' first, so this starts empty then.
     finalTranscriptRef.current = transcript ? transcript.trim() + ' ' : '';
 
-    // Step 1: Trigger browser permission popup explicitly
+    // Step 1: Trigger browser permission popup explicitly and KEEP the stream —
+    // the waveform visualizer taps it through a Web Audio AnalyserNode.
+    let stream;
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      // Permission granted — stop the stream immediately, we don't need it
-      stream.getTracks().forEach(t => t.stop());
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       setMicBlocked(false);
     } catch (err) {
       if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
@@ -277,10 +424,34 @@ export default function VoiceInterviewPage() {
       return;
     }
 
+    // Step 1b: Build the analyser graph off the live stream. If Web Audio is
+    // unavailable we still record — the visualizer just falls back to CSS.
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        const ctx = new AudioCtx();
+        if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+        const source = ctx.createMediaStreamSource(stream);
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.72;
+        source.connect(analyser);
+        audioContextRef.current = ctx;
+        analyserRef.current = analyser;
+      }
+      mediaStreamRef.current = stream;
+    } catch {
+      // Analyser setup failed — drop the stream so we don't leak the mic.
+      try { stream.getTracks().forEach(t => t.stop()); } catch {}
+      mediaStreamRef.current = null;
+      analyserRef.current = null;
+    }
+
     // Step 2: Now start SpeechRecognition
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
       toast.error('Voice not supported. Please use Google Chrome.');
+      teardownAudio();
       return;
     }
 
@@ -303,6 +474,13 @@ export default function VoiceInterviewPage() {
         if (event.results[i].isFinal) finalText += t + ' ';
         else interimText += t;
       }
+
+      // Interrupt handling: any speech detected while the AI mentor is still
+      // outputting audio instantly cuts the TTS and flags the interrupt state.
+      if (isAISpeakingRef.current && (finalText.trim() || interimText.trim())) {
+        triggerInterrupt();
+      }
+
       // Accumulate ONLY the newly-finalized text into a ref, then mirror it into
       // the COMMITTED transcript state. The volatile interim stream is written to
       // its own state below and can never overwrite committed history.
@@ -324,11 +502,13 @@ export default function VoiceInterviewPage() {
         };
         toast.error(msgs[e.error] || 'Mic error: ' + e.error);
       }
+      teardownAudio();
       setIsListening(false);
       setInterim('');
     };
 
     recognition.onend = () => {
+      teardownAudio();
       setIsListening(false);
       setInterim('');
     };
@@ -338,6 +518,7 @@ export default function VoiceInterviewPage() {
       recognition.start();
     } catch (e) {
       toast.error('Could not start recording: ' + e.message);
+      teardownAudio();
       setIsListening(false);
     }
   };
@@ -355,6 +536,13 @@ export default function VoiceInterviewPage() {
     utterance.rate = 0.9;  // slightly slower = clearer
     utterance.pitch = 1.0;
     utterance.volume = 1.0;
+
+    // Drive the "AI Speaking" visualizer state off the real TTS lifecycle so
+    // the waveform is high-contrast exactly while audio is playing, and the
+    // interrupt detector knows when the mentor is mid-sentence.
+    utterance.onstart = () => { isAISpeakingRef.current = true; setIsAISpeaking(true); };
+    utterance.onend = () => { isAISpeakingRef.current = false; setIsAISpeaking(false); };
+    utterance.onerror = () => { isAISpeakingRef.current = false; setIsAISpeaking(false); };
 
     // Prefer a male voice (interviewer feel)
     const voices = window.speechSynthesis.getVoices();
@@ -525,17 +713,21 @@ export default function VoiceInterviewPage() {
   }
 
   const keyframes = `
-    @keyframes vi-pulse { 0%{box-shadow:0 0 0 0 rgba(255,45,120,.55)} 70%{box-shadow:0 0 0 26px rgba(255,45,120,0)} 100%{box-shadow:0 0 0 0 rgba(255,45,120,0)} }
+    @keyframes vi-pulse-green { 0%{box-shadow:0 0 0 0 rgba(0,217,163,.5)} 70%{box-shadow:0 0 0 22px rgba(0,217,163,0)} 100%{box-shadow:0 0 0 0 rgba(0,217,163,0)} }
     @keyframes vi-spin { to { transform: rotate(360deg) } }
     @keyframes vi-blink { 0%,100%{opacity:1} 50%{opacity:.25} }
     @keyframes vi-shimmer { 0%{background-position:-450px 0} 100%{background-position:450px 0} }
-    @keyframes vi-wave { 0%,100%{transform:scaleY(.35)} 50%{transform:scaleY(1)} }
-    @keyframes vi-fade { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }`;
+    @keyframes vi-wave { 0%,100%{transform:scaleY(.28)} 50%{transform:scaleY(1)} }
+    @keyframes vi-fade { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+    @keyframes vi-pop { 0%{transform:scale(.85);opacity:0} 45%{transform:scale(1.06);opacity:1} 100%{transform:scale(1);opacity:1} }
+    .vi-mic-btn { transition: transform .12s ease, box-shadow .2s ease, background .2s ease; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+    .vi-mic-btn:active { transform: scale(.93); }
+    .vi-mic-btn:disabled { cursor: not-allowed; }`;
 
   const micBlockedBanner = micBlocked ? (
     <div style={{
       background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.4)',
-      borderRadius: 10, padding: '12px 18px', marginBottom: 16,
+      borderRadius: 12, padding: `${SP[3]}px ${SP[4]}px`, marginBottom: SP[4],
       color: '#ffb020', fontSize: 13, fontFamily: 'var(--font-body)', lineHeight: 1.6,
     }}>
       🎤 <strong>Microphone blocked.</strong> To fix: Click the <strong>🔒 lock icon</strong> in Chrome’s address bar → Find “Microphone” → Set to <strong>“Allow”</strong> → Refresh this page.
@@ -544,46 +736,48 @@ export default function VoiceInterviewPage() {
 
   if (!ready) return <div style={{ color: MUTED, padding: 60, textAlign: 'center' }}>Loading…</div>;
 
-  // ── question loader (lightweight, themed) ────────────────────────────────
+  // ── question loader — slate surface + a "processing" waveform ─────────────
   if (status === 'loadingQ') {
     return (
-      <div style={{ color: MUTED, padding: 80, textAlign: 'center', fontFamily: 'var(--font-body)' }}>
+      <div style={{ maxWidth: 720, margin: '0 auto', width: '100%', boxSizing: 'border-box', fontFamily: 'var(--font-body)', animation: 'vi-fade .3s ease' }}>
         <style dangerouslySetInnerHTML={{ __html: keyframes }} />
-        <div style={{ width: 46, height: 46, margin: '0 auto 18px', border: `3px solid rgba(0,217,163,.15)`, borderTopColor: CYAN, borderRadius: '50%', animation: 'vi-spin .8s linear infinite' }} />
-        <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, color: LIGHT }}>Interviewer is thinking…</div>
-        <div style={{ fontSize: 13, marginTop: 6 }}>Preparing question {Math.min(questions.length + 1, TOTAL_QUESTIONS)} of {TOTAL_QUESTIONS}</div>
+        <div style={{ background: SLATE_900, border: `1px solid ${SLATE_700}`, borderRadius: 16, padding: SP[6], minHeight: 260, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: SP[5], boxSizing: 'border-box' }}>
+          <AudioWaveform state="processing" analyserRef={analyserRef} />
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, color: TXT_WHITE }}>Interviewer is thinking…</div>
+            <div style={{ fontSize: 13, marginTop: SP[2], color: TXT_MUTE }}>Preparing question {Math.min(questions.length + 1, TOTAL_QUESTIONS)} of {TOTAL_QUESTIONS}</div>
+          </div>
+        </div>
       </div>
     );
   }
 
-  // ── evaluating: polished processing state that RESERVES the result card's
+  // ── evaluating: a "processing" waveform that RESERVES the result card's
   //    footprint (min-height) so the real card can't jump the page on arrival.
   if (status === 'evaluating') {
     return (
-      <div style={{ maxWidth: 720, margin: '0 auto', fontFamily: 'var(--font-body)', animation: 'vi-fade .3s ease' }}>
+      <div style={{ maxWidth: 720, margin: '0 auto', width: '100%', boxSizing: 'border-box', fontFamily: 'var(--font-body)', animation: 'vi-fade .3s ease' }}>
         <style dangerouslySetInnerHTML={{ __html: keyframes }} />
-        <div style={{ background: CARD, border: `1px solid ${CYAN}22`, borderRadius: 16, padding: 24, minHeight: 300, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 22 }}>
+        <div style={{ background: SLATE_900, border: `1px solid ${SLATE_700}`, borderRadius: 16, padding: SP[6], minHeight: 300, display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: SP[4], marginBottom: SP[6] }}>
             {/* live audio-style wave = "engine is working", not "app crashed" */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, height: 34, width: 46 }}>
-              {[0, 1, 2, 3, 4].map(i => (
-                <span key={i} style={{ width: 5, height: '100%', borderRadius: 3, background: `linear-gradient(${CYAN},${PURPLE})`, transformOrigin: 'center', animation: `vi-wave 1s ${i * 0.13}s ease-in-out infinite` }} />
-              ))}
+            <div style={{ width: 120, flexShrink: 0 }}>
+              <AudioWaveform state="processing" analyserRef={analyserRef} />
             </div>
             <div>
-              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, color: LIGHT }}>Interviewer is evaluating your answer…</div>
-              <div style={{ fontSize: 12.5, color: MUTED, marginTop: 3 }}>Scoring accuracy, clarity &amp; confidence. Long answers can take a few seconds.</div>
+              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, color: TXT_WHITE }}>Interviewer is evaluating your answer…</div>
+              <div style={{ fontSize: 12.5, color: TXT_MUTE, marginTop: SP[1] }}>Scoring accuracy, clarity &amp; confidence. Long answers can take a few seconds.</div>
             </div>
           </div>
           {/* skeleton of the three metric bars */}
           {[0, 1, 2].map(i => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: SP[3], marginBottom: SP[4] }}>
               <Shimmer w={130} h={12} />
               <Shimmer h={8} r={4} style={{ flex: 1 }} />
               <Shimmer w={40} h={14} />
             </div>
           ))}
-          <div style={{ marginTop: 8, display: 'grid', gap: 8 }}>
+          <div style={{ marginTop: SP[2], display: 'grid', gap: SP[2] }}>
             <Shimmer h={12} w="90%" />
             <Shimmer h={12} w="70%" />
           </div>
@@ -595,17 +789,17 @@ export default function VoiceInterviewPage() {
   // ── evaluation failed / timed out: never a dead spinner — always a way out ─
   if (status === 'evalFailed' && evalError) {
     return (
-      <div style={{ maxWidth: 640, margin: '0 auto', fontFamily: 'var(--font-body)', animation: 'vi-fade .3s ease' }}>
-        <div style={{ background: CARD, border: `1px solid ${AMBER}44`, borderRadius: 16, padding: 26, minHeight: 300, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <div style={{ fontSize: 34, marginBottom: 12 }}>{evalError.timedOut ? '⏳' : '⚠️'}</div>
-          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 18, color: LIGHT, marginBottom: 8 }}>
+      <div style={{ maxWidth: 640, margin: '0 auto', width: '100%', boxSizing: 'border-box', fontFamily: 'var(--font-body)', animation: 'vi-fade .3s ease' }}>
+        <div style={{ background: SLATE_900, border: `1px solid ${AMBER}44`, borderRadius: 16, padding: SP[7], minHeight: 300, display: 'flex', flexDirection: 'column', justifyContent: 'center', boxSizing: 'border-box' }}>
+          <div style={{ fontSize: 34, marginBottom: SP[3] }}>{evalError.timedOut ? '⏳' : '⚠️'}</div>
+          <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 18, color: TXT_WHITE, marginBottom: SP[2] }}>
             {evalError.timedOut ? 'Still scoring…' : 'Scoring hiccuped'}
           </div>
-          <div style={{ fontSize: 14, color: SOFT, lineHeight: 1.6, marginBottom: 6 }}>{evalError.message}</div>
-          <div style={{ fontSize: 12.5, color: MUTED, lineHeight: 1.6, marginBottom: 22 }}>Your answer is safe — nothing was lost. Retry the evaluation, or continue with an estimated score.</div>
-          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-            <button onClick={() => pendingAnswer && runEvaluation(pendingAnswer)} style={{ flex: 1, minWidth: 160, padding: 14, borderRadius: 12, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${CYAN},${PURPLE})`, color: '#020812', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>↻ Retry evaluation</button>
-            <button onClick={acceptEstimated} style={{ flex: 1, minWidth: 160, padding: 14, borderRadius: 12, border: '1px solid rgba(255,255,255,0.14)', cursor: 'pointer', background: 'transparent', color: SOFT, fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14 }}>Use estimated score</button>
+          <div style={{ fontSize: 14, color: TXT_SLATE, lineHeight: 1.6, marginBottom: SP[2] }}>{evalError.message}</div>
+          <div style={{ fontSize: 12.5, color: TXT_MUTE, lineHeight: 1.6, marginBottom: SP[6] }}>Your answer is safe — nothing was lost. Retry the evaluation, or continue with an estimated score.</div>
+          <div style={{ display: 'flex', gap: SP[3], flexWrap: 'wrap' }}>
+            <button onClick={() => pendingAnswer && runEvaluation(pendingAnswer)} style={{ flex: 1, minWidth: 160, padding: SP[4], borderRadius: 12, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${GENOIS},${GENOIS_SOFT})`, color: '#04120d', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>↻ Retry evaluation</button>
+            <button onClick={acceptEstimated} style={{ flex: 1, minWidth: 160, padding: SP[4], borderRadius: 12, border: `1px solid ${SLATE_600}`, cursor: 'pointer', background: 'transparent', color: TXT_SLATE, fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14 }}>Use estimated score</button>
           </div>
         </div>
       </div>
@@ -615,109 +809,149 @@ export default function VoiceInterviewPage() {
   // ── question screen ────────────────────────────────────────────────────
   if (status === 'question' && currentQ) {
     const enough = liveWords >= MIN_WORDS;
+
+    // Mic-pad state copy — one primary line (reserved height so it never nudges
+    // layout) plus a secondary hint.
+    const padLabel = interrupting ? 'Interrupting AI…'
+      : isAISpeaking ? 'Interviewer is speaking…'
+      : isListening ? 'Recording your answer…'
+      : (transcript ? 'Tap the mic to add more' : 'Tap the mic to answer aloud');
+    const padHint = interrupting ? 'You took the floor — keep going.'
+      : isListening ? 'Tap again to stop'
+      : isAISpeaking ? 'Tap the mic to answer over the interviewer'
+      : 'Speak clearly — we transcribe in real time';
+    const padLabelColor = interrupting ? AMBER : isListening ? GENOIS : isAISpeaking ? GENOIS_SOFT : TXT_MUTE;
+
     return (
-      <div style={{ maxWidth: 760, margin: '0 auto', fontFamily: 'var(--font-body)', paddingBottom: 'calc(120px + env(safe-area-inset-bottom))' }}>
+      <div style={{ maxWidth: 760, margin: '0 auto', width: '100%', boxSizing: 'border-box', fontFamily: 'var(--font-body)', paddingBottom: 'calc(96px + env(safe-area-inset-bottom))' }}>
         <style dangerouslySetInnerHTML={{ __html: keyframes }} />
 
-        {/* interviewer bar */}
-        <div style={{ background: `linear-gradient(135deg,${PURPLE}14,transparent)`, border: `1px solid ${PURPLE}33`, borderRadius: 14, padding: '12px 18px', marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 40, height: 40, borderRadius: '50%', background: `linear-gradient(135deg,${CYAN},${PURPLE})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🤖</div>
+        {/* interviewer header bar (Slate-800 over the page) */}
+        <div style={{ background: SLATE_800, border: `1px solid ${SLATE_700}`, borderRadius: 14, padding: `${SP[3]}px ${SP[4]}px`, marginBottom: SP[4], display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: SP[3], flexWrap: 'wrap', boxSizing: 'border-box' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: SP[3] }}>
+            <div style={{ width: 40, height: 40, borderRadius: '50%', background: `linear-gradient(135deg,${GENOIS},${GENOIS_SOFT})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🤖</div>
             <div>
-              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 15, color: LIGHT }}>AI Interviewer · {company}</div>
-              <div style={{ fontSize: 11, color: MUTED, fontFamily: 'var(--font-mono)' }}>{MODES.find(m => m.key === mode)?.label} mode</div>
+              <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 15, color: TXT_WHITE }}>AI Interviewer · {company}</div>
+              <div style={{ fontSize: 11, color: TXT_MUTE, fontFamily: 'var(--font-mono)' }}>{MODES.find(m => m.key === mode)?.label} mode</div>
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 16, color: CYAN }}>Q{qIndex + 1} / {TOTAL_QUESTIONS}</div>
-            <div style={{ fontSize: 11, color: MUTED, fontFamily: 'var(--font-mono)' }}>⏱ {Math.floor(elapsed / 60)}:{String(elapsed % 60).padStart(2, '0')}</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 16, color: GENOIS }}>Q{qIndex + 1} / {TOTAL_QUESTIONS}</div>
+            <div style={{ fontSize: 11, color: TXT_MUTE, fontFamily: 'var(--font-mono)' }}>⏱ {Math.floor(elapsed / 60)}:{String(elapsed % 60).padStart(2, '0')}</div>
           </div>
         </div>
 
         {micBlockedBanner}
 
         {/* progress */}
-        <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, marginBottom: 22, overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${((qIndex + 1) / TOTAL_QUESTIONS) * 100}%`, background: `linear-gradient(90deg,${CYAN},${PURPLE})`, borderRadius: 3, transition: 'width .4s' }} />
+        <div style={{ height: 5, background: SLATE_800, borderRadius: 3, marginBottom: SP[5], overflow: 'hidden' }}>
+          <div style={{ height: '100%', width: `${((qIndex + 1) / TOTAL_QUESTIONS) * 100}%`, background: `linear-gradient(90deg,${GENOIS},${GENOIS_SOFT})`, borderRadius: 3, transition: 'width .4s' }} />
         </div>
 
-        {/* ── interviewer bubble (the prompt) ─────────────────────────────── */}
-        <div style={{ position: 'relative', background: CARD, border: `1px solid ${CYAN}1a`, borderLeft: `3px solid ${CYAN}`, borderRadius: 16, padding: '20px 22px', marginBottom: 18 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: CYAN, letterSpacing: 1.5, marginBottom: 10, textTransform: 'uppercase' }}>🤖 Interviewer asks</div>
-          <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-            <span style={{ fontSize: 9, padding: '3px 9px', borderRadius: 10, background: `${PURPLE}1a`, color: PURPLE, fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>{currentQ.type}</span>
-            <span style={{ fontSize: 9, padding: '3px 9px', borderRadius: 10, background: `${AMBER}1a`, color: AMBER, fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>{currentQ.difficulty}</span>
-          </div>
-          <div style={{ fontSize: 'clamp(17px,3.6vw,23px)', color: LIGHT, lineHeight: 1.55, fontWeight: 500, fontFamily: 'var(--font-heading)' }}>{currentQ.question}</div>
-          <button
-            onClick={() => speakQuestion(currentQ?.question)}
-            style={{
-              background: 'transparent', border: '1px solid rgba(0,217,163,0.3)',
-              borderRadius: 8, padding: '6px 14px', color: '#2ee6b0',
-              fontFamily: 'var(--font-body)', fontSize: 12, cursor: 'pointer',
-              marginTop: 12, display: 'flex', alignItems: 'center', gap: 6,
-            }}
-          >
-            🔊 Replay Question
-          </button>
-        </div>
+        {/* ── chat matrix: Slate-800 message containers on a Slate-900 master ── */}
+        <div style={{ background: SLATE_900, border: `1px solid ${SLATE_700}`, borderRadius: 16, padding: SP[4], boxSizing: 'border-box' }}>
 
-        {/* mic / transcript */}
-        {speechSupported ? (
-          <div style={{ textAlign: 'center', marginBottom: 16 }}>
-            {/* fixed 132px footprint in BOTH states — only colour/animation change */}
-            <button
-              onClick={() => (isListening ? stopListening() : startListening())}
-              style={{
-                width: 132, height: 132, borderRadius: '50%', cursor: 'pointer', border: 'none',
-                background: isListening ? RED : `linear-gradient(135deg,${CARD},${INPUT})`,
-                boxShadow: isListening ? 'none' : `inset 0 0 0 2px ${CYAN}40`,
-                animation: isListening ? 'vi-pulse 1.4s infinite' : 'none',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6,
-                color: isListening ? '#fff' : CYAN, transition: 'background .2s',
-              }}>
-              <span style={{ fontSize: 40 }}>🎤</span>
-            </button>
-            {/* reserve one line so the label toggling can't nudge layout */}
-            <div style={{ marginTop: 12, minHeight: 20, fontFamily: 'var(--font-mono)', fontSize: 13, color: isListening ? RED : MUTED }}>
-              {isListening ? (<span><span style={{ animation: 'vi-blink 1s infinite' }}>🔴</span> Recording… tap to stop</span>) : (transcript ? 'Tap to add more' : 'Tap to answer out loud')}
+          {/* interviewer (AI mentor) message — green left-accent, green label */}
+          <div style={{ position: 'relative', background: SLATE_800, border: `1px solid ${SLATE_700}`, borderLeft: `3px solid ${GENOIS}`, borderRadius: 12, padding: SP[5], marginBottom: SP[4], boxSizing: 'border-box' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: SP[2], marginBottom: SP[3], flexWrap: 'wrap' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: GENOIS, letterSpacing: 1.5, textTransform: 'uppercase' }}>🤖 Interviewer asks</div>
+              <div style={{ display: 'flex', gap: SP[2] }}>
+                <span style={{ fontSize: 9, padding: '3px 9px', borderRadius: 10, background: `${GENOIS}1a`, color: GENOIS, fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>{currentQ.type}</span>
+                <span style={{ fontSize: 9, padding: '3px 9px', borderRadius: 10, background: `${AMBER}1a`, color: AMBER, fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>{currentQ.difficulty}</span>
+              </div>
             </div>
+            <div style={{ fontSize: 'clamp(17px,3.6vw,23px)', color: TXT_WHITE, lineHeight: 1.55, fontWeight: 500, fontFamily: 'var(--font-heading)' }}>{currentQ.question}</div>
+            <button
+              onClick={() => speakQuestion(currentQ?.question)}
+              style={{
+                background: 'transparent', border: `1px solid ${GENOIS}4d`,
+                borderRadius: 8, padding: `${SP[2]}px ${SP[4]}px`, color: GENOIS_SOFT,
+                fontFamily: 'var(--font-body)', fontSize: 12, cursor: 'pointer',
+                marginTop: SP[3], display: 'flex', alignItems: 'center', gap: SP[2],
+              }}
+            >
+              🔊 Replay Question
+            </button>
           </div>
-        ) : (
-          <div style={{ marginBottom: 16 }}>
-            <div style={{ fontSize: 12, color: AMBER, marginBottom: 8, fontFamily: 'var(--font-mono)' }}>⚠️ Voice input isn’t supported here — type your answer instead (Chrome recommended).</div>
-            <textarea value={transcript} onChange={e => { setTranscript(e.target.value); finalTranscriptRef.current = e.target.value ? e.target.value.trim() + ' ' : ''; }} rows={6} placeholder="Type your answer…" style={{ width: '100%', padding: 14, borderRadius: 10, border: `1px solid ${CYAN}1f`, background: INPUT, color: LIGHT, fontSize: 14, fontFamily: 'var(--font-body)', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.6 }} />
-          </div>
-        )}
 
-        {/* ── candidate bubble (the answer) — ALWAYS mounted with a fixed height
-             band so streaming STT text can't make the page jump, and the
-             committed transcript stays visibly distinct from live interim. ── */}
-        <div style={{ background: `linear-gradient(135deg,${GREEN}0e,transparent)`, border: `1px solid ${GREEN}2e`, borderRight: `3px solid ${GREEN}`, borderRadius: 14, padding: 16, marginBottom: 14, minHeight: 96, maxHeight: 240, overflowY: 'auto' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: GREEN, letterSpacing: 1.5, textTransform: 'uppercase' }}>🗣 Your answer</span>
-            {isListening && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: RED }}><span style={{ animation: 'vi-blink 1s infinite' }}>●</span> live</span>}
+          {/* candidate (user transcription) message — distinct: darker slate,
+              slate-600 border, WHITE typography, right-side accent. Always
+              mounted with a fixed min-height band so streaming STT can't jump
+              the page, and interim stays visibly separate from committed. */}
+          <div style={{ background: SLATE_850, border: `1px solid ${SLATE_600}`, borderRight: `3px solid ${TXT_SLATE}`, borderRadius: 12, padding: SP[4], marginBottom: SP[4], minHeight: 96, maxHeight: 240, overflowY: 'auto', boxSizing: 'border-box' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: SP[2] }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: TXT_SLATE, letterSpacing: 1.5, textTransform: 'uppercase' }}>🗣 You — {userName || 'candidate'}</span>
+              {isListening && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: GENOIS }}><span style={{ animation: 'vi-blink 1s infinite' }}>●</span> live</span>}
+            </div>
+            {liveText ? (
+              <div style={{ fontSize: 14, lineHeight: 1.7 }}>
+                <span style={{ color: TXT_WHITE }}>{transcript}</span>
+                {interim && <span style={{ color: TXT_MUTE, fontStyle: 'italic' }}> {interim}</span>}
+              </div>
+            ) : (
+              <div style={{ fontSize: 13.5, color: TXT_MUTE, fontStyle: 'italic', lineHeight: 1.6 }}>
+                {isListening ? 'Listening… start speaking.' : 'Your spoken answer will appear here as you talk.'}
+              </div>
+            )}
           </div>
-          {liveText ? (
-            <div style={{ fontSize: 14, lineHeight: 1.7 }}>
-              <span style={{ color: SOFT }}>{transcript}</span>
-              {interim && <span style={{ color: MUTED, fontStyle: 'italic' }}> {interim}</span>}
+
+          {/* ── mobile mic control pad ─────────────────────────────────────
+              Waveform visualizer + fixed-size push-to-talk button. Everything
+              here is on the 4px spacing scale, scales cleanly to 360px, and
+              the button NEVER changes size between states (only colour). ── */}
+          {speechSupported ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: SP[3], paddingTop: SP[2] }}>
+              <AudioWaveform state={waveState} analyserRef={analyserRef} />
+
+              {/* interrupt micro-animation — pops in only while interrupting */}
+              <div style={{ minHeight: 22, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {interrupting ? (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: SP[2], padding: `${SP[1]}px ${SP[3]}px`, borderRadius: 20, background: `${AMBER}1f`, border: `1px solid ${AMBER}66`, color: AMBER, fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: 0.5, animation: 'vi-pop .3s ease' }}>
+                    <span style={{ animation: 'vi-blink .7s infinite' }}>⚡</span> Interrupting AI…
+                  </span>
+                ) : (
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: padLabelColor, transition: 'color .2s' }}>
+                    {isListening && <span style={{ animation: 'vi-blink 1s infinite' }}>🔴 </span>}{padLabel}
+                  </span>
+                )}
+              </div>
+
+              {/* fixed 128px footprint in BOTH states — only colour/glow change */}
+              <button
+                className="vi-mic-btn"
+                onClick={() => (isListening ? stopListening() : startListening())}
+                aria-label={isListening ? 'Stop recording' : 'Start recording'}
+                style={{
+                  width: 128, height: 128, borderRadius: '50%', cursor: 'pointer', border: 'none',
+                  background: isListening
+                    ? `radial-gradient(circle at 50% 40%, ${GENOIS}, #05271e)`
+                    : `linear-gradient(135deg,${SLATE_800},${SLATE_900})`,
+                  boxShadow: isListening ? `0 0 0 2px ${GENOIS}` : `inset 0 0 0 2px ${GENOIS}55`,
+                  animation: isListening ? 'vi-pulse-green 1.4s infinite' : 'none',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: SP[1],
+                  color: isListening ? '#04120d' : GENOIS,
+                }}>
+                <span style={{ fontSize: 40 }}>🎤</span>
+              </button>
+
+              <div style={{ minHeight: 18, fontFamily: 'var(--font-body)', fontSize: 12, color: TXT_MUTE, textAlign: 'center' }}>{padHint}</div>
             </div>
           ) : (
-            <div style={{ fontSize: 13.5, color: MUTED, fontStyle: 'italic', lineHeight: 1.6 }}>
-              {isListening ? 'Listening… start speaking.' : 'Your spoken answer will appear here as you talk.'}
+            <div>
+              <div style={{ fontSize: 12, color: AMBER, marginBottom: SP[2], fontFamily: 'var(--font-mono)' }}>⚠️ Voice input isn’t supported here — type your answer instead (Chrome recommended).</div>
+              <textarea value={transcript} onChange={e => { setTranscript(e.target.value); finalTranscriptRef.current = e.target.value ? e.target.value.trim() + ' ' : ''; }} rows={6} placeholder="Type your answer…" style={{ width: '100%', padding: SP[4], borderRadius: 10, border: `1px solid ${SLATE_600}`, background: SLATE_850, color: TXT_WHITE, fontSize: 14, fontFamily: 'var(--font-body)', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.6 }} />
             </div>
           )}
-        </div>
 
-        {/* word count + submit */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-          <div style={{ fontSize: 13, fontWeight: 600, fontFamily: 'var(--font-mono)', color: liveWords < MIN_WORDS ? RED : liveWords <= 20 ? AMBER : GREEN }}>
-            {liveWords} words {enough ? '✓' : `· need ${MIN_WORDS}+`}
-          </div>
-          <div style={{ display: 'flex', gap: 10 }}>
-            {(transcript || interim) && <button onClick={() => { finalTranscriptRef.current = ''; setTranscript(''); setInterim(''); }} style={{ padding: '11px 16px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: MUTED, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13 }}>Clear</button>}
-            <button onClick={submitAnswer} disabled={!enough} style={{ padding: '11px 22px', borderRadius: 10, border: 'none', cursor: enough ? 'pointer' : 'not-allowed', background: enough ? `linear-gradient(135deg,${GREEN},${CYAN})` : 'rgba(255,255,255,0.06)', color: enough ? '#020812' : MUTED, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>Submit Answer →</button>
+          {/* word count + submit */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: SP[3], flexWrap: 'wrap', marginTop: SP[4] }}>
+            <div style={{ fontSize: 13, fontWeight: 600, fontFamily: 'var(--font-mono)', color: liveWords < MIN_WORDS ? RED : liveWords <= 20 ? AMBER : GENOIS }}>
+              {liveWords} words {enough ? '✓' : `· need ${MIN_WORDS}+`}
+            </div>
+            <div style={{ display: 'flex', gap: SP[3] }}>
+              {(transcript || interim) && <button onClick={() => { finalTranscriptRef.current = ''; setTranscript(''); setInterim(''); }} style={{ padding: `${SP[3]}px ${SP[4]}px`, borderRadius: 10, border: `1px solid ${SLATE_600}`, background: 'transparent', color: TXT_MUTE, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13 }}>Clear</button>}
+              <button onClick={submitAnswer} disabled={!enough} style={{ padding: `${SP[3]}px ${SP[5]}px`, borderRadius: 10, border: 'none', cursor: enough ? 'pointer' : 'not-allowed', background: enough ? `linear-gradient(135deg,${GENOIS},${GENOIS_SOFT})` : SLATE_800, color: enough ? '#04120d' : TXT_MUTE, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>Submit Answer →</button>
+            </div>
           </div>
         </div>
       </div>
@@ -729,7 +963,8 @@ export default function VoiceInterviewPage() {
     const ev = currentEval;
     const isLast = qIndex + 1 >= TOTAL_QUESTIONS;
     return (
-      <div style={{ maxWidth: 720, margin: '0 auto', fontFamily: 'var(--font-body)', animation: 'vi-fade .3s ease' }}>
+      <div style={{ maxWidth: 720, margin: '0 auto', width: '100%', boxSizing: 'border-box', fontFamily: 'var(--font-body)', animation: 'vi-fade .3s ease' }}>
+        <style dangerouslySetInnerHTML={{ __html: keyframes }} />
         <div style={{ background: CARD, border: `1px solid ${gradeColor(ev.grade)}33`, borderRadius: 16, padding: 24, marginBottom: 16, minHeight: 300 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, flexWrap: 'wrap', gap: 10 }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: MUTED, letterSpacing: 1.5 }}>QUESTION {qIndex + 1} / {TOTAL_QUESTIONS} · {currentQ?.type?.toUpperCase()}</div>
@@ -767,7 +1002,7 @@ export default function VoiceInterviewPage() {
           </div>
         )}
 
-        <button onClick={continueNext} style={{ width: '100%', padding: 15, borderRadius: 12, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${CYAN},${PURPLE})`, color: '#020812', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15 }}>
+        <button onClick={continueNext} style={{ width: '100%', padding: 15, borderRadius: 12, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${GENOIS},${GENOIS_SOFT})`, color: '#04120d', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15 }}>
           {isLast ? 'See Final Results 🎉' : `Continue to Q${qIndex + 2} →`}
         </button>
       </div>
@@ -777,7 +1012,7 @@ export default function VoiceInterviewPage() {
   // ── final summary ──────────────────────────────────────────────────────
   if (status === 'complete' && summary) {
     return (
-      <div style={{ maxWidth: 760, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
+      <div style={{ maxWidth: 760, margin: '0 auto', width: '100%', boxSizing: 'border-box', fontFamily: 'var(--font-body)' }}>
         {/* shareable card */}
         <div ref={shareRef} style={{ background: 'linear-gradient(160deg,#0a1428,#020812)', border: `1px solid ${CYAN}26`, borderRadius: 18, padding: 28, marginBottom: 18, position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg,${CYAN},${PURPLE},${RED})` }} />
@@ -830,20 +1065,22 @@ export default function VoiceInterviewPage() {
           <button onClick={retake} style={{ flex: 1, minWidth: 150, padding: 13, borderRadius: 12, border: 'none', background: `linear-gradient(135deg,${GREEN},${CYAN})`, color: '#020812', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>Retake Interview</button>
         </div>
 
-        {/* full session transcript — every Q + score persists here */}
+        {/* full session transcript — every Q + score persists here. Slate-800
+            containers over the Slate-900 matrix; the candidate's own words get
+            a distinct green-accented sub-block. */}
         {showDetails && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ background: SLATE_900, border: `1px solid ${SLATE_700}`, borderRadius: 14, padding: SP[3], display: 'flex', flexDirection: 'column', gap: SP[3], boxSizing: 'border-box' }}>
             {questions.map((q, i) => {
               const e = evaluations[i];
               if (!e) return null;
               return (
-                <div key={i} style={{ background: CARD, border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12, padding: 16 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, marginBottom: 8 }}>
-                    <div style={{ fontSize: 13, color: LIGHT, fontWeight: 600, lineHeight: 1.5 }}>Q{i + 1}. {q.question}</div>
+                <div key={i} style={{ background: SLATE_800, border: `1px solid ${SLATE_700}`, borderRadius: 12, padding: SP[4], boxSizing: 'border-box' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: SP[3], marginBottom: SP[2] }}>
+                    <div style={{ fontSize: 13, color: TXT_WHITE, fontWeight: 600, lineHeight: 1.5 }}>Q{i + 1}. {q.question}</div>
                     <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 16, color: gradeColor(e.grade), flexShrink: 0 }}>{e.overallScore}</div>
                   </div>
-                  {answers[i]?.transcript && <div style={{ fontSize: 12.5, color: SOFT, lineHeight: 1.6, marginBottom: 6, paddingLeft: 10, borderLeft: `2px solid ${GREEN}55` }}>🗣 {answers[i].transcript}</div>}
-                  {e.verdict && <div style={{ fontSize: 12, color: MUTED, lineHeight: 1.6 }}>{e.verdict}</div>}
+                  {answers[i]?.transcript && <div style={{ fontSize: 12.5, color: TXT_WHITE, lineHeight: 1.6, marginBottom: SP[2], padding: SP[2], background: SLATE_850, borderLeft: `2px solid ${GENOIS}`, borderRadius: 6 }}>🗣 {answers[i].transcript}</div>}
+                  {e.verdict && <div style={{ fontSize: 12, color: TXT_MUTE, lineHeight: 1.6 }}>{e.verdict}</div>}
                 </div>
               );
             })}
@@ -855,7 +1092,7 @@ export default function VoiceInterviewPage() {
 
   // ── selection screen (idle) ──────────────────────────────────────────────
   return (
-    <div style={{ maxWidth: 760, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
+    <div style={{ maxWidth: 760, margin: '0 auto', width: '100%', boxSizing: 'border-box', fontFamily: 'var(--font-body)' }}>
       <div style={{ marginBottom: 22 }}>
         <h1 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 27, color: LIGHT, margin: '0 0 6px' }}>🎤 Voice Mock Interview</h1>
         <p style={{ color: MUTED, fontSize: 13.5, lineHeight: 1.6, margin: 0 }}>Practice <b style={{ color: SOFT }}>speaking</b> your answers out loud — not typing. The AI plays a tough interviewer and scores you on accuracy, clarity, and confidence. 10 questions.</p>
@@ -901,7 +1138,7 @@ export default function VoiceInterviewPage() {
         </div>
       </div>
 
-      <button onClick={startInterview} style={{ width: '100%', padding: 16, borderRadius: 12, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${CYAN},${PURPLE})`, color: '#020812', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16 }}>
+      <button onClick={startInterview} style={{ width: '100%', padding: 16, borderRadius: 12, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${GENOIS},${GENOIS_SOFT})`, color: '#04120d', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16 }}>
         Start {company || ''} Voice Interview 🎤
       </button>
     </div>
