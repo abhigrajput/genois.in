@@ -4,16 +4,16 @@ import { useRouter } from 'next/navigation';
 import { trackSignup } from '@/lib/analytics';
 
 const DOMAINS = [
-  { id: 'fullstack', label: 'Full Stack', icon: '⬡', color: '#7F77DD', desc: 'HTML CSS React Node.js' },
-  { id: 'dsa', label: 'DSA', icon: '◈', color: '#1D9E75', desc: 'Data Structures Algorithms' },
-  { id: 'aiml', label: 'AI / ML', icon: '◉', color: '#D85A30', desc: 'LLMs Python Scikit-learn' },
-  { id: 'datascience', label: 'Data Science', icon: '◇', color: '#378ADD', desc: 'Pandas Visualization SQL' },
-  { id: 'cybersecurity', label: 'Cybersecurity', icon: '◆', color: '#D4537E', desc: 'Networks Pentesting Tools' },
-  { id: 'devops', label: 'DevOps', icon: '○', color: '#639922', desc: 'Docker Kubernetes CI/CD' },
-  { id: 'android', label: 'Mobile Dev', icon: '▣', color: '#E24B4A', desc: 'React Native Expo Flutter' },
-  { id: 'systemdesign', label: 'System Design', icon: '▦', color: '#534AB7', desc: 'Architecture Scalability' },
-  { id: 'blockchain', label: 'Blockchain', icon: '◎', color: '#BA7517', desc: 'Web3 Solidity Smart Contracts' },
-  { id: 'gamedev', label: 'Game Dev', icon: '▷', color: '#888780', desc: 'Unity C# Game Design' },
+  { id: 'fullstack', label: 'Full Stack', icon: '⬡', color: '#00d9a3', desc: 'HTML CSS React Node.js' },
+  { id: 'dsa', label: 'DSA', icon: '◈', color: '#86efac', desc: 'Data Structures Algorithms' },
+  { id: 'aiml', label: 'AI / ML', icon: '◉', color: '#10b981', desc: 'LLMs Python Scikit-learn' },
+  { id: 'datascience', label: 'Data Science', icon: '◇', color: '#5eead4', desc: 'Pandas Visualization SQL' },
+  { id: 'cybersecurity', label: 'Cybersecurity', icon: '◆', color: '#22c55e', desc: 'Networks Pentesting Tools' },
+  { id: 'devops', label: 'DevOps', icon: '○', color: '#6ee7b7', desc: 'Docker Kubernetes CI/CD' },
+  { id: 'android', label: 'Mobile Dev', icon: '▣', color: '#14b8a6', desc: 'React Native Expo Flutter' },
+  { id: 'systemdesign', label: 'System Design', icon: '▦', color: '#4ade80', desc: 'Architecture Scalability' },
+  { id: 'blockchain', label: 'Blockchain', icon: '◎', color: '#2dd4bf', desc: 'Web3 Solidity Smart Contracts' },
+  { id: 'gamedev', label: 'Game Dev', icon: '▷', color: '#34d399', desc: 'Unity C# Game Design' },
 ];
 
 const COMPANIES = [
