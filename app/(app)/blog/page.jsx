@@ -28,11 +28,11 @@ const DIFFICULTY_OPTIONS = [
 ];
 
 const TOPIC_COLORS = {
-  arrays: '#00d9a3', strings: '#2ee6b0', linkedlist: '#1d9e75',
-  trees: '#34d399', graphs: '#10b981', dp: '#14b8a6',
-  greedy: '#6ee7b7', sorting: '#00b389', searching: '#059669',
-  backtracking: '#5eead4', heap: '#4ade80', trie: '#22c55e',
-  'system-design': '#0d9488', other: '#3f7d6e'
+  arrays: '#90dfab', strings: '#1aa275', linkedlist: '#9eedc8',
+  trees: '#14b85b', graphs: '#bcebc7', dp: '#1fbd83',
+  greedy: '#86e9c8', sorting: '#13aa3b', searching: '#a6e5c1',
+  backtracking: '#1daf4e', heap: '#b6f2dc', trie: '#16c573',
+  'system-design': '#90dfa5', other: '#1aa23a'
 };
 
 const DIFFICULTY_COLORS = {
