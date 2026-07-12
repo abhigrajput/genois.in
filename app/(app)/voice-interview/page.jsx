@@ -156,8 +156,11 @@ const ESTIMATED_EVAL = {
 // pure CSS keyframe animations, so the visualizer never needs a live analyser
 // to look alive.
 const WAVE_BARS = 24;
-function AudioWaveform({ state, analyserRef }) {
+function AudioWaveform({ state, analyserRef, debug = false }) {
   const [levels, setLevels] = useState(() => new Array(WAVE_BARS).fill(0.08));
+  // Raw analyser peak (0–255) for the ?debug=audio readout. null = not sampling,
+  // -1 = listening but no analyser node attached (the failure we want to catch).
+  const [bytePeak, setBytePeak] = useState(null);
   const rafRef = useRef(0);
 
   useEffect(() => {
@@ -165,10 +168,11 @@ function AudioWaveform({ state, analyserRef }) {
     // CSS keyframes below drive the bars, so we bail early and reset baseline.
     if (state !== 'listening') {
       setLevels(new Array(WAVE_BARS).fill(0.08));
+      setBytePeak(null);
       return;
     }
     const analyser = analyserRef?.current;
-    if (!analyser) return;
+    if (!analyser) { setBytePeak(-1); return; }
 
     const data = new Uint8Array(analyser.frequencyBinCount);
     const half = Math.ceil(WAVE_BARS / 2);
@@ -188,11 +192,16 @@ function AudioWaveform({ state, analyserRef }) {
         if (half + i < WAVE_BARS) next[half + i] = lvl;
       }
       setLevels(next);
+      if (debug) {
+        let bmax = 0;
+        for (let k = 0; k < data.length; k++) if (data[k] > bmax) bmax = data[k];
+        setBytePeak(bmax);
+      }
       rafRef.current = requestAnimationFrame(loop);
     };
     rafRef.current = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [state, analyserRef]);
+  }, [state, analyserRef, debug]);
 
   const bars = [];
   for (let i = 0; i < WAVE_BARS; i++) {
@@ -219,10 +228,29 @@ function AudioWaveform({ state, analyserRef }) {
     bars.push(<span key={i} style={{ flex: 1, minWidth: 2, maxWidth: 6, borderRadius: 4, alignSelf: 'center', ...style }} />);
   }
 
+  const barPeak = Math.round(Math.max(...levels) * 100);
+  const listening = state === 'listening';
+  const hint = !listening ? 'tap the mic, then speak'
+    : bytePeak === -1 ? 'analyser NOT attached — bug'
+    : bytePeak > 4 ? 'LIVE — bars reacting to sound ✓'
+    : 'listening… speak (should climb)';
+
   return (
-    <div aria-hidden style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: SP[1], height: 64, width: '100%', padding: `0 ${SP[2]}px`, boxSizing: 'border-box' }}>
-      {bars}
-    </div>
+    <>
+      <div aria-hidden style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: SP[1], height: 64, width: '100%', padding: `0 ${SP[2]}px`, boxSizing: 'border-box' }}>
+        {bars}
+      </div>
+      {debug && (
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, lineHeight: 1.8, color: TXT_SLATE, background: SLATE_850, border: `1px solid ${SLATE_600}`, borderRadius: 8, padding: `${SP[2]}px ${SP[3]}px`, width: '100%', boxSizing: 'border-box', textAlign: 'left' }}>
+          <div style={{ color: GENOIS, letterSpacing: 1, marginBottom: SP[1] }}>◈ AUDIO DEBUG</div>
+          <div>state: <b style={{ color: TXT_WHITE }}>{state}</b></div>
+          <div>analyser: <b style={{ color: bytePeak === -1 ? RED : GENOIS }}>{bytePeak === -1 ? 'MISSING ✗' : listening ? 'wired ✓' : '—'}</b></div>
+          <div>byte peak: <b style={{ color: TXT_WHITE }}>{bytePeak == null || bytePeak < 0 ? 'n/a' : bytePeak}</b> / 255</div>
+          <div>bar peak: <b style={{ color: TXT_WHITE }}>{barPeak}%</b></div>
+          <div style={{ marginTop: SP[1], color: listening && bytePeak > 4 ? GENOIS : TXT_MUTE }}>{hint}</div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -304,6 +332,14 @@ export default function VoiceInterviewPage() {
   const isAISpeakingRef = useRef(false);
   const [interrupting, setInterrupting] = useState(false);
   const interruptTimerRef = useRef(null);
+
+  // ?debug=audio → show a live numeric analyser readout in the mic pad, so a
+  // real-device test gives a hard number instead of a "do the bars look alive?"
+  // judgement call. Read in an effect to avoid any SSR/hydration mismatch.
+  const [debugAudio, setDebugAudio] = useState(false);
+  useEffect(() => {
+    try { setDebugAudio(new URLSearchParams(window.location.search).get('debug') === 'audio'); } catch {}
+  }, []);
 
   const currentQ = questions[qIndex];
   const currentEval = evaluations[qIndex];
@@ -911,7 +947,7 @@ export default function VoiceInterviewPage() {
               the button NEVER changes size between states (only colour). ── */}
           {speechSupported ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: SP[3], paddingTop: SP[2] }}>
-              <AudioWaveform state={waveState} analyserRef={analyserRef} />
+              <AudioWaveform state={waveState} analyserRef={analyserRef} debug={debugAudio} />
 
               {/* interrupt micro-animation — pops in only while interrupting */}
               <div style={{ minHeight: 22, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
