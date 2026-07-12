@@ -84,7 +84,7 @@ function computeBFSSteps(src) {
 
 function nodeColor(id, step) {
   if (!step) return '#1a2a3a';
-  if (step.current === id) return '#00f0ff';
+  if (step.current === id) return '#00d9a3';
   if (step.enqueueing === id) return '#ef9f27';
   if (step.visited?.[id]) return '#1d9e75';
   return '#1a2a3a';
@@ -132,7 +132,7 @@ export default function BFSVisualizer() {
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Source', value: src, color: '#00f0ff' },
+          { label: 'Source', value: src, color: '#00d9a3' },
           { label: 'Current', value: current?.current >= 0 ? current.current : '-', color: '#ef9f27' },
           { label: 'Visited', value: current?.visited?.filter(Boolean).length ?? 0, color: '#1d9e75' },
           { label: 'Queue Size', value: current?.queue?.length ?? 0, color: '#ff6b4a' },
@@ -146,20 +146,20 @@ export default function BFSVisualizer() {
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {/* Graph SVG */}
-        <div style={{ flex: 1, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, overflow: 'hidden', minWidth: 280 }}>
+        <div style={{ flex: 1, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, overflow: 'hidden', minWidth: 280 }}>
           <svg width="100%" viewBox={`0 0 ${SVG_W} ${SVG_H}`} style={{ display: 'block' }}>
             {GRAPH_EDGES.map(([a, b], i) => (
               <line key={i}
                 x1={GRAPH_NODES[a].x} y1={GRAPH_NODES[a].y + 60}
                 x2={GRAPH_NODES[b].x} y2={GRAPH_NODES[b].y + 60}
-                stroke="rgba(0,240,255,0.2)" strokeWidth={1.5} />
+                stroke="rgba(0,217,163,0.2)" strokeWidth={1.5} />
             ))}
             {GRAPH_NODES.map(n => {
               const color = nodeColor(n.id, current);
               const isActive = current?.current === n.id;
               return (
                 <g key={n.id}>
-                  {isActive && <circle cx={n.x} cy={n.y + 60} r={28} fill="none" stroke="#00f0ff" strokeWidth={1} opacity={0.4} />}
+                  {isActive && <circle cx={n.x} cy={n.y + 60} r={28} fill="none" stroke="#00d9a3" strokeWidth={1} opacity={0.4} />}
                   <circle cx={n.x} cy={n.y + 60} r={22}
                     fill={color === '#1a2a3a' ? '#0d1a2a' : color + '22'}
                     stroke={color} strokeWidth={isActive ? 2.5 : 1.5}
@@ -189,7 +189,7 @@ export default function BFSVisualizer() {
             </div>
           </div>
           {/* Adjacency list */}
-          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 10, padding: 12 }}>
+          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 10, padding: 12 }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>ADJACENCY LIST</div>
             {ADJ.map((nbrs, i) => (
               <div key={i} style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 3 }}>
@@ -212,21 +212,21 @@ export default function BFSVisualizer() {
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a' }}>SRC</span>
         {GRAPH_NODES.map(n => (
-          <button key={n.id} onClick={() => setSrc(n.id)} style={{ padding: '4px 12px', borderRadius: 6, border: `1px solid ${src === n.id ? '#00f0ff' : 'rgba(0,240,255,0.15)'}`, background: src === n.id ? 'rgba(0,240,255,0.12)' : 'transparent', color: src === n.id ? '#00f0ff' : '#5a7a9a', fontSize: 12, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{n.id}</button>
+          <button key={n.id} onClick={() => setSrc(n.id)} style={{ padding: '4px 12px', borderRadius: 6, border: `1px solid ${src === n.id ? '#00d9a3' : 'rgba(0,217,163,0.15)'}`, background: src === n.id ? 'rgba(0,217,163,0.12)' : 'transparent', color: src === n.id ? '#00d9a3' : '#5a7a9a', fontSize: 12, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{n.id}</button>
         ))}
-        <button onClick={start} style={btn('#00f0ff')}>▶ Start BFS</button>
+        <button onClick={start} style={btn('#00d9a3')}>▶ Start BFS</button>
         <button onClick={() => setIsPlaying(p => !p)} style={btn('#ff6b4a')}>{isPlaying ? '⏸ Pause' : '▶ Resume'}</button>
         <button onClick={() => setStepIdx(p => Math.min(p + 1, steps.length - 1))} style={btn('#ef9f27')}>⏭ Step</button>
         <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
           {[1,2,3,4].map(s => (
-            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid #00f0ff' : '1px solid rgba(0,240,255,0.15)', background: speed === s ? 'rgba(0,240,255,0.12)' : 'transparent', color: speed === s ? '#00f0ff' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
+            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid #00d9a3' : '1px solid rgba(0,217,163,0.15)', background: speed === s ? 'rgba(0,217,163,0.12)' : 'transparent', color: speed === s ? '#00d9a3' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
           ))}
         </div>
         <button onClick={reset} style={btn('#ff2d78')}>↺ Reset</button>
       </div>
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        {[['#00f0ff','Current'],['#ef9f27','Being Enqueued'],['#1d9e75','Visited'],['#1a2a3a','Unvisited']].map(([c,l]) => (
+        {[['#00d9a3','Current'],['#ef9f27','Being Enqueued'],['#1d9e75','Visited'],['#1a2a3a','Unvisited']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:'50%', background:c+'44', border:`2px solid ${c}` }}/>
             <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>

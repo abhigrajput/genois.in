@@ -26,7 +26,7 @@ export default function SubscriptionPage() {
       name: 'Player',
       price: '₹199',
       period: '/month',
-      color: '#00f0ff',
+      color: '#00d9a3',
       badge: null,
       features: [
         'Everything in Spectator',
@@ -135,7 +135,7 @@ export default function SubscriptionPage() {
       </div>
 
       <div style={{ marginTop: 32, textAlign: 'center' }}>
-        <button onClick={() => router.push('/dashboard')} style={{ padding: '12px 28px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+        <button onClick={() => router.push('/dashboard')} style={{ padding: '12px 28px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
           Back to Dashboard →
         </button>
       </div>

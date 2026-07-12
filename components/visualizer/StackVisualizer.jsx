@@ -104,7 +104,7 @@ export default function StackVisualizer() {
       {/* Stats */}
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
-          { label:'Size', value: stack.length, color:'#00f0ff' },
+          { label:'Size', value: stack.length, color:'#00d9a3' },
           { label:'Top', value: stack.length > 0 ? stack[stack.length-1] : 'null', color:'#ef9f27' },
           { label:'Capacity', value: MAX_SIZE, color:'#ff6b4a' },
           { label:'Empty', value: stack.length === 0 ? 'Yes' : 'No', color:'#1d9e75' },
@@ -118,21 +118,21 @@ export default function StackVisualizer() {
 
       {/* Message */}
       {message && (
-        <div style={{ background:'rgba(0,240,255,0.05)', border:'1px solid rgba(0,240,255,0.15)', borderRadius:8, padding:'8px 14px', fontFamily:'var(--font-mono)', fontSize:12, color:'#00f0ff' }}>
+        <div style={{ background:'rgba(0,217,163,0.05)', border:'1px solid rgba(0,217,163,0.15)', borderRadius:8, padding:'8px 14px', fontFamily:'var(--font-mono)', fontSize:12, color:'#00d9a3' }}>
           ▶ {message}
         </div>
       )}
 
       {/* Visual stack */}
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:12, padding:24, minHeight:300, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'flex-end', gap:0 }}>
+      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, padding:24, minHeight:300, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'flex-end', gap:0 }}>
         {/* Empty slots */}
         {Array.from({ length: MAX_SIZE - stack.length }, (_, i) => (
           <div key={`empty-${i}`} style={{
-            width: 180, height: 44, border:'1px dashed rgba(0,240,255,0.1)',
+            width: 180, height: 44, border:'1px dashed rgba(0,217,163,0.1)',
             borderRadius: 0, display:'flex', alignItems:'center', justifyContent:'center',
             marginBottom: 0,
           }}>
-            <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'rgba(0,240,255,0.15)' }}>—</span>
+            <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'rgba(0,217,163,0.15)' }}>—</span>
           </div>
         ))}
 
@@ -143,17 +143,17 @@ export default function StackVisualizer() {
           return (
             <div key={`${val}-${i}`} style={{
               width: 180, height: 44,
-              background: isTop ? 'rgba(0,240,255,0.12)' : 'rgba(26,42,58,0.8)',
-              border: isTop ? '1px solid rgba(0,240,255,0.5)' : '1px solid rgba(0,240,255,0.15)',
+              background: isTop ? 'rgba(0,217,163,0.12)' : 'rgba(26,42,58,0.8)',
+              border: isTop ? '1px solid rgba(0,217,163,0.5)' : '1px solid rgba(0,217,163,0.15)',
               borderRadius: 0,
               display:'flex', alignItems:'center', justifyContent:'space-between',
               padding:'0 16px',
               transition: 'all 0.35s ease',
               animation: isNew ? 'stackPush 0.35s ease' : 'none',
-              boxShadow: isTop ? '0 0 16px rgba(0,240,255,0.15)' : 'none',
+              boxShadow: isTop ? '0 0 16px rgba(0,217,163,0.15)' : 'none',
             }}>
-              <span style={{ fontFamily:'var(--font-mono)', fontSize:16, fontWeight:600, color: isTop ? '#00f0ff' : '#e8e8ed' }}>{val}</span>
-              {isTop && <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#00f0ff' }}>← TOP</span>}
+              <span style={{ fontFamily:'var(--font-mono)', fontSize:16, fontWeight:600, color: isTop ? '#00d9a3' : '#e8e8ed' }}>{val}</span>
+              {isTop && <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#00d9a3' }}>← TOP</span>}
             </div>
           );
         })}
@@ -165,14 +165,14 @@ export default function StackVisualizer() {
         )}
 
         {/* Bottom label */}
-        <div style={{ width:180, height:4, background:'rgba(0,240,255,0.3)', borderRadius:2, marginTop:2 }}/>
+        <div style={{ width:180, height:4, background:'rgba(0,217,163,0.3)', borderRadius:2, marginTop:2 }}/>
         <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'#5a7a9a', marginTop:4 }}>BOTTOM</span>
       </div>
 
       {/* Controls */}
       <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
         {[
-          { label:'Push', action:push, color:'#00f0ff', bg:'rgba(0,240,255,0.08)', border:'rgba(0,240,255,0.25)' },
+          { label:'Push', action:push, color:'#00d9a3', bg:'rgba(0,217,163,0.08)', border:'rgba(0,217,163,0.25)' },
           { label:'Pop', action:pop, color:'#ff2d78', bg:'rgba(255,45,120,0.08)', border:'rgba(255,45,120,0.25)' },
           { label:'Peek', action:peek, color:'#ef9f27', bg:'rgba(239,159,39,0.08)', border:'rgba(239,159,39,0.25)' },
           { label:'Clear', action:clear, color:'#5a7a9a', bg:'transparent', border:'rgba(90,122,154,0.25)' },

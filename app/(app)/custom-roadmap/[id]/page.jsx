@@ -103,7 +103,7 @@ export default function CustomRoadmapDetailPage() {
   return (
     <div style={{ fontFamily: 'var(--font-body)', width: '100%' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-        <button onClick={() => router.push('/custom-roadmap')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#00f0ff', fontSize: 18, padding: 0, flexShrink: 0 }}>←</button>
+        <button onClick={() => router.push('/custom-roadmap')} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#00d9a3', fontSize: 18, padding: 0, flexShrink: 0 }}>←</button>
         <div style={{ flex: 1 }}>
           <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 800, color: '#e8e8ed', margin: 0, marginBottom: 2 }}>{roadmap.topic}</h1>
           <div style={{ fontSize: 12, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>
@@ -111,7 +111,7 @@ export default function CustomRoadmapDetailPage() {
           </div>
         </div>
         <div style={{ textAlign: 'right', flexShrink: 0 }}>
-          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 800, color: '#00f0ff' }}>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 800, color: '#00d9a3' }}>
             {Math.round((roadmap.current_day / roadmap.total_days) * 100)}%
           </div>
           <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>complete</div>
@@ -119,11 +119,11 @@ export default function CustomRoadmapDetailPage() {
       </div>
 
       <div style={{ height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3, marginBottom: 20, overflow: 'hidden' }}>
-        <div style={{ height: '100%', width: `${Math.round((roadmap.current_day / roadmap.total_days) * 100)}%`, background: 'linear-gradient(90deg,#00f0ff,#ff6b4a)', borderRadius: 3 }} />
+        <div style={{ height: '100%', width: `${Math.round((roadmap.current_day / roadmap.total_days) * 100)}%`, background: 'linear-gradient(90deg,#00d9a3,#ff6b4a)', borderRadius: 3 }} />
       </div>
 
       {dayData && (
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: '14px 18px', marginBottom: 20 }}>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: '14px 18px', marginBottom: 20 }}>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#e8e8ed', marginBottom: 4 }}>
             Day {roadmap.current_day}: {dayData.topic}
           </div>
@@ -134,9 +134,9 @@ export default function CustomRoadmapDetailPage() {
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
         {TASK_TYPES.map(type => (
           <button key={type} onClick={() => setActiveTask(type)} style={{
-            padding: '8px 14px', borderRadius: 20, border: `1px solid ${activeTask === type ? 'rgba(0,240,255,0.4)' : isTaskDone(type) ? 'rgba(29,158,117,0.3)' : 'rgba(255,255,255,0.08)'}`,
-            background: activeTask === type ? 'rgba(0,240,255,0.1)' : isTaskDone(type) ? 'rgba(29,158,117,0.08)' : 'transparent',
-            color: activeTask === type ? '#00f0ff' : isTaskDone(type) ? '#1D9E75' : '#5a7a9a',
+            padding: '8px 14px', borderRadius: 20, border: `1px solid ${activeTask === type ? 'rgba(0,217,163,0.4)' : isTaskDone(type) ? 'rgba(29,158,117,0.3)' : 'rgba(255,255,255,0.08)'}`,
+            background: activeTask === type ? 'rgba(0,217,163,0.1)' : isTaskDone(type) ? 'rgba(29,158,117,0.08)' : 'transparent',
+            color: activeTask === type ? '#00d9a3' : isTaskDone(type) ? '#1D9E75' : '#5a7a9a',
             cursor: 'pointer', fontSize: 12, fontFamily: 'var(--font-body)', fontWeight: 600,
           }}>
             {isTaskDone(type) ? '✓ ' : ''}{TASK_LABELS[type]}
@@ -144,13 +144,13 @@ export default function CustomRoadmapDetailPage() {
         ))}
       </div>
 
-      <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 14, padding: 24, minHeight: 300 }}>
+      <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 14, padding: 24, minHeight: 300 }}>
 
         {activeTask === 'video' && dayData && (
           <div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 12 }}>WATCH VIDEO</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 2, marginBottom: 12 }}>WATCH VIDEO</div>
             <div style={{ fontSize: 15, fontWeight: 600, color: '#e8e8ed', marginBottom: 8 }}>Search on YouTube:</div>
-            <div style={{ padding: '12px 16px', background: 'rgba(0,240,255,0.06)', borderRadius: 10, fontSize: 14, color: '#00f0ff', fontFamily: 'var(--font-mono)', marginBottom: 20 }}>
+            <div style={{ padding: '12px 16px', background: 'rgba(0,217,163,0.06)', borderRadius: 10, fontSize: 14, color: '#00d9a3', fontFamily: 'var(--font-mono)', marginBottom: 20 }}>
               {dayData.video_search}
             </div>
             <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(dayData.video_search)}`} target="_blank" rel="noreferrer" style={{ display: 'inline-block', padding: '12px 24px', borderRadius: 10, background: '#FF0000', color: '#fff', textDecoration: 'none', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, marginBottom: 20 }}>
@@ -158,7 +158,7 @@ export default function CustomRoadmapDetailPage() {
             </a>
             {!isTaskDone('video') && (
               <div>
-                <button onClick={() => completeTask('video')} disabled={completing} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+                <button onClick={() => completeTask('video')} disabled={completing} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
                   ✓ Mark as Watched +10pts
                 </button>
               </div>
@@ -176,7 +176,7 @@ export default function CustomRoadmapDetailPage() {
             </a>
             {!isTaskDone('resource') && (
               <div>
-                <button onClick={() => completeTask('resource')} disabled={completing} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#ff6b4a,#00f0ff)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+                <button onClick={() => completeTask('resource')} disabled={completing} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#ff6b4a,#00d9a3)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
                   ✓ Mark as Read +10pts
                 </button>
               </div>
@@ -193,7 +193,7 @@ export default function CustomRoadmapDetailPage() {
               {dayData.coding_task}
             </div>
             {!isTaskDone('coding') && (
-              <button onClick={() => completeTask('coding')} disabled={completing} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#1D9E75,#00f0ff)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+              <button onClick={() => completeTask('coding')} disabled={completing} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#1D9E75,#00d9a3)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
                 ✓ Mark as Done +20pts
               </button>
             )}
@@ -224,8 +224,8 @@ export default function CustomRoadmapDetailPage() {
                         return (
                           <button key={oi} onClick={() => !testSubmitted && setSelectedAnswers(p => ({...p, [i]: opt}))} style={{
                             padding: '10px 14px', borderRadius: 8, cursor: testSubmitted ? 'default' : 'pointer', textAlign: 'left',
-                            border: `1px solid ${isCorrect ? 'rgba(29,158,117,0.5)' : isWrong ? 'rgba(255,45,120,0.5)' : isSelected ? 'rgba(0,240,255,0.4)' : 'rgba(255,255,255,0.06)'}`,
-                            background: isCorrect ? 'rgba(29,158,117,0.1)' : isWrong ? 'rgba(255,45,120,0.1)' : isSelected ? 'rgba(0,240,255,0.06)' : 'transparent',
+                            border: `1px solid ${isCorrect ? 'rgba(29,158,117,0.5)' : isWrong ? 'rgba(255,45,120,0.5)' : isSelected ? 'rgba(0,217,163,0.4)' : 'rgba(255,255,255,0.06)'}`,
+                            background: isCorrect ? 'rgba(29,158,117,0.1)' : isWrong ? 'rgba(255,45,120,0.1)' : isSelected ? 'rgba(0,217,163,0.06)' : 'transparent',
                             color: isCorrect ? '#1D9E75' : isWrong ? '#ff2d78' : '#c8d8e8', fontSize: 13,
                           }}>
                             <span style={{ color: '#5a7a9a', marginRight: 8, fontFamily: 'var(--font-mono)' }}>{letters[oi]}.</span>
@@ -235,7 +235,7 @@ export default function CustomRoadmapDetailPage() {
                       })}
                     </div>
                     {testSubmitted && q.explanation && (
-                      <div style={{ marginTop: 8, padding: '8px 12px', background: 'rgba(0,240,255,0.04)', borderRadius: 8, fontSize: 12, color: '#5a7a9a' }}>
+                      <div style={{ marginTop: 8, padding: '8px 12px', background: 'rgba(0,217,163,0.04)', borderRadius: 8, fontSize: 12, color: '#5a7a9a' }}>
                         💡 {q.explanation}
                       </div>
                     )}

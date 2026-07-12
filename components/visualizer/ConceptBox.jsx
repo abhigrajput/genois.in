@@ -5,12 +5,12 @@ export default function ConceptBox({ title, description, timeComplexity, spaceCo
     <div style={{
       background: '#0d1117',
       border: '1px solid #1a2a3a',
-      borderLeft: '4px solid #00f0ff',
+      borderLeft: '4px solid #00d9a3',
       borderRadius: 8,
       padding: 16,
       marginBottom: 16,
     }}>
-      <div style={{ color: '#00f0ff', fontWeight: 600, marginBottom: 8, fontSize: 14, fontFamily: 'var(--font-heading)' }}>
+      <div style={{ color: '#00d9a3', fontWeight: 600, marginBottom: 8, fontSize: 14, fontFamily: 'var(--font-heading)' }}>
         💡 {title}
       </div>
       <div style={{ color: '#8b949e', fontSize: 13, lineHeight: 1.7, fontFamily: 'var(--font-body)' }}>

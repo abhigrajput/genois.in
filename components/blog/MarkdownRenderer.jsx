@@ -35,12 +35,12 @@ function parseInline(text) {
   html = html.replace(/\*(.*?)\*/g, '<em style="color:#e8e8ed;font-style:italic;">$1</em>');
 
   // inline code: `code`
-  html = html.replace(/`(.*?)`/g, '<code style="background:#161b22;color:#00f0ff;padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:13px;border:1px solid rgba(0,240,255,0.15);word-break:break-all;">$1</code>');
+  html = html.replace(/`(.*?)`/g, '<code style="background:#161b22;color:#00d9a3;padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:13px;border:1px solid rgba(0,217,163,0.15);word-break:break-all;">$1</code>');
 
   // links: [text](url) — URL must pass isSafeUrl, otherwise we render plain text only
   html = html.replace(/\[(.*?)\]\((.*?)\)/g, (_match, linkText, url) => {
     if (!isSafeUrl(url)) return linkText;
-    return `<a href="${escapeAttr(url.trim())}" target="_blank" rel="noopener noreferrer" style="color:#00f0ff;text-decoration:underline;font-weight:500;transition:opacity 0.15s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">${linkText}</a>`;
+    return `<a href="${escapeAttr(url.trim())}" target="_blank" rel="noopener noreferrer" style="color:#00d9a3;text-decoration:underline;font-weight:500;transition:opacity 0.15s;" onmouseover="this.style.opacity=0.8" onmouseout="this.style.opacity=1">${linkText}</a>`;
   });
 
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
@@ -62,7 +62,7 @@ function CodeBlock({ code = '', lang = 'cpp' }) {
     <div style={{ 
       background: '#0d1117', 
       border: '1px solid #21262d', 
-      borderLeft: '3px solid #00f0ff',
+      borderLeft: '3px solid #00d9a3',
       borderRadius: '8px', 
       overflow: 'hidden', 
       margin: '20px 0',
@@ -86,7 +86,7 @@ function CodeBlock({ code = '', lang = 'cpp' }) {
           style={{
             background: 'transparent',
             border: 'none',
-            color: copied ? '#1d9e75' : '#00f0ff',
+            color: copied ? '#1d9e75' : '#00d9a3',
             cursor: 'pointer',
             fontFamily: 'var(--font-heading)',
             fontSize: '11px',
@@ -264,12 +264,12 @@ export default function MarkdownRenderer({ content = '' }) {
                 id={encodeURIComponent(block.text.toLowerCase().replace(/\s+/g, '-'))}
                 style={{ 
                   fontFamily: 'var(--font-heading)', 
-                  color: '#00f0ff', 
+                  color: '#00d9a3', 
                   fontSize: '24px', 
                   fontWeight: 800, 
                   marginTop: '32px', 
                   marginBottom: '16px', 
-                  borderBottom: '1px solid rgba(0,240,255,0.1)', 
+                  borderBottom: '1px solid rgba(0,217,163,0.1)', 
                   paddingBottom: '6px' 
                 }}
               >
@@ -283,7 +283,7 @@ export default function MarkdownRenderer({ content = '' }) {
                 id={encodeURIComponent(block.text.toLowerCase().replace(/\s+/g, '-'))}
                 style={{ 
                   fontFamily: 'var(--font-heading)', 
-                  color: '#00f0ff', 
+                  color: '#00d9a3', 
                   fontSize: '20px', 
                   fontWeight: 700, 
                   marginTop: '24px', 
@@ -341,7 +341,7 @@ export default function MarkdownRenderer({ content = '' }) {
                       fontFamily: 'var(--font-body)' 
                     }}
                   >
-                    <span style={{ color: '#00f0ff', position: 'absolute', left: '-16px' }}>•</span>
+                    <span style={{ color: '#00d9a3', position: 'absolute', left: '-16px' }}>•</span>
                     {parseInline(item)}
                   </li>
                 ))}

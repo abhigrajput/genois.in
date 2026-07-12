@@ -23,11 +23,11 @@ const TOPIC_LABELS = {
 // ─── Shared styles ──────────────────────────────────────────────────────────
 const S = {
   page:     { fontFamily: 'var(--font-body)', minHeight: '100vh', background: '#020812', color: '#e8e8ed', padding: '32px 16px' },
-  card:     { maxWidth: 780, margin: '0 auto', background: '#070f1f', border: '1px solid rgba(0,240,255,0.12)', borderRadius: 20, padding: 32 },
+  card:     { maxWidth: 780, margin: '0 auto', background: '#070f1f', border: '1px solid rgba(0,217,163,0.12)', borderRadius: 20, padding: 32 },
   h1:       { fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, color: '#e8e8ed', margin: '0 0 8px' },
   sub:      { color: '#5a7a9a', fontSize: 14, lineHeight: 1.6, margin: '0 0 24px' },
-  btn:      { padding: '14px 32px', borderRadius: 12, border: 'none', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812' },
-  btnGhost: { padding: '10px 20px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', background: 'transparent', cursor: 'pointer', color: '#00f0ff', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600 },
+  btn:      { padding: '14px 32px', borderRadius: 12, border: 'none', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812' },
+  btnGhost: { padding: '10px 20px', borderRadius: 8, border: '1px solid rgba(0,217,163,0.2)', background: 'transparent', cursor: 'pointer', color: '#00d9a3', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600 },
   mono:     { fontFamily: 'var(--font-mono)' },
 };
 
@@ -48,7 +48,7 @@ function IntroScreen({ onStart, loading, previousResult }) {
             {[['📺', '10 Code Snippets', 'Predict output & find errors'],
               ['📖', '15 Theory MCQs', 'DSA concepts & logic'],
               ['🤖', 'AI Evaluation', 'DeepSeek analyzes your strengths']].map(([icon, title, desc]) => (
-              <div key={title} style={{ background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 12, padding: '14px 18px', flex: '1 1 180px', textAlign: 'left' }}>
+              <div key={title} style={{ background: 'rgba(0,217,163,0.04)', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 12, padding: '14px 18px', flex: '1 1 180px', textAlign: 'left' }}>
                 <div style={{ fontSize: 20, marginBottom: 6 }}>{icon}</div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#e8e8ed', marginBottom: 3 }}>{title}</div>
                 <div style={{ fontSize: 11, color: '#5a7a9a' }}>{desc}</div>
@@ -57,7 +57,7 @@ function IntroScreen({ onStart, loading, previousResult }) {
           </div>
 
           {previousResult && (
-            <div style={{ background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: '14px 20px', marginBottom: 20, textAlign: 'left' }}>
+            <div style={{ background: 'rgba(0,217,163,0.04)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: '14px 20px', marginBottom: 20, textAlign: 'left' }}>
               <div style={{ fontSize: 12, color: '#5a7a9a', marginBottom: 4, ...S.mono }}>PREVIOUS RESULT</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ fontSize: 22 }}>{LEVEL_CONFIG[previousResult.level]?.emoji}</span>
@@ -123,7 +123,7 @@ function TestScreen({ questions, onSubmit, submitting }) {
 
   const mm = String(Math.floor(timeLeft / 60)).padStart(2, '0');
   const ss = String(timeLeft % 60).padStart(2, '0');
-  const timerColor = timeLeft < 120 ? '#ff2d78' : timeLeft < 300 ? '#EF9F27' : '#00f0ff';
+  const timerColor = timeLeft < 120 ? '#ff2d78' : timeLeft < 300 ? '#EF9F27' : '#00d9a3';
 
   const q = questions[current];
   const topicLabel = TOPIC_LABELS[q?.topic] || q?.topic;
@@ -134,7 +134,7 @@ function TestScreen({ questions, onSubmit, submitting }) {
       <div style={{ maxWidth: 780, margin: '0 auto 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <span style={{ ...S.mono, fontSize: 12, color: '#5a7a9a' }}>Q {current + 1}/{questions.length}</span>
-          <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: 'rgba(0,240,255,0.08)', color: '#00f0ff', ...S.mono }}>{topicLabel}</span>
+          <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: 'rgba(0,217,163,0.08)', color: '#00d9a3', ...S.mono }}>{topicLabel}</span>
           <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: q?.type === 'code' ? 'rgba(255,107,74,0.12)' : 'rgba(29,158,117,0.1)', color: q?.type === 'code' ? '#ff6b4a' : '#1D9E75' }}>
             {q?.type === 'code' ? '💻 Code' : '📖 Theory'}
           </span>
@@ -147,7 +147,7 @@ function TestScreen({ questions, onSubmit, submitting }) {
 
       {/* Progress bar */}
       <div style={{ maxWidth: 780, margin: '0 auto 16px', height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: 2 }}>
-        <div style={{ height: '100%', width: `${(answeredCount / questions.length) * 100}%`, background: 'linear-gradient(90deg,#00f0ff,#ff6b4a)', borderRadius: 2, transition: 'width 0.3s' }} />
+        <div style={{ height: '100%', width: `${(answeredCount / questions.length) * 100}%`, background: 'linear-gradient(90deg,#00d9a3,#ff6b4a)', borderRadius: 2, transition: 'width 0.3s' }} />
       </div>
 
       {/* Question card */}
@@ -171,13 +171,13 @@ function TestScreen({ questions, onSubmit, submitting }) {
                 onClick={() => setAnswers(prev => ({ ...prev, [q.id]: opt }))}
                 style={{
                   display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 16px',
-                  borderRadius: 10, border: `1px solid ${selected ? '#00f0ff' : 'rgba(255,255,255,0.06)'}`,
-                  background: selected ? 'rgba(0,240,255,0.08)' : 'rgba(255,255,255,0.02)',
-                  color: selected ? '#00f0ff' : '#c8d8e8', cursor: 'pointer', textAlign: 'left',
+                  borderRadius: 10, border: `1px solid ${selected ? '#00d9a3' : 'rgba(255,255,255,0.06)'}`,
+                  background: selected ? 'rgba(0,217,163,0.08)' : 'rgba(255,255,255,0.02)',
+                  color: selected ? '#00d9a3' : '#c8d8e8', cursor: 'pointer', textAlign: 'left',
                   transition: 'all 0.15s', fontSize: 14, fontFamily: 'var(--font-body)',
                 }}
               >
-                <span style={{ ...S.mono, fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 2, width: 18, color: selected ? '#00f0ff' : '#5a7a9a' }}>{opt}.</span>
+                <span style={{ ...S.mono, fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 2, width: 18, color: selected ? '#00d9a3' : '#5a7a9a' }}>{opt}.</span>
                 <span>{q?.options?.[opt]}</span>
               </button>
             );
@@ -198,7 +198,7 @@ function TestScreen({ questions, onSubmit, submitting }) {
               style={{
                 width: 28, height: 28, borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 10,
                 fontFamily: 'var(--font-mono)', fontWeight: 700,
-                background: i === current ? '#00f0ff' : answers[qs.id] ? '#1D9E75' : 'rgba(255,255,255,0.06)',
+                background: i === current ? '#00d9a3' : answers[qs.id] ? '#1D9E75' : 'rgba(255,255,255,0.06)',
                 color: i === current ? '#020812' : answers[qs.id] ? '#020812' : '#5a7a9a',
               }}
             >
@@ -288,8 +288,8 @@ function ResultScreen({ result, onStartRoadmap }) {
 
         {/* AI Recommendation */}
         {result.recommendation && (
-          <div style={{ background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 16, marginBottom: 28 }}>
-            <div style={{ fontSize: 11, color: '#00f0ff', letterSpacing: 2, ...S.mono, marginBottom: 8 }}>🤖 AI RECOMMENDATION</div>
+          <div style={{ background: 'rgba(0,217,163,0.04)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 16, marginBottom: 28 }}>
+            <div style={{ fontSize: 11, color: '#00d9a3', letterSpacing: 2, ...S.mono, marginBottom: 8 }}>🤖 AI RECOMMENDATION</div>
             <p style={{ fontSize: 13, color: '#c8d8e8', lineHeight: 1.7, margin: 0 }}>{result.recommendation}</p>
           </div>
         )}
@@ -366,7 +366,7 @@ export default function DSADiagnosticPage() {
           <p style={{ color: '#5a7a9a', fontSize: 14 }}>Evaluating topic mastery, code accuracy, and learning path. This takes ~10 seconds.</p>
           <div style={{ marginTop: 24, display: 'flex', gap: 6, justifyContent: 'center' }}>
             {[0, 1, 2].map(i => (
-              <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: '#00f0ff', animation: `bounce 1.2s ${i * 0.2}s infinite` }} />
+              <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: '#00d9a3', animation: `bounce 1.2s ${i * 0.2}s infinite` }} />
             ))}
           </div>
         </div>

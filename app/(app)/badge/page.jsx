@@ -21,9 +21,9 @@ const LEVEL_COLOR = { proficient:'#4f9cf9', expert:'#EF9F27', master:'#1D9E75' }
 
 const S = {
   page: { fontFamily:'var(--font-body)', minHeight:'100vh', background:'#020812', color:'#e8e8ed', padding:'28px 16px' },
-  card: { maxWidth:820, margin:'0 auto', background:'#070f1f', border:'1px solid rgba(0,240,255,0.12)', borderRadius:20, padding:28 },
-  btn:  { padding:'13px 28px', borderRadius:12, border:'none', cursor:'pointer', fontFamily:'var(--font-heading)', fontSize:14, fontWeight:700, background:'linear-gradient(135deg,#00f0ff,#ff6b4a)', color:'#020812' },
-  ghost:{ padding:'9px 18px', borderRadius:8, border:'1px solid rgba(0,240,255,0.2)', background:'transparent', cursor:'pointer', color:'#00f0ff', fontSize:12, fontFamily:'var(--font-heading)', fontWeight:600 },
+  card: { maxWidth:820, margin:'0 auto', background:'#070f1f', border:'1px solid rgba(0,217,163,0.12)', borderRadius:20, padding:28 },
+  btn:  { padding:'13px 28px', borderRadius:12, border:'none', cursor:'pointer', fontFamily:'var(--font-heading)', fontSize:14, fontWeight:700, background:'linear-gradient(135deg,#00d9a3,#ff6b4a)', color:'#020812' },
+  ghost:{ padding:'9px 18px', borderRadius:8, border:'1px solid rgba(0,217,163,0.2)', background:'transparent', cursor:'pointer', color:'#00d9a3', fontSize:12, fontFamily:'var(--font-heading)', fontWeight:600 },
   mono: { fontFamily:'var(--font-mono)' },
   h1:   { fontFamily:'var(--font-heading)', fontSize:26, fontWeight:800, color:'#e8e8ed', margin:'0 0 6px' },
   sub:  { color:'#5a7a9a', fontSize:13, margin:'0 0 24px' },
@@ -111,7 +111,7 @@ function TestScreen({ questions, domain, onSubmit, submitting }) {
   const q = questions[current];
   const mm = String(Math.floor(timeLeft/60)).padStart(2,'0');
   const ss = String(timeLeft%60).padStart(2,'0');
-  const timerColor = timeLeft < 180 ? '#ff2d78' : timeLeft < 600 ? '#EF9F27' : '#00f0ff';
+  const timerColor = timeLeft < 180 ? '#ff2d78' : timeLeft < 600 ? '#EF9F27' : '#00d9a3';
   const answered = Object.keys(answers).length;
   const canSubmit = answered >= 25;
 
@@ -128,14 +128,14 @@ function TestScreen({ questions, domain, onSubmit, submitting }) {
         <div style={{ display:'flex', gap:10, alignItems:'center' }}>
           <span style={{ fontSize:18 }}>{DOMAINS.find(d=>d.slug===domain)?.icon}</span>
           <span style={{ fontSize:12, color:'#5a7a9a', ...S.mono }}>Q {current+1}/{questions.length}</span>
-          <span style={{ fontSize:11, padding:'2px 8px', borderRadius:12, background:'rgba(0,240,255,0.08)', color:'#00f0ff' }}>{q?.type}</span>
+          <span style={{ fontSize:11, padding:'2px 8px', borderRadius:12, background:'rgba(0,217,163,0.08)', color:'#00d9a3' }}>{q?.type}</span>
         </div>
         <span style={{ fontSize:16, fontWeight:700, color:timerColor, ...S.mono }}>⏱ {mm}:{ss}</span>
       </div>
 
       {/* Progress */}
       <div style={{ maxWidth:820, margin:'0 auto 14px', height:3, background:'rgba(255,255,255,0.05)', borderRadius:2 }}>
-        <div style={{ height:'100%', width:`${(answered/questions.length)*100}%`, background:'linear-gradient(90deg,#00f0ff,#ff6b4a)', borderRadius:2, transition:'width 0.3s' }} />
+        <div style={{ height:'100%', width:`${(answered/questions.length)*100}%`, background:'linear-gradient(90deg,#00d9a3,#ff6b4a)', borderRadius:2, transition:'width 0.3s' }} />
       </div>
 
       {/* Question card */}
@@ -152,10 +152,10 @@ function TestScreen({ questions, domain, onSubmit, submitting }) {
             return (
               <button key={opt} onClick={() => setAnswers(p => ({...p, [q.id]: opt}))}
                 style={{ display:'flex', gap:10, padding:'11px 14px', borderRadius:10,
-                  border:`1px solid ${sel ? '#00f0ff' : 'rgba(255,255,255,0.05)'}`,
-                  background: sel ? 'rgba(0,240,255,0.08)' : 'rgba(255,255,255,0.02)',
-                  color: sel ? '#00f0ff' : '#c8d8e8', cursor:'pointer', textAlign:'left', fontSize:13, fontFamily:'var(--font-body)' }}>
-                <span style={{ ...S.mono, fontSize:11, fontWeight:700, color: sel ? '#00f0ff' : '#5a7a9a', flexShrink:0, marginTop:2 }}>{opt}.</span>
+                  border:`1px solid ${sel ? '#00d9a3' : 'rgba(255,255,255,0.05)'}`,
+                  background: sel ? 'rgba(0,217,163,0.08)' : 'rgba(255,255,255,0.02)',
+                  color: sel ? '#00d9a3' : '#c8d8e8', cursor:'pointer', textAlign:'left', fontSize:13, fontFamily:'var(--font-body)' }}>
+                <span style={{ ...S.mono, fontSize:11, fontWeight:700, color: sel ? '#00d9a3' : '#5a7a9a', flexShrink:0, marginTop:2 }}>{opt}.</span>
                 <span>{q?.options?.[opt]}</span>
               </button>
             );
@@ -177,7 +177,7 @@ function TestScreen({ questions, domain, onSubmit, submitting }) {
             <button key={qs.id} onClick={() => setCurrent(i)}
               style={{ width:26, height:26, borderRadius:5, border:'none', cursor:'pointer', fontSize:9,
                 ...S.mono, fontWeight:700,
-                background: i===current ? '#00f0ff' : flagged[qs.id] ? '#EF9F27' : answers[qs.id] ? '#1D9E75' : 'rgba(255,255,255,0.05)',
+                background: i===current ? '#00d9a3' : flagged[qs.id] ? '#EF9F27' : answers[qs.id] ? '#1D9E75' : 'rgba(255,255,255,0.05)',
                 color: i===current || flagged[qs.id] || answers[qs.id] ? '#020812' : '#5a7a9a' }}>
               {i+1}
             </button>
@@ -252,8 +252,8 @@ function ResultScreen({ result, domain, onViewBadges }) {
             )}
 
             {result.feedback && (
-              <div style={{ background:'rgba(0,240,255,0.04)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:12, padding:16, marginBottom:20 }}>
-                <div style={{ fontSize:10, color:'#00f0ff', letterSpacing:2, ...S.mono, marginBottom:6 }}>🤖 FEEDBACK</div>
+              <div style={{ background:'rgba(0,217,163,0.04)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, padding:16, marginBottom:20 }}>
+                <div style={{ fontSize:10, color:'#00d9a3', letterSpacing:2, ...S.mono, marginBottom:6 }}>🤖 FEEDBACK</div>
                 <p style={{ fontSize:13, color:'#c8d8e8', lineHeight:1.7, margin:0 }}>{result.feedback}</p>
               </div>
             )}
@@ -291,7 +291,7 @@ function ResultScreen({ result, domain, onViewBadges }) {
             )}
 
             {result.feedback && (
-              <div style={{ background:'rgba(0,240,255,0.03)', border:'1px solid rgba(0,240,255,0.08)', borderRadius:12, padding:14, marginBottom:20 }}>
+              <div style={{ background:'rgba(0,217,163,0.03)', border:'1px solid rgba(0,217,163,0.08)', borderRadius:12, padding:14, marginBottom:20 }}>
                 <p style={{ fontSize:13, color:'#c8d8e8', lineHeight:1.7, margin:0 }}>{result.feedback}</p>
               </div>
             )}

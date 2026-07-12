@@ -87,7 +87,7 @@ function barColor(idx, step) {
   if (step.done) return '#1d9e75';
   if (idx >= step.sortedFrom) return '#1d9e75';
   if (step.swapped?.includes(idx)) return '#1d9e75';
-  if (step.comparing?.includes(idx)) return '#00f0ff';
+  if (step.comparing?.includes(idx)) return '#00d9a3';
   return '#1a2a3a';
 }
 
@@ -139,7 +139,7 @@ export default function BubbleSortVisualizer() {
       {/* Stats */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Comparisons', value: current?.comparisons ?? 0, color: '#00f0ff' },
+          { label: 'Comparisons', value: current?.comparisons ?? 0, color: '#00d9a3' },
           { label: 'Swaps', value: current?.swaps ?? 0, color: '#ef9f27' },
           { label: 'Time', value: 'O(n²)', color: '#ff6b4a' },
           { label: 'Space', value: 'O(1)', color: '#1d9e75' },
@@ -156,7 +156,7 @@ export default function BubbleSortVisualizer() {
 
       {/* Bar chart */}
       <div style={{
-        background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,240,255,0.1)',
+        background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)',
         borderRadius: 12, padding: '24px 16px', minHeight: 200,
         display: 'flex', alignItems: 'flex-end', gap: 6, justifyContent: 'center',
       }}>
@@ -184,7 +184,7 @@ export default function BubbleSortVisualizer() {
 
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        {[['#1a2a3a','Unsorted'],['#00f0ff','Comparing'],['#1d9e75','Sorted']].map(([c,l]) => (
+        {[['#1a2a3a','Unsorted'],['#00d9a3','Comparing'],['#1d9e75','Sorted']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:2, background:c, border:`1px solid ${c}` }}/>
             <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>

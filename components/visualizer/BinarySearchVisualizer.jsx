@@ -127,7 +127,7 @@ function barColor(idx, step, eliminatedSet) {
   if (!step) return '#1a2a3a';
   if (step.found && step.mid === idx) return '#1d9e75';
   if (eliminatedSet?.has(idx)) return '#2a2a2a';
-  if (step.mid === idx) return '#00f0ff';
+  if (step.mid === idx) return '#00d9a3';
   if (step.left === idx) return '#ef9f2770';
   if (step.right === idx) return '#ef9f2770';
   return '#1a2a3a';
@@ -198,7 +198,7 @@ export default function BinarySearchVisualizer() {
       <div style={{ display:'flex', gap:10, alignItems:'center', flexWrap:'wrap' }}>
         <span style={{ fontFamily:'var(--font-mono)', fontSize:11, color:'#5a7a9a', letterSpacing:1 }}>TARGET</span>
         <input type="number" value={target} onChange={e => setTarget(e.target.value)}
-          placeholder="Enter target..." style={{ background:'rgba(0,240,255,0.04)', border:'1px solid rgba(0,240,255,0.2)', borderRadius:8, padding:'6px 12px', color:'#e8e8ed', fontFamily:'var(--font-mono)', fontSize:13, outline:'none', width:160 }}
+          placeholder="Enter target..." style={{ background:'rgba(0,217,163,0.04)', border:'1px solid rgba(0,217,163,0.2)', borderRadius:8, padding:'6px 12px', color:'#e8e8ed', fontFamily:'var(--font-mono)', fontSize:13, outline:'none', width:160 }}
         />
         <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a' }}>Array is sorted ✓</span>
         {result && (
@@ -209,7 +209,7 @@ export default function BinarySearchVisualizer() {
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
           { label:'Left', value: current?.left ?? 0, color:'#ef9f27' },
-          { label:'Mid', value: current?.mid ?? '-', color:'#00f0ff' },
+          { label:'Mid', value: current?.mid ?? '-', color:'#00d9a3' },
           { label:'Right', value: current?.right ?? arr.length - 1, color:'#ef9f27' },
           { label:'Time', value:'O(log n)', color:'#ff6b4a' },
         ].map(s => (
@@ -220,24 +220,24 @@ export default function BinarySearchVisualizer() {
         ))}
       </div>
 
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
+      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
         {arr.map((v, i) => (
           <div key={i} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:2, flex:1, maxWidth:60 }}>
             {current?.left === i && <span style={{ fontSize:9, color:'#ef9f27', fontFamily:'var(--font-mono)' }}>L</span>}
             {current?.mid === i && !current?.left && <span style={{ fontSize:9, color:'transparent' }}>.</span>}
             <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:barColor(i, current, eliminated) }}>{v}</span>
             <div style={{ width:'100%', borderRadius:'4px 4px 0 0', height:`${(v / maxVal) * 160}px`, background:barColor(i, current, eliminated), transition:'all 0.3s ease', minHeight:4,
-              boxShadow: current?.mid === i ? `0 0 14px #00f0ff80` : 'none',
+              boxShadow: current?.mid === i ? `0 0 14px #00d9a380` : 'none',
             }} />
             <span style={{ fontFamily:'var(--font-mono)', fontSize:8, color:'#2a3a4a' }}>[{i}]</span>
-            {current?.mid === i && <span style={{ fontSize:8, color:'#00f0ff', fontFamily:'var(--font-mono)' }}>MID</span>}
+            {current?.mid === i && <span style={{ fontSize:8, color:'#00d9a3', fontFamily:'var(--font-mono)' }}>MID</span>}
             {current?.right === i && current.right !== current.mid && <span style={{ fontSize:8, color:'#ef9f27', fontFamily:'var(--font-mono)' }}>R</span>}
           </div>
         ))}
       </div>
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
-        {[['#00f0ff','Mid'],['#ef9f2770','L / R Pointers'],['#2a2a2a','Eliminated'],['#1d9e75','Found']].map(([c,l]) => (
+        {[['#00d9a3','Mid'],['#ef9f2770','L / R Pointers'],['#2a2a2a','Eliminated'],['#1d9e75','Found']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:2, background:c, border:`1px solid ${c}60` }}/>
             <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>

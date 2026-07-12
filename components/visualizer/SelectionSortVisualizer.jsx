@@ -79,7 +79,7 @@ function barColor(idx, step) {
   if (idx < step.sortedUpto) return '#1d9e75';
   if (step.swapped?.includes(idx)) return '#1d9e75';
   if (idx === step.minIdx) return '#ef9f27';
-  if (idx === step.current) return '#00f0ff';
+  if (idx === step.current) return '#00d9a3';
   if (idx === step.scanning) return '#ff6b4a';
   return '#1a2a3a';
 }
@@ -123,7 +123,7 @@ export default function SelectionSortVisualizer() {
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Current Pass', value: current ? Math.min(current.sortedUpto + 1, arr.length) : 1, color: '#00f0ff' },
+          { label: 'Current Pass', value: current ? Math.min(current.sortedUpto + 1, arr.length) : 1, color: '#00d9a3' },
           { label: 'Min Index', value: current?.minIdx ?? '-', color: '#ef9f27' },
           { label: 'Time', value: 'O(n²)', color: '#ff6b4a' },
           { label: 'Space', value: 'O(1)', color: '#1d9e75' },
@@ -135,7 +135,7 @@ export default function SelectionSortVisualizer() {
         ))}
       </div>
 
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
+      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
         {displayArr.map((v, i) => (
           <div key={i} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, flex:1, maxWidth:60 }}>
             <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:barColor(i, current) }}>{v}</span>
@@ -152,7 +152,7 @@ export default function SelectionSortVisualizer() {
       />
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
-        {[['#1d9e75','Sorted'],['#00f0ff','Current Position'],['#ef9f27','Minimum Found'],['#ff6b4a','Scanning']].map(([c,l]) => (
+        {[['#1d9e75','Sorted'],['#00d9a3','Current Position'],['#ef9f27','Minimum Found'],['#ff6b4a','Scanning']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:2, background:c }}/>
             <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>

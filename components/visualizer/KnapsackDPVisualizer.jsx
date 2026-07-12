@@ -177,16 +177,16 @@ export default function KnapsackDPVisualizer() {
     const cand = current.candidates.find(cand => cand.r === r && cand.c === c);
     const isTrace = current.traceback.some(pt => pt.r === r && pt.c === c);
     
-    let border = '1px solid rgba(0, 240, 255, 0.08)';
+    let border = '1px solid rgba(0, 217, 163, 0.08)';
     let color = '#4a607a';
     let background = 'transparent';
     let shadow = 'none';
 
     if (isCurrent) {
-      border = '2px solid #00f0ff';
-      color = '#00f0ff';
-      background = 'rgba(0, 240, 255, 0.08)';
-      shadow = '0 0 10px rgba(0, 240, 255, 0.2)';
+      border = '2px solid #00d9a3';
+      color = '#00d9a3';
+      background = 'rgba(0, 217, 163, 0.08)';
+      shadow = '0 0 10px rgba(0, 217, 163, 0.2)';
     } else if (cand) {
       border = '1.5px dashed #ef9f27';
       color = '#ef9f27';
@@ -215,7 +215,7 @@ export default function KnapsackDPVisualizer() {
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
           { label: 'Max Knapsack Value', value: current.traceback.length ? current.dp[items.length][W] : '—', color: '#1d9e75' },
-          { label: 'Capacity (W)', value: W, color: '#00f0ff' },
+          { label: 'Capacity (W)', value: W, color: '#00d9a3' },
           { label: 'Total Items', value: items.length, color: '#ff6b4a' },
           { label: 'Grid Calculations', value: items.length * W, color: '#ef9f27' },
         ].map(s => (
@@ -229,25 +229,25 @@ export default function KnapsackDPVisualizer() {
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {/* Left Side: Items editor panel */}
         <div style={{ minWidth: 240, flex: 0.8 }}>
-          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#5a7a9a', letterSpacing: 1 }}>ITEMS LIST (Max 5)</span>
-              <button onClick={addItem} disabled={items.length >= 5} style={{ background: 'rgba(0,240,255,0.1)', border: '1px solid rgba(0,240,255,0.3)', borderRadius: 6, color: '#00f0ff', padding: '2px 8px', fontSize: 10, cursor: 'pointer' }}>+ Add</button>
+              <button onClick={addItem} disabled={items.length >= 5} style={{ background: 'rgba(0,217,163,0.1)', border: '1px solid rgba(0,217,163,0.3)', borderRadius: 6, color: '#00d9a3', padding: '2px 8px', fontSize: 10, cursor: 'pointer' }}>+ Add</button>
             </div>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {items.map((it, idx) => {
                 const isSelected = current.selectedIds?.includes(it.id);
                 return (
-                  <div key={it.id} style={{ display: 'flex', gap: 8, alignItems: 'center', background: isSelected ? 'rgba(29,158,117,0.1)' : 'rgba(0,240,255,0.02)', padding: '6px 10px', borderRadius: 8, border: isSelected ? '1px solid #1d9e75' : '1px solid rgba(0,240,255,0.08)', transition: 'all 0.3s' }}>
+                  <div key={it.id} style={{ display: 'flex', gap: 8, alignItems: 'center', background: isSelected ? 'rgba(29,158,117,0.1)' : 'rgba(0,217,163,0.02)', padding: '6px 10px', borderRadius: 8, border: isSelected ? '1px solid #1d9e75' : '1px solid rgba(0,217,163,0.08)', transition: 'all 0.3s' }}>
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: isSelected ? '#1d9e75' : '#5a7a9a', fontWeight: 'bold' }}>#{it.id}</span>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                       <span style={{ fontSize: 9, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>VAL</span>
-                      <input type="number" value={it.val} onChange={e => handleItemChange(idx, 'val', e.target.value)} style={{ width: 44, background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 4, color: '#fff', fontSize: 11, padding: '2px 4px', textAlign: 'center' }} />
+                      <input type="number" value={it.val} onChange={e => handleItemChange(idx, 'val', e.target.value)} style={{ width: 44, background: 'rgba(0,217,163,0.04)', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 4, color: '#fff', fontSize: 11, padding: '2px 4px', textAlign: 'center' }} />
                     </div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                       <span style={{ fontSize: 9, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>WT</span>
-                      <input type="number" value={it.wt} onChange={e => handleItemChange(idx, 'wt', e.target.value)} style={{ width: 44, background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 4, color: '#fff', fontSize: 11, padding: '2px 4px', textAlign: 'center' }} />
+                      <input type="number" value={it.wt} onChange={e => handleItemChange(idx, 'wt', e.target.value)} style={{ width: 44, background: 'rgba(0,217,163,0.04)', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 4, color: '#fff', fontSize: 11, padding: '2px 4px', textAlign: 'center' }} />
                     </div>
                     <button onClick={() => removeItem(it.id)} style={{ marginLeft: 'auto', background: 'transparent', border: 'none', color: '#ff2d78', cursor: 'pointer', fontSize: 12 }}>×</button>
                   </div>
@@ -255,26 +255,26 @@ export default function KnapsackDPVisualizer() {
               })}
             </div>
 
-            <div style={{ borderTop: '1px solid rgba(0,240,255,0.05)', paddingTop: 10 }}>
+            <div style={{ borderTop: '1px solid rgba(0,217,163,0.05)', paddingTop: 10 }}>
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 8 }}>
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a' }}>CAPACITY (W):</span>
-                <input type="range" min={4} max={10} value={W} onChange={e => setW(Number(e.target.value))} style={{ flex: 1, accentColor: '#00f0ff', cursor: 'pointer' }} />
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: '#00f0ff', fontWeight: 'bold' }}>{W}</span>
+                <input type="range" min={4} max={10} value={W} onChange={e => setW(Number(e.target.value))} style={{ flex: 1, accentColor: '#00d9a3', cursor: 'pointer' }} />
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: '#00d9a3', fontWeight: 'bold' }}>{W}</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Right Side: DP Table Visualizer */}
-        <div style={{ flex: 1.5, minWidth: 320, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 16, overflowX: 'auto' }}>
+        <div style={{ flex: 1.5, minWidth: 320, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 16, overflowX: 'auto' }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 12 }}>2D DYNAMIC PROGRAMMING GRID [i][w]</div>
           
           <table style={{ borderCollapse: 'collapse', margin: '0 auto', fontFamily: 'var(--font-mono)', fontSize: 11 }}>
             <thead>
               <tr>
-                <th style={{ padding: 6, color: '#5a7a9a', borderBottom: '2px solid rgba(0,240,255,0.12)' }}>Item \ W</th>
+                <th style={{ padding: 6, color: '#5a7a9a', borderBottom: '2px solid rgba(0,217,163,0.12)' }}>Item \ W</th>
                 {Array.from({ length: W + 1 }).map((_, w) => (
-                  <th key={w} style={{ padding: '6px 10px', color: '#5a7a9a', borderBottom: '2px solid rgba(0,240,255,0.12)' }}>{w}</th>
+                  <th key={w} style={{ padding: '6px 10px', color: '#5a7a9a', borderBottom: '2px solid rgba(0,217,163,0.12)' }}>{w}</th>
                 ))}
               </tr>
             </thead>
@@ -282,7 +282,7 @@ export default function KnapsackDPVisualizer() {
               {current.dp.map((row, r) => (
                 <tr key={r}>
                   {/* Left Label */}
-                  <td style={{ padding: '8px 12px', borderRight: '2px solid rgba(0,240,255,0.12)', color: '#5a7a9a', fontWeight: 'bold' }}>
+                  <td style={{ padding: '8px 12px', borderRight: '2px solid rgba(0,217,163,0.12)', color: '#5a7a9a', fontWeight: 'bold' }}>
                     {r === 0 ? 'Base (0)' : `i=${r} (w:${items[r-1].wt}, v:${items[r-1].val})`}
                   </td>
                   {row.map((val, c) => {
@@ -290,7 +290,7 @@ export default function KnapsackDPVisualizer() {
                     return (
                       <td key={c} style={{
                         padding: 0,
-                        border: '1px solid rgba(0, 240, 255, 0.04)',
+                        border: '1px solid rgba(0, 217, 163, 0.04)',
                         textAlign: 'center',
                       }}>
                         <div style={{
@@ -320,7 +320,7 @@ export default function KnapsackDPVisualizer() {
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {[
-          { color: '#00f0ff', label: 'Current cell being computed' },
+          { color: '#00d9a3', label: 'Current cell being computed' },
           { color: '#ef9f27', label: 'Dependencies (exclusion / inclusion subproblems)' },
           { color: '#1d9e75', label: 'Traceback path (selected items)' },
         ].map(l => (

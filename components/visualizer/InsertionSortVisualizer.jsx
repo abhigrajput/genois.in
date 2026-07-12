@@ -166,7 +166,7 @@ export default function InsertionSortVisualizer() {
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
           { label:'Key Value', value: current?.keyVal > 0 ? current.keyVal : '-', color:'#ef9f27' },
-          { label:'Comparisons', value: current?.comparisons ?? 0, color:'#00f0ff' },
+          { label:'Comparisons', value: current?.comparisons ?? 0, color:'#00d9a3' },
           { label:'Shifts', value: current?.shifts ?? 0, color:'#378ADD' },
           { label:'Time', value:'O(n²)', color:'#ff6b4a' },
         ].map(s => (
@@ -177,7 +177,7 @@ export default function InsertionSortVisualizer() {
         ))}
       </div>
 
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
+      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
         {displayArr.map((v, i) => (
           <div key={i} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, flex:1, maxWidth:60 }}>
             <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:barColor(i, current) }}>{v}</span>

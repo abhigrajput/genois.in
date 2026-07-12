@@ -52,22 +52,22 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
   return (
     <div style={{
       background: '#0d1117',
-      border: '1px solid rgba(0,240,255,0.12)',
-      borderLeft: '3px solid #00f0ff',
+      border: '1px solid rgba(0,217,163,0.12)',
+      borderLeft: '3px solid #00d9a3',
       borderRadius: '0 10px 10px 0',
       overflow: 'hidden',
     }}>
       {/* Header */}
       <div style={{
         padding: '8px 14px',
-        background: 'rgba(0,240,255,0.04)',
-        borderBottom: '1px solid rgba(0,240,255,0.1)',
+        background: 'rgba(0,217,163,0.04)',
+        borderBottom: '1px solid rgba(0,217,163,0.1)',
         display: 'flex',
         alignItems: 'center',
         gap: 8,
         flexWrap: 'wrap',
       }}>
-        <span style={{ fontSize: 10, color: '#00f0ff', fontFamily: 'var(--font-mono)', letterSpacing: 1 }}>
+        <span style={{ fontSize: 10, color: '#00d9a3', fontFamily: 'var(--font-mono)', letterSpacing: 1 }}>
           {'{ }'}
         </span>
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#5a7a9a', letterSpacing: 1 }}>
@@ -77,9 +77,9 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
           <span style={{
             marginLeft: 8,
             fontSize: 10,
-            color: '#00f0ff',
+            color: '#00d9a3',
             fontFamily: 'var(--font-mono)',
-            background: 'rgba(0,240,255,0.1)',
+            background: 'rgba(0,217,163,0.1)',
             padding: '2px 8px',
             borderRadius: 4,
             animation: 'pulse 1.5s ease infinite',
@@ -94,8 +94,8 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
         display: 'flex',
         gap: 6,
         padding: '8px 12px',
-        background: 'rgba(0,240,255,0.02)',
-        borderBottom: '1px solid rgba(0,240,255,0.08)',
+        background: 'rgba(0,217,163,0.02)',
+        borderBottom: '1px solid rgba(0,217,163,0.08)',
         flexWrap: 'wrap',
       }}>
         {LANGS.map(l => {
@@ -143,8 +143,8 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
                 ref={isActive ? activeRef : null}
                 style={{
                   padding: '0 14px',
-                  background: isActive ? '#00f0ff22' : 'transparent',
-                  borderLeft: isActive ? '3px solid #00f0ff' : '3px solid transparent',
+                  background: isActive ? '#00d9a322' : 'transparent',
+                  borderLeft: isActive ? '3px solid #00d9a3' : '3px solid transparent',
                   transition: 'all 0.2s ease',
                   display: 'flex',
                   gap: 12,
@@ -152,7 +152,7 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
                 }}
               >
                 <span style={{
-                  color: isActive ? '#00f0ff' : '#3d5066',
+                  color: isActive ? '#00d9a3' : '#3d5066',
                   userSelect: 'none',
                   minWidth: 20,
                   textAlign: 'right',
@@ -164,9 +164,9 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
                 {isActive && (
                   <span style={{
                     fontSize: 9,
-                    color: '#00f0ff',
+                    color: '#00d9a3',
                     fontFamily: 'var(--font-mono)',
-                    background: 'rgba(0,240,255,0.15)',
+                    background: 'rgba(0,217,163,0.15)',
                     padding: '1px 5px',
                     borderRadius: 3,
                     whiteSpace: 'nowrap',
@@ -174,7 +174,7 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
                   }}>Currently executing →</span>
                 )}
                 <span style={{
-                  color: isActive ? '#00f0ff' : syntaxColor(line),
+                  color: isActive ? '#00d9a3' : syntaxColor(line),
                   fontWeight: isActive ? 600 : 400,
                   transition: 'color 0.2s',
                 }}>
@@ -194,7 +194,7 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
         }}>
           <div style={{ color: '#6a9955', marginBottom: 8 }}>{`// ${langLabel} code coming soon`}</div>
           <div style={{ fontSize: 11, color: '#3d5066' }}>
-            We&apos;re still translating this one. Switch to the <strong style={{ color: '#00f0ff' }}>C++</strong> tab to follow along.
+            We&apos;re still translating this one. Switch to the <strong style={{ color: '#00d9a3' }}>C++</strong> tab to follow along.
           </div>
         </div>
       )}

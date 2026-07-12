@@ -28,9 +28,9 @@ const DIFFICULTY_OPTIONS = [
 ];
 
 const TOPIC_COLORS = {
-  arrays: '#00f0ff', strings: '#ff6b4a', linkedlist: '#1d9e75',
+  arrays: '#00d9a3', strings: '#ff6b4a', linkedlist: '#1d9e75',
   trees: '#ef9f27', graphs: '#ff2d78', dp: '#a855f7',
-  greedy: '#ffb020', sorting: '#06b6d4', searching: '#10b981',
+  greedy: '#ffb020', sorting: '#00b389', searching: '#10b981',
   backtracking: '#ec4899', heap: '#f97316', trie: '#8b5cf6',
   'system-design': '#64748b', other: '#6b7280'
 };
@@ -104,7 +104,7 @@ export default function BlogIndex() {
       {/* Grid background */}
       <div style={{
         position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none',
-        backgroundImage: 'linear-gradient(rgba(0,240,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,0.02) 1px,transparent 1px)',
+        backgroundImage: 'linear-gradient(rgba(0,217,163,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,217,163,0.02) 1px,transparent 1px)',
         backgroundSize: '60px 60px',
       }}/>
 
@@ -114,7 +114,7 @@ export default function BlogIndex() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px', flexWrap: 'wrap', gap: 12 }}>
           <div>
             <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: '36px', fontWeight: 800, color: '#e8e8ed', margin: '0 0 8px 0', letterSpacing: '-1px' }}>
-              DSA Blog <span style={{ color: '#00f0ff' }}>— Learn with Examples</span>
+              DSA Blog <span style={{ color: '#00d9a3' }}>— Learn with Examples</span>
             </h1>
             <p style={{ color: '#8a9ab0', fontSize: '14px', margin: 0, lineHeight: '1.6' }}>
               Step-by-step masterclasses on Data Structures and Algorithms.
@@ -128,7 +128,7 @@ export default function BlogIndex() {
         </div>
 
         {/* Search & Filter Bar */}
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: '16px', padding: '20px', marginBottom: '32px' }}>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.08)', borderRadius: '16px', padding: '20px', marginBottom: '32px' }}>
           <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '16px' }}>
             <div style={{ flex: 1, minWidth: '240px', position: 'relative' }}>
               <input
@@ -139,7 +139,7 @@ export default function BlogIndex() {
                 style={{
                   width: '100%',
                   background: '#020812',
-                  border: '1px solid rgba(0,240,255,0.15)',
+                  border: '1px solid rgba(0,217,163,0.15)',
                   borderRadius: '10px',
                   padding: '12px 16px 12px 40px',
                   color: '#e8e8ed',
@@ -156,7 +156,7 @@ export default function BlogIndex() {
               onChange={(e) => { setActiveDifficulty(e.target.value); setPage(1); }}
               style={{
                 background: '#020812',
-                border: '1px solid rgba(0,240,255,0.15)',
+                border: '1px solid rgba(0,217,163,0.15)',
                 borderRadius: '10px',
                 padding: '12px 20px',
                 color: '#e8e8ed',
@@ -174,7 +174,7 @@ export default function BlogIndex() {
             <button
               type="submit"
               style={{
-                background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)',
+                background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)',
                 color: '#020812',
                 border: 'none',
                 borderRadius: '10px',
@@ -200,17 +200,17 @@ export default function BlogIndex() {
                     key={topic.value}
                     onClick={() => { setActiveTopic(topic.value); setPage(1); }}
                     style={{
-                      background: active ? 'rgba(0,240,255,0.12)' : 'rgba(255,255,255,0.02)',
-                      border: `1px solid ${active ? '#00f0ff' : 'rgba(0,240,255,0.15)'}`,
+                      background: active ? 'rgba(0,217,163,0.12)' : 'rgba(255,255,255,0.02)',
+                      border: `1px solid ${active ? '#00d9a3' : 'rgba(0,217,163,0.15)'}`,
                       borderRadius: '20px',
                       padding: '6px 14px',
                       fontSize: '12px',
-                      color: active ? '#00f0ff' : '#8a9ab0',
+                      color: active ? '#00d9a3' : '#8a9ab0',
                       cursor: 'pointer',
                       transition: 'all 0.15s',
                       fontFamily: 'var(--font-body)'
                     }}
-                    onMouseOver={(e) => { if (!active) e.target.style.background = 'rgba(0,240,255,0.05)'; }}
+                    onMouseOver={(e) => { if (!active) e.target.style.background = 'rgba(0,217,163,0.05)'; }}
                     onMouseOut={(e) => { if (!active) e.target.style.background = 'rgba(255,255,255,0.02)'; }}
                   >
                     {topic.label}
@@ -224,10 +224,10 @@ export default function BlogIndex() {
         {/* Loading / Results Grid */}
         {loading ? (
           <div style={{ minHeight: '300px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#5a7a9a' }}>
-            <div style={{ fontSize: '20px', animation: 'pulse 1.5s infinite', color: '#00f0ff', fontWeight: 'bold' }}>Loading DSA Articles...</div>
+            <div style={{ fontSize: '20px', animation: 'pulse 1.5s infinite', color: '#00d9a3', fontWeight: 'bold' }}>Loading DSA Articles...</div>
           </div>
         ) : posts.length === 0 ? (
-          <div style={{ minHeight: '300px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: '#5a7a9a', background: '#070f1f', borderRadius: '16px', border: '1px dashed rgba(0,240,255,0.1)', padding: '40px' }}>
+          <div style={{ minHeight: '300px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', color: '#5a7a9a', background: '#070f1f', borderRadius: '16px', border: '1px dashed rgba(0,217,163,0.1)', padding: '40px' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>📭</div>
             <h3 style={{ color: '#e8e8ed', margin: '0 0 8px 0', fontFamily: 'var(--font-heading)' }}>No Articles Found</h3>
             <p style={{ margin: 0, fontSize: '14px', maxWidth: '360px', textAlign: 'center', lineHeight: 1.5 }}>We couldn&apos;t find any published articles matching your topic or search parameters.</p>
@@ -245,12 +245,12 @@ export default function BlogIndex() {
                     href={`/blog/${post.slug}`}
                     style={{
                       display: 'flex', flexDirection: 'column',
-                      background: '#070f1f', border: '1px solid rgba(0,240,255,0.06)',
+                      background: '#070f1f', border: '1px solid rgba(0,217,163,0.06)',
                       borderRadius: '16px', overflow: 'hidden', textDecoration: 'none',
                       color: 'inherit', transition: 'all 0.2s ease-in-out'
                     }}
-                    onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'rgba(0,240,255,0.2)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,240,255,0.05)'; }}
-                    onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(0,240,255,0.06)'; e.currentTarget.style.boxShadow = 'none'; }}
+                    onMouseOver={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.borderColor = 'rgba(0,217,163,0.2)'; e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,217,163,0.05)'; }}
+                    onMouseOut={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'rgba(0,217,163,0.06)'; e.currentTarget.style.boxShadow = 'none'; }}
                   >
                     <div style={{ height: '180px', width: '100%', overflow: 'hidden', background: '#0a0a0f', position: 'relative' }}>
                       {post.cover_image ? (
@@ -291,13 +291,13 @@ export default function BlogIndex() {
 
             {totalPages > 1 && (
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '16px', marginTop: '24px' }}>
-                <button disabled={page === 1} onClick={() => setPage(p => Math.max(1, p - 1))} style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid rgba(0,240,255,0.15)', background: page === 1 ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.03)', color: page === 1 ? '#3a4a5a' : '#00f0ff', cursor: page === 1 ? 'not-allowed' : 'pointer', fontSize: '13px', fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
+                <button disabled={page === 1} onClick={() => setPage(p => Math.max(1, p - 1))} style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid rgba(0,217,163,0.15)', background: page === 1 ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.03)', color: page === 1 ? '#3a4a5a' : '#00d9a3', cursor: page === 1 ? 'not-allowed' : 'pointer', fontSize: '13px', fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
                   ◀ Previous
                 </button>
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', color: '#5a7a9a' }}>
                   PAGE <strong style={{ color: '#e8e8ed' }}>{page}</strong> OF <strong style={{ color: '#e8e8ed' }}>{totalPages}</strong>
                 </span>
-                <button disabled={page === totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid rgba(0,240,255,0.15)', background: page === totalPages ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.03)', color: page === totalPages ? '#3a4a5a' : '#00f0ff', cursor: page === totalPages ? 'not-allowed' : 'pointer', fontSize: '13px', fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
+                <button disabled={page === totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))} style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid rgba(0,217,163,0.15)', background: page === totalPages ? 'rgba(255,255,255,0.01)' : 'rgba(255,255,255,0.03)', color: page === totalPages ? '#3a4a5a' : '#00d9a3', cursor: page === totalPages ? 'not-allowed' : 'pointer', fontSize: '13px', fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
                   Next ▶
                 </button>
               </div>

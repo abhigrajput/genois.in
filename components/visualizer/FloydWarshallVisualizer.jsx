@@ -109,16 +109,16 @@ export default function FloydWarshallVisualizer() {
   const reset = () => { setSteps([]); setStepIdx(-1); setIsPlaying(false); setAnimCell(null); clearInterval(intervalRef.current); };
 
   function cellStyle(i, j) {
-    if (!current) return { bg: '#0d1a2a', border: 'rgba(0,240,255,0.08)', color: '#5a7a9a' };
+    if (!current) return { bg: '#0d1a2a', border: 'rgba(0,217,163,0.08)', color: '#5a7a9a' };
     const isCurrent = current.i === i && current.j === j;
     const isK_row = current.k === i || current.k === j;
     const isUpdated = isCurrent && current.updated;
     const isDiag = i === j;
     if (isDiag) return { bg: 'rgba(239,159,39,0.08)', border: 'rgba(239,159,39,0.2)', color: '#ef9f27' };
     if (isUpdated) return { bg: 'rgba(29,158,117,0.2)', border: 'rgba(29,158,117,0.5)', color: '#1d9e75' };
-    if (isCurrent) return { bg: 'rgba(0,240,255,0.12)', border: 'rgba(0,240,255,0.4)', color: '#00f0ff' };
+    if (isCurrent) return { bg: 'rgba(0,217,163,0.12)', border: 'rgba(0,217,163,0.4)', color: '#00d9a3' };
     if (isK_row) return { bg: 'rgba(255,107,74,0.06)', border: 'rgba(255,107,74,0.15)', color: '#ff6b4a' };
-    return { bg: '#0d1a2a', border: 'rgba(0,240,255,0.08)', color: '#e8e8ed' };
+    return { bg: '#0d1a2a', border: 'rgba(0,217,163,0.08)', color: '#e8e8ed' };
   }
 
   return (
@@ -132,7 +132,7 @@ export default function FloydWarshallVisualizer() {
 
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
-          { label:'Vertices', value:4, color:'#00f0ff' },
+          { label:'Vertices', value:4, color:'#00d9a3' },
           { label:'k (via)', value:current?.k>=0?current.k:'-', color:'#ff6b4a' },
           { label:'i (from)', value:current?.i>=0?current.i:'-', color:'#ef9f27' },
           { label:'j (to)', value:current?.j>=0?current.j:'-', color:'#1d9e75' },
@@ -145,7 +145,7 @@ export default function FloydWarshallVisualizer() {
       </div>
 
       {/* Distance matrix */}
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:12, padding:24, display:'flex', flexDirection:'column', alignItems:'center' }}>
+      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, padding:24, display:'flex', flexDirection:'column', alignItems:'center' }}>
         <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', letterSpacing:1, marginBottom:16 }}>DISTANCE MATRIX dist[i][j]</div>
 
         {/* Column headers */}
@@ -167,7 +167,7 @@ export default function FloydWarshallVisualizer() {
                   background:cs.bg, border:`2px solid ${cs.border}`, borderRadius:8, margin:2,
                   transition:'all 0.35s ease',
                   animation: animCell===key ? 'flash 0.4s ease' : 'none',
-                  boxShadow: cs.color==='#1d9e75' ? '0 0 12px rgba(29,158,117,0.3)' : cs.color==='#00f0ff' ? '0 0 8px rgba(0,240,255,0.2)' : 'none',
+                  boxShadow: cs.color==='#1d9e75' ? '0 0 12px rgba(29,158,117,0.3)' : cs.color==='#00d9a3' ? '0 0 8px rgba(0,217,163,0.2)' : 'none',
                 }}>
                   <span style={{ fontFamily:'var(--font-mono)', fontSize:16, fontWeight:700, color:cs.color }}>
                     {v >= INF ? '∞' : v}
@@ -200,20 +200,20 @@ export default function FloydWarshallVisualizer() {
       />
 
       <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
-        <button onClick={start} style={btn('#00f0ff')}>▶ Run Floyd-Warshall</button>
+        <button onClick={start} style={btn('#00d9a3')}>▶ Run Floyd-Warshall</button>
         <button onClick={()=>setIsPlaying(p=>!p)} style={btn('#ff6b4a')}>{isPlaying?'⏸ Pause':'▶ Resume'}</button>
         <button onClick={()=>setStepIdx(p=>Math.min(p+1,steps.length-1))} style={btn('#ef9f27')}>⏭ Step</button>
         <button onClick={()=>setStepIdx(p=>Math.max(p-1,0))} style={btn('#5a7a9a')}>⏮ Back</button>
         <div style={{ display:'flex', gap:4 }}>
           {[1,2,3,4].map(s=>(
-            <button key={s} onClick={()=>setSpeed(s)} style={{ padding:'3px 10px', borderRadius:6, border:speed===s?'1px solid #00f0ff':'1px solid rgba(0,240,255,0.15)', background:speed===s?'rgba(0,240,255,0.12)':'transparent', color:speed===s?'#00f0ff':'#5a7a9a', fontSize:11, fontFamily:'var(--font-mono)', cursor:'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
+            <button key={s} onClick={()=>setSpeed(s)} style={{ padding:'3px 10px', borderRadius:6, border:speed===s?'1px solid #00d9a3':'1px solid rgba(0,217,163,0.15)', background:speed===s?'rgba(0,217,163,0.12)':'transparent', color:speed===s?'#00d9a3':'#5a7a9a', fontSize:11, fontFamily:'var(--font-mono)', cursor:'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
           ))}
         </div>
         <button onClick={reset} style={btn('#ff2d78')}>↺ Reset</button>
       </div>
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
-        {[['#ff6b4a','via k (intermediate)'],['#00f0ff','d[i][j] checking'],['#1d9e75','Updated (shorter path)'],['#ef9f27','Diagonal (self)']].map(([c,l])=>(
+        {[['#ff6b4a','via k (intermediate)'],['#00d9a3','d[i][j] checking'],['#1d9e75','Updated (shorter path)'],['#ef9f27','Diagonal (self)']].map(([c,l])=>(
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:2, background:c+'44', border:`2px solid ${c}` }}/>
             <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>

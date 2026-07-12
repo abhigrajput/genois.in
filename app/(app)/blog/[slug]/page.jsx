@@ -5,9 +5,9 @@ import toast from 'react-hot-toast';
 import MarkdownRenderer from '@/components/blog/MarkdownRenderer';
 
 const TOPIC_COLORS = {
-  arrays: '#00f0ff', strings: '#ff6b4a', linkedlist: '#1d9e75',
+  arrays: '#00d9a3', strings: '#ff6b4a', linkedlist: '#1d9e75',
   trees: '#ef9f27', graphs: '#ff2d78', dp: '#a855f7',
-  greedy: '#ffb020', sorting: '#06b6d4', searching: '#10b981',
+  greedy: '#ffb020', sorting: '#00b389', searching: '#10b981',
   backtracking: '#ec4899', heap: '#f97316', trie: '#8b5cf6',
   'system-design': '#64748b', other: '#6b7280'
 };
@@ -100,7 +100,7 @@ export default function BlogPostDetail({ params }) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh', color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '20px', color: '#00f0ff', fontWeight: 'bold', animation: 'pulse 1.5s infinite' }}>Analyzing Article Pointers...</div>
+          <div style={{ fontSize: '20px', color: '#00d9a3', fontWeight: 'bold', animation: 'pulse 1.5s infinite' }}>Analyzing Article Pointers...</div>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', marginTop: '6px' }}>RETRIEVING DSA EXPLAINERS</div>
         </div>
       </div>
@@ -113,7 +113,7 @@ export default function BlogPostDetail({ params }) {
         <div style={{ fontSize: '64px', marginBottom: '16px' }}>⚠️</div>
         <h2 style={{ color: '#e8e8ed', fontFamily: 'var(--font-heading)' }}>Article Not Found</h2>
         <p style={{ margin: '0 0 24px 0', fontSize: '14px' }}>The post you are looking for has either been moved, deleted, or remains a draft.</p>
-        <Link href="/blog" style={{ padding: '12px 24px', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', textDecoration: 'none', borderRadius: '8px', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>
+        <Link href="/blog" style={{ padding: '12px 24px', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', textDecoration: 'none', borderRadius: '8px', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>
           Back to DSA Blog
         </Link>
       </div>
@@ -149,7 +149,7 @@ export default function BlogPostDetail({ params }) {
           )}
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '13px', color: '#5a7a9a', marginBottom: '32px', borderTop: '1px solid rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.04)', padding: '12px 0' }}>
-            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontFamily: 'var(--font-heading)' }}>
+            <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '13px', fontFamily: 'var(--font-heading)' }}>
               {post.authors?.name?.charAt(0) || 'D'}
             </div>
             <div>
@@ -171,7 +171,7 @@ export default function BlogPostDetail({ params }) {
           {post.cpp_code && (
             <div style={{ marginTop: '48px', paddingTop: '32px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#00f0ff', fontFamily: 'var(--font-heading)', fontSize: '20px', fontWeight: 700 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#00d9a3', fontFamily: 'var(--font-heading)', fontSize: '20px', fontWeight: 700 }}>
                   <span>{'{ }'}</span> C++ Implementation
                 </div>
                 <a href={`https://godbolt.org/?code=${encodeURIComponent(post.cpp_code)}`} target="_blank" rel="noreferrer" style={{ textDecoration: 'none', fontSize: '12px', color: '#ff6b4a', background: 'rgba(255,107,74,0.08)', border: '1px solid rgba(255,107,74,0.25)', padding: '6px 14px', borderRadius: '8px', fontFamily: 'var(--font-heading)', fontWeight: 600, transition: 'all 0.15s' }} onMouseOver={(e) => e.target.style.background = 'rgba(255,107,74,0.15)'} onMouseOut={(e) => e.target.style.background = 'rgba(255,107,74,0.08)'}>
@@ -192,8 +192,8 @@ export default function BlogPostDetail({ params }) {
             </div>
           )}
 
-          <div style={{ marginTop: '48px', background: '#070f1f', border: '1px solid rgba(0,240,255,0.06)', borderRadius: '16px', padding: '24px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
-            <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontFamily: 'var(--font-heading)', flexShrink: 0 }}>
+          <div style={{ marginTop: '48px', background: '#070f1f', border: '1px solid rgba(0,217,163,0.06)', borderRadius: '16px', padding: '24px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+            <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontFamily: 'var(--font-heading)', flexShrink: 0 }}>
               {post.authors?.name?.charAt(0) || 'D'}
             </div>
             <div style={{ flex: 1, minWidth: '240px' }}>
@@ -209,12 +209,12 @@ export default function BlogPostDetail({ params }) {
         {/* Sidebar: TOC + Share + Related */}
         <aside style={{ flex: 0.6, minWidth: '240px', display: 'flex', flexDirection: 'column', gap: '24px', height: 'fit-content', position: 'sticky', top: '24px' }}>
           {headings.length > 0 && (
-            <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.06)', borderRadius: '12px', padding: '16px 20px' }}>
+            <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.06)', borderRadius: '12px', padding: '16px 20px' }}>
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#5a7a9a', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '12px', fontWeight: 'bold' }}>TABLE OF CONTENTS</div>
               <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {headings.map((h, idx) => (
-                  <a key={idx} href={`#${h.anchor}`} style={{ textDecoration: 'none', fontSize: h.level === 2 ? '13px' : '12px', color: h.level === 2 ? '#8a9ab0' : '#5a7a9a', paddingLeft: h.level === 3 ? '12px' : '0px', transition: 'color 0.15s', lineHeight: '1.4' }} onMouseOver={(e) => e.target.style.color = '#00f0ff'} onMouseOut={(e) => e.target.style.color = h.level === 2 ? '#8a9ab0' : '#5a7a9a'}>
-                    {h.level === 3 && <span style={{ color: '#00f0ff', opacity: 0.5, marginRight: '4px' }}>└</span>}
+                  <a key={idx} href={`#${h.anchor}`} style={{ textDecoration: 'none', fontSize: h.level === 2 ? '13px' : '12px', color: h.level === 2 ? '#8a9ab0' : '#5a7a9a', paddingLeft: h.level === 3 ? '12px' : '0px', transition: 'color 0.15s', lineHeight: '1.4' }} onMouseOver={(e) => e.target.style.color = '#00d9a3'} onMouseOut={(e) => e.target.style.color = h.level === 2 ? '#8a9ab0' : '#5a7a9a'}>
+                    {h.level === 3 && <span style={{ color: '#00d9a3', opacity: 0.5, marginRight: '4px' }}>└</span>}
                     {h.text}
                   </a>
                 ))}
@@ -222,7 +222,7 @@ export default function BlogPostDetail({ params }) {
             </div>
           )}
 
-          <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.06)', borderRadius: '12px', padding: '16px 20px' }}>
+          <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.06)', borderRadius: '12px', padding: '16px 20px' }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#5a7a9a', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '12px', fontWeight: 'bold' }}>SHARE ARTICLE</div>
             <div style={{ display: 'flex', gap: '10px' }}>
               <a href={getTwitterShareLink()} target="_blank" rel="noreferrer" style={{ flex: 1, textDecoration: 'none', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#e8e8ed', fontSize: '13px', fontFamily: 'var(--font-heading)', fontWeight: 600, transition: 'all 0.15s' }} onMouseOver={(e) => { e.target.style.background = '#1da1f2'; e.target.style.borderColor = '#1da1f2'; }} onMouseOut={(e) => { e.target.style.background = 'rgba(255,255,255,0.02)'; e.target.style.borderColor = 'rgba(255,255,255,0.08)'; }}>
@@ -231,14 +231,14 @@ export default function BlogPostDetail({ params }) {
               <a href={getLinkedInShareLink()} target="_blank" rel="noreferrer" style={{ flex: 1, textDecoration: 'none', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#e8e8ed', fontSize: '13px', fontFamily: 'var(--font-heading)', fontWeight: 600, transition: 'all 0.15s' }} onMouseOver={(e) => { e.target.style.background = '#0077b5'; e.target.style.borderColor = '#0077b5'; }} onMouseOut={(e) => { e.target.style.background = 'rgba(255,255,255,0.02)'; e.target.style.borderColor = 'rgba(255,255,255,0.08)'; }}>
                 💼 Link
               </a>
-              <button onClick={copyPageLink} style={{ flex: 1, background: copiedLink ? 'rgba(29,158,117,0.1)' : 'rgba(255,255,255,0.02)', border: `1px solid ${copiedLink ? '#1d9e75' : 'rgba(255,255,255,0.08)'}`, borderRadius: '8px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: copiedLink ? '#1d9e75' : '#00f0ff', fontSize: '13px', fontFamily: 'var(--font-heading)', fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' }}>
+              <button onClick={copyPageLink} style={{ flex: 1, background: copiedLink ? 'rgba(29,158,117,0.1)' : 'rgba(255,255,255,0.02)', border: `1px solid ${copiedLink ? '#1d9e75' : 'rgba(255,255,255,0.08)'}`, borderRadius: '8px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: copiedLink ? '#1d9e75' : '#00d9a3', fontSize: '13px', fontFamily: 'var(--font-heading)', fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' }}>
                 {copiedLink ? '✓ Copied' : '🔗 Copy'}
               </button>
             </div>
           </div>
 
           {related.length > 0 && (
-            <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.06)', borderRadius: '12px', padding: '16px 20px' }}>
+            <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.06)', borderRadius: '12px', padding: '16px 20px' }}>
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: '#5a7a9a', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '14px', fontWeight: 'bold' }}>RELATED ARTICLES</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                 {related.map(p => (

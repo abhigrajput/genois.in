@@ -59,14 +59,14 @@ export default function CertificatePage() {
       doc.rect(0, 0, 297, 210, 'F');
 
       // Border accents
-      doc.setFillColor(0, 240, 255);
+      doc.setFillColor(0, 217, 163);
       doc.rect(0, 0, 297, 3, 'F');
       doc.rect(0, 207, 297, 3, 'F');
       doc.rect(0, 0, 3, 210, 'F');
       doc.rect(294, 0, 3, 210, 'F');
 
       // Logo
-      doc.setTextColor(0, 240, 255);
+      doc.setTextColor(0, 217, 163);
       doc.setFontSize(20);
       doc.setFont('helvetica', 'bold');
       doc.text('GENOIS', 148.5, 22, { align: 'center' });
@@ -77,7 +77,7 @@ export default function CertificatePage() {
       doc.text('Career OS for Engineering Students · genois.in', 148.5, 29, { align: 'center' });
 
       // Divider
-      doc.setDrawColor(0, 240, 255);
+      doc.setDrawColor(0, 217, 163);
       doc.setLineWidth(0.3);
       doc.line(40, 33, 257, 33);
 
@@ -87,13 +87,13 @@ export default function CertificatePage() {
       doc.text('THIS IS TO CERTIFY THAT', 148.5, 42, { align: 'center' });
 
       // Recipient Name
-      doc.setTextColor(0, 240, 255);
+      doc.setTextColor(0, 217, 163);
       doc.setFontSize(24);
       doc.setFont('helvetica', 'bold');
       doc.text(cert.recipientName, 148.5, 58, { align: 'center' });
 
       // Underline name
-      doc.setDrawColor(0, 240, 255);
+      doc.setDrawColor(0, 217, 163);
       doc.setLineWidth(0.2);
       doc.line(60, 62, 237, 62);
 
@@ -135,11 +135,11 @@ export default function CertificatePage() {
       boxes.forEach(b => {
         doc.setFillColor(7, 15, 31);
         doc.roundedRect(b.x, 110, 55, 24, 2, 2, 'F');
-        doc.setDrawColor(0, 240, 255);
+        doc.setDrawColor(0, 217, 163);
         doc.setLineWidth(0.2);
         doc.roundedRect(b.x, 110, 55, 24, 2, 2, 'S');
 
-        doc.setTextColor(0, 240, 255);
+        doc.setTextColor(0, 217, 163);
         doc.setFontSize(16);
         doc.setFont('helvetica', 'bold');
         doc.text(b.value, b.x + 27.5, 122, { align: 'center' });
@@ -151,7 +151,7 @@ export default function CertificatePage() {
       });
 
       // Divider
-      doc.setDrawColor(0, 240, 255);
+      doc.setDrawColor(0, 217, 163);
       doc.setLineWidth(0.2);
       doc.line(40, 144, 257, 144);
 
@@ -163,9 +163,9 @@ export default function CertificatePage() {
       doc.text(`Verify at: ${cert.verifyUrl}`, 237, 152, { align: 'center' });
 
       // Signature line
-      doc.setDrawColor(0, 240, 255);
+      doc.setDrawColor(0, 217, 163);
       doc.line(60, 165, 120, 165);
-      doc.setTextColor(0, 240, 255);
+      doc.setTextColor(0, 217, 163);
       doc.setFontSize(9);
       doc.setFont('helvetica', 'bold');
       doc.text('GENOIS', 90, 172, { align: 'center' });
@@ -192,9 +192,9 @@ export default function CertificatePage() {
   const CertCard = ({ cert, certErr, title, desc, threshold, current, unit, type }) => {
     const pct = Math.min(100, Math.round((current / threshold) * 100));
     return (
-      <div style={{ background: '#070f1f', border: `1px solid ${cert ? 'rgba(239,159,39,0.35)' : 'rgba(0,240,255,0.08)'}`, borderRadius: 16, padding: 28, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ background: '#070f1f', border: `1px solid ${cert ? 'rgba(239,159,39,0.35)' : 'rgba(0,217,163,0.08)'}`, borderRadius: 16, padding: 28, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         {cert && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: 'linear-gradient(90deg,#EF9F27,#D85A30)' }} />}
-        {!cert && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,rgba(0,240,255,0.3),transparent)' }} />}
+        {!cert && <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,rgba(0,217,163,0.3),transparent)' }} />}
 
         <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
           <div style={{ flex: 1 }}>
@@ -236,10 +236,10 @@ export default function CertificatePage() {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
               <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>PROGRESS TO UNLOCK</span>
-              <span style={{ fontSize: 11, color: '#00f0ff', fontFamily: 'var(--font-mono)' }}>{current}/{threshold} {unit}</span>
+              <span style={{ fontSize: 11, color: '#00d9a3', fontFamily: 'var(--font-mono)' }}>{current}/{threshold} {unit}</span>
             </div>
             <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 99, height: 8, marginBottom: 10 }}>
-              <div style={{ background: 'linear-gradient(90deg,#00f0ff,#ff6b4a)', borderRadius: 99, height: 8, width: `${pct}%`, transition: 'width 1s ease' }} />
+              <div style={{ background: 'linear-gradient(90deg,#00d9a3,#ff6b4a)', borderRadius: 99, height: 8, width: `${pct}%`, transition: 'width 1s ease' }} />
             </div>
             <div style={{ fontSize: 12, color: '#5a7a9a' }}>
               {threshold - current > 0
@@ -256,7 +256,7 @@ export default function CertificatePage() {
   return (
     <div style={{ fontFamily: 'var(--font-body)', width: '100%', paddingBottom: 60 }}>
       <div style={{ marginBottom: 32 }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 8 }}>ACHIEVEMENTS</div>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 2, marginBottom: 8 }}>ACHIEVEMENTS</div>
         <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: '#e8e8ed', marginBottom: 8, margin: 0 }}>
           My Certificates
         </h1>
@@ -288,7 +288,7 @@ export default function CertificatePage() {
         />
       </div>
 
-      <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 14, padding: 24 }}>
+      <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 14, padding: 24 }}>
         <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: '#e8e8ed', marginBottom: 16 }}>
           💡 How to earn certificates faster
         </div>

@@ -166,14 +166,14 @@ export default function ProjectsPortfolioPage() {
             return (
               <div key={idx} style={{
                 background: '#070f1a',
-                border: isLocked ? '1px solid rgba(255,255,255,0.03)' : '1px solid rgba(0,240,255,0.08)',
+                border: isLocked ? '1px solid rgba(255,255,255,0.03)' : '1px solid rgba(0,217,163,0.08)',
                 borderRadius: '16px', padding: '20px', opacity: isLocked ? 0.5 : 1,
                 position: 'relative', overflow: 'hidden', transition: 'all 0.25s'
               }}>
                 {/* Horizontal flow line for timeline */}
                 <div style={{
                   position: 'absolute', top: 0, left: 0, width: '4px', height: '100%',
-                  background: isLocked ? 'rgba(255,255,255,0.05)' : status === 'reviewed' ? '#1D9E75' : status === 'submitted' ? '#00f0ff' : 'rgba(0,240,255,0.15)'
+                  background: isLocked ? 'rgba(255,255,255,0.05)' : status === 'reviewed' ? '#1D9E75' : status === 'submitted' ? '#00d9a3' : 'rgba(0,217,163,0.15)'
                 }} />
 
                 {/* Title & Badge Row */}
@@ -190,7 +190,7 @@ export default function ProjectsPortfolioPage() {
                   <div>
                     {isLocked && <span className="text-gray-500 text-xs font-semibold">🔒 Locked</span>}
                     {!isLocked && status === 'not_started' && <span className="text-gray-400 text-xs font-semibold">⏳ Not Started</span>}
-                    {!isLocked && status === 'submitted' && <span style={{ color: '#00f0ff', fontSize: '12px', fontWeight: 700 }}>🛸 Under AI Audit</span>}
+                    {!isLocked && status === 'submitted' && <span style={{ color: '#00d9a3', fontSize: '12px', fontWeight: 700 }}>🛸 Under AI Audit</span>}
                     {!isLocked && status === 'reviewed' && <span style={{ color: '#1D9E75', fontSize: '12px', fontWeight: 700 }}>✅ Audit Completed</span>}
                   </div>
                 </div>
@@ -210,7 +210,7 @@ export default function ProjectsPortfolioPage() {
                           padding: '8px 10px', borderRadius: '8px', fontSize: '12px', color: '#b2c8dc',
                           border: '1px solid rgba(255,255,255,0.02)'
                         }}>
-                          <span style={{ color: '#00f0ff', fontWeight: 700 }}>{i+1}</span>
+                          <span style={{ color: '#00d9a3', fontWeight: 700 }}>{i+1}</span>
                           <span>{st}</span>
                         </div>
                       ))}
@@ -224,7 +224,7 @@ export default function ProjectsPortfolioPage() {
                       // Assign dynamically generated project UUID or standard ID if exists in db
                       proj.id = progressRecord?.project_id || 'dummy-uuid-needed';
                     }} style={{
-                      marginTop: '16px', background: 'linear-gradient(135deg, #00f0ff, #ff6b4a)',
+                      marginTop: '16px', background: 'linear-gradient(135deg, #00d9a3, #ff6b4a)',
                       color: '#020812', fontWeight: 700, fontSize: '13px', padding: '10px 20px',
                       borderRadius: '8px', border: 'none', cursor: 'pointer'
                     }}>
@@ -235,7 +235,7 @@ export default function ProjectsPortfolioPage() {
                   {activeSubmitting === proj.title && (
                     <form onSubmit={(e) => submitProject(e, proj)} style={{
                       marginTop: '16px', padding: '14px', borderRadius: '12px',
-                      border: '1px solid rgba(0,240,255,0.2)', background: 'rgba(0,0,0,0.15)',
+                      border: '1px solid rgba(0,217,163,0.2)', background: 'rgba(0,0,0,0.15)',
                       display: 'flex', flexDirection: 'column', gap: '10px'
                     }}>
                       <div>
@@ -243,7 +243,7 @@ export default function ProjectsPortfolioPage() {
                         <input type="url" required value={githubUrl} onChange={e => setGithubUrl(e.target.value)}
                           placeholder="https://github.com/yourusername/portfolio"
                           style={{
-                            width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid rgba(0,240,255,0.15)',
+                            width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid rgba(0,217,163,0.15)',
                             background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: '13px', outline: 'none'
                           }} />
                       </div>
@@ -252,14 +252,14 @@ export default function ProjectsPortfolioPage() {
                         <textarea value={projectNotes} onChange={e => setProjectNotes(e.target.value)} rows={2}
                           placeholder="List technologies used, features implemented..."
                           style={{
-                            width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid rgba(0,240,255,0.15)',
+                            width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid rgba(0,217,163,0.15)',
                             background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: '13px', outline: 'none', resize: 'none'
                           }} />
                       </div>
                       <div style={{ display: 'flex', gap: '8px' }}>
                         <button type="submit" disabled={submitting} style={{
                           flex: 1, padding: '10px', borderRadius: '6px', border: 'none', fontWeight: 700,
-                          background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', cursor: 'pointer'
+                          background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', cursor: 'pointer'
                         }}>{submitting ? 'Submitting...' : 'Submit Repository'}</button>
                         <button type="button" onClick={() => setActiveSubmitting(null)} style={{
                           padding: '10px 16px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.15)',
@@ -320,7 +320,7 @@ export default function ProjectsPortfolioPage() {
           {/* Portfolio Stats */}
           <div style={{
             background: 'linear-gradient(135deg, #091322, #070f1a)',
-            border: '1px solid rgba(0,240,255,0.12)',
+            border: '1px solid rgba(0,217,163,0.12)',
             borderRadius: '16px', padding: '20px'
           }}>
             <h3 style={{
@@ -329,7 +329,7 @@ export default function ProjectsPortfolioPage() {
             }}>📊 Portfolio Metrics</h3>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
               <div style={{ background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
-                <div style={{ fontSize: '24px', fontWeight: 800, color: '#00f0ff' }}>
+                <div style={{ fontSize: '24px', fontWeight: 800, color: '#00d9a3' }}>
                   {historyList.filter(h => h.status === 'reviewed').length}
                 </div>
                 <div style={{ fontSize: '11px', color: '#5a7a9a', marginTop: '2px' }}>Audited Projects</div>
@@ -345,7 +345,7 @@ export default function ProjectsPortfolioPage() {
 
           {/* VS Code Setup Guide */}
           <div style={{
-            background: '#070f1a', border: '1px solid rgba(0,240,255,0.08)',
+            background: '#070f1a', border: '1px solid rgba(0,217,163,0.08)',
             borderRadius: '16px', padding: '20px'
           }}>
             <h3 style={{
@@ -357,7 +357,7 @@ export default function ProjectsPortfolioPage() {
                 <strong>1. Initialize Workspace</strong>
                 <pre style={{
                   background: 'rgba(0,0,0,0.3)', padding: '8px', borderRadius: '6px',
-                  fontFamily: 'var(--font-mono)', fontSize: '11px', color: '#00f0ff', marginTop: '4px'
+                  fontFamily: 'var(--font-mono)', fontSize: '11px', color: '#00d9a3', marginTop: '4px'
                 }}>mkdir genois-portfolio && cd genois-portfolio</pre>
               </div>
               <div>

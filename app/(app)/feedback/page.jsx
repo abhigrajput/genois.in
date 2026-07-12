@@ -12,7 +12,7 @@ const TYPES = [
   { value:'general',  label:'💬 General',            desc:'Something else' },
 ];
 
-const inp = { width:'100%', padding:'12px 14px', borderRadius:10, border:'1px solid rgba(0,240,255,0.12)', background:'#070f1f', color:'#e8e8ed', fontSize:14, outline:'none', boxSizing:'border-box', fontFamily:'var(--font-body)' };
+const inp = { width:'100%', padding:'12px 14px', borderRadius:10, border:'1px solid rgba(0,217,163,0.12)', background:'#070f1f', color:'#e8e8ed', fontSize:14, outline:'none', boxSizing:'border-box', fontFamily:'var(--font-body)' };
 const label = { fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', letterSpacing:2, marginBottom:8, display:'block' };
 
 export default function FeedbackPage() {
@@ -42,7 +42,7 @@ export default function FeedbackPage() {
       <p style={{ color:'#5a7a9a', fontSize:14, lineHeight:1.7, marginBottom:24 }}>
         Thank you for taking the time to write to us. We read every message and will get back to you if needed.
       </p>
-      <button onClick={() => { setSent(false); setMessage(''); setSubject(''); }} style={{ padding:'12px 24px', borderRadius:10, border:'none', cursor:'pointer', background:'linear-gradient(135deg,#00f0ff,#ff6b4a)', color:'#020812', fontFamily:'var(--font-heading)', fontSize:14, fontWeight:700 }}>
+      <button onClick={() => { setSent(false); setMessage(''); setSubject(''); }} style={{ padding:'12px 24px', borderRadius:10, border:'none', cursor:'pointer', background:'linear-gradient(135deg,#00d9a3,#ff6b4a)', color:'#020812', fontFamily:'var(--font-heading)', fontSize:14, fontWeight:700 }}>
         Send Another →
       </button>
     </div>
@@ -58,8 +58,8 @@ export default function FeedbackPage() {
       <div style={{ ...label, display:'block', marginBottom:12 }}>TYPE OF FEEDBACK</div>
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:8, marginBottom:20 }}>
         {TYPES.map(t => (
-          <button key={t.value} onClick={() => setType(t.value)} style={{ padding:'12px 14px', borderRadius:10, border:`1px solid ${type===t.value?'rgba(0,240,255,0.4)':'rgba(255,255,255,0.06)'}`, background:type===t.value?'rgba(0,240,255,0.08)':'rgba(255,255,255,0.02)', cursor:'pointer', textAlign:'left' }}>
-            <div style={{ fontSize:13, fontWeight:600, color:type===t.value?'#00f0ff':'#e8e8ed', marginBottom:3 }}>{t.label}</div>
+          <button key={t.value} onClick={() => setType(t.value)} style={{ padding:'12px 14px', borderRadius:10, border:`1px solid ${type===t.value?'rgba(0,217,163,0.4)':'rgba(255,255,255,0.06)'}`, background:type===t.value?'rgba(0,217,163,0.08)':'rgba(255,255,255,0.02)', cursor:'pointer', textAlign:'left' }}>
+            <div style={{ fontSize:13, fontWeight:600, color:type===t.value?'#00d9a3':'#e8e8ed', marginBottom:3 }}>{t.label}</div>
             <div style={{ fontSize:11, color:'#5a7a9a' }}>{t.desc}</div>
           </button>
         ))}
@@ -81,7 +81,7 @@ export default function FeedbackPage() {
         <input value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" type="email" style={inp} />
       </div>
 
-      <button onClick={submit} disabled={sending || !message} style={{ width:'100%', padding:14, borderRadius:12, border:'none', cursor:sending||!message?'not-allowed':'pointer', background:sending||!message?'rgba(0,240,255,0.15)':'linear-gradient(135deg,#00f0ff,#ff6b4a)', color:'#020812', fontFamily:'var(--font-heading)', fontSize:15, fontWeight:700, transition:'all 0.2s' }}>
+      <button onClick={submit} disabled={sending || !message} style={{ width:'100%', padding:14, borderRadius:12, border:'none', cursor:sending||!message?'not-allowed':'pointer', background:sending||!message?'rgba(0,217,163,0.15)':'linear-gradient(135deg,#00d9a3,#ff6b4a)', color:'#020812', fontFamily:'var(--font-heading)', fontSize:15, fontWeight:700, transition:'all 0.2s' }}>
         {sending ? 'Sending...' : 'Send Feedback →'}
       </button>
 

@@ -42,9 +42,9 @@ export default function CorrelationPage() {
       </div>
 
       {data?.keyInsight && (
-        <div style={{ background: 'linear-gradient(135deg,rgba(0,240,255,0.06),rgba(255,107,74,0.03))', border: '1px solid rgba(0,240,255,0.2)', borderRadius: 14, padding: 20, marginBottom: 24, position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,#00f0ff,#ff6b4a)' }} />
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 8 }}>KEY INSIGHT</div>
+        <div style={{ background: 'linear-gradient(135deg,rgba(0,217,163,0.06),rgba(255,107,74,0.03))', border: '1px solid rgba(0,217,163,0.2)', borderRadius: 14, padding: 20, marginBottom: 24, position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,#00d9a3,#ff6b4a)' }} />
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 2, marginBottom: 8 }}>KEY INSIGHT</div>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#e8e8ed' }}>{data.keyInsight}</div>
         </div>
       )}
@@ -52,7 +52,7 @@ export default function CorrelationPage() {
       {s && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(130px,1fr))', gap: 12, marginBottom: 24 }}>
           {[
-            { label: 'Total Reports', value: s.totalOutcomes, color: '#00f0ff' },
+            { label: 'Total Reports', value: s.totalOutcomes, color: '#00d9a3' },
             { label: 'Interviews', value: s.totalInterviews, color: '#ff6b4a' },
             { label: 'Hired', value: s.totalHired, color: '#1D9E75' },
             { label: 'Interview Rate', value: s.interviewRate + '%', color: '#EF9F27' },
@@ -70,23 +70,23 @@ export default function CorrelationPage() {
       )}
 
       {data?.correlationData && (
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 14, padding: 20, marginBottom: 20 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 20 }}>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 14, padding: 20, marginBottom: 20 }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 2, marginBottom: 20 }}>
             GENOIS SCORE vs INTERVIEW SUCCESS RATE
           </div>
           {data.correlationData.every(d => d.total === 0) ? (
             <div style={{ textAlign: 'center', padding: '20px 0', color: '#5a7a9a', fontSize: 14 }}>
               No outcome data yet. Students need to report their interview results.
               <br />
-              <button onClick={() => router.push('/outcomes')} style={{ marginTop: 12, padding: '8px 20px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700 }}>
+              <button onClick={() => router.push('/outcomes')} style={{ marginTop: 12, padding: '8px 20px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700 }}>
                 Report Your Outcome →
               </button>
             </div>
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(140px,1fr))', gap: 10 }}>
               {data.correlationData.map((d, i) => (
-                <div key={i} style={{ padding: 16, background: 'rgba(255,255,255,0.02)', borderRadius: 12, textAlign: 'center', border: '1px solid rgba(0,240,255,0.06)' }}>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00f0ff', marginBottom: 10 }}>
+                <div key={i} style={{ padding: 16, background: 'rgba(255,255,255,0.02)', borderRadius: 12, textAlign: 'center', border: '1px solid rgba(0,217,163,0.06)' }}>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00d9a3', marginBottom: 10 }}>
                     Score {d.range}
                   </div>
                   <div style={{ marginBottom: 8 }}>
@@ -114,7 +114,7 @@ export default function CorrelationPage() {
       )}
 
       {data?.domainBreakdown?.length > 0 && data.domainBreakdown.some(d => d.total > 0) && (
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 14, padding: 20, marginBottom: 20 }}>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 14, padding: 20, marginBottom: 20 }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 16 }}>
             OUTCOMES BY DOMAIN
           </div>
@@ -148,7 +148,7 @@ export default function CorrelationPage() {
       )}
 
       {data?.topCompanies?.length > 0 && (
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 14, padding: 20, marginBottom: 20 }}>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 14, padding: 20, marginBottom: 20 }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 16 }}>
             TOP HIRING COMPANIES
           </div>
@@ -186,14 +186,14 @@ export default function CorrelationPage() {
         </div>
       )}
 
-      <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.06)', borderRadius: 14, padding: 20, textAlign: 'center' }}>
+      <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.06)', borderRadius: 14, padding: 20, textAlign: 'center' }}>
         <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#e8e8ed', marginBottom: 8 }}>
           Help us build this data
         </div>
         <div style={{ color: '#5a7a9a', fontSize: 13, marginBottom: 16 }}>
           Got an interview or job offer? Report it. Your data helps prove GENOIS works.
         </div>
-        <button onClick={() => router.push('/outcomes')} style={{ padding: '12px 28px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+        <button onClick={() => router.push('/outcomes')} style={{ padding: '12px 28px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
           Report Your Outcome →
         </button>
       </div>

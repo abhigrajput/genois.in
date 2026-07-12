@@ -103,13 +103,13 @@ export default function NotesPage() {
   );
 
   return (
-    <div style={{ fontFamily: 'var(--font-body)', width: '100%', height: 'calc(100vh - 80px)', display: 'flex', gap: 0, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(0,240,255,0.08)' }}>
+    <div style={{ fontFamily: 'var(--font-body)', width: '100%', height: 'calc(100vh - 80px)', display: 'flex', gap: 0, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(0,217,163,0.08)' }}>
 
       {/* SIDEBAR */}
-      <div style={{ width: 260, flexShrink: 0, background: '#070f1f', borderRight: '1px solid rgba(0,240,255,0.08)', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ padding: '16px 14px', borderBottom: '1px solid rgba(0,240,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div style={{ width: 260, flexShrink: 0, background: '#070f1f', borderRight: '1px solid rgba(0,217,163,0.08)', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: '16px 14px', borderBottom: '1px solid rgba(0,217,163,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: '#e8e8ed' }}>📒 My Notes</div>
-          <button onClick={createNote} disabled={creating} style={{ padding: '6px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 700 }}>
+          <button onClick={createNote} disabled={creating} style={{ padding: '6px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 700 }}>
             {creating ? '...' : '+ New'}
           </button>
         </div>
@@ -121,9 +121,9 @@ export default function NotesPage() {
             </div>
           ) : (
             notes.map(note => (
-              <div key={note.id} onClick={() => selectNote(note)} style={{ padding: '12px 14px', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.03)', background: selected?.id === note.id ? 'rgba(0,240,255,0.06)' : 'transparent', borderLeft: selected?.id === note.id ? '2px solid #00f0ff' : '2px solid transparent', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+              <div key={note.id} onClick={() => selectNote(note)} style={{ padding: '12px 14px', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.03)', background: selected?.id === note.id ? 'rgba(0,217,163,0.06)' : 'transparent', borderLeft: selected?.id === note.id ? '2px solid #00d9a3' : '2px solid transparent', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600, color: selected?.id === note.id ? '#00f0ff' : '#e8e8ed', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600, color: selected?.id === note.id ? '#00d9a3' : '#e8e8ed', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {note.title || 'Untitled'}
                   </div>
                   <div style={{ fontSize: 11, color: '#3a4a5a', fontFamily: 'var(--font-mono)' }}>
@@ -143,13 +143,13 @@ export default function NotesPage() {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#020812' }}>
         {selected ? (
           <>
-            <div style={{ padding: '14px 20px', borderBottom: '1px solid rgba(0,240,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid rgba(0,217,163,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
               <input value={title} onChange={e => handleTitleChange(e.target.value)} placeholder="Note title..." style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: '#e8e8ed' }} />
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: saving ? '#EF9F27' : '#3a4a5a' }}>
                   {saving ? 'Saving...' : 'Auto-saved'}
                 </span>
-                <button onClick={saveNote} style={{ padding: '6px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'rgba(0,240,255,0.1)', color: '#00f0ff', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 600 }}>
+                <button onClick={saveNote} style={{ padding: '6px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'rgba(0,217,163,0.1)', color: '#00d9a3', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 600 }}>
                   Save
                 </button>
               </div>
@@ -172,7 +172,7 @@ export default function NotesPage() {
             <div style={{ fontSize: 48 }}>📒</div>
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: '#5a7a9a' }}>No note selected</div>
             <div style={{ fontSize: 13, color: '#3a4a5a' }}>Create a new note or select one from the list</div>
-            <button onClick={createNote} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+            <button onClick={createNote} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
               + Create First Note
             </button>
           </div>

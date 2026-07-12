@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 // ── theme (app-interior palette) ───────────────────────────────────────────
 const CARD = '#070f1f';
 const INPUT = '#050d1a';
-const CYAN = '#00f0ff';
+const CYAN = '#00d9a3';
 const PURPLE = '#ff6b4a';
 const GREEN = '#1D9E75';
 const RED = '#ff2d78';
@@ -549,7 +549,7 @@ export default function VoiceInterviewPage() {
     return (
       <div style={{ color: MUTED, padding: 80, textAlign: 'center', fontFamily: 'var(--font-body)' }}>
         <style dangerouslySetInnerHTML={{ __html: keyframes }} />
-        <div style={{ width: 46, height: 46, margin: '0 auto 18px', border: `3px solid rgba(0,240,255,.15)`, borderTopColor: CYAN, borderRadius: '50%', animation: 'vi-spin .8s linear infinite' }} />
+        <div style={{ width: 46, height: 46, margin: '0 auto 18px', border: `3px solid rgba(0,217,163,.15)`, borderTopColor: CYAN, borderRadius: '50%', animation: 'vi-spin .8s linear infinite' }} />
         <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, color: LIGHT }}>Interviewer is thinking…</div>
         <div style={{ fontSize: 13, marginTop: 6 }}>Preparing question {Math.min(questions.length + 1, TOTAL_QUESTIONS)} of {TOTAL_QUESTIONS}</div>
       </div>

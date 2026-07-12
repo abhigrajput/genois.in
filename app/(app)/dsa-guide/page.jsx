@@ -184,7 +184,7 @@ export default function DSAGuidePage() {
       <div style={{ maxWidth: 760, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
 
         <div style={{ textAlign: 'center', marginBottom: 24 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00f0ff', letterSpacing: 2, marginBottom: 10 }}>RECOMMENDATION</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00d9a3', letterSpacing: 2, marginBottom: 10 }}>RECOMMENDATION</div>
           <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: '#e8e8ed' }}>
             Do your DSA in <span style={{ color: lang.color }}>{lang.name}</span>
           </h1>
@@ -216,8 +216,8 @@ export default function DSAGuidePage() {
           </div>
         </div>
 
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 20, marginBottom: 20 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 12 }}>COMPANIES THAT USE {lang.name.toUpperCase()}</div>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 20, marginBottom: 20 }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 2, marginBottom: 12 }}>COMPANIES THAT USE {lang.name.toUpperCase()}</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {lang.companies.map((c, i) => (
               <span key={i} style={{ fontSize: 12, padding: '5px 12px', borderRadius: 20, background: `${lang.color}12`, color: lang.color, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>{c}</span>
@@ -245,7 +245,7 @@ export default function DSAGuidePage() {
         </div>
 
         <div id="dsa-roadmap-section" style={{ marginTop: 32, scrollMarginTop: 20 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00f0ff', letterSpacing: 2, marginBottom: 14 }}>90-DAY DSA ROADMAP</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00d9a3', letterSpacing: 2, marginBottom: 14 }}>90-DAY DSA ROADMAP</div>
           <div style={{ fontSize: 13, color: '#5a7a9a', marginBottom: 20 }}>
             Follow this 12-week roadmap in {lang.name}. Dedicate 2-3 hours daily. 300 problems total.
           </div>
@@ -275,8 +275,8 @@ export default function DSAGuidePage() {
             })}
           </div>
 
-          <div style={{ background: 'linear-gradient(135deg,rgba(0,240,255,0.06),rgba(255,107,74,0.02))', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 12, padding: 18, marginTop: 16, textAlign: 'center' }}>
-            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: '#00f0ff', marginBottom: 6 }}>90 Days. 300 Problems. 1 Job.</div>
+          <div style={{ background: 'linear-gradient(135deg,rgba(0,217,163,0.06),rgba(255,107,74,0.02))', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 12, padding: 18, marginTop: 16, textAlign: 'center' }}>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: '#00d9a3', marginBottom: 6 }}>90 Days. 300 Problems. 1 Job.</div>
             <div style={{ fontSize: 12, color: '#5a7a9a' }}>Consistency beats intensity. Do 3-4 problems daily in {lang.name}.</div>
           </div>
         </div>
@@ -289,7 +289,7 @@ export default function DSAGuidePage() {
   return (
     <div style={{ maxWidth: 640, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
       <div style={{ marginBottom: 24 }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00f0ff', letterSpacing: 2, marginBottom: 6 }}>DSA LANGUAGE RECOMMENDER</div>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00d9a3', letterSpacing: 2, marginBottom: 6 }}>DSA LANGUAGE RECOMMENDER</div>
         <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 800, color: '#e8e8ed' }}>Which language should you use for DSA?</h1>
       </div>
 
@@ -298,7 +298,7 @@ export default function DSAGuidePage() {
           QUESTION {step + 1} OF {QUESTIONS.length}
         </div>
         <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${((step + 1) / QUESTIONS.length) * 100}%`, background: 'linear-gradient(90deg,#00f0ff,#ff6b4a)', borderRadius: 3, transition: 'width 0.3s' }} />
+          <div style={{ height: '100%', width: `${((step + 1) / QUESTIONS.length) * 100}%`, background: 'linear-gradient(90deg,#00d9a3,#ff6b4a)', borderRadius: 3, transition: 'width 0.3s' }} />
         </div>
       </div>
 
@@ -308,7 +308,7 @@ export default function DSAGuidePage() {
         {q.options.map(opt => {
           const selected = answers[q.id] === opt.value;
           return (
-            <button key={opt.value} onClick={() => selectOption(q.id, opt.value)} style={{ padding: '14px 18px', borderRadius: 12, cursor: 'pointer', textAlign: 'left', border: `1px solid ${selected ? 'rgba(0,240,255,0.5)' : 'rgba(255,255,255,0.06)'}`, background: selected ? 'rgba(0,240,255,0.08)' : 'rgba(255,255,255,0.02)', color: selected ? '#00f0ff' : '#c8d8e8', fontSize: 15 }}>
+            <button key={opt.value} onClick={() => selectOption(q.id, opt.value)} style={{ padding: '14px 18px', borderRadius: 12, cursor: 'pointer', textAlign: 'left', border: `1px solid ${selected ? 'rgba(0,217,163,0.5)' : 'rgba(255,255,255,0.06)'}`, background: selected ? 'rgba(0,217,163,0.08)' : 'rgba(255,255,255,0.02)', color: selected ? '#00d9a3' : '#c8d8e8', fontSize: 15 }}>
               {opt.label}
             </button>
           );

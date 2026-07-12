@@ -91,7 +91,7 @@ function nodeColor(i, step) {
   if (step.highlight?.includes(i)) {
     if (step.phase === 'swap' || step.phase === 'replace') return '#ef9f27';
     if (step.phase === 'done' || step.phase === 'bubbled' || step.phase === 'heapified') return '#1d9e75';
-    return '#00f0ff';
+    return '#00d9a3';
   }
   return '#1a2a3a';
 }
@@ -163,7 +163,7 @@ export default function HeapVisualizer() {
       />
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Size', value: heap.length, color: '#00f0ff' },
+          { label: 'Size', value: heap.length, color: '#00d9a3' },
           { label: 'Min (root)', value: heap[0] ?? '-', color: '#1d9e75' },
           { label: 'Phase', value: current?.phase ?? '—', color: '#ef9f27' },
           { label: 'Type', value: 'Min-Heap', color: '#ff6b4a' },
@@ -176,11 +176,11 @@ export default function HeapVisualizer() {
       </div>
 
       {current?.label && (
-        <div style={{ background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00f0ff' }}>▶ {current.label}</div>
+        <div style={{ background: 'rgba(0,217,163,0.05)', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00d9a3' }}>▶ {current.label}</div>
       )}
 
       {/* Array view */}
-      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 10, padding: '12px 16px' }}>
+      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 10, padding: '12px 16px' }}>
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>ARRAY REPRESENTATION</div>
         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
           {displayHeap.map((v, i) => {
@@ -198,14 +198,14 @@ export default function HeapVisualizer() {
       </div>
 
       {/* Tree SVG */}
-      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, overflow: 'hidden' }}>
+      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, overflow: 'hidden' }}>
         <svg width="100%" viewBox={`0 0 ${SVG_W} ${SVG_H}`} style={{ display: 'block' }}>
           {displayHeap.map((_, i) => {
             if (i === 0) return null;
             const parent = Math.floor((i - 1) / 2);
             const pc = heapNodePos(parent);
             const cc = heapNodePos(i);
-            return <line key={i} x1={pc.x} y1={pc.y} x2={cc.x} y2={cc.y} stroke="rgba(0,240,255,0.2)" strokeWidth={1.5} />;
+            return <line key={i} x1={pc.x} y1={pc.y} x2={cc.x} y2={cc.y} stroke="rgba(0,217,163,0.2)" strokeWidth={1.5} />;
           })}
           {displayHeap.map((v, i) => {
             const { x, y } = heapNodePos(i);
@@ -230,19 +230,19 @@ export default function HeapVisualizer() {
       />
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-        <button onClick={doInsert} style={btn('#00f0ff')}>Insert Random</button>
+        <button onClick={doInsert} style={btn('#00d9a3')}>Insert Random</button>
         <button onClick={doExtract} style={btn('#ef9f27')}>Extract Min</button>
         <button onClick={() => setIsPlaying(p => !p)} style={btn('#ff6b4a')}>{isPlaying ? '⏸ Pause' : '▶ Play'}</button>
         <div style={{ display: 'flex', gap: 4 }}>
           {[1,2,3,4].map(s => (
-            <button key={s} onClick={() => setSpeed(s)} style={{ padding:'3px 10px', borderRadius:6, border: speed===s?'1px solid #00f0ff':'1px solid rgba(0,240,255,0.15)', background: speed===s?'rgba(0,240,255,0.12)':'transparent', color: speed===s?'#00f0ff':'#5a7a9a', fontSize:11, fontFamily:'var(--font-mono)', cursor:'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
+            <button key={s} onClick={() => setSpeed(s)} style={{ padding:'3px 10px', borderRadius:6, border: speed===s?'1px solid #00d9a3':'1px solid rgba(0,217,163,0.15)', background: speed===s?'rgba(0,217,163,0.12)':'transparent', color: speed===s?'#00d9a3':'#5a7a9a', fontSize:11, fontFamily:'var(--font-mono)', cursor:'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
           ))}
         </div>
         <button onClick={reset} style={btn('#ff2d78')}>↺ Reset</button>
       </div>
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
-        {[['#00f0ff','Selected'],['#ef9f27','Swapping'],['#1d9e75','Placed']].map(([c,l]) => (
+        {[['#00d9a3','Selected'],['#ef9f27','Swapping'],['#1d9e75','Placed']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:2, background:c+'44', border:`2px solid ${c}` }}/>
             <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>

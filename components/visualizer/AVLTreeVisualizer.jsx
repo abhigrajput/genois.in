@@ -408,7 +408,7 @@ export default function AVLTreeVisualizer() {
       {/* Stats row */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Root Value', value: current.tree ? current.tree.val : '—', color: '#00f0ff' },
+          { label: 'Root Value', value: current.tree ? current.tree.val : '—', color: '#00d9a3' },
           { label: 'Tree Height', value: current.tree ? current.tree.height : '—', color: '#ff6b4a' },
           { label: 'Total Nodes', value: Object.keys(positions).length, color: '#1d9e75' },
           { label: 'Balance State', value: current.unbalanced?.length ? 'Rebalancing' : 'Balanced', color: current.unbalanced?.length ? '#ff2d78' : '#1d9e75' },
@@ -421,7 +421,7 @@ export default function AVLTreeVisualizer() {
       </div>
 
       {/* SVG Canvas */}
-      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 16, overflow: 'auto', display: 'flex', justifyContent: 'center', minHeight: 280 }}>
+      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 16, overflow: 'auto', display: 'flex', justifyContent: 'center', minHeight: 280 }}>
         {current.tree ? (
           <svg width={Math.max(totalW, 460)} height={280} style={{ display: 'block' }}>
             {/* Links */}
@@ -431,7 +431,7 @@ export default function AVLTreeVisualizer() {
                 <line key={link.id}
                   x1={link.from.x} y1={link.from.y}
                   x2={link.to.x} y2={link.to.y}
-                  stroke={isHl ? '#00f0ff' : 'rgba(0,240,255,0.15)'}
+                  stroke={isHl ? '#00d9a3' : 'rgba(0,217,163,0.15)'}
                   strokeWidth={isHl ? 2.5 : 1.5}
                   style={{ transition: 'all 0.3s' }}
                 />
@@ -444,14 +444,14 @@ export default function AVLTreeVisualizer() {
               const isUnb = current.unbalanced?.includes(node.id);
               const bf = getBF(node);
 
-              let stroke = 'rgba(0,240,255,0.3)';
+              let stroke = 'rgba(0,217,163,0.3)';
               let bg = 'rgba(13,20,36,0.9)';
               let glow = 'none';
 
               if (isComp) {
-                stroke = '#00f0ff';
-                bg = 'rgba(0,240,255,0.08)';
-                glow = '0 0 10px #00f0ff';
+                stroke = '#00d9a3';
+                bg = 'rgba(0,217,163,0.08)';
+                glow = '0 0 10px #00d9a3';
               } else if (isUnb) {
                 stroke = '#ff2d78';
                 bg = 'rgba(255,45,120,0.1)';
@@ -464,7 +464,7 @@ export default function AVLTreeVisualizer() {
                 <g key={node.id}>
                   {glow !== 'none' && <circle cx={x} cy={y} r={22} fill="none" stroke={stroke} strokeWidth={1} opacity={0.3} />}
                   <circle cx={x} cy={y} r={17} fill={bg} stroke={stroke} strokeWidth={2} style={{ transition: 'all 0.35s' }} />
-                  <text x={x} y={y + 4} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fill: isUnb ? '#ff2d78' : isComp ? '#00f0ff' : '#e8e8ed', fontWeight: 'bold' }}>
+                  <text x={x} y={y + 4} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fill: isUnb ? '#ff2d78' : isComp ? '#00d9a3' : '#e8e8ed', fontWeight: 'bold' }}>
                     {node.val}
                   </text>
                   
@@ -491,16 +491,16 @@ export default function AVLTreeVisualizer() {
       />
 
       {/* Interface Controls */}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 12 }}>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 12 }}>
         <input type="number" value={inputVal} onChange={e => setInputVal(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleInsert()} placeholder="Insert key..." style={inpStyle} />
-        <button onClick={handleInsert} style={btnStyle('#00f0ff')}>Insert Node</button>
+        <button onClick={handleInsert} style={btnStyle('#00d9a3')}>Insert Node</button>
         <button onClick={handleRandomInsert} style={btnStyle('#ef9f27')}>🎲 Insert Random</button>
         <button onClick={reset} style={btnStyle('#ff2d78')}>↺ Reset Tree</button>
 
         <div style={{ display: 'flex', gap: 4, alignItems: 'center', marginLeft: 'auto' }}>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a' }}>SPEED</span>
           {[1,2,3,4].map(s => (
-            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 9px', borderRadius: 6, border: speed === s ? '1px solid #00f0ff' : '1px solid rgba(0,240,255,0.15)', background: speed === s ? 'rgba(0,240,255,0.12)' : 'transparent', color: speed === s ? '#00f0ff' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
+            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 9px', borderRadius: 6, border: speed === s ? '1px solid #00d9a3' : '1px solid rgba(0,217,163,0.15)', background: speed === s ? 'rgba(0,217,163,0.12)' : 'transparent', color: speed === s ? '#00d9a3' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
           ))}
         </div>
       </div>
@@ -508,9 +508,9 @@ export default function AVLTreeVisualizer() {
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {[
-          { color: '#00f0ff', label: 'Comparing node / searching path' },
+          { color: '#00d9a3', label: 'Comparing node / searching path' },
           { color: '#ff2d78', label: 'Unbalanced node (requires rotation!)' },
-          { color: 'rgba(0,240,255,0.3)', label: 'Balanced node' },
+          { color: 'rgba(0,217,163,0.3)', label: 'Balanced node' },
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 12, height: 12, borderRadius: 2, background: l.color + '22', border: `1.5px solid ${l.color}` }} />
@@ -539,8 +539,8 @@ export default function AVLTreeVisualizer() {
 }
 
 const inpStyle = {
-  background: 'rgba(0,240,255,0.04)',
-  border: '1px solid rgba(0,240,255,0.2)',
+  background: 'rgba(0,217,163,0.04)',
+  border: '1px solid rgba(0,217,163,0.2)',
   borderRadius: 8,
   padding: '6px 12px',
   color: '#e8e8ed',

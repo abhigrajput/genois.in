@@ -57,7 +57,7 @@ export default function DomainExplorerPage() {
       <div style={{ minHeight: '100vh', background: '#020812', color: '#e8e8ed', fontFamily: 'var(--font-body)' }}>
         <PublicNav />
         <div style={{ maxWidth: 860, margin: '0 auto', padding: '32px 20px' }}>
-          <button onClick={() => setSelected(null)} style={{ background: 'transparent', border: 'none', color: '#00f0ff', fontSize: 14, cursor: 'pointer', marginBottom: 16 }}>← Back to Explorer</button>
+          <button onClick={() => setSelected(null)} style={{ background: 'transparent', border: 'none', color: '#00d9a3', fontSize: 14, cursor: 'pointer', marginBottom: 16 }}>← Back to Explorer</button>
 
           <div style={{ background: '#070f1f', border: `2px solid ${selected.color}30`, borderRadius: 16, padding: 32, marginBottom: 20, position: 'relative', overflow: 'hidden' }}>
             <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg,transparent,${selected.color},transparent)` }} />
@@ -77,7 +77,7 @@ export default function DomainExplorerPage() {
               {[
                 { label: 'Demand', value: selected.demand, color: '#1D9E75' },
                 { label: 'Difficulty', value: selected.difficulty, color: '#EF9F27' },
-                { label: 'Time to Job', value: selected.timeToJob, color: '#00f0ff' },
+                { label: 'Time to Job', value: selected.timeToJob, color: '#00d9a3' },
                 { label: 'Entry Package', value: selected.packages.entry, color: '#ff6b4a' },
               ].map(s => (
                 <div key={s.label} style={{ padding: '12px', background: 'rgba(255,255,255,0.02)', borderRadius: 10, textAlign: 'center' }}>
@@ -90,11 +90,11 @@ export default function DomainExplorerPage() {
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 12, marginBottom: 20 }}>
 
-            <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 12, padding: 20 }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 12 }}>TECH STACK YOU LEARN</div>
+            <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 12, padding: 20 }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 2, marginBottom: 12 }}>TECH STACK YOU LEARN</div>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                 {selected.stack.map((s, i) => (
-                  <span key={i} style={{ fontSize: 12, padding: '4px 10px', borderRadius: 20, background: 'rgba(0,240,255,0.06)', color: '#00f0ff', fontFamily: 'var(--font-mono)' }}>{s}</span>
+                  <span key={i} style={{ fontSize: 12, padding: '4px 10px', borderRadius: 20, background: 'rgba(0,217,163,0.06)', color: '#00d9a3', fontFamily: 'var(--font-mono)' }}>{s}</span>
                 ))}
               </div>
             </div>
@@ -123,8 +123,8 @@ export default function DomainExplorerPage() {
             </div>
           </div>
 
-          <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 14, padding: 24, marginBottom: 20 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 10 }}>IS THIS FOR YOU?</div>
+          <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 14, padding: 24, marginBottom: 20 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 2, marginBottom: 10 }}>IS THIS FOR YOU?</div>
             <div style={{ fontSize: 15, color: '#e8e8ed', lineHeight: 1.7 }}>{selected.whoShould}</div>
           </div>
 
@@ -176,7 +176,7 @@ export default function DomainExplorerPage() {
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#5a7a9a', letterSpacing: 2 }}>QUESTION {quizStep + 1} OF {quizQuestions.length}</div>
           </div>
           <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, marginBottom: 32, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: `${((quizStep + 1) / quizQuestions.length) * 100}%`, background: 'linear-gradient(90deg,#00f0ff,#ff6b4a)', borderRadius: 2, transition: 'width 0.3s' }} />
+            <div style={{ height: '100%', width: `${((quizStep + 1) / quizQuestions.length) * 100}%`, background: 'linear-gradient(90deg,#00d9a3,#ff6b4a)', borderRadius: 2, transition: 'width 0.3s' }} />
           </div>
           {q && (
             <>
@@ -185,14 +185,14 @@ export default function DomainExplorerPage() {
                 {q.options.map(opt => {
                   const selected = quizAnswers[q.id] === opt.value;
                   return (
-                    <button key={opt.value} onClick={() => selectQuizOption(q.id, opt.value)} style={{ padding: '14px 18px', borderRadius: 12, cursor: 'pointer', textAlign: 'left', border: `1px solid ${selected ? 'rgba(0,240,255,0.5)' : 'rgba(255,255,255,0.06)'}`, background: selected ? 'rgba(0,240,255,0.08)' : 'rgba(255,255,255,0.02)', color: selected ? '#00f0ff' : '#c8d8e8', fontSize: 15, fontFamily: 'var(--font-body)' }}>
+                    <button key={opt.value} onClick={() => selectQuizOption(q.id, opt.value)} style={{ padding: '14px 18px', borderRadius: 12, cursor: 'pointer', textAlign: 'left', border: `1px solid ${selected ? 'rgba(0,217,163,0.5)' : 'rgba(255,255,255,0.06)'}`, background: selected ? 'rgba(0,217,163,0.08)' : 'rgba(255,255,255,0.02)', color: selected ? '#00d9a3' : '#c8d8e8', fontSize: 15, fontFamily: 'var(--font-body)' }}>
                       {opt.label}
                     </button>
                   );
                 })}
               </div>
               {quizStep === quizQuestions.length - 1 && Object.keys(quizAnswers).length === quizQuestions.length && (
-                <button onClick={submitQuiz} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, marginTop: 20 }}>
+                <button onClick={submitQuiz} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, marginTop: 20 }}>
                   Get My 3 Matches →
                 </button>
               )}
@@ -209,22 +209,22 @@ export default function DomainExplorerPage() {
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 20px' }}>
 
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00f0ff', letterSpacing: 2, marginBottom: 10 }}>DOMAIN EXPLORER</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00d9a3', letterSpacing: 2, marginBottom: 10 }}>DOMAIN EXPLORER</div>
           <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(26px,4vw,42px)', fontWeight: 800, marginBottom: 12, lineHeight: 1.15 }}>
-            Pick the <span style={{ color: '#00f0ff' }}>right domain</span> for your career
+            Pick the <span style={{ color: '#00d9a3' }}>right domain</span> for your career
           </h1>
           <p style={{ color: '#5a7a9a', fontSize: 15, maxWidth: 600, margin: '0 auto' }}>
             20 career paths with real package data, time to job, top companies, and what you will learn.
           </p>
         </div>
 
-        <div style={{ background: 'linear-gradient(135deg,rgba(0,240,255,0.06),rgba(255,107,74,0.03))', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 14, padding: 20, marginBottom: 28, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+        <div style={{ background: 'linear-gradient(135deg,rgba(0,217,163,0.06),rgba(255,107,74,0.03))', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 14, padding: 20, marginBottom: 28, display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
           <div style={{ fontSize: 36 }}>🎯</div>
           <div style={{ flex: 1, minWidth: 200 }}>
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#e8e8ed', marginBottom: 4 }}>Not sure which domain to pick?</div>
             <div style={{ fontSize: 13, color: '#5a7a9a' }}>Take our 5 question quiz and we will recommend your top 3 matches.</div>
           </div>
-          <button onClick={() => { setMode('quiz'); setQuizStep(0); setQuizAnswers({}); setQuizDone(false); }} style={{ padding: '12px 24px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, flexShrink: 0 }}>
+          <button onClick={() => { setMode('quiz'); setQuizStep(0); setQuizAnswers({}); setQuizDone(false); }} style={{ padding: '12px 24px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, flexShrink: 0 }}>
             Take 2-min Quiz →
           </button>
         </div>
@@ -237,7 +237,7 @@ export default function DomainExplorerPage() {
             { slug: 'fast-job', label: '⚡ Fast Job' },
             { slug: 'easy', label: '🌱 Easy Start' },
           ].map(f => (
-            <button key={f.slug} onClick={() => setFilter(f.slug)} style={{ padding: '8px 16px', borderRadius: 20, border: 'none', cursor: 'pointer', background: filter === f.slug ? '#00f0ff' : 'rgba(255,255,255,0.05)', color: filter === f.slug ? '#020812' : '#5a7a9a', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600 }}>
+            <button key={f.slug} onClick={() => setFilter(f.slug)} style={{ padding: '8px 16px', borderRadius: 20, border: 'none', cursor: 'pointer', background: filter === f.slug ? '#00d9a3' : 'rgba(255,255,255,0.05)', color: filter === f.slug ? '#020812' : '#5a7a9a', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600 }}>
               {f.label}
             </button>
           ))}
@@ -255,7 +255,7 @@ export default function DomainExplorerPage() {
               <div style={{ fontSize: 12, color: '#5a7a9a', marginBottom: 12, lineHeight: 1.5 }}>{d.shortDesc}</div>
               <div style={{ display: 'flex', gap: 6, fontSize: 10, color: '#c8d8e8', fontFamily: 'var(--font-mono)', flexWrap: 'wrap' }}>
                 <span style={{ padding: '2px 8px', borderRadius: 8, background: 'rgba(29,158,117,0.08)', color: '#1D9E75' }}>{d.packages.entry}</span>
-                <span style={{ padding: '2px 8px', borderRadius: 8, background: 'rgba(0,240,255,0.06)', color: '#00f0ff' }}>{d.timeToJob}</span>
+                <span style={{ padding: '2px 8px', borderRadius: 8, background: 'rgba(0,217,163,0.06)', color: '#00d9a3' }}>{d.timeToJob}</span>
               </div>
             </div>
           ))}

@@ -116,7 +116,7 @@ export default function QueueVisualizer() {
 
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
-          { label:'Size', value:queue.length, color:'#00f0ff' },
+          { label:'Size', value:queue.length, color:'#00d9a3' },
           { label:'Front', value:queue.length > 0 ? queue[0] : 'null', color:'#1d9e75' },
           { label:'Rear', value:queue.length > 0 ? queue[queue.length-1] : 'null', color:'#ff6b4a' },
           { label:'Capacity', value:MAX_SIZE, color:'#ef9f27' },
@@ -129,13 +129,13 @@ export default function QueueVisualizer() {
       </div>
 
       {message && (
-        <div style={{ background:'rgba(0,240,255,0.05)', border:'1px solid rgba(0,240,255,0.15)', borderRadius:8, padding:'8px 14px', fontFamily:'var(--font-mono)', fontSize:12, color:'#00f0ff' }}>
+        <div style={{ background:'rgba(0,217,163,0.05)', border:'1px solid rgba(0,217,163,0.15)', borderRadius:8, padding:'8px 14px', fontFamily:'var(--font-mono)', fontSize:12, color:'#00d9a3' }}>
           ▶ {message}
         </div>
       )}
 
       {/* Queue visualization */}
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:12, padding:'24px', minHeight:180 }}>
+      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, padding:'24px', minHeight:180 }}>
         {/* Direction labels */}
         <div style={{ display:'flex', justifyContent:'space-between', marginBottom:8 }}>
           <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'#1d9e75', letterSpacing:1 }}>← DEQUEUE (FRONT)</span>
@@ -146,8 +146,8 @@ export default function QueueVisualizer() {
         <div style={{ display:'flex', alignItems:'stretch', gap:0, minHeight:80, overflowX:'auto' }}>
           {/* Empty slots left */}
           {Array.from({ length: MAX_SIZE - queue.length }, (_, i) => (
-            <div key={`el-${i}`} style={{ minWidth:70, height:70, border:'1px dashed rgba(0,240,255,0.1)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-              <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'rgba(0,240,255,0.1)' }}>—</span>
+            <div key={`el-${i}`} style={{ minWidth:70, height:70, border:'1px dashed rgba(0,217,163,0.1)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+              <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'rgba(0,217,163,0.1)' }}>—</span>
             </div>
           ))}
 
@@ -158,7 +158,7 @@ export default function QueueVisualizer() {
               <div key={`${val}-${i}`} style={{
                 minWidth: 70, height: 70,
                 background: isFront ? 'rgba(29,158,117,0.12)' : isRear ? 'rgba(255,107,74,0.12)' : 'rgba(26,42,58,0.8)',
-                border: isFront ? '1px solid rgba(29,158,117,0.5)' : isRear ? '1px solid rgba(255,107,74,0.5)' : '1px solid rgba(0,240,255,0.15)',
+                border: isFront ? '1px solid rgba(29,158,117,0.5)' : isRear ? '1px solid rgba(255,107,74,0.5)' : '1px solid rgba(0,217,163,0.15)',
                 display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
                 transition:'all 0.3s ease', flexShrink:0,
                 animation: isFront && animOut ? 'queueOut 0.3s ease forwards' : isRear && animIn ? 'queueIn 0.3s ease' : 'none',

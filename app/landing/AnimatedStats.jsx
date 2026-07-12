@@ -1,8 +1,8 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 
-const PURPLE_LIGHT = '#8b5cf6';
-const CYAN = '#06b6d4';
+const PURPLE_LIGHT = '#2ee6b0';
+const CYAN = '#00b389';
 
 const STATS = [
   { target: 500, suffix: '+', label: 'Students Enrolled' },

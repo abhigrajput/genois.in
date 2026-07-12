@@ -81,15 +81,15 @@ export default function OnboardingTour() {
       <div style={{
         maxWidth: 460,
         width: '100%',
-        background: 'linear-gradient(135deg,rgba(7,15,31,0.98),rgba(0,240,255,0.04))',
-        border: '1px solid rgba(0,240,255,0.25)',
+        background: 'linear-gradient(135deg,rgba(7,15,31,0.98),rgba(0,217,163,0.04))',
+        border: '1px solid rgba(0,217,163,0.25)',
         borderRadius: 16,
         padding: 32,
         textAlign: 'center',
       }}>
         <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginBottom: 20 }}>
           {TOUR_STEPS.map((_, i) => (
-            <div key={i} style={{ width: i === step ? 24 : 6, height: 6, borderRadius: 3, background: i <= step ? '#00f0ff' : 'rgba(255,255,255,0.1)', transition: 'all 0.3s' }} />
+            <div key={i} style={{ width: i === step ? 24 : 6, height: 6, borderRadius: 3, background: i <= step ? '#00d9a3' : 'rgba(255,255,255,0.1)', transition: 'all 0.3s' }} />
           ))}
         </div>
 
@@ -106,7 +106,7 @@ export default function OnboardingTour() {
               Skip Tour
             </button>
           )}
-          <button onClick={next} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700 }}>
+          <button onClick={next} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700 }}>
             {current.cta} →
           </button>
         </div>

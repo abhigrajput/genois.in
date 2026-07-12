@@ -37,13 +37,13 @@ export default function ReferralPage() {
         Refer friends. Both get 1 month free Dominator when they subscribe.
       </p>
 
-      <div style={{ background: 'linear-gradient(135deg,rgba(29,158,117,0.1),rgba(0,240,255,0.05))', border: '1px solid rgba(29,158,117,0.3)', borderRadius: 14, padding: 24, marginBottom: 20 }}>
+      <div style={{ background: 'linear-gradient(135deg,rgba(29,158,117,0.1),rgba(0,217,163,0.05))', border: '1px solid rgba(29,158,117,0.3)', borderRadius: 14, padding: 24, marginBottom: 20 }}>
         <div style={{ fontSize: 11, color: '#1D9E75', fontFamily: 'var(--font-mono)', letterSpacing: 2, marginBottom: 8 }}>YOUR REFERRAL CODE</div>
         <div style={{ fontFamily: 'var(--font-heading)', fontSize: 32, fontWeight: 800, color: '#1D9E75', letterSpacing: 3, marginBottom: 16 }}>
           {data?.referralCode}
         </div>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          <button onClick={copyLink} style={{ padding: '10px 18px', borderRadius: 10, border: '1px solid rgba(0,240,255,0.3)', background: 'transparent', color: '#00f0ff', cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
+          <button onClick={copyLink} style={{ padding: '10px 18px', borderRadius: 10, border: '1px solid rgba(0,217,163,0.3)', background: 'transparent', color: '#00d9a3', cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
             🔗 Copy Link
           </button>
           <button onClick={shareWhatsApp} style={{ padding: '10px 18px', borderRadius: 10, border: 'none', background: '#25D366', color: '#020812', cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 700 }}>
@@ -53,8 +53,8 @@ export default function ReferralPage() {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12, marginBottom: 24 }}>
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 20, textAlign: 'center' }}>
-          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, color: '#00f0ff' }}>{data?.stats?.total || 0}</div>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 20, textAlign: 'center' }}>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, color: '#00d9a3' }}>{data?.stats?.total || 0}</div>
           <div style={{ fontSize: 11, color: '#5a7a9a', marginTop: 4, fontFamily: 'var(--font-mono)' }}>TOTAL REFS</div>
         </div>
         <div style={{ background: '#070f1f', border: '1px solid rgba(29,158,117,0.1)', borderRadius: 12, padding: 20, textAlign: 'center' }}>
@@ -67,7 +67,7 @@ export default function ReferralPage() {
         </div>
       </div>
 
-      <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24 }}>
+      <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 24 }}>
         <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#e8e8ed', marginBottom: 16 }}>
           🏆 Top Referrers
         </div>

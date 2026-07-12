@@ -129,7 +129,7 @@ export default function AuctionPage() {
               <div>
                 <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800, color: '#e8e8ed', marginBottom: 4 }}>{a.name}</div>
                 <div style={{ fontSize: 12, color: '#8a9ab0' }}>{a.college}</div>
-                <div style={{ fontSize: 11, color: '#00f0ff', fontFamily: 'var(--font-mono)', marginTop: 4 }}>{a.domain?.toUpperCase()} · {a.score} pts</div>
+                <div style={{ fontSize: 11, color: '#00d9a3', fontFamily: 'var(--font-mono)', marginTop: 4 }}>{a.domain?.toUpperCase()} · {a.score} pts</div>
               </div>
               <div style={{ background: 'rgba(239,159,39,0.1)', color: '#EF9F27', padding: '10px 14px', borderRadius: 10, textAlign: 'center' }}>
                 <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800 }}>{Math.round(a.current_bid / 100000)}L</div>

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
 const S = { background:'#020812', color:'#e8e8ed', fontFamily:'var(--font-body)', minHeight:'100vh' };
-const card = { background:'#070f1f', border:'1px solid rgba(0,240,255,0.08)', borderRadius:12, padding:20 };
+const card = { background:'#070f1f', border:'1px solid rgba(0,217,163,0.08)', borderRadius:12, padding:20 };
 const mono = { fontFamily:'var(--font-mono)' };
 
 export default function AdminPage() {
@@ -85,13 +85,13 @@ export default function AdminPage() {
     loadUser(userId);
   }
 
-  if (loading) return <div style={{...S, display:'flex', alignItems:'center', justifyContent:'center', color:'#00f0ff', ...mono}}>Loading admin data...</div>;
+  if (loading) return <div style={{...S, display:'flex', alignItems:'center', justifyContent:'center', color:'#00d9a3', ...mono}}>Loading admin data...</div>;
   if (error) return (
     <div style={{...S, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:20}}>
       <div style={{color:'#ff2d78', fontFamily:'var(--font-heading)', fontSize:18, textAlign:'center', maxWidth:480, padding:24}}>{error}</div>
       <button
         onClick={() => router.push('/login?redirect=/admin')}
-        style={{padding:'12px 28px', borderRadius:10, background:'#00f0ff', color:'#020812', fontFamily:'var(--font-heading)', fontWeight:700, fontSize:14, border:'none', cursor:'pointer'}}
+        style={{padding:'12px 28px', borderRadius:10, background:'#00d9a3', color:'#020812', fontFamily:'var(--font-heading)', fontWeight:700, fontSize:14, border:'none', cursor:'pointer'}}
       >Log in as Admin</button>
     </div>
   );
@@ -109,16 +109,16 @@ export default function AdminPage() {
   return (
     <div style={S}>
       {/* Header */}
-      <div style={{background:'#070f1f', borderBottom:'1px solid rgba(0,240,255,0.1)', padding:'14px 24px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, flexWrap:'wrap'}}>
-        <div style={{fontFamily:'var(--font-heading)', fontSize:20, fontWeight:800, color:'#00f0ff'}}>⚙️ GENOIS Admin</div>
+      <div style={{background:'#070f1f', borderBottom:'1px solid rgba(0,217,163,0.1)', padding:'14px 24px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, flexWrap:'wrap'}}>
+        <div style={{fontFamily:'var(--font-heading)', fontSize:20, fontWeight:800, color:'#00d9a3'}}>⚙️ GENOIS Admin</div>
         <div style={{fontSize:12, color:'#5a7a9a', ...mono}}>{data?.stats?.totalUsers} users · ₹{(data?.stats?.monthRevenue||0).toLocaleString()} revenue</div>
-        <button onClick={() => router.push('/dashboard')} style={{background:'transparent', border:'1px solid rgba(0,240,255,0.2)', color:'#00f0ff', cursor:'pointer', padding:'6px 14px', borderRadius:8, fontSize:12}}>← Dashboard</button>
+        <button onClick={() => router.push('/dashboard')} style={{background:'transparent', border:'1px solid rgba(0,217,163,0.2)', color:'#00d9a3', cursor:'pointer', padding:'6px 14px', borderRadius:8, fontSize:12}}>← Dashboard</button>
       </div>
 
       {/* Tabs */}
       <div style={{display:'flex', gap:8, padding:'14px 24px', flexWrap:'wrap', borderBottom:'1px solid rgba(255,255,255,0.04)'}}>
         {TABS.map(t => (
-          <button key={t.key} onClick={() => setTab(t.key)} style={{padding:'7px 16px', borderRadius:20, border:'none', cursor:'pointer', background:tab===t.key?'#00f0ff':'rgba(255,255,255,0.05)', color:tab===t.key?'#020812':'#5a7a9a', fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600}}>
+          <button key={t.key} onClick={() => setTab(t.key)} style={{padding:'7px 16px', borderRadius:20, border:'none', cursor:'pointer', background:tab===t.key?'#00d9a3':'rgba(255,255,255,0.05)', color:tab===t.key?'#020812':'#5a7a9a', fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600}}>
             {t.label}
           </button>
         ))}
@@ -132,7 +132,7 @@ export default function AdminPage() {
           <div>
             <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(150px,1fr))', gap:12, marginBottom:24}}>
               {[
-                {label:'Total Users', value:data?.stats?.totalUsers, color:'#00f0ff'},
+                {label:'Total Users', value:data?.stats?.totalUsers, color:'#00d9a3'},
                 {label:'Active Today', value:data?.stats?.activeToday, color:'#1D9E75'},
                 {label:'New This Week', value:data?.stats?.newThisWeek, color:'#ff6b4a'},
                 {label:'Avg Score', value:(data?.stats?.avgScore||0)+' pts', color:'#EF9F27'},
@@ -150,11 +150,11 @@ export default function AdminPage() {
 
             <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:16}}>
               <div style={card}>
-                <div style={{...mono, fontSize:10, color:'#00f0ff', letterSpacing:2, marginBottom:14}}>PLAN BREAKDOWN</div>
+                <div style={{...mono, fontSize:10, color:'#00d9a3', letterSpacing:2, marginBottom:14}}>PLAN BREAKDOWN</div>
                 {Object.entries(data?.planBreakdown || {}).map(([plan, count]) => (
                   <div key={plan} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
                     <span style={{ color: '#e8e8ed', textTransform: 'capitalize' }}>{plan}</span>
-                    <span style={{ color: '#00f0ff', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>{count}</span>
+                    <span style={{ color: '#00d9a3', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>{count}</span>
                   </div>
                 ))}
               </div>
@@ -190,7 +190,7 @@ export default function AdminPage() {
         {/* USERS */}
         {tab === 'users' && (
           <div>
-            <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search name or email..." style={{width:'100%', padding:'11px 16px', borderRadius:10, border:'1px solid rgba(0,240,255,0.15)', background:'#070f1f', color:'#e8e8ed', fontSize:14, outline:'none', marginBottom:16, boxSizing:'border-box'}} />
+            <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search name or email..." style={{width:'100%', padding:'11px 16px', borderRadius:10, border:'1px solid rgba(0,217,163,0.15)', background:'#070f1f', color:'#e8e8ed', fontSize:14, outline:'none', marginBottom:16, boxSizing:'border-box'}} />
             <div style={{ marginTop: 16 }}>
               {(data?.allUsers || [])
                 .filter(u => 
@@ -199,14 +199,14 @@ export default function AdminPage() {
                   u.email?.toLowerCase().includes(searchQuery.toLowerCase())
                 )
                 .map(u => (
-                  <div key={u.id} onClick={() => loadUser(u.id)} style={{ padding: 16, borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(0,240,255,0.08)', marginBottom: 12, cursor: 'pointer' }}>
+                  <div key={u.id} onClick={() => loadUser(u.id)} style={{ padding: 16, borderRadius: 12, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(0,217,163,0.08)', marginBottom: 12, cursor: 'pointer' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12, flexWrap: 'wrap', gap: 12 }}>
                       <div>
                         <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#e8e8ed' }}>{u.name}</div>
                         <div style={{ fontSize: 12, color: '#5a7a9a', marginTop: 2 }}>{u.email}</div>
                       </div>
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                        <span style={{ padding: '3px 10px', borderRadius: 12, background: u.plan === 'dominator' ? 'rgba(239,159,39,0.15)' : u.plan === 'performer' ? 'rgba(255,107,74,0.15)' : u.plan === 'player' ? 'rgba(0,240,255,0.15)' : 'rgba(255,255,255,0.06)', color: u.plan === 'dominator' ? '#EF9F27' : u.plan === 'performer' ? '#ff6b4a' : u.plan === 'player' ? '#00f0ff' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, textTransform: 'uppercase' }}>{u.plan}</span>
+                        <span style={{ padding: '3px 10px', borderRadius: 12, background: u.plan === 'dominator' ? 'rgba(239,159,39,0.15)' : u.plan === 'performer' ? 'rgba(255,107,74,0.15)' : u.plan === 'player' ? 'rgba(0,217,163,0.15)' : 'rgba(255,255,255,0.06)', color: u.plan === 'dominator' ? '#EF9F27' : u.plan === 'performer' ? '#ff6b4a' : u.plan === 'player' ? '#00d9a3' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700, textTransform: 'uppercase' }}>{u.plan}</span>
                         {u.isOnTrial && u.trialDaysLeft > 0 && <span style={{ padding: '3px 10px', borderRadius: 12, background: 'rgba(29,158,117,0.15)', color: '#1D9E75', fontSize: 11, fontFamily: 'var(--font-mono)', fontWeight: 700 }}>TRIAL {u.trialDaysLeft}d</span>}
                       </div>
                     </div>
@@ -281,7 +281,7 @@ export default function AdminPage() {
             <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))', gap:12, marginBottom:20}}>
               {[
                 {label:'Total Revenue', value:'₹'+(data?.stats?.monthRevenue||0).toLocaleString(), color:'#1D9E75'},
-                {label:'Paid Users', value:Object.entries(data?.planBreakdown||{}).filter(([k])=>k!=='spectator'&&k!=='free').reduce((s,[,v])=>s+v,0), color:'#00f0ff'},
+                {label:'Paid Users', value:Object.entries(data?.planBreakdown||{}).filter(([k])=>k!=='spectator'&&k!=='free').reduce((s,[,v])=>s+v,0), color:'#00d9a3'},
               ].map(s => (
                 <div key={s.label} style={{...card, textAlign:'center', border:`1px solid ${s.color}20`}}>
                   <div style={{fontFamily:'var(--font-heading)', fontSize:28, fontWeight:800, color:s.color}}>{s.value}</div>
@@ -310,10 +310,10 @@ export default function AdminPage() {
         {/* USER DETAIL */}
         {tab === 'user_detail' && userDetail && (
           <div>
-            <button onClick={() => setTab('users')} style={{background:'transparent', border:'none', color:'#00f0ff', cursor:'pointer', fontSize:13, fontFamily:'var(--font-heading)', fontWeight:600, marginBottom:16}}>← Back to Users</button>
+            <button onClick={() => setTab('users')} style={{background:'transparent', border:'none', color:'#00d9a3', cursor:'pointer', fontSize:13, fontFamily:'var(--font-heading)', fontWeight:600, marginBottom:16}}>← Back to Users</button>
             <div style={{display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))', gap:16}}>
-              <div style={{...card, border:'1px solid rgba(0,240,255,0.1)'}}>
-                <div style={{...mono, fontSize:10, color:'#00f0ff', letterSpacing:2, marginBottom:14}}>STUDENT PROFILE</div>
+              <div style={{...card, border:'1px solid rgba(0,217,163,0.1)'}}>
+                <div style={{...mono, fontSize:10, color:'#00d9a3', letterSpacing:2, marginBottom:14}}>STUDENT PROFILE</div>
                 {[
                   ['Name', userDetail.user?.name],
                   ['Email', userDetail.user?.email],
@@ -335,7 +335,7 @@ export default function AdminPage() {
                     <button onClick={() => extendTrial(userDetail.user.id, 30)} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid rgba(29,158,117,0.3)', background: 'rgba(29,158,117,0.1)', color: '#1D9E75', cursor: 'pointer', fontSize: 12 }}>
                       +30 days trial
                     </button>
-                    <button onClick={() => extendTrial(userDetail.user.id, 7)} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.3)', background: 'rgba(0,240,255,0.1)', color: '#00f0ff', cursor: 'pointer', fontSize: 12 }}>
+                    <button onClick={() => extendTrial(userDetail.user.id, 7)} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid rgba(0,217,163,0.3)', background: 'rgba(0,217,163,0.1)', color: '#00d9a3', cursor: 'pointer', fontSize: 12 }}>
                       +7 days trial
                     </button>
                     <button onClick={() => revokeTrial(userDetail.user.id)} style={{ padding: '8px 14px', borderRadius: 8, border: '1px solid rgba(255,45,120,0.3)', background: 'rgba(255,45,120,0.1)', color: '#ff2d78', cursor: 'pointer', fontSize: 12 }}>

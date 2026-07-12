@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 
 const VERDICT_COLORS = {
   Strong: '#1D9E75',
-  Good: '#00f0ff',
+  Good: '#00d9a3',
   Weak: '#EF9F27',
   Poor: '#ff2d78',
 };
@@ -98,20 +98,20 @@ export default function MockInterviewPage() {
           <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>
             Interview Complete
           </h1>
-          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 48, fontWeight: 800, color: readiness >= 70 ? '#1D9E75' : readiness >= 50 ? '#00f0ff' : '#ff2d78', marginBottom: 4 }}>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 48, fontWeight: 800, color: readiness >= 70 ? '#1D9E75' : readiness >= 50 ? '#00d9a3' : '#ff2d78', marginBottom: 4 }}>
             {readiness}%
           </div>
           <div style={{ color: '#5a7a9a', fontSize: 14 }}>Interview Readiness Score</div>
         </div>
 
         {interview.feedback && (
-          <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24, marginBottom: 20 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 12 }}>OVERALL FEEDBACK</div>
+          <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 24, marginBottom: 20 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 2, marginBottom: 12 }}>OVERALL FEEDBACK</div>
             <p style={{ color: '#c8d8e8', fontSize: 14, lineHeight: 1.8, margin: 0 }}>{interview.feedback}</p>
           </div>
         )}
 
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 14, padding: 20, marginBottom: 20 }}>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 14, padding: 20, marginBottom: 20 }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 16 }}>QUESTION BREAKDOWN</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {evals.map((e, i) => {
@@ -134,7 +134,7 @@ export default function MockInterviewPage() {
         </div>
 
         <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button onClick={() => { setPhase('home'); setInterview(null); setAnswer(''); setEvaluation(null); setCurrentQIndex(0); }} style={{ padding: '12px 24px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+          <button onClick={() => { setPhase('home'); setInterview(null); setAnswer(''); setEvaluation(null); setCurrentQIndex(0); }} style={{ padding: '12px 24px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
             Practice Again
           </button>
           <button onClick={() => {
@@ -176,8 +176,8 @@ export default function MockInterviewPage() {
             </div>
           )}
           {evaluation.better_answer && (
-            <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 12, padding: 16 }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00f0ff', letterSpacing: 1, marginBottom: 8 }}>💡 BETTER ANSWER</div>
+            <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 12, padding: 16 }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 1, marginBottom: 8 }}>💡 BETTER ANSWER</div>
               <p style={{ color: '#c8d8e8', fontSize: 14, lineHeight: 1.7, margin: 0 }}>{evaluation.better_answer}</p>
             </div>
           )}
@@ -193,7 +193,7 @@ export default function MockInterviewPage() {
           <div style={{ color: '#5a7a9a', fontSize: 12, fontFamily: 'var(--font-mono)', marginBottom: 16 }}>
             Question {currentQIndex} of {totalQuestions} complete
           </div>
-          <button onClick={nextQuestion} style={{ padding: '14px 40px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 }}>
+          <button onClick={nextQuestion} style={{ padding: '14px 40px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 }}>
             {isLast ? 'See Final Results →' : 'Next Question →'}
           </button>
         </div>
@@ -203,7 +203,7 @@ export default function MockInterviewPage() {
 
   // INTERVIEW PAGE
   if (phase === 'interview' && currentQ) {
-    const typeColors = { technical: '#00f0ff', conceptual: '#ff6b4a', behavioral: '#1D9E75', situational: '#EF9F27', 'problem solving': '#D85A30' };
+    const typeColors = { technical: '#00d9a3', conceptual: '#ff6b4a', behavioral: '#1D9E75', situational: '#EF9F27', 'problem solving': '#D85A30' };
     const typeColor = typeColors[currentQ.type?.toLowerCase()] || '#5a7a9a';
 
     return (
@@ -223,10 +223,10 @@ export default function MockInterviewPage() {
         </div>
 
         <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, marginBottom: 24 }}>
-          <div style={{ height: '100%', width: `${(currentQIndex / totalQuestions) * 100}%`, background: 'linear-gradient(90deg,#00f0ff,#ff6b4a)', borderRadius: 2 }} />
+          <div style={{ height: '100%', width: `${(currentQIndex / totalQuestions) * 100}%`, background: 'linear-gradient(90deg,#00d9a3,#ff6b4a)', borderRadius: 2 }} />
         </div>
 
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.12)', borderRadius: 14, padding: 24, marginBottom: 20 }}>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.12)', borderRadius: 14, padding: 24, marginBottom: 20 }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 12 }}>INTERVIEWER</div>
           <p style={{ fontSize: 17, color: '#e8e8ed', lineHeight: 1.7, margin: 0, fontWeight: 500 }}>
             {currentQ.question}
@@ -240,7 +240,7 @@ export default function MockInterviewPage() {
             onChange={e => setAnswer(e.target.value)}
             placeholder="Type your answer here. Speak as if you are in a real interview. Be specific, give examples, explain your thought process..."
             rows={6}
-            style={{ width: '100%', padding: '14px 16px', borderRadius: 12, border: '1px solid rgba(0,240,255,0.15)', background: 'rgba(255,255,255,0.02)', color: '#e8e8ed', fontSize: 14, fontFamily: 'var(--font-body)', outline: 'none', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.7 }}
+            style={{ width: '100%', padding: '14px 16px', borderRadius: 12, border: '1px solid rgba(0,217,163,0.15)', background: 'rgba(255,255,255,0.02)', color: '#e8e8ed', fontSize: 14, fontFamily: 'var(--font-body)', outline: 'none', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.7 }}
           />
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6 }}>
             <span style={{ fontSize: 11, color: '#3a4a5a', fontFamily: 'var(--font-mono)' }}>{answer.length} chars</span>
@@ -248,7 +248,7 @@ export default function MockInterviewPage() {
           </div>
         </div>
 
-        <button onClick={submitAnswer} disabled={loading || answer.trim().length < 20} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: answer.trim().length >= 20 ? 'pointer' : 'not-allowed', background: answer.trim().length >= 20 ? 'linear-gradient(135deg,#00f0ff,#ff6b4a)' : 'rgba(255,255,255,0.05)', color: answer.trim().length >= 20 ? '#020812' : '#3a4a5a', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 }}>
+        <button onClick={submitAnswer} disabled={loading || answer.trim().length < 20} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: answer.trim().length >= 20 ? 'pointer' : 'not-allowed', background: answer.trim().length >= 20 ? 'linear-gradient(135deg,#00d9a3,#ff6b4a)' : 'rgba(255,255,255,0.05)', color: answer.trim().length >= 20 ? '#020812' : '#3a4a5a', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 }}>
           {loading ? 'Evaluating your answer...' : 'Submit Answer →'}
         </button>
       </div>
@@ -267,8 +267,8 @@ export default function MockInterviewPage() {
         </p>
       </div>
 
-      <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.12)', borderRadius: 16, padding: 28, marginBottom: 24 }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 16 }}>HOW IT WORKS</div>
+      <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.12)', borderRadius: 16, padding: 28, marginBottom: 24 }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 2, marginBottom: 16 }}>HOW IT WORKS</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 28 }}>
           {[
             { step: '1', icon: '🎯', title: '10 real interview questions', desc: 'Generated specifically for your domain. Mix of technical, conceptual and behavioral questions.' },
@@ -277,7 +277,7 @@ export default function MockInterviewPage() {
             { step: '4', icon: '📊', title: 'Get your Interview Readiness Score', desc: 'Final score out of 100% showing how ready you are for placement interviews right now.' },
           ].map(s => (
             <div key={s.step} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-              <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(0,240,255,0.08)', border: '1px solid rgba(0,240,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>{s.icon}</div>
+              <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(0,217,163,0.08)', border: '1px solid rgba(0,217,163,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>{s.icon}</div>
               <div>
                 <div style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: '#e8e8ed', marginBottom: 3 }}>{s.title}</div>
                 <div style={{ fontSize: 13, color: '#5a7a9a', lineHeight: 1.6 }}>{s.desc}</div>
@@ -286,7 +286,7 @@ export default function MockInterviewPage() {
           ))}
         </div>
 
-        <button onClick={startInterview} disabled={loading} style={{ width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: loading ? 'rgba(0,240,255,0.2)' : 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 800, boxShadow: '0 0 30px rgba(0,240,255,0.2)' }}>
+        <button onClick={startInterview} disabled={loading} style={{ width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: loading ? 'rgba(0,217,163,0.2)' : 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 800, boxShadow: '0 0 30px rgba(0,217,163,0.2)' }}>
           {loading ? 'Preparing your interview...' : 'Start Mock Interview →'}
         </button>
         <p style={{ textAlign: 'center', color: '#3a4a5a', fontSize: 11, fontFamily: 'var(--font-mono)', marginTop: 10 }}>
@@ -295,7 +295,7 @@ export default function MockInterviewPage() {
       </div>
 
       {history.length > 0 && (
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 14, padding: 20 }}>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 14, padding: 20 }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 16 }}>PAST INTERVIEWS</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {history.filter(i => i.status === 'completed').slice(0, 5).map((i, idx) => (
@@ -305,7 +305,7 @@ export default function MockInterviewPage() {
                   <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>{new Date(i.created_at).toLocaleDateString('en-IN')}</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800, color: i.interview_readiness >= 70 ? '#1D9E75' : i.interview_readiness >= 50 ? '#00f0ff' : '#ff2d78' }}>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800, color: i.interview_readiness >= 70 ? '#1D9E75' : i.interview_readiness >= 50 ? '#00d9a3' : '#ff2d78' }}>
                     {i.interview_readiness}%
                   </div>
                   <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>readiness</div>

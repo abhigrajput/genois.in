@@ -132,7 +132,7 @@ export default function TestsPage() {
     } catch (err) { toast.error(err.message); } finally { setLoading(false); }
   }
 
-  const C = { background: '#070f1f', border: '1px solid rgba(0,240,255,0.12)', borderRadius: 14, padding: 24, marginBottom: 16 };
+  const C = { background: '#070f1f', border: '1px solid rgba(0,217,163,0.12)', borderRadius: 14, padding: 24, marginBottom: 16 };
 
   return (
     <div style={{ width: '100%', maxWidth: 1600, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
@@ -206,22 +206,22 @@ export default function TestsPage() {
       {loading && (
         <div style={{ ...C, textAlign: 'center', padding: 48 }}>
           <div style={{ fontSize: 36, marginBottom: 12 }}>⏳</div>
-          <div style={{ color: '#00f0ff', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 600 }}>Claude is generating your test...</div>
+          <div style={{ color: '#00d9a3', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 600 }}>Claude is generating your test...</div>
           <div style={{ color: '#5a7a9a', fontSize: 13, marginTop: 6 }}>Takes about 15 seconds</div>
         </div>
       )}
 
       {test && !result && !loading && (
         <div style={C}>
-          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: '#00f0ff', marginBottom: 20 }}>{test.topic} · {test.questions?.length} Questions</div>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: '#00d9a3', marginBottom: 20 }}>{test.topic} · {test.questions?.length} Questions</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             {(test.questions || []).map((q, i) => (
               <div key={i}>
                 <div style={{ fontSize: 14, fontWeight: 500, color: '#e8e8ed', marginBottom: 10, lineHeight: 1.6 }}>Q{i + 1}. {q.question}</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {(q.options || []).map(opt => (
-                    <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 16px', borderRadius: 8, cursor: 'pointer', background: answers[i] === opt[0] ? 'rgba(0,240,255,0.08)' : 'rgba(255,255,255,0.02)', border: '1px solid ' + (answers[i] === opt[0] ? '#00f0ff' : 'rgba(255,255,255,0.06)') }}>
-                      <input type="radio" name={'q' + i} value={opt[0]} checked={answers[i] === opt[0]} onChange={e => setAnswers(a => ({ ...a, [i]: e.target.value }))} style={{ accentColor: '#00f0ff' }} />
+                    <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 16px', borderRadius: 8, cursor: 'pointer', background: answers[i] === opt[0] ? 'rgba(0,217,163,0.08)' : 'rgba(255,255,255,0.02)', border: '1px solid ' + (answers[i] === opt[0] ? '#00d9a3' : 'rgba(255,255,255,0.06)') }}>
+                      <input type="radio" name={'q' + i} value={opt[0]} checked={answers[i] === opt[0]} onChange={e => setAnswers(a => ({ ...a, [i]: e.target.value }))} style={{ accentColor: '#00d9a3' }} />
                       <span style={{ color: '#e8e8ed', fontSize: 13 }}>{opt}</span>
                     </label>
                   ))}
@@ -237,7 +237,7 @@ export default function TestsPage() {
               style={{
                 flex: 1, padding: 13, borderRadius: 8, border: 'none',
                 cursor: submitEligible ? 'pointer' : 'not-allowed',
-                background: submitEligible ? 'linear-gradient(135deg,#00f0ff,#ff6b4a)' : 'rgba(255,255,255,0.07)',
+                background: submitEligible ? 'linear-gradient(135deg,#00d9a3,#ff6b4a)' : 'rgba(255,255,255,0.07)',
                 color: submitEligible ? '#020812' : '#555',
                 fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700,
                 transition: 'all 0.4s ease',
@@ -262,7 +262,7 @@ export default function TestsPage() {
               {f.explanation && <div style={{ fontSize: 12, color: '#5a7a9a', marginTop: 3 }}>{f.explanation}</div>}
             </div>
           ))}
-          <button onClick={() => { setTest(null); setResult(null); setAnswers({}); setActiveType(null); }} style={{ marginTop: 12, width: '100%', padding: 12, borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', background: 'transparent', color: '#00f0ff', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Take Another Test</button>
+          <button onClick={() => { setTest(null); setResult(null); setAnswers({}); setActiveType(null); }} style={{ marginTop: 12, width: '100%', padding: 12, borderRadius: 8, border: '1px solid rgba(0,217,163,0.2)', background: 'transparent', color: '#00d9a3', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Take Another Test</button>
         </div>
       )}
 

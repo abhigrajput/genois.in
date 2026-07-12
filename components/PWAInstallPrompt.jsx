@@ -59,8 +59,8 @@ export default function PWAInstallPrompt() {
       right: 16,
       width: 'calc(100vw - 32px)',
       maxWidth: 320,
-      background: 'linear-gradient(135deg,rgba(7,15,31,0.98),rgba(0,240,255,0.05))',
-      border: '1px solid rgba(0,240,255,0.3)',
+      background: 'linear-gradient(135deg,rgba(7,15,31,0.98),rgba(0,217,163,0.05))',
+      border: '1px solid rgba(0,217,163,0.3)',
       borderRadius: 14,
       padding: 18,
       paddingRight: 34,
@@ -81,7 +81,7 @@ export default function PWAInstallPrompt() {
         Add to home screen for instant access. Works offline.
       </div>
       <div style={{ display: 'flex', gap: 8 }}>
-        <button onClick={handleInstall} style={{ flex: 1, padding: '10px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 700 }}>
+        <button onClick={handleInstall} style={{ flex: 1, padding: '10px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 700 }}>
           Install
         </button>
         <button onClick={handleDismiss} style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', background: 'transparent', color: '#5a7a9a', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 600 }}>

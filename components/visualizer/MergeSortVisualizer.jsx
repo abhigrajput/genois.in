@@ -133,7 +133,7 @@ function barColor(idx, step) {
   if (step.done) return '#1d9e75';
   if (step.merged && idx >= step.merged[0] && idx <= step.merged[1]) return '#1d9e75';
   if (step.placed === idx) return '#1d9e75';
-  if (step.merging === idx) return '#00f0ff';
+  if (step.merging === idx) return '#00d9a3';
   if (step.left && idx >= step.left[0] && idx <= step.left[1]) return '#378ADD';
   if (step.right && idx >= step.right[0] && idx <= step.right[1]) return '#ff6b4a';
   if (step.dividing) {
@@ -183,7 +183,7 @@ export default function MergeSortVisualizer() {
 
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
-          { label:'Phase', value: current?.dividing ? 'Divide' : current?.merging != null ? 'Merge' : current?.done ? 'Done' : '—', color:'#00f0ff' },
+          { label:'Phase', value: current?.dividing ? 'Divide' : current?.merging != null ? 'Merge' : current?.done ? 'Done' : '—', color:'#00d9a3' },
           { label:'Time', value:'O(n log n)', color:'#ff6b4a' },
           { label:'Space', value:'O(n)', color:'#ef9f27' },
           { label:'Stable', value:'Yes', color:'#1d9e75' },
@@ -195,7 +195,7 @@ export default function MergeSortVisualizer() {
         ))}
       </div>
 
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
+      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
         {displayArr.map((v, i) => (
           <div key={i} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, flex:1, maxWidth:60 }}>
             <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:barColor(i, current) }}>{v}</span>
@@ -212,7 +212,7 @@ export default function MergeSortVisualizer() {
       />
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
-        {[['#378ADD','Left Half'],['#ff6b4a','Right Half'],['#00f0ff','Merging'],['#1d9e75','Merged']].map(([c,l]) => (
+        {[['#378ADD','Left Half'],['#ff6b4a','Right Half'],['#00d9a3','Merging'],['#1d9e75','Merged']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:2, background:c }}/>
             <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>

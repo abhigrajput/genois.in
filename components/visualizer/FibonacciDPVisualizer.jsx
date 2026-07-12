@@ -178,7 +178,7 @@ export default function FibonacciDPVisualizer() {
   function getCellColor(idx) {
     if (current.mode === 'done') return '#1d9e75';
     if (idx === current.currentIdx) {
-      return current.mode === 'computed' ? '#1d9e75' : '#00f0ff';
+      return current.mode === 'computed' ? '#1d9e75' : '#00d9a3';
     }
     if (current.dependencies.includes(idx)) return '#ef9f27';
     if (current.dp[idx] !== null) return '#1d9e7540';
@@ -201,7 +201,7 @@ export default function FibonacciDPVisualizer() {
     if (!match) return '#1a2a3a';
     const val = parseInt(match[1]);
     if (current.dp[val] !== null) return '#1d9e75';
-    if (val === current.currentIdx) return '#00f0ff';
+    if (val === current.currentIdx) return '#00d9a3';
     return '#2a3a4a';
   }
 
@@ -217,7 +217,7 @@ export default function FibonacciDPVisualizer() {
       {/* Stats row */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Bottom-up Result', value: current.dp[n] ?? '—', color: '#00f0ff' },
+          { label: 'Bottom-up Result', value: current.dp[n] ?? '—', color: '#00d9a3' },
           { label: 'DP States', value: n + 1, color: '#ff6b4a' },
           { label: 'Time Complexity', value: 'O(n)', color: '#1d9e75' },
           { label: 'Space Complexity', value: 'O(n)', color: '#ef9f27' },
@@ -232,7 +232,7 @@ export default function FibonacciDPVisualizer() {
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {/* Left Side: Bottom-Up DP Grid */}
         <div style={{ flex: 1.2, minWidth: 280, display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: '24px 16px', position: 'relative' }}>
+          <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: '24px 16px', position: 'relative' }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 16 }}>BOTTOM-UP DP TABLE (dp[])</div>
             
             <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', minHeight: 70, alignItems: 'center' }}>
@@ -244,11 +244,11 @@ export default function FibonacciDPVisualizer() {
                 return (
                   <div key={idx} style={{
                     width: 52, height: 52, borderRadius: 8,
-                    background: isCurrent ? 'rgba(0,240,255,0.05)' : isDep ? 'rgba(239,159,39,0.05)' : 'rgba(10,15,30,0.8)',
+                    background: isCurrent ? 'rgba(0,217,163,0.05)' : isDep ? 'rgba(239,159,39,0.05)' : 'rgba(10,15,30,0.8)',
                     border: `2px solid ${color}`,
                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                     position: 'relative', transition: 'all 0.3s ease',
-                    boxShadow: isCurrent ? '0 0 12px rgba(0,240,255,0.2)' : 'none',
+                    boxShadow: isCurrent ? '0 0 12px rgba(0,217,163,0.2)' : 'none',
                   }}>
                     <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: '#5a7a9a', position: 'absolute', top: 4 }}>i={idx}</span>
                     <span style={{ fontSize: 14, fontFamily: 'var(--font-mono)', fontWeight: 700, color: val === null ? '#2a3a4a' : color, marginTop: 10 }}>
@@ -267,7 +267,7 @@ export default function FibonacciDPVisualizer() {
                   <span>+</span>
                   <span>dp[{current.currentIdx - 1}] ({current.dp[current.currentIdx - 1]})</span>
                   <span>=</span>
-                  <span style={{ color: '#00f0ff', fontWeight: 'bold' }}>dp[{current.currentIdx}] ({current.dp[current.currentIdx]})</span>
+                  <span style={{ color: '#00d9a3', fontWeight: 'bold' }}>dp[{current.currentIdx}] ({current.dp[current.currentIdx]})</span>
                 </div>
               )}
             </div>
@@ -276,7 +276,7 @@ export default function FibonacciDPVisualizer() {
 
         {/* Right Side: Recursive call tree representation */}
         <div style={{ flex: 1, minWidth: 280, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 16 }}>
+          <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 16 }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>RECURSIVE CALL TREE (Top-Down Memoized)</div>
             <div style={{ overflow: 'auto', display: 'flex', justifyContent: 'center' }}>
               <svg width="500" height="260" style={{ display: 'block' }}>
@@ -288,7 +288,7 @@ export default function FibonacciDPVisualizer() {
                     <line key={i}
                       x1={link.from.x} y1={link.from.y}
                       x2={link.to.x} y2={link.to.y}
-                      stroke={isActive ? '#1d9e75' : 'rgba(0,240,255,0.12)'}
+                      stroke={isActive ? '#1d9e75' : 'rgba(0,217,163,0.12)'}
                       strokeWidth={isActive ? 2 : 1.5}
                       style={{ transition: 'all 0.3s' }}
                     />
@@ -296,7 +296,7 @@ export default function FibonacciDPVisualizer() {
                 })}
                 {nodes.map(node => {
                   const color = getTreeNodeColor(node.label);
-                  const isHl = color === '#00f0ff';
+                  const isHl = color === '#00d9a3';
                   return (
                     <g key={node.id}>
                       <circle cx={node.x} cy={node.y} r={16}
@@ -332,7 +332,7 @@ export default function FibonacciDPVisualizer() {
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {[
           { color: '#1a2a3a', label: 'Uncomputed' },
-          { color: '#00f0ff', label: 'Current computation' },
+          { color: '#00d9a3', label: 'Current computation' },
           { color: '#ef9f27', label: 'Dependencies (i-1, i-2)' },
           { color: '#1d9e75', label: 'Computed / Base Case' },
         ].map(l => (

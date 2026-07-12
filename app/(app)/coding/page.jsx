@@ -77,7 +77,7 @@ export default function CodingPage() {
     }
   }
 
-  const card = { background:'#070f1f', border:'1px solid rgba(0,240,255,0.1)', borderRadius:14, padding:20, marginBottom:16 };
+  const card = { background:'#070f1f', border:'1px solid rgba(0,217,163,0.1)', borderRadius:14, padding:20, marginBottom:16 };
 
   if (!ready || pageLoading) return (
     <div style={{textAlign:'center',paddingTop:80,color:'#5a7a9a',fontFamily:'var(--font-mono)',fontSize:13}}>
@@ -110,7 +110,7 @@ export default function CodingPage() {
         style={{
           padding:'8px 16px',borderRadius:8,border:'none',cursor:'pointer',
           fontFamily:'var(--font-heading)',fontSize:12,fontWeight:600,
-          background: currentTestIndex===i ? 'linear-gradient(135deg,#00f0ff,#ff6b4a)' : 'rgba(255,255,255,0.05)',
+          background: currentTestIndex===i ? 'linear-gradient(135deg,#00d9a3,#ff6b4a)' : 'rgba(255,255,255,0.05)',
           color: currentTestIndex===i ? '#020812' : '#5a7a9a',
         }}>
         Problem {i+1} {t.difficulty ? '· '+t.difficulty : ''}
@@ -124,7 +124,7 @@ export default function CodingPage() {
             <div style={{fontSize:13,color:'#c8d8e8',lineHeight:1.7,marginTop:12,marginBottom:16}}>{codingTest.problem}</div>
             {codingTest.example_input && (
               <div style={{background:'rgba(0,0,0,0.4)',borderRadius:8,padding:12,fontFamily:'var(--font-mono)',fontSize:12}}>
-                <div style={{color:'#5a7a9a',marginBottom:4}}>Input: <span style={{color:'#00f0ff'}}>{codingTest.example_input}</span></div>
+                <div style={{color:'#5a7a9a',marginBottom:4}}>Input: <span style={{color:'#00d9a3'}}>{codingTest.example_input}</span></div>
                 <div style={{color:'#5a7a9a'}}>Output: <span style={{color:'#1D9E75'}}>{codingTest.example_output}</span></div>
               </div>
             )}
@@ -172,7 +172,7 @@ export default function CodingPage() {
                  <span style={{padding:'4px 12px',borderRadius:20,fontSize:12,fontWeight:600,background: result.review?.isCorrect?'rgba(29,158,117,0.15)':'rgba(255,45,120,0.15)',color: result.review?.isCorrect?'#1D9E75':'#ff2d78'}}>
                    {result.review?.isCorrect ? '✓ Correct' : '✗ Needs Work'}
                  </span>
-                 <span style={{padding:'4px 12px',borderRadius:20,fontSize:12,background:'rgba(0,240,255,0.1)',color:'#00f0ff'}}>Score: {result.review?.score}/100</span>
+                 <span style={{padding:'4px 12px',borderRadius:20,fontSize:12,background:'rgba(0,217,163,0.1)',color:'#00d9a3'}}>Score: {result.review?.score}/100</span>
                  <span style={{padding:'4px 12px',borderRadius:20,fontSize:12,background:'rgba(186,117,23,0.1)',color:'#EF9F27'}}>+{result.points} pts</span>
                </div>
                <div style={{fontSize:13,color:'#c8d8e8',lineHeight:1.7}}>{result.review?.feedback}</div>

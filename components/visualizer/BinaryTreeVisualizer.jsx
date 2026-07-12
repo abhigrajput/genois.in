@@ -193,7 +193,7 @@ function traversePostorder(nodes, edges, idx = 0, result = []) {
 function nodeColor(id, traversalOrder, currentStep, visited) {
   if (traversalOrder.length === 0) return '#1a2a3a';
   if (visited.has(id)) return '#1d9e75';
-  if (traversalOrder[currentStep] === id) return '#00f0ff';
+  if (traversalOrder[currentStep] === id) return '#00d9a3';
   return '#1a2a3a';
 }
 
@@ -304,7 +304,7 @@ export default function BinaryTreeVisualizer() {
       {/* Stats */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Nodes', value: nodes.length, color: '#00f0ff' },
+          { label: 'Nodes', value: nodes.length, color: '#00d9a3' },
           { label: 'Edges', value: edges.length, color: '#ff6b4a' },
           { label: 'Current', value: traversalOrder[currentStep] !== undefined ? nodes[traversalOrder[currentStep]]?.val ?? '-' : '-', color: '#ef9f27' },
           { label: 'Visited', value: visited.size, color: '#1d9e75' },
@@ -318,20 +318,20 @@ export default function BinaryTreeVisualizer() {
 
       {/* Message */}
       {message && (
-        <div style={{ background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00f0ff' }}>
+        <div style={{ background: 'rgba(0,217,163,0.05)', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00d9a3' }}>
           ▶ {message}
         </div>
       )}
 
       {/* SVG Tree */}
-      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, overflow: 'hidden' }}>
+      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, overflow: 'hidden' }}>
         <svg width="100%" viewBox={`0 0 ${SVG_W} ${SVG_H}`} style={{ display: 'block' }}>
           {/* Edges */}
           {edges.map((e, i) => {
             const p = laidOut[e.parent], c = laidOut[e.child];
             return (
               <line key={i} x1={p?.x} y1={p?.y} x2={c?.x} y2={c?.y}
-                stroke="rgba(0,240,255,0.2)" strokeWidth={1.5} />
+                stroke="rgba(0,217,163,0.2)" strokeWidth={1.5} />
             );
           })}
           {/* Nodes */}
@@ -341,7 +341,7 @@ export default function BinaryTreeVisualizer() {
             return (
               <g key={n.id}>
                 {isActive && (
-                  <circle cx={n.x} cy={n.y} r={26} fill="none" stroke="#00f0ff" strokeWidth={1} opacity={0.4} />
+                  <circle cx={n.x} cy={n.y} r={26} fill="none" stroke="#00d9a3" strokeWidth={1} opacity={0.4} />
                 )}
                 <circle cx={n.x} cy={n.y} r={20}
                   fill={color === '#1a2a3a' ? '#0d1a2a' : color + '22'}
@@ -379,9 +379,9 @@ export default function BinaryTreeVisualizer() {
             <span key={i} style={{
               fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 600,
               padding: '2px 10px', borderRadius: 6,
-              background: visited.has(idx) ? 'rgba(29,158,117,0.15)' : traversalOrder[currentStep] === idx ? 'rgba(0,240,255,0.15)' : 'rgba(26,42,58,0.6)',
-              color: visited.has(idx) ? '#1d9e75' : traversalOrder[currentStep] === idx ? '#00f0ff' : '#5a7a9a',
-              border: `1px solid ${visited.has(idx) ? 'rgba(29,158,117,0.3)' : traversalOrder[currentStep] === idx ? 'rgba(0,240,255,0.3)' : 'rgba(0,240,255,0.08)'}`,
+              background: visited.has(idx) ? 'rgba(29,158,117,0.15)' : traversalOrder[currentStep] === idx ? 'rgba(0,217,163,0.15)' : 'rgba(26,42,58,0.6)',
+              color: visited.has(idx) ? '#1d9e75' : traversalOrder[currentStep] === idx ? '#00d9a3' : '#5a7a9a',
+              border: `1px solid ${visited.has(idx) ? 'rgba(29,158,117,0.3)' : traversalOrder[currentStep] === idx ? 'rgba(0,217,163,0.3)' : 'rgba(0,217,163,0.08)'}`,
               transition: 'all 0.3s ease',
             }}>{nodes[idx]?.val}</span>
           ))}
@@ -392,16 +392,16 @@ export default function BinaryTreeVisualizer() {
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
         <input type="number" value={newNodeVal} onChange={e => setNewNodeVal(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && doInsert(newNodeVal)}
-          placeholder="Value..." style={{ background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.2)', borderRadius: 8, padding: '7px 12px', color: '#e8e8ed', fontFamily: 'var(--font-mono)', fontSize: 13, outline: 'none', width: 100 }} />
-        <button onClick={() => doInsert(newNodeVal || String(Math.floor(Math.random() * 90) + 10))} style={btn('#00f0ff')}>Insert</button>
+          placeholder="Value..." style={{ background: 'rgba(0,217,163,0.04)', border: '1px solid rgba(0,217,163,0.2)', borderRadius: 8, padding: '7px 12px', color: '#e8e8ed', fontFamily: 'var(--font-mono)', fontSize: 13, outline: 'none', width: 100 }} />
+        <button onClick={() => doInsert(newNodeVal || String(Math.floor(Math.random() * 90) + 10))} style={btn('#00d9a3')}>Insert</button>
         <button onClick={() => startTraversal('inorder')} style={btn('#ff6b4a')}>Inorder</button>
         <button onClick={() => startTraversal('preorder')} style={btn('#ef9f27')}>Preorder</button>
         <button onClick={() => startTraversal('postorder')} style={btn('#1d9e75')}>Postorder</button>
-        <button onClick={() => { setIsPlaying(p => !p); }} style={btn('#00f0ff')}>{isPlaying ? '⏸ Pause' : '▶ Play'}</button>
+        <button onClick={() => { setIsPlaying(p => !p); }} style={btn('#00d9a3')}>{isPlaying ? '⏸ Pause' : '▶ Play'}</button>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a' }}>SPEED</span>
           {[1, 2, 3, 4].map(s => (
-            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid #00f0ff' : '1px solid rgba(0,240,255,0.15)', background: speed === s ? 'rgba(0,240,255,0.12)' : 'transparent', color: speed === s ? '#00f0ff' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×', '1×', '2×', '3×'][s - 1]}</button>
+            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid #00d9a3' : '1px solid rgba(0,217,163,0.15)', background: speed === s ? 'rgba(0,217,163,0.12)' : 'transparent', color: speed === s ? '#00d9a3' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×', '1×', '2×', '3×'][s - 1]}</button>
           ))}
         </div>
         <button onClick={reset} style={btn('#ff2d78')}>↺ Reset</button>
@@ -409,7 +409,7 @@ export default function BinaryTreeVisualizer() {
 
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        {[['#1a2a3a', 'Unvisited'], ['#00f0ff', 'Current'], ['#1d9e75', 'Visited']].map(([c, l]) => (
+        {[['#1a2a3a', 'Unvisited'], ['#00d9a3', 'Current'], ['#1d9e75', 'Visited']].map(([c, l]) => (
           <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 12, height: 12, borderRadius: '50%', background: c + '44', border: `2px solid ${c}` }} />
             <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l}</span>

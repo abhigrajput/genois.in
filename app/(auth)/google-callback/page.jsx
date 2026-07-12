@@ -82,7 +82,7 @@ export default function GoogleCallbackPage() {
         <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginTop: 16 }}>
           {[0, 1, 2].map(i => (
             <div key={i} style={{
-              width: 8, height: 8, borderRadius: '50%', background: '#00f0ff',
+              width: 8, height: 8, borderRadius: '50%', background: '#00d9a3',
               animation: `bounce 1.2s ${i * 0.2}s infinite`,
             }} />
           ))}

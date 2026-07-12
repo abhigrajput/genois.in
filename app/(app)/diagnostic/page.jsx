@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 const SKILL_COLORS = {
   novice: '#ff2d78',
   beginner: '#EF9F27',
-  intermediate: '#00f0ff',
+  intermediate: '#00d9a3',
   advanced: '#1D9E75',
 };
 
@@ -88,7 +88,7 @@ export default function DiagnosticPage() {
   const q = questions[currentQ];
 
   if (phase === 'result' && result) {
-    const color = SKILL_COLORS[result.skillLevel] || '#00f0ff';
+    const color = SKILL_COLORS[result.skillLevel] || '#00d9a3';
     return (
       <div style={{ maxWidth: 680, margin: '0 auto', fontFamily: 'var(--font-body)', textAlign: 'center' }}>
         <div style={{ marginBottom: 32 }}>
@@ -116,8 +116,8 @@ export default function DiagnosticPage() {
           </div>
         </div>
 
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 14, padding: 20, marginBottom: 24 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 12 }}>YOUR BASELINE SCORE</div>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 14, padding: 20, marginBottom: 24 }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 2, marginBottom: 12 }}>YOUR BASELINE SCORE</div>
           <div style={{ fontSize: 13, color: '#5a7a9a', lineHeight: 1.7 }}>
             This is your Day 0 score: <span style={{ color, fontWeight: 700 }}>{result.score}%</span>.<br />
             After 30 days of GENOIS we will compare this to your Day 30 score.<br />
@@ -125,7 +125,7 @@ export default function DiagnosticPage() {
           </div>
         </div>
 
-        <button onClick={() => router.push('/roadmap')} style={{ width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 800 }}>
+        <button onClick={() => router.push('/roadmap')} style={{ width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 800 }}>
           Start Day 1 — Let us Go 🚀
         </button>
       </div>
@@ -153,10 +153,10 @@ export default function DiagnosticPage() {
         </div>
 
         <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, marginBottom: 24, overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${((currentQ + 1) / questions.length) * 100}%`, background: 'linear-gradient(90deg,#00f0ff,#ff6b4a)', borderRadius: 2, transition: 'width 0.3s' }} />
+          <div style={{ height: '100%', width: `${((currentQ + 1) / questions.length) * 100}%`, background: 'linear-gradient(90deg,#00d9a3,#ff6b4a)', borderRadius: 2, transition: 'width 0.3s' }} />
         </div>
 
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24, marginBottom: 20 }}>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 24, marginBottom: 20 }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 10 }}>
             {q.topic?.toUpperCase()}
           </div>
@@ -169,11 +169,11 @@ export default function DiagnosticPage() {
             return (
               <button key={oi} onClick={() => setAnswers(p => ({ ...p, [currentQ]: opt }))} style={{
                 padding: '14px 16px', borderRadius: 10, cursor: 'pointer', textAlign: 'left',
-                border: `1px solid ${isSelected ? 'rgba(0,240,255,0.4)' : 'rgba(255,255,255,0.06)'}`,
-                background: isSelected ? 'rgba(0,240,255,0.08)' : 'rgba(255,255,255,0.01)',
-                color: isSelected ? '#00f0ff' : '#c8d8e8', fontSize: 14, transition: 'all 0.15s',
+                border: `1px solid ${isSelected ? 'rgba(0,217,163,0.4)' : 'rgba(255,255,255,0.06)'}`,
+                background: isSelected ? 'rgba(0,217,163,0.08)' : 'rgba(255,255,255,0.01)',
+                color: isSelected ? '#00d9a3' : '#c8d8e8', fontSize: 14, transition: 'all 0.15s',
               }}>
-                <span style={{ color: isSelected ? '#00f0ff' : '#5a7a9a', marginRight: 10, fontFamily: 'var(--font-mono)', fontWeight: 700 }}>{letters[oi]}.</span>
+                <span style={{ color: isSelected ? '#00d9a3' : '#5a7a9a', marginRight: 10, fontFamily: 'var(--font-mono)', fontWeight: 700 }}>{letters[oi]}.</span>
                 {opt}
               </button>
             );
@@ -185,11 +185,11 @@ export default function DiagnosticPage() {
             <button onClick={() => setCurrentQ(q => q - 1)} style={{ flex: 1, padding: '13px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 14 }}>← Back</button>
           )}
           {currentQ < questions.length - 1 ? (
-            <button onClick={() => { if (!answers[currentQ]) { toast.error('Select an answer first'); return; } setCurrentQ(q => q + 1); }} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: 'pointer', background: answers[currentQ] ? 'linear-gradient(135deg,#00f0ff,#ff6b4a)' : 'rgba(255,255,255,0.05)', color: answers[currentQ] ? '#020812' : '#3a4a5a', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+            <button onClick={() => { if (!answers[currentQ]) { toast.error('Select an answer first'); return; } setCurrentQ(q => q + 1); }} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: 'pointer', background: answers[currentQ] ? 'linear-gradient(135deg,#00d9a3,#ff6b4a)' : 'rgba(255,255,255,0.05)', color: answers[currentQ] ? '#020812' : '#3a4a5a', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
               Next →
             </button>
           ) : (
-            <button onClick={submitTest} disabled={submitting} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: 'pointer', background: submitting ? 'rgba(0,240,255,0.2)' : 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+            <button onClick={submitTest} disabled={submitting} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: 'pointer', background: submitting ? 'rgba(0,217,163,0.2)' : 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
               {submitting ? 'Calculating...' : 'Submit Test →'}
             </button>
           )}
@@ -209,12 +209,12 @@ export default function DiagnosticPage() {
           Before you start your 30-day journey we need to know where you stand today.
         </p>
         <p style={{ color: '#5a7a9a', fontSize: 15, lineHeight: 1.8 }}>
-          This score becomes your <span style={{ color: '#00f0ff', fontWeight: 600 }}>Day 0 baseline</span>. After 30 days we compare it to show your exact skill lift.
+          This score becomes your <span style={{ color: '#00d9a3', fontWeight: 600 }}>Day 0 baseline</span>. After 30 days we compare it to show your exact skill lift.
         </p>
       </div>
 
-      <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24, marginBottom: 28, textAlign: 'left' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 16 }}>WHAT TO EXPECT</div>
+      <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 24, marginBottom: 28, textAlign: 'left' }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 2, marginBottom: 16 }}>WHAT TO EXPECT</div>
         {[
           { icon: '📝', text: '15 questions on your chosen domain' },
           { icon: '⏱️', text: 'Takes about 10-15 minutes' },
@@ -229,7 +229,7 @@ export default function DiagnosticPage() {
         ))}
       </div>
 
-      <button onClick={startTest} disabled={generating} style={{ width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: generating ? 'rgba(0,240,255,0.2)' : 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 800, marginBottom: 12, boxShadow: '0 0 30px rgba(0,240,255,0.2)' }}>
+      <button onClick={startTest} disabled={generating} style={{ width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: generating ? 'rgba(0,217,163,0.2)' : 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 800, marginBottom: 12, boxShadow: '0 0 30px rgba(0,217,163,0.2)' }}>
         {generating ? 'Generating your questions...' : 'Start Diagnostic Test →'}
       </button>
       <p style={{ color: '#3a4a5a', fontSize: 12, fontFamily: 'var(--font-mono)' }}>

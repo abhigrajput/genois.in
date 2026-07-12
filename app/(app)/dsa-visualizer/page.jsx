@@ -101,7 +101,7 @@ const ALGORITHMS = [
 ];
 
 const CATEGORY_COLORS = {
-  'Sorting':             '#00f0ff',
+  'Sorting':             '#00d9a3',
   'Searching':           '#ff6b4a',
   'Data Structures':     '#1d9e75',
   'Trees':               '#ef9f27',
@@ -126,7 +126,7 @@ function AlgoSkeleton() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16, animation: 'pulse 1.5s ease infinite' }}>
       {[200, 120, 80].map((h, i) => (
-        <div key={i} style={{ height: h, borderRadius: 12, background: 'rgba(0,240,255,0.03)', border: '1px solid rgba(0,240,255,0.06)' }} />
+        <div key={i} style={{ height: h, borderRadius: 12, background: 'rgba(0,217,163,0.03)', border: '1px solid rgba(0,217,163,0.06)' }} />
       ))}
       <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>
     </div>
@@ -157,7 +157,7 @@ function DSAVisualizerInner() {
         flexShrink: 0,
         overflow: 'hidden',
         transition: 'width 0.25s ease',
-        borderRight: sidebarOpen ? '1px solid rgba(0,240,255,0.1)' : 'none',
+        borderRight: sidebarOpen ? '1px solid rgba(0,217,163,0.1)' : 'none',
         display: 'flex',
         flexDirection: 'column',
         background: 'rgba(6,15,30,0.7)',
@@ -170,7 +170,7 @@ function DSAVisualizerInner() {
             <input
               type="text" value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search algorithms..."
-              style={{ width: '100%', background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '7px 10px 7px 32px', color: '#e8e8ed', fontSize: 12, fontFamily: 'var(--font-body)', outline: 'none' }}
+              style={{ width: '100%', background: 'rgba(0,217,163,0.04)', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 8, padding: '7px 10px 7px 32px', color: '#e8e8ed', fontSize: 12, fontFamily: 'var(--font-body)', outline: 'none' }}
             />
           </div>
         </div>
@@ -212,7 +212,7 @@ function DSAVisualizerInner() {
         </nav>
 
         {/* Algorithm count */}
-        <div style={{ padding: '8px 16px', borderTop: '1px solid rgba(0,240,255,0.06)', fontFamily: 'var(--font-mono)', fontSize: 9, color: '#2a3a4a', flexShrink: 0 }}>
+        <div style={{ padding: '8px 16px', borderTop: '1px solid rgba(0,217,163,0.06)', fontFamily: 'var(--font-mono)', fontSize: 9, color: '#2a3a4a', flexShrink: 0 }}>
           {ALGORITHMS.length} ALGORITHMS TOTAL
         </div>
       </div>
@@ -223,7 +223,7 @@ function DSAVisualizerInner() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
           <button
             onClick={() => setSidebarOpen(p => !p)}
-            style={{ background: 'transparent', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, color: '#5a7a9a', fontSize: 14, padding: '6px 10px', cursor: 'pointer', transition: 'all 0.15s', flexShrink: 0 }}
+            style={{ background: 'transparent', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 8, color: '#5a7a9a', fontSize: 14, padding: '6px 10px', cursor: 'pointer', transition: 'all 0.15s', flexShrink: 0 }}
             title="Toggle sidebar"
           >
             {sidebarOpen ? '◀' : '▶'}
@@ -241,7 +241,7 @@ function DSAVisualizerInner() {
                   color: CATEGORY_COLORS[selected.category], background: `${CATEGORY_COLORS[selected.category]}12`,
                   border: `1px solid ${CATEGORY_COLORS[selected.category]}25`, borderRadius: 20, padding: '2px 10px',
                 }}>{selected.category}</span>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 20, padding: '2px 10px' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', background: 'rgba(0,217,163,0.04)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 20, padding: '2px 10px' }}>
                   {selected.complexity}
                 </span>
               </div>
@@ -254,7 +254,7 @@ function DSAVisualizerInner() {
               <button key={a.id} onClick={() => setSelectedId(a.id)} title={a.name}
                 style={{
                   width: 28, height: 28, borderRadius: 6,
-                  border: `1px solid ${selectedId === a.id ? CATEGORY_COLORS[a.category] : 'rgba(0,240,255,0.1)'}`,
+                  border: `1px solid ${selectedId === a.id ? CATEGORY_COLORS[a.category] : 'rgba(0,217,163,0.1)'}`,
                   background: selectedId === a.id ? `${CATEGORY_COLORS[a.category]}15` : 'transparent',
                   cursor: 'pointer', fontSize: 14, transition: 'all 0.15s',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -267,7 +267,7 @@ function DSAVisualizerInner() {
 
         {/* Visualizer card */}
         <div style={{
-          background: 'rgba(8,14,28,0.8)', border: '1px solid rgba(0,240,255,0.1)',
+          background: 'rgba(8,14,28,0.8)', border: '1px solid rgba(0,217,163,0.1)',
           borderRadius: 16, padding: '24px', position: 'relative', overflow: 'hidden',
         }}>
           <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: `linear-gradient(90deg,transparent,${CATEGORY_COLORS[selected.category]}60,transparent)` }} />

@@ -196,7 +196,7 @@ export default function LinkedListVisualizer() {
 
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
-          { label:'Size', value:nodes.length, color:'#00f0ff' },
+          { label:'Size', value:nodes.length, color:'#00d9a3' },
           { label:'Head', value:nodes.length > 0 ? nodes[0].val : 'null', color:'#1d9e75' },
           { label:'Tail', value:nodes.length > 0 ? nodes[nodes.length-1].val : 'null', color:'#ff6b4a' },
           { label:'Time (search)', value:'O(n)', color:'#ef9f27' },
@@ -209,13 +209,13 @@ export default function LinkedListVisualizer() {
       </div>
 
       {message && (
-        <div style={{ background:'rgba(0,240,255,0.05)', border:'1px solid rgba(0,240,255,0.15)', borderRadius:8, padding:'8px 14px', fontFamily:'var(--font-mono)', fontSize:12, color:'#00f0ff' }}>
+        <div style={{ background:'rgba(0,217,163,0.05)', border:'1px solid rgba(0,217,163,0.15)', borderRadius:8, padding:'8px 14px', fontFamily:'var(--font-mono)', fontSize:12, color:'#00d9a3' }}>
           ▶ {message}
         </div>
       )}
 
       {/* Visual linked list */}
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:12, padding:'32px 20px', minHeight:160, overflowX:'auto' }}>
+      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, padding:'32px 20px', minHeight:160, overflowX:'auto' }}>
         {nodes.length === 0 ? (
           <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:80, fontFamily:'var(--font-mono)', fontSize:12, color:'#2a3a4a' }}>
             head → null
@@ -239,21 +239,21 @@ export default function LinkedListVisualizer() {
                   {/* Node box */}
                   <div style={{
                     display:'flex', flexDirection:'column',
-                    border: isActive ? '2px solid #00f0ff' : isHead ? '2px solid #1d9e75' : isTail ? '2px solid #ff6b4a' : '1px solid rgba(0,240,255,0.25)',
+                    border: isActive ? '2px solid #00d9a3' : isHead ? '2px solid #1d9e75' : isTail ? '2px solid #ff6b4a' : '1px solid rgba(0,217,163,0.25)',
                     borderRadius: 10, overflow:'hidden',
-                    boxShadow: isActive ? '0 0 20px rgba(0,240,255,0.4)' : 'none',
+                    boxShadow: isActive ? '0 0 20px rgba(0,217,163,0.4)' : 'none',
                     transition:'all 0.3s ease',
                     minWidth: 72,
                   }}>
                     {/* Labels */}
-                    <div style={{ display:'flex', fontSize:7, fontFamily:'var(--font-mono)', borderBottom:'1px solid rgba(0,240,255,0.1)', background:'rgba(0,240,255,0.03)' }}>
-                      <span style={{ flex:1, textAlign:'center', padding:'2px 0', color:'#5a7a9a', borderRight:'1px solid rgba(0,240,255,0.1)' }}>data</span>
+                    <div style={{ display:'flex', fontSize:7, fontFamily:'var(--font-mono)', borderBottom:'1px solid rgba(0,217,163,0.1)', background:'rgba(0,217,163,0.03)' }}>
+                      <span style={{ flex:1, textAlign:'center', padding:'2px 0', color:'#5a7a9a', borderRight:'1px solid rgba(0,217,163,0.1)' }}>data</span>
                       <span style={{ flex:1, textAlign:'center', padding:'2px 0', color:'#5a7a9a' }}>next</span>
                     </div>
                     {/* Values */}
                     <div style={{ display:'flex', background:'rgba(10,20,40,0.8)' }}>
-                      <div style={{ flex:1, padding:'10px 8px', textAlign:'center', borderRight:'1px solid rgba(0,240,255,0.1)' }}>
-                        <span style={{ fontFamily:'var(--font-mono)', fontSize:16, fontWeight:700, color: isActive ? '#00f0ff' : isHead ? '#1d9e75' : '#e8e8ed' }}>{node.val}</span>
+                      <div style={{ flex:1, padding:'10px 8px', textAlign:'center', borderRight:'1px solid rgba(0,217,163,0.1)' }}>
+                        <span style={{ fontFamily:'var(--font-mono)', fontSize:16, fontWeight:700, color: isActive ? '#00d9a3' : isHead ? '#1d9e75' : '#e8e8ed' }}>{node.val}</span>
                       </div>
                       <div style={{ flex:1, padding:'10px 4px', textAlign:'center' }}>
                         <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color: isTail ? '#ff2d78' : '#5a7a9a' }}>
@@ -274,8 +274,8 @@ export default function LinkedListVisualizer() {
                   {/* Arrow */}
                   {i < nodes.length - 1 && (
                     <div style={{ display:'flex', alignItems:'center', padding:'0 4px' }}>
-                      <div style={{ width:24, height:2, background:'rgba(0,240,255,0.3)', position:'relative' }}>
-                        <div style={{ position:'absolute', right:-5, top:-4, color:'rgba(0,240,255,0.5)', fontSize:12 }}>▶</div>
+                      <div style={{ width:24, height:2, background:'rgba(0,217,163,0.3)', position:'relative' }}>
+                        <div style={{ position:'absolute', right:-5, top:-4, color:'rgba(0,217,163,0.5)', fontSize:12 }}>▶</div>
                       </div>
                     </div>
                   )}
@@ -298,7 +298,7 @@ export default function LinkedListVisualizer() {
           { label:'Insert Tail', action:insertTail, color:'#ff6b4a', bg:'rgba(255,107,74,0.08)', border:'rgba(255,107,74,0.25)' },
           { label:'Delete Head', action:deleteHead, color:'#ff2d78', bg:'rgba(255,45,120,0.08)', border:'rgba(255,45,120,0.25)' },
           { label:'Delete Tail', action:deleteTail, color:'#ef9f27', bg:'rgba(239,159,39,0.08)', border:'rgba(239,159,39,0.25)' },
-          { label:'Traverse', action:traverse, color:'#00f0ff', bg:'rgba(0,240,255,0.08)', border:'rgba(0,240,255,0.25)' },
+          { label:'Traverse', action:traverse, color:'#00d9a3', bg:'rgba(0,217,163,0.08)', border:'rgba(0,217,163,0.25)' },
         ].map(b => (
           <button key={b.label} onClick={b.action} style={{ padding:'8px 16px', borderRadius:8, border:`1px solid ${b.border}`, background:b.bg, color:b.color, fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' }}>{b.label}</button>
         ))}

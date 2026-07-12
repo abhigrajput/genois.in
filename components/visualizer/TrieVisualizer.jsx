@@ -92,7 +92,7 @@ export default function TrieVisualizer() {
   const [inputWord, setInputWord] = useState('');
   const [searchWord, setSearchWord] = useState('');
   const [highlightPath, setHighlightPath] = useState([]);
-  const [highlightColor, setHighlightColor] = useState('#00f0ff');
+  const [highlightColor, setHighlightColor] = useState('#00d9a3');
   const [newNodes, setNewNodes] = useState(new Set());
   const [message, setMessage] = useState('Insert or search words in the Trie.');
   const [speed, setSpeed] = useState(2);
@@ -140,10 +140,10 @@ export default function TrieVisualizer() {
 
     setWords([...words, w]);
     setNewNodes(newSet);
-    setHighlightColor('#00f0ff');
+    setHighlightColor('#00d9a3');
     const newRoot2 = buildTrieTree([...words, w]);
     const { path } = getPathIds(w, newRoot2);
-    animatePath(path, '#00f0ff');
+    animatePath(path, '#00d9a3');
     setMessage(`Inserted "${w}"`);
     setInputWord('');
     setTimeout(() => setNewNodes(new Set()), 2000);
@@ -194,7 +194,7 @@ export default function TrieVisualizer() {
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Words', value: words.length, color: '#00f0ff' },
+          { label: 'Words', value: words.length, color: '#00d9a3' },
           { label: 'Nodes', value: Object.keys(positions).length, color: '#ff6b4a' },
           { label: 'Search', value: searchResult === null ? '—' : searchResult ? 'Found ✓' : 'Not Found ✗', color: searchResult ? '#1d9e75' : searchResult === false ? '#ff2d78' : '#5a7a9a' },
           { label: 'Speed', value: ['—','Slow','Med','Fast','Max'][speed], color: '#ef9f27' },
@@ -208,14 +208,14 @@ export default function TrieVisualizer() {
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {/* SVG Trie */}
-        <div style={{ flex: 1, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, overflow: 'auto', minWidth: 280, minHeight: 200 }}>
+        <div style={{ flex: 1, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, overflow: 'auto', minWidth: 280, minHeight: 200 }}>
           <svg width={Math.max(totalW, 400)} height={SVG_H + 20} style={{ display: 'block' }}>
             {edges.map((e, i) => {
               const isHl = highlightPath.includes(e.id);
               const mid = { x: (e.from.x + e.to.x) / 2, y: (e.from.y + e.to.y) / 2 };
               return (
                 <g key={i}>
-                  <line x1={e.from.x} y1={e.from.y} x2={e.to.x} y2={e.to.y} stroke={isHl ? highlightColor : 'rgba(0,240,255,0.15)'} strokeWidth={isHl ? 2 : 1} style={{ transition: 'all 0.3s' }} />
+                  <line x1={e.from.x} y1={e.from.y} x2={e.to.x} y2={e.to.y} stroke={isHl ? highlightColor : 'rgba(0,217,163,0.15)'} strokeWidth={isHl ? 2 : 1} style={{ transition: 'all 0.3s' }} />
                   <text x={mid.x + 6} y={mid.y} style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fill: isHl ? highlightColor : '#2a3a4a', fontWeight: 700 }}>{e.char}</text>
                 </g>
               );
@@ -227,7 +227,7 @@ export default function TrieVisualizer() {
               return (
                 <g key={node.id}>
                   {isHl && <circle cx={x} cy={y} r={22} fill="none" stroke={color} strokeWidth={1} opacity={0.3} />}
-                  <circle cx={x} cy={y} r={18} fill={color === '#1a2a3a' ? '#0d1a2a' : color + '22'} stroke={isRoot ? 'rgba(0,240,255,0.3)' : color} strokeWidth={isHl ? 2.5 : 1.5} style={{ transition: 'all 0.35s' }} />
+                  <circle cx={x} cy={y} r={18} fill={color === '#1a2a3a' ? '#0d1a2a' : color + '22'} stroke={isRoot ? 'rgba(0,217,163,0.3)' : color} strokeWidth={isHl ? 2.5 : 1.5} style={{ transition: 'all 0.35s' }} />
                   <text x={x} y={y + 5} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: isRoot ? 9 : 13, fontWeight: 700, fill: isRoot ? '#2a3a4a' : color, transition: 'fill 0.3s' }}>
                     {isRoot ? 'ROOT' : node.char.toUpperCase()}
                   </text>
@@ -240,10 +240,10 @@ export default function TrieVisualizer() {
 
         {/* Words list */}
         <div style={{ minWidth: 160 }}>
-          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 10, padding: 12 }}>
+          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 10, padding: 12 }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>WORDS IN TRIE</div>
             {words.map((w, i) => (
-              <div key={i} style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: '#00f0ff', padding: '3px 0', borderBottom: '1px solid rgba(0,240,255,0.05)' }}>
+              <div key={i} style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: '#00d9a3', padding: '3px 0', borderBottom: '1px solid rgba(0,217,163,0.05)' }}>
                 {w}
               </div>
             ))}
@@ -261,20 +261,20 @@ export default function TrieVisualizer() {
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
         <input value={inputWord} onChange={e => setInputWord(e.target.value)} onKeyDown={e => e.key === 'Enter' && doInsert()} placeholder="Insert word..." style={inp} />
-        <button onClick={doInsert} style={btn('#00f0ff')}>Insert</button>
+        <button onClick={doInsert} style={btn('#00d9a3')}>Insert</button>
         <input value={searchWord} onChange={e => setSearchWord(e.target.value)} onKeyDown={e => e.key === 'Enter' && doSearch()} placeholder="Search word..." style={inp} />
         <button onClick={doSearch} style={btn('#ff6b4a')}>Search</button>
         <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a' }}>SPD</span>
           {[1,2,3,4].map(s => (
-            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 9px', borderRadius: 6, border: speed === s ? '1px solid #00f0ff' : '1px solid rgba(0,240,255,0.15)', background: speed === s ? 'rgba(0,240,255,0.12)' : 'transparent', color: speed === s ? '#00f0ff' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×','1×','2×','4×'][s-1]}</button>
+            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 9px', borderRadius: 6, border: speed === s ? '1px solid #00d9a3' : '1px solid rgba(0,217,163,0.15)', background: speed === s ? 'rgba(0,217,163,0.12)' : 'transparent', color: speed === s ? '#00d9a3' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×','1×','2×','4×'][s-1]}</button>
           ))}
         </div>
         <button onClick={reset} style={btn('#ff2d78')}>↺ Reset</button>
       </div>
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        {[['#00f0ff','Insert path'],['#1d9e75','Found'],['#ff2d78','Not found'],['#1d9e75','● End of word']].map(([c,l]) => (
+        {[['#00d9a3','Insert path'],['#1d9e75','Found'],['#ff2d78','Not found'],['#1d9e75','● End of word']].map(([c,l]) => (
           <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 12, height: 12, borderRadius: '50%', background: c+'44', border: `2px solid ${c}` }}/>
             <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l}</span>
@@ -286,4 +286,4 @@ export default function TrieVisualizer() {
   );
 }
 const btn = c => ({ padding: '8px 16px', borderRadius: 8, border: `1px solid ${c}30`, background: `${c}10`, color: c, fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' });
-const inp = { background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.2)', borderRadius: 8, padding: '7px 12px', color: '#e8e8ed', fontFamily: 'var(--font-mono)', fontSize: 13, outline: 'none', width: 130 };
+const inp = { background: 'rgba(0,217,163,0.04)', border: '1px solid rgba(0,217,163,0.2)', borderRadius: 8, padding: '7px 12px', color: '#e8e8ed', fontFamily: 'var(--font-mono)', fontSize: 13, outline: 'none', width: 130 };

@@ -300,7 +300,7 @@ export default function KMPVisualizer() {
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
           { label: 'Matches Found', value: current.matchesFound?.length ?? 0, color: '#1d9e75' },
-          { label: 'Current Phase', value: current.phase === 'lps' ? 'LPS Construction' : 'Pattern Search', color: '#00f0ff' },
+          { label: 'Current Phase', value: current.phase === 'lps' ? 'LPS Construction' : 'Pattern Search', color: '#00d9a3' },
           { label: 'Text Length', value: txt.length, color: '#ff6b4a' },
           { label: 'Pattern Length', value: pat.length, color: '#ef9f27' },
         ].map(s => (
@@ -314,23 +314,23 @@ export default function KMPVisualizer() {
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {/* Left Side: LPS Table Display */}
         <div style={{ minWidth: 240, flex: 0.8 }}>
-          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1 }}>LPS / PREFIX TABLE (pi[])</div>
             
             <div style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
               {pat.split('').map((char, index) => {
                 const isLpsActive = current.phase === 'lps' && current.currPatI === index;
-                const borderCol = isLpsActive ? '#00f0ff' : 'rgba(0,240,255,0.1)';
+                const borderCol = isLpsActive ? '#00d9a3' : 'rgba(0,217,163,0.1)';
                 return (
                   <div key={index} style={{
                     flex: 1, height: 48, borderRadius: 6,
                     border: `1.5px solid ${borderCol}`,
-                    background: isLpsActive ? 'rgba(0,240,255,0.08)' : 'rgba(10,15,30,0.6)',
+                    background: isLpsActive ? 'rgba(0,217,163,0.08)' : 'rgba(10,15,30,0.6)',
                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                     transition: 'all 0.2s',
                   }}>
-                    <span style={{ fontSize: 11, fontWeight: 'bold', color: isLpsActive ? '#00f0ff' : '#e8e8ed' }}>{char}</span>
-                    <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: isLpsActive ? '#00f0ff' : '#1d9e75' }}>
+                    <span style={{ fontSize: 11, fontWeight: 'bold', color: isLpsActive ? '#00d9a3' : '#e8e8ed' }}>{char}</span>
+                    <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: isLpsActive ? '#00d9a3' : '#1d9e75' }}>
                       {current.lps[index] !== undefined ? current.lps[index] : 0}
                     </span>
                   </div>
@@ -338,7 +338,7 @@ export default function KMPVisualizer() {
               })}
             </div>
             
-            <div style={{ borderTop: '1px solid rgba(0,240,255,0.05)', paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ borderTop: '1px solid rgba(0,217,163,0.05)', paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
               <span style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>INPUT STRINGS:</span>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <span style={{ fontSize: 9, color: '#5a7a9a' }}>TXT (Text, Max 22 chars):</span>
@@ -353,7 +353,7 @@ export default function KMPVisualizer() {
         </div>
 
         {/* Right Side: Shift Canvas */}
-        <div style={{ flex: 1.5, minWidth: 320, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 24, overflowX: 'auto' }}>
+        <div style={{ flex: 1.5, minWidth: 320, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 24, overflowX: 'auto' }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1 }}>KMP STRING SHIFT VISUALIZATION</div>
 
           {/* Text Row */}
@@ -364,7 +364,7 @@ export default function KMPVisualizer() {
                 const isComparing = current.phase === 'search' && current.textIdx === index;
                 const isInsideMatch = current.matchesFound?.some(start => index >= start && index < start + pat.length);
                 
-                let border = '1px solid rgba(0,240,255,0.06)';
+                let border = '1px solid rgba(0,217,163,0.06)';
                 let bg = 'rgba(10,15,30,0.7)';
                 let col = '#e8e8ed';
 
@@ -406,7 +406,7 @@ export default function KMPVisualizer() {
               }}>
                 {pat.split('').map((char, index) => {
                   const isComparing = current.patIdx === index;
-                  let border = '1px solid rgba(0,240,255,0.1)';
+                  let border = '1px solid rgba(0,217,163,0.1)';
                   let bg = 'rgba(10,15,30,0.7)';
                   let col = '#5a7a9a';
 
@@ -438,7 +438,7 @@ export default function KMPVisualizer() {
         {[
           { color: '#1d9e75', label: 'Character match / fully matching substrings' },
           { color: '#ff2d78', label: 'Mismatch (triggers slide jump)' },
-          { color: 'rgba(0,240,255,0.2)', label: 'Normal grid cells' },
+          { color: 'rgba(0,217,163,0.2)', label: 'Normal grid cells' },
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 12, height: 12, borderRadius: 2, background: l.color + '22', border: `1.5px solid ${l.color}` }} />
@@ -474,8 +474,8 @@ export default function KMPVisualizer() {
 }
 
 const inpStyle = {
-  background: 'rgba(0,240,255,0.04)',
-  border: '1px solid rgba(0,240,255,0.2)',
+  background: 'rgba(0,217,163,0.04)',
+  border: '1px solid rgba(0,217,163,0.2)',
   borderRadius: 8,
   padding: '6px 10px',
   color: '#e8e8ed',

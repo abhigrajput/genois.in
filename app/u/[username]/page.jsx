@@ -67,18 +67,18 @@ export default function PublicProfilePage() {
         <div style={{ fontSize: 64, marginBottom: 16 }}>🔍</div>
         <div style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>Profile not found</div>
         <div style={{ color: '#5a7a9a', fontSize: 15, marginBottom: 24 }}>This student does not exist or has not signed up yet.</div>
-        <Link href="/onboarding" style={{ padding: '12px 28px', borderRadius: 10, background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', textDecoration: 'none', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+        <Link href="/onboarding" style={{ padding: '12px 28px', borderRadius: 10, background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', textDecoration: 'none', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
           Create Your Profile →
         </Link>
       </div>
     </div>
   );
 
-  const color = DOMAIN_COLORS[profile.domain] || '#00f0ff';
+  const color = DOMAIN_COLORS[profile.domain] || '#00d9a3';
 
   return (
     <div style={{ minHeight: '100vh', background: '#020812', color: '#e8e8ed', fontFamily: 'var(--font-body)' }}>
-      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(0,240,255,0.012) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,0.012) 1px,transparent 1px)', backgroundSize: '56px 56px' }} />
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(0,217,163,0.012) 1px,transparent 1px),linear-gradient(90deg,rgba(0,217,163,0.012) 1px,transparent 1px)', backgroundSize: '56px 56px' }} />
 
       <PublicNav />
 
@@ -107,7 +107,7 @@ export default function PublicProfilePage() {
                   {profile.domain?.toUpperCase()}
                 </span>
                 {profile.skillLevel && (
-                  <span style={{ padding: '3px 12px', borderRadius: 20, background: 'rgba(0,240,255,0.06)', color: '#00f0ff', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
+                  <span style={{ padding: '3px 12px', borderRadius: 20, background: 'rgba(0,217,163,0.06)', color: '#00d9a3', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
                     {SKILL_LABELS[profile.skillLevel]}
                   </span>
                 )}
@@ -145,7 +145,7 @@ export default function PublicProfilePage() {
               { label: 'Top', value: `${100 - profile.percentile}%`, color: '#1D9E75' },
               { label: 'Day', value: profile.currentDay, color },
               { label: 'Streak', value: `🔥${profile.streak}d`, color: '#EF9F27' },
-              { label: 'Avg Test', value: `${profile.avgTestScore}%`, color: '#00f0ff' },
+              { label: 'Avg Test', value: `${profile.avgTestScore}%`, color: '#00d9a3' },
               ...(profile.diagnosticScore ? [{ label: 'Baseline', value: `${profile.diagnosticScore}%`, color: '#D85A30' }] : []),
             ].map(s => (
               <div key={s.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: '12px', textAlign: 'center', border: `1px solid ${s.color}12` }}>
@@ -181,7 +181,7 @@ export default function PublicProfilePage() {
                 🐙 GitHub
               </a>
             )}
-            <button onClick={copyLink} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', background: copied ? 'rgba(0,240,255,0.1)' : 'transparent', color: '#00f0ff', cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
+            <button onClick={copyLink} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 8, border: '1px solid rgba(0,217,163,0.2)', background: copied ? 'rgba(0,217,163,0.1)' : 'transparent', color: '#00d9a3', cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
               {copied ? '✓ Copied' : '🔗 Share Profile'}
             </button>
           </div>
@@ -189,13 +189,13 @@ export default function PublicProfilePage() {
 
         {/* GITHUB STATS */}
         {profile.githubUsername && (
-          <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 14, padding: 20, marginBottom: 20 }}>
+          <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 14, padding: 20, marginBottom: 20 }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 14 }}>
               🐙 GITHUB — @{profile.githubUsername}
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 14 }}>
               {[
-                { label: 'Repos', value: profile.githubRepos, color: '#00f0ff' },
+                { label: 'Repos', value: profile.githubRepos, color: '#00d9a3' },
                 { label: 'Stars', value: profile.githubStars, color: '#EF9F27' },
               ].map(s => (
                 <div key={s.label} style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 8, padding: '10px', textAlign: 'center' }}>
@@ -251,13 +251,13 @@ export default function PublicProfilePage() {
         )}
 
         {/* VERIFICATION BADGE */}
-        <div style={{ background: 'linear-gradient(135deg,rgba(0,240,255,0.04),rgba(255,107,74,0.02))', border: '1px solid rgba(0,240,255,0.12)', borderRadius: 14, padding: 20, marginBottom: 20, textAlign: 'center' }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 10 }}>VERIFIED BY GENOIS</div>
+        <div style={{ background: 'linear-gradient(135deg,rgba(0,217,163,0.04),rgba(255,107,74,0.02))', border: '1px solid rgba(0,217,163,0.12)', borderRadius: 14, padding: 20, marginBottom: 20, textAlign: 'center' }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 2, marginBottom: 10 }}>VERIFIED BY GENOIS</div>
           <div style={{ fontSize: 14, color: '#8a9ab0', lineHeight: 1.7 }}>
             This profile is verified by GENOIS. Score and rank are based on real daily performance — daily coding, timed tests, and actual projects. Not self-reported.
           </div>
           <div style={{ marginTop: 14 }}>
-            <Link href="/onboarding" style={{ display: 'inline-block', padding: '10px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', textDecoration: 'none', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700 }}>
+            <Link href="/onboarding" style={{ display: 'inline-block', padding: '10px 24px', borderRadius: 10, background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', textDecoration: 'none', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700 }}>
               Get Your Verified Profile →
             </Link>
           </div>

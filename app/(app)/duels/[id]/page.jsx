@@ -127,8 +127,8 @@ export default function DuelPage() {
             <p style={{ color: '#5a7a9a', fontSize: 14, marginBottom: 24 }}>
               You scored {result?.scorePoints || duel.myScore} pts. Results will show when they finish.
             </p>
-            <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24, marginBottom: 20 }}>
-              <div style={{ fontSize: 48, fontWeight: 800, color: '#00f0ff', fontFamily: 'var(--font-heading)' }}>
+            <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 24, marginBottom: 20 }}>
+              <div style={{ fontSize: 48, fontWeight: 800, color: '#00d9a3', fontFamily: 'var(--font-heading)' }}>
                 {result?.scorePoints || duel.myScore}
               </div>
               <div style={{ color: '#5a7a9a', fontSize: 12, fontFamily: 'var(--font-mono)' }}>YOUR SCORE</div>
@@ -147,9 +147,9 @@ export default function DuelPage() {
             </h2>
             {won && <p style={{ color: '#1D9E75', fontSize: 14, marginBottom: 16 }}>+50 points added to your GENOIS score!</p>}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>
-              <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 12, padding: 20 }}>
+              <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 12, padding: 20 }}>
                 <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>YOUR SCORE</div>
-                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 32, fontWeight: 800, color: '#00f0ff' }}>{duel.myScore}</div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 32, fontWeight: 800, color: '#00d9a3' }}>{duel.myScore}</div>
               </div>
               <div style={{ background: '#070f1f', border: '1px solid rgba(255,45,120,0.15)', borderRadius: 12, padding: 20 }}>
                 <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>{duel.opponentName}</div>
@@ -157,7 +157,7 @@ export default function DuelPage() {
               </div>
             </div>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <button onClick={() => router.push('/duels')} style={{ padding: '12px 24px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+              <button onClick={() => router.push('/duels')} style={{ padding: '12px 24px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
                 Back to Duels
               </button>
               <button onClick={() => {
@@ -205,7 +205,7 @@ export default function DuelPage() {
           Question {currentQ + 1} of {questions.length}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <div style={{ width: 36, height: 36, borderRadius: '50%', border: `3px solid ${timeLeft <= 10 ? '#ff2d78' : '#00f0ff'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 800, color: timeLeft <= 10 ? '#ff2d78' : '#00f0ff' }}>
+          <div style={{ width: 36, height: 36, borderRadius: '50%', border: `3px solid ${timeLeft <= 10 ? '#ff2d78' : '#00d9a3'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 800, color: timeLeft <= 10 ? '#ff2d78' : '#00d9a3' }}>
             {timeLeft}
           </div>
         </div>
@@ -215,7 +215,7 @@ export default function DuelPage() {
         <div style={{ height: '100%', width: `${((currentQ) / questions.length) * 100}%`, background: 'linear-gradient(90deg,#ff2d78,#EF9F27)', borderRadius: 2, transition: 'width 0.3s' }} />
       </div>
 
-      <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24, marginBottom: 20 }}>
+      <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 24, marginBottom: 20 }}>
         <div style={{ fontSize: 16, color: '#e8e8ed', lineHeight: 1.6, fontWeight: 500 }}>
           {q?.question}
         </div>
@@ -228,13 +228,13 @@ export default function DuelPage() {
           return (
             <button key={i} onClick={() => selectAnswer(opt)} style={{
               padding: '14px 20px', borderRadius: 12, cursor: selected ? 'default' : 'pointer',
-              border: `2px solid ${isSelected ? '#00f0ff' : 'rgba(0,240,255,0.08)'}`,
-              background: isSelected ? 'rgba(0,240,255,0.08)' : 'rgba(255,255,255,0.02)',
-              color: isSelected ? '#00f0ff' : '#c8d8e8',
+              border: `2px solid ${isSelected ? '#00d9a3' : 'rgba(0,217,163,0.08)'}`,
+              background: isSelected ? 'rgba(0,217,163,0.08)' : 'rgba(255,255,255,0.02)',
+              color: isSelected ? '#00d9a3' : '#c8d8e8',
               textAlign: 'left', fontSize: 14, fontFamily: 'var(--font-body)',
               display: 'flex', alignItems: 'center', gap: 12, transition: 'all 0.15s',
             }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: isSelected ? '#00f0ff' : '#5a7a9a', flexShrink: 0, width: 20, textAlign: 'center' }}>{letters[i]}</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: isSelected ? '#00d9a3' : '#5a7a9a', flexShrink: 0, width: 20, textAlign: 'center' }}>{letters[i]}</span>
               {opt}
             </button>
           );

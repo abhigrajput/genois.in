@@ -69,7 +69,7 @@ function barColor(idx, step) {
     return '#2a2a2a';
   }
   if (step.found && step.current === idx) return '#1d9e75';
-  if (step.current === idx) return '#00f0ff';
+  if (step.current === idx) return '#00d9a3';
   if (idx < step.current) return '#2a2a2a';
   return '#1a2a3a';
 }
@@ -133,7 +133,7 @@ export default function LinearSearchVisualizer() {
           onChange={e => setTarget(e.target.value)}
           placeholder="Enter target value..."
           style={{
-            background:'rgba(0,240,255,0.04)', border:'1px solid rgba(0,240,255,0.2)',
+            background:'rgba(0,217,163,0.04)', border:'1px solid rgba(0,217,163,0.2)',
             borderRadius:8, padding:'6px 12px', color:'#e8e8ed',
             fontFamily:'var(--font-mono)', fontSize:13, outline:'none', width:160,
           }}
@@ -151,7 +151,7 @@ export default function LinearSearchVisualizer() {
 
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
-          { label:'Comparisons', value: stepIdx >= 0 ? stepIdx + 1 : 0, color:'#00f0ff' },
+          { label:'Comparisons', value: stepIdx >= 0 ? stepIdx + 1 : 0, color:'#00d9a3' },
           { label:'Current', value: current?.current ?? '-', color:'#ef9f27' },
           { label:'Time', value:'O(n)', color:'#ff6b4a' },
           { label:'Space', value:'O(1)', color:'#1d9e75' },
@@ -163,12 +163,12 @@ export default function LinearSearchVisualizer() {
         ))}
       </div>
 
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
+      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
         {arr.map((v, i) => (
           <div key={i} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, flex:1, maxWidth:60 }}>
             <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:barColor(i, current) }}>{v}</span>
             <div style={{ width:'100%', borderRadius:'4px 4px 0 0', height:`${(v / maxVal) * 160}px`, background:barColor(i, current), transition:'all 0.3s ease', minHeight:4,
-              boxShadow: current?.current === i ? `0 0 14px #00f0ff80` : 'none',
+              boxShadow: current?.current === i ? `0 0 14px #00d9a380` : 'none',
             }} />
             <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'#2a3a4a' }}>[{i}]</span>
           </div>
@@ -176,7 +176,7 @@ export default function LinearSearchVisualizer() {
       </div>
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
-        {[['#00f0ff','Current'],['#2a2a2a','Eliminated'],['#1d9e75','Found'],['#ff2d78','Not Found']].map(([c,l]) => (
+        {[['#00d9a3','Current'],['#2a2a2a','Eliminated'],['#1d9e75','Found'],['#ff2d78','Not Found']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:2, background:c, border:`1px solid ${c}50` }}/>
             <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>

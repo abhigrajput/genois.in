@@ -232,7 +232,7 @@ export default function KruskalVisualizer() {
       return e.u === vId || e.v === vId;
     });
 
-    let border = '2px solid rgba(0, 240, 255, 0.2)';
+    let border = '2px solid rgba(0, 217, 163, 0.2)';
     let background = 'rgba(10,15,30,0.8)';
     let color = '#5a7a9a';
 
@@ -247,11 +247,11 @@ export default function KruskalVisualizer() {
 
   const getEdgeStyles = (edge) => {
     const state = current.edgeStates[edge.id];
-    let stroke = 'rgba(0, 240, 255, 0.12)';
+    let stroke = 'rgba(0, 217, 163, 0.12)';
     let width = 1.5;
 
     if (state === 'active') {
-      stroke = '#00f0ff';
+      stroke = '#00d9a3';
       width = 3.5;
     } else if (state === 'mst') {
       stroke = '#1d9e75';
@@ -292,7 +292,7 @@ export default function KruskalVisualizer() {
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
           { label: 'MST Cost', value: current.mstEdges.reduce((acc, id) => acc + SORTED_EDGES.find(e => e.id === id).w, 0), color: '#1d9e75' },
-          { label: 'MST Edges Added', value: `${current.mstEdges.length} / 5`, color: '#00f0ff' },
+          { label: 'MST Edges Added', value: `${current.mstEdges.length} / 5`, color: '#00d9a3' },
           { label: 'DSU Clusters', value: getDisjointSets().length, color: '#ff6b4a' },
           { label: 'Checked Edges', value: `${Object.values(current.edgeStates).filter(s => s !== 'pending').length} / 9`, color: '#ef9f27' },
         ].map(s => (
@@ -304,13 +304,13 @@ export default function KruskalVisualizer() {
       </div>
 
       {/* Description board */}
-      <div style={{ background: 'rgba(0,240,255,0.05)', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00f0ff' }}>
+      <div style={{ background: 'rgba(0,217,163,0.05)', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00d9a3' }}>
         ▶ {current.description}
       </div>
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {/* Graph rendering area */}
-        <div style={{ flex: 1.5, minWidth: 320, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 16, display: 'flex', justifyContent: 'center' }}>
+        <div style={{ flex: 1.5, minWidth: 320, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 16, display: 'flex', justifyContent: 'center' }}>
           <svg width="420" height="280" style={{ display: 'block', overflow: 'visible' }}>
             {/* Draw Links */}
             {SORTED_EDGES.map(e => {
@@ -329,8 +329,8 @@ export default function KruskalVisualizer() {
                     style={{ transition: 'all 0.3s' }}
                   />
                   {/* Weight block */}
-                  <rect x={mid.x - 8} y={mid.y - 8} width="16" height="16" rx="4" fill="#0d1424" stroke="rgba(0, 240, 255, 0.15)" strokeWidth="0.5" />
-                  <text x={mid.x} y={mid.y + 4} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fill: edgeStyles.stroke !== 'rgba(0, 240, 255, 0.12)' ? edgeStyles.stroke : '#5a7a9a', fontWeight: 'bold' }}>
+                  <rect x={mid.x - 8} y={mid.y - 8} width="16" height="16" rx="4" fill="#0d1424" stroke="rgba(0, 217, 163, 0.15)" strokeWidth="0.5" />
+                  <text x={mid.x} y={mid.y + 4} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fill: edgeStyles.stroke !== 'rgba(0, 217, 163, 0.12)' ? edgeStyles.stroke : '#5a7a9a', fontWeight: 'bold' }}>
                     {e.w}
                   </text>
                 </g>
@@ -355,7 +355,7 @@ export default function KruskalVisualizer() {
         {/* Side Panel: Sorted list + DSU set display */}
         <div style={{ flex: 1, minWidth: 240, display: 'flex', flexDirection: 'column', gap: 12 }}>
           {/* Sorted Edges List */}
-          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 12 }}>
+          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 12 }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>SORTED EDGES WALKTHROUGH</div>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -364,13 +364,13 @@ export default function KruskalVisualizer() {
                 const active = current.currEdgeId === e.id;
                 
                 let col = '#5a7a9a';
-                let bg = 'rgba(0,240,255,0.02)';
-                let border = '1px dashed rgba(0,240,255,0.08)';
+                let bg = 'rgba(0,217,163,0.02)';
+                let border = '1px dashed rgba(0,217,163,0.08)';
 
                 if (active) {
-                  col = '#00f0ff';
-                  bg = 'rgba(0, 240, 255, 0.08)';
-                  border = '1px solid #00f0ff';
+                  col = '#00d9a3';
+                  bg = 'rgba(0, 217, 163, 0.08)';
+                  border = '1px solid #00d9a3';
                 } else if (state === 'mst') {
                   col = '#1d9e75';
                   bg = 'rgba(29, 158, 117, 0.06)';
@@ -399,13 +399,13 @@ export default function KruskalVisualizer() {
           </div>
 
           {/* DSU Sets */}
-          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 12 }}>
+          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 12 }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>DISJOINT UNION CLUSTERS</div>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {getDisjointSets().map((set, i) => (
                 <div key={i} style={{
-                  background: 'rgba(123, 92, 255, 0.06)', border: '1px solid rgba(123, 92, 255, 0.2)',
+                  background: 'rgba(46, 230, 176, 0.06)', border: '1px solid rgba(46, 230, 176, 0.2)',
                   borderRadius: 6, padding: '5px 10px', fontFamily: 'var(--font-mono)', fontSize: 11, color: '#ff6b4a',
                 }}>
                   Set {i + 1}: {`{ ${set.join(', ')} }`}
@@ -426,7 +426,7 @@ export default function KruskalVisualizer() {
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {[
-          { color: '#00f0ff', label: 'Edge currently under DSU validation' },
+          { color: '#00d9a3', label: 'Edge currently under DSU validation' },
           { color: '#1d9e75', label: 'MST Edge (Union Success / No Cycle)' },
           { color: '#ff2d78', label: 'Cycle Edge (Union Failure / Discarded)' },
         ].map(l => (

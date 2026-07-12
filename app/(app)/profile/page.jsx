@@ -151,18 +151,18 @@ export default function ProfilePage() {
     router.push('/login');
   }
 
-  const cardStyle = { background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24, marginBottom: 16 };
-  const inpStyle = { width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.12)', background: 'rgba(255,255,255,0.02)', color: '#e8e8ed', fontSize: 14, outline: 'none', fontFamily: 'var(--font-body)', boxSizing: 'border-box' };
-  const btnSecondary = { padding: '9px 18px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', background: 'transparent', color: '#00f0ff', cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600 };
+  const cardStyle = { background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 24, marginBottom: 16 };
+  const inpStyle = { width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(0,217,163,0.12)', background: 'rgba(255,255,255,0.02)', color: '#e8e8ed', fontSize: 14, outline: 'none', fontFamily: 'var(--font-body)', boxSizing: 'border-box' };
+  const btnSecondary = { padding: '9px 18px', borderRadius: 8, border: '1px solid rgba(0,217,163,0.2)', background: 'transparent', color: '#00d9a3', cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600 };
 
   return (
     <div style={{ fontFamily: 'var(--font-body)', width: '100%', paddingBottom: 60 }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 16, alignItems: 'start' }}>
         
         {/* PUBLIC PROFILE - full width */}
-        <div style={{ gridColumn: '1 / -1', background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 20 }}>
+        <div style={{ gridColumn: '1 / -1', background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 20 }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 8 }}>YOUR PUBLIC PROFILE</div>
-          <div style={{ fontSize: 14, color: '#00f0ff', marginBottom: 14 }}>
+          <div style={{ fontSize: 14, color: '#00d9a3', marginBottom: 14 }}>
             genois.in/u/{user?.name?.toLowerCase().replace(/\s+/g,'-') || 'you'}
           </div>
           <div style={{ display: 'flex', gap: 10 }}>
@@ -170,17 +170,17 @@ export default function ProfilePage() {
               Copy Link
             </button>
             <a href={'/u/'+(user?.name?.toLowerCase().replace(/\s+/g,'-')||'')} target="_blank" rel="noreferrer"
-              style={{ padding: '9px 18px', borderRadius: 8, border: 'none', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', textDecoration: 'none', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 700 }}>
+              style={{ padding: '9px 18px', borderRadius: 8, border: 'none', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', textDecoration: 'none', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 700 }}>
               View Profile
             </a>
           </div>
         </div>
 
         {/* PROFILE INFO */}
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24 }}>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-              <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 700, color: '#020812', fontFamily: 'var(--font-heading)', flexShrink: 0 }}>
+              <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, fontWeight: 700, color: '#020812', fontFamily: 'var(--font-heading)', flexShrink: 0 }}>
                 {(user?.name||'A')[0].toUpperCase()}
               </div>
               <div>
@@ -203,7 +203,7 @@ export default function ProfilePage() {
                 </div>
               ))}
               <button onClick={saveProfile} disabled={loading}
-                style={{ padding: 12, borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+                style={{ padding: 12, borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
                 {loading ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
@@ -225,7 +225,7 @@ export default function ProfilePage() {
         </div>
 
         {/* PERFORMANCE */}
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24 }}>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 24 }}>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#e8e8ed', marginBottom: 16 }}>Performance</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 12 }}>
             {[
@@ -242,13 +242,13 @@ export default function ProfilePage() {
         </div>
 
         {/* SKILL BADGES - full width */}
-        <div style={{ gridColumn: '1 / -1', background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24 }}>
+        <div style={{ gridColumn: '1 / -1', background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 24 }}>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom: 14 }}>
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#e8e8ed' }}>🎖️ Skill Badges</div>
-            <Link href="/badge" style={{ padding:'7px 14px', borderRadius:8, border:'1px solid rgba(0,240,255,0.2)', background:'transparent', color:'#00f0ff', textDecoration:'none', fontSize:12, fontFamily:'var(--font-heading)', fontWeight:600 }}>Get Verified →</Link>
+            <Link href="/badge" style={{ padding:'7px 14px', borderRadius:8, border:'1px solid rgba(0,217,163,0.2)', background:'transparent', color:'#00d9a3', textDecoration:'none', fontSize:12, fontFamily:'var(--font-heading)', fontWeight:600 }}>Get Verified →</Link>
           </div>
           {myBadges.length === 0 ? (
-            <div style={{ fontSize:13, color:'#5a7a9a' }}>No active badges yet. <Link href="/badge" style={{ color:'#00f0ff' }}>Start a verification test →</Link></div>
+            <div style={{ fontSize:13, color:'#5a7a9a' }}>No active badges yet. <Link href="/badge" style={{ color:'#00d9a3' }}>Start a verification test →</Link></div>
           ) : (
             <div style={{ display:'flex', flexWrap:'wrap', gap:8 }}>
               {myBadges.map(b => {
@@ -268,7 +268,7 @@ export default function ProfilePage() {
         </div>
 
         {/* PLACEMENT PROFILE - full width */}
-        <div style={{ gridColumn: '1 / -1', background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24 }}>
+        <div style={{ gridColumn: '1 / -1', background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 24 }}>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#e8e8ed', marginBottom: 4 }}>🎯 Placement Profile</div>
           <div style={{ fontSize: 12, color: '#5a7a9a', marginBottom: 20 }}>Used by GENOIS AI to personalize your roadmap, chatbot, and company-specific prep.</div>
 
@@ -280,9 +280,9 @@ export default function ProfilePage() {
                 return (
                   <button key={c} onClick={() => togglePlacementCompany(c)} style={{
                     padding: '8px 14px', borderRadius: 10, cursor: 'pointer',
-                    border: `1px solid ${sel ? '#00f0ff' : 'rgba(255,255,255,0.08)'}`,
-                    background: sel ? 'rgba(0,240,255,0.08)' : 'transparent',
-                    color: sel ? '#00f0ff' : '#5a7a9a',
+                    border: `1px solid ${sel ? '#00d9a3' : 'rgba(255,255,255,0.08)'}`,
+                    background: sel ? 'rgba(0,217,163,0.08)' : 'transparent',
+                    color: sel ? '#00d9a3' : '#5a7a9a',
                     fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600,
                   }}>{c}</button>
                 );
@@ -298,9 +298,9 @@ export default function ProfilePage() {
                 return (
                   <button key={m.value} onClick={() => setPlacementForm(p => ({ ...p, months_to_placement: m.value }))} style={{
                     padding: '8px 14px', borderRadius: 10, cursor: 'pointer',
-                    border: `1px solid ${sel ? '#00f0ff' : 'rgba(255,255,255,0.08)'}`,
-                    background: sel ? 'rgba(0,240,255,0.08)' : 'transparent',
-                    color: sel ? '#00f0ff' : '#5a7a9a',
+                    border: `1px solid ${sel ? '#00d9a3' : 'rgba(255,255,255,0.08)'}`,
+                    background: sel ? 'rgba(0,217,163,0.08)' : 'transparent',
+                    color: sel ? '#00d9a3' : '#5a7a9a',
                     fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600,
                   }}>{m.label}</button>
                 );
@@ -316,9 +316,9 @@ export default function ProfilePage() {
                 return (
                   <button key={s} onClick={() => toggleWeakSubject(s)} style={{
                     padding: '8px 14px', borderRadius: 10, cursor: 'pointer',
-                    border: `1px solid ${sel ? '#00f0ff' : 'rgba(255,255,255,0.08)'}`,
-                    background: sel ? 'rgba(0,240,255,0.08)' : 'transparent',
-                    color: sel ? '#00f0ff' : '#5a7a9a',
+                    border: `1px solid ${sel ? '#00d9a3' : 'rgba(255,255,255,0.08)'}`,
+                    background: sel ? 'rgba(0,217,163,0.08)' : 'transparent',
+                    color: sel ? '#00d9a3' : '#5a7a9a',
                     fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600,
                   }}>{s}</button>
                 );
@@ -333,18 +333,18 @@ export default function ProfilePage() {
               value={placementForm.cgpa}
               onChange={e => setPlacementForm(p => ({ ...p, cgpa: e.target.value }))}
               placeholder="e.g. 7.2"
-              style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.12)', background: 'rgba(255,255,255,0.02)', color: '#e8e8ed', fontSize: 14, outline: 'none', fontFamily: 'var(--font-body)', boxSizing: 'border-box' }}
+              style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(0,217,163,0.12)', background: 'rgba(255,255,255,0.02)', color: '#e8e8ed', fontSize: 14, outline: 'none', fontFamily: 'var(--font-body)', boxSizing: 'border-box' }}
             />
             <div style={{ fontSize: 11, color: '#3a4a5a', marginTop: 4, fontFamily: 'var(--font-mono)' }}>Not shared publicly</div>
           </div>
 
-          <button onClick={savePlacementProfile} disabled={placementLoading} style={{ padding: '10px 24px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+          <button onClick={savePlacementProfile} disabled={placementLoading} style={{ padding: '10px 24px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
             {placementLoading ? 'Saving...' : 'Save Placement Profile'}
           </button>
         </div>
 
         {/* SETTINGS - full width */}
-        <div style={{ gridColumn: '1 / -1', background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24 }}>
+        <div style={{ gridColumn: '1 / -1', background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 24 }}>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#e8e8ed', marginBottom: 16 }}>Settings</div>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             <button onClick={() => setShowDomainModal(true)} style={btnSecondary}>Change Domain</button>
@@ -360,13 +360,13 @@ export default function ProfilePage() {
       {/* Domain Modal */}
       {showDomainModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: 16 }}>
-          <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 14, padding: 24, maxWidth: 360, width: '100%' }}>
+          <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 14, padding: 24, maxWidth: 360, width: '100%' }}>
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#e8e8ed', marginBottom: 4 }}>Change Domain</div>
             <div style={{ fontSize: 12, color: '#5a7a9a', marginBottom: 16 }}>Resets roadmap to Day 1. Score is kept.</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
               {DOMAINS.map(d => (
                 <button key={d.slug} onClick={() => changeDomain(d.slug)} disabled={loading}
-                  style={{ padding: '10px 12px', borderRadius: 10, border: user?.domain_slug === d.slug ? '1px solid rgba(0,240,255,0.4)' : '1px solid rgba(255,255,255,0.06)', background: user?.domain_slug === d.slug ? 'rgba(0,240,255,0.08)' : 'transparent', color: '#e8e8ed', cursor: 'pointer', textAlign: 'left', fontSize: 13 }}>
+                  style={{ padding: '10px 12px', borderRadius: 10, border: user?.domain_slug === d.slug ? '1px solid rgba(0,217,163,0.4)' : '1px solid rgba(255,255,255,0.06)', background: user?.domain_slug === d.slug ? 'rgba(0,217,163,0.08)' : 'transparent', color: '#e8e8ed', cursor: 'pointer', textAlign: 'left', fontSize: 13 }}>
                   {d.label}
                 </button>
               ))}

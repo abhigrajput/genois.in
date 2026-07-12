@@ -172,7 +172,7 @@ function ErrorCard({ icon = '⚠️', title, message, primaryLabel, onPrimary, s
         <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>{title}</div>
         <div style={{ fontSize: 14, color: '#c8d8e8', lineHeight: 1.6, marginBottom: 20 }}>{message}</div>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
-          <button onClick={onPrimary} style={{ flex: 1, minWidth: 160, padding: 13, borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>{primaryLabel}</button>
+          <button onClick={onPrimary} style={{ flex: 1, minWidth: 160, padding: 13, borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>{primaryLabel}</button>
           {secondaryLabel && (
             <button onClick={onSecondary} style={{ flex: 1, minWidth: 160, padding: 13, borderRadius: 12, border: '1px solid rgba(255,255,255,0.14)', cursor: 'pointer', background: 'transparent', color: '#c8d8e8', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14 }}>{secondaryLabel}</button>
           )}
@@ -350,7 +350,7 @@ export default function AptitudePage() {
           ))}
         </div>
 
-        <button onClick={() => { setPhase('list'); setActiveTopic(null); setResult(null); }} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, marginTop: 20 }}>
+        <button onClick={() => { setPhase('list'); setActiveTopic(null); setResult(null); }} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, marginTop: 20 }}>
           Back to Topics →
         </button>
       </div>
@@ -375,10 +375,10 @@ export default function AptitudePage() {
         </div>
 
         <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, marginBottom: 20, overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${((currentQ + 1) / questions.length) * 100}%`, background: 'linear-gradient(90deg,#00f0ff,#ff6b4a)', borderRadius: 3, transition: 'width 0.3s' }} />
+          <div style={{ height: '100%', width: `${((currentQ + 1) / questions.length) * 100}%`, background: 'linear-gradient(90deg,#00d9a3,#ff6b4a)', borderRadius: 3, transition: 'width 0.3s' }} />
         </div>
 
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24, marginBottom: 18 }}>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 24, marginBottom: 18 }}>
           <div style={{ fontSize: 16, color: '#e8e8ed', lineHeight: 1.75, fontWeight: 500, whiteSpace: 'pre-wrap' }}>{q.question}</div>
         </div>
 
@@ -386,8 +386,8 @@ export default function AptitudePage() {
           {(q.options || []).map((opt, oi) => {
             const isSelected = answers[currentQ] === opt;
             return (
-              <button key={oi} onClick={() => setAnswers(p => ({ ...p, [currentQ]: opt }))} style={{ padding: '13px 16px', borderRadius: 10, cursor: 'pointer', textAlign: 'left', border: `1px solid ${isSelected ? 'rgba(0,240,255,0.5)' : 'rgba(255,255,255,0.06)'}`, background: isSelected ? 'rgba(0,240,255,0.08)' : 'rgba(255,255,255,0.01)', color: isSelected ? '#00f0ff' : '#c8d8e8', fontSize: 14, lineHeight: 1.5 }}>
-                <span style={{ color: isSelected ? '#00f0ff' : '#5a7a9a', marginRight: 10, fontFamily: 'var(--font-mono)', fontWeight: 700 }}>{letters[oi]}.</span>{opt}
+              <button key={oi} onClick={() => setAnswers(p => ({ ...p, [currentQ]: opt }))} style={{ padding: '13px 16px', borderRadius: 10, cursor: 'pointer', textAlign: 'left', border: `1px solid ${isSelected ? 'rgba(0,217,163,0.5)' : 'rgba(255,255,255,0.06)'}`, background: isSelected ? 'rgba(0,217,163,0.08)' : 'rgba(255,255,255,0.01)', color: isSelected ? '#00d9a3' : '#c8d8e8', fontSize: 14, lineHeight: 1.5 }}>
+                <span style={{ color: isSelected ? '#00d9a3' : '#5a7a9a', marginRight: 10, fontFamily: 'var(--font-mono)', fontWeight: 700 }}>{letters[oi]}.</span>{opt}
               </button>
             );
           })}
@@ -396,9 +396,9 @@ export default function AptitudePage() {
         <div style={{ display: 'flex', gap: 10 }}>
           {currentQ > 0 && <button onClick={() => setCurrentQ(c => c - 1)} style={{ flex: 1, padding: '13px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 14 }}>← Prev</button>}
           {currentQ < questions.length - 1 ? (
-            <button onClick={() => setCurrentQ(c => c + 1)} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>Next →</button>
+            <button onClick={() => setCurrentQ(c => c + 1)} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>Next →</button>
           ) : (
-            <button onClick={submitSession} disabled={submitting} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: submitting ? 'not-allowed' : 'pointer', background: submitting ? 'rgba(0,240,255,0.2)' : 'linear-gradient(135deg,#1D9E75,#00f0ff)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+            <button onClick={submitSession} disabled={submitting} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: submitting ? 'not-allowed' : 'pointer', background: submitting ? 'rgba(0,217,163,0.2)' : 'linear-gradient(135deg,#1D9E75,#00d9a3)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
               {submitting ? 'Scoring...' : `Submit ${answeredCount}/${questions.length} →`}
             </button>
           )}
@@ -428,7 +428,7 @@ export default function AptitudePage() {
     </div>
 
     {!level ? (
-      <div style={{ background: 'linear-gradient(135deg,rgba(0,240,255,0.06),rgba(255,107,74,0.03))', border: '2px solid rgba(0,240,255,0.15)', borderRadius: 14, padding: 24, textAlign: 'center' }}>
+      <div style={{ background: 'linear-gradient(135deg,rgba(0,217,163,0.06),rgba(255,107,74,0.03))', border: '2px solid rgba(0,217,163,0.15)', borderRadius: 14, padding: 24, textAlign: 'center' }}>
         <div style={{ fontSize: 40, marginBottom: 12 }}>🎯</div>
         <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>
           Pick your aptitude level
@@ -455,14 +455,14 @@ export default function AptitudePage() {
           <div style={{ fontSize: 12, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>
             LEVEL: <span style={{ color: level === 'easy' ? '#1D9E75' : level === 'medium' ? '#EF9F27' : '#ff2d78', fontWeight: 700 }}>{level.toUpperCase()}</span>
           </div>
-          <button onClick={() => setLevel(null)} style={{ background: 'transparent', border: 'none', color: '#00f0ff', cursor: 'pointer', fontSize: 12, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
+          <button onClick={() => setLevel(null)} style={{ background: 'transparent', border: 'none', color: '#00d9a3', cursor: 'pointer', fontSize: 12, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
             Change →
           </button>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(140px,1fr))', gap: 12, marginBottom: 24 }}>
           {[
-            { label: 'Sessions', value: progress?.total_sessions ?? 0, color: '#00f0ff' },
+            { label: 'Sessions', value: progress?.total_sessions ?? 0, color: '#00d9a3' },
             { label: 'Streak', value: '🔥' + (progress?.current_streak ?? 0), color: '#EF9F27' },
             { label: 'Best Quant', value: (progress?.quant_score ?? 0) + '%', color: '#1D9E75' },
             { label: 'Best Logical', value: (progress?.logical_score ?? 0) + '%', color: '#ff6b4a' },

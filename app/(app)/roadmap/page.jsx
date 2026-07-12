@@ -10,7 +10,7 @@ import { toEmbedUrl } from '@/lib/youtubeEmbed';
 const CARD =
   'relative overflow-hidden rounded-2xl border border-primary/10 bg-[#070f1a] p-5';
 const ACTION_BTN =
-  'w-full cursor-pointer rounded-[10px] border-none bg-[linear-gradient(135deg,#00f0ff,#ff6b4a)] px-7 py-3.5 text-[15px] font-bold text-[#020812] transition-all hover:brightness-110 hover:shadow-[0_0_28px_rgba(0,240,255,0.35)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50';
+  'w-full cursor-pointer rounded-[10px] border-none bg-[linear-gradient(135deg,#00d9a3,#ff6b4a)] px-7 py-3.5 text-[15px] font-bold text-[#020812] transition-all hover:brightness-110 hover:shadow-[0_0_28px_rgba(0,217,163,0.35)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50';
 const EYEBROW =
   'font-mono text-[11px] font-extrabold uppercase tracking-[1px] text-muted';
 
@@ -453,7 +453,7 @@ export default function DailyRoadmapPage() {
           {/* PROJECT DAY BANNER */}
           {isProjectDay && project && (
             <div className="relative overflow-hidden rounded-2xl border border-primary/15 bg-[linear-gradient(135deg,#091322,#070f1a)] p-6">
-              <div className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(0,240,255,0.5),transparent)]" />
+              <div className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(0,217,163,0.5),transparent)]" />
 
               <div className="mb-3 flex flex-wrap justify-between gap-2">
                 <span className="rounded-full border border-[#ff6b4a]/30 bg-[#ff6b4a]/15 px-2.5 py-1 font-mono text-[11px] font-bold uppercase text-[#9d85ff]">
@@ -574,7 +574,7 @@ export default function DailyRoadmapPage() {
                     done
                       ? 'border-success/25 bg-success/10 text-success hover:bg-success/20'
                       : active
-                        ? 'border-primary bg-primary text-[#020812] shadow-[0_0_16px_rgba(0,240,255,0.3)]'
+                        ? 'border-primary bg-primary text-[#020812] shadow-[0_0_16px_rgba(0,217,163,0.3)]'
                         : 'border-white/[0.08] bg-white/[0.03] text-muted hover:border-primary/40 hover:text-primary'
                   }`}
                 >

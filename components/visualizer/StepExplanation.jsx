@@ -1,7 +1,7 @@
 'use client';
 
 const STATUS_COLORS = {
-  compare:  '#00f0ff',
+  compare:  '#00d9a3',
   sorted:   '#1d9e75',
   found:    '#1d9e75',
   pivot:    '#ef9f27',

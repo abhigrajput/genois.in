@@ -46,7 +46,7 @@ export default function DuelsPage() {
     } catch (e) { toast.error(e.message); }
   }
 
-  const statusColor = (s) => s === 'completed' ? '#1D9E75' : s === 'active' ? '#00f0ff' : '#EF9F27';
+  const statusColor = (s) => s === 'completed' ? '#1D9E75' : s === 'active' ? '#00d9a3' : '#EF9F27';
   const statusLabel = (s) => s === 'completed' ? 'DONE' : s === 'active' ? 'LIVE' : 'PENDING';
 
   return (
@@ -66,7 +66,7 @@ export default function DuelsPage() {
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#ff2d78', letterSpacing: 2, marginBottom: 12 }}>NEW CHALLENGE</div>
           <div style={{ fontSize: 13, color: '#5a7a9a', marginBottom: 16 }}>Enter your opponent&apos;s GENOIS email address.</div>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-            <input value={email} onChange={e => setEmail(e.target.value)} placeholder="batchmate@email.com" style={{ flex: 1, minWidth: 200, padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 13, outline: 'none' }} onKeyDown={e => e.key === 'Enter' && challenge()} />
+            <input value={email} onChange={e => setEmail(e.target.value)} placeholder="batchmate@email.com" style={{ flex: 1, minWidth: 200, padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(0,217,163,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 13, outline: 'none' }} onKeyDown={e => e.key === 'Enter' && challenge()} />
             <button onClick={challenge} disabled={challenging} style={{ padding: '10px 20px', borderRadius: 8, border: 'none', cursor: 'pointer', background: challenging ? 'rgba(255,45,120,0.3)' : '#ff2d78', color: '#fff', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700 }}>
               {challenging ? 'Sending...' : 'Send Challenge →'}
             </button>
@@ -80,7 +80,7 @@ export default function DuelsPage() {
       {loading ? (
         <div style={{ color: '#5a7a9a', textAlign: 'center', padding: 40, fontFamily: 'var(--font-mono)' }}>Loading duels...</div>
       ) : duels.length === 0 ? (
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 14, padding: 48, textAlign: 'center' }}>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 14, padding: 48, textAlign: 'center' }}>
           <div style={{ fontSize: 48, marginBottom: 16 }}>⚔️</div>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: '#e8e8ed', marginBottom: 8 }}>No duels yet</div>
           <div style={{ color: '#5a7a9a', fontSize: 14 }}>Challenge a batchmate and prove who is better.</div>
@@ -111,7 +111,7 @@ export default function DuelsPage() {
                   </div>
                   {d.status === 'completed' && (
                     <div style={{ fontSize: 13, color: '#e8e8ed', marginTop: 8 }}>
-                      Score: <span style={{ color: '#00f0ff', fontWeight: 700 }}>{d.myScore}</span> vs <span style={{ color: '#ff2d78' }}>{d.theirScore}</span>
+                      Score: <span style={{ color: '#00d9a3', fontWeight: 700 }}>{d.myScore}</span> vs <span style={{ color: '#ff2d78' }}>{d.theirScore}</span>
                       {d.winner_id ? (d.winner_id === d.challenger_id) === d.isChallenger
                         ? <span style={{ color: '#1D9E75', fontWeight: 700, marginLeft: 8 }}>🏆 You won!</span>
                         : <span style={{ color: '#ff2d78', fontWeight: 700, marginLeft: 8 }}>You lost</span>
@@ -126,7 +126,7 @@ export default function DuelsPage() {
                     </button>
                   )}
                   {d.status === 'active' && !d.iFinished && (
-                    <button onClick={() => router.push(`/duels/${d.id}`)} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', cursor: 'pointer', background: '#00f0ff', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 700 }}>
+                    <button onClick={() => router.push(`/duels/${d.id}`)} style={{ padding: '8px 16px', borderRadius: 8, border: 'none', cursor: 'pointer', background: '#00d9a3', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 700 }}>
                       Fight Now →
                     </button>
                   )}
@@ -134,7 +134,7 @@ export default function DuelsPage() {
                     <span style={{ fontSize: 12, color: '#EF9F27', fontFamily: 'var(--font-mono)', padding: '8px 0' }}>Waiting for opponent...</span>
                   )}
                   {d.status === 'completed' && (
-                    <button onClick={() => router.push(`/duels/${d.id}`)} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', background: 'transparent', color: '#00f0ff', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 12 }}>
+                    <button onClick={() => router.push(`/duels/${d.id}`)} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid rgba(0,217,163,0.2)', background: 'transparent', color: '#00d9a3', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 12 }}>
                       View Results
                     </button>
                   )}

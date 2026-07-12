@@ -120,7 +120,7 @@ export default function InterviewSimulatorPage() {
           {isPass && <div style={{ marginTop: 14, fontSize: 13, color: '#1D9E75', fontFamily: 'var(--font-mono)' }}>+100 GENOIS points earned</div>}
         </div>
 
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 14, padding: 20, marginBottom: 16 }}>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 14, padding: 20, marginBottom: 16 }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 14 }}>ROUND BREAKDOWN</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {finalResult.roundBreakdown?.map((r, i) => {
@@ -162,7 +162,7 @@ export default function InterviewSimulatorPage() {
           </div>
         )}
 
-        <button onClick={() => { setPhase('select'); setSession(null); setFinalResult(null); setSelectedCompany(null); setSelectedType(null); loadData(); }} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 }}>
+        <button onClick={() => { setPhase('select'); setSession(null); setFinalResult(null); setSelectedCompany(null); setSelectedType(null); loadData(); }} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 }}>
           Take Another Interview →
         </button>
       </div>
@@ -172,15 +172,15 @@ export default function InterviewSimulatorPage() {
   if (phase === 'round_result' && roundResult) {
     return (
       <div style={{ maxWidth: 720, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: 14, padding: 28, marginBottom: 20, textAlign: 'center' }}>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 14, padding: 28, marginBottom: 20, textAlign: 'center' }}>
           <div style={{ fontSize: 48, marginBottom: 12 }}>{roundConfig?.icon}</div>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#e8e8ed', marginBottom: 4 }}>{roundConfig?.label} Complete</div>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 42, fontWeight: 800, color: roundResult.roundScore >= 70 ? '#1D9E75' : roundResult.roundScore >= 50 ? '#EF9F27' : '#ff2d78', lineHeight: 1, marginBottom: 10 }}>{roundResult.roundScore}%</div>
           <div style={{ fontSize: 13, color: '#5a7a9a' }}>Round {roundIndex + 1} of {totalRounds}</div>
         </div>
 
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 12, padding: 18, marginBottom: 16 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 10 }}>INTERVIEWER FEEDBACK</div>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 12, padding: 18, marginBottom: 16 }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 2, marginBottom: 10 }}>INTERVIEWER FEEDBACK</div>
           <div style={{ fontSize: 14, color: '#c8d8e8', lineHeight: 1.7 }}>{roundResult.detailedFeedback}</div>
         </div>
 
@@ -201,7 +201,7 @@ export default function InterviewSimulatorPage() {
           </div>
         )}
 
-        <button onClick={nextRound} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 }}>
+        <button onClick={nextRound} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 }}>
           Continue to Round {roundIndex + 2} →
         </button>
       </div>
@@ -239,23 +239,23 @@ export default function InterviewSimulatorPage() {
           QUESTION {currentQ + 1} OF {questions.length}
         </div>
 
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 24, marginBottom: 16 }}>
+        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 24, marginBottom: 16 }}>
           <div style={{ fontSize: 16, color: '#e8e8ed', lineHeight: 1.75, fontWeight: 500 }}>{q?.question}</div>
-          {q?.constraints && <div style={{ marginTop: 12, padding: '10px 14px', background: 'rgba(0,240,255,0.04)', borderRadius: 8, fontSize: 12, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>Constraints: {q.constraints}</div>}
+          {q?.constraints && <div style={{ marginTop: 12, padding: '10px 14px', background: 'rgba(0,217,163,0.04)', borderRadius: 8, fontSize: 12, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>Constraints: {q.constraints}</div>}
           {q?.hints?.length > 0 && (
             <div style={{ marginTop: 10, fontSize: 11, color: '#5a7a9a' }}>💡 Hints available if needed</div>
           )}
         </div>
 
         {isTextAnswer ? (
-          <textarea value={answers[currentQ] || ''} onChange={e => setAnswers(p => ({ ...p, [currentQ]: e.target.value }))} rows={8} placeholder="Type your answer here. Be specific. Think out loud. Show your approach." style={{ width: '100%', padding: '14px 16px', borderRadius: 10, border: '1px solid rgba(0,240,255,0.12)', background: '#050d1a', color: '#e8e8ed', fontSize: 14, fontFamily: 'var(--font-body)', outline: 'none', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.6, marginBottom: 16 }} />
+          <textarea value={answers[currentQ] || ''} onChange={e => setAnswers(p => ({ ...p, [currentQ]: e.target.value }))} rows={8} placeholder="Type your answer here. Be specific. Think out loud. Show your approach." style={{ width: '100%', padding: '14px 16px', borderRadius: 10, border: '1px solid rgba(0,217,163,0.12)', background: '#050d1a', color: '#e8e8ed', fontSize: 14, fontFamily: 'var(--font-body)', outline: 'none', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.6, marginBottom: 16 }} />
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
             {(q?.options || []).map((opt, oi) => {
               const letters = ['A', 'B', 'C', 'D'];
               const isSelected = answers[currentQ] === opt;
               return (
-                <button key={oi} onClick={() => setAnswers(p => ({ ...p, [currentQ]: opt }))} style={{ padding: '13px 16px', borderRadius: 10, cursor: 'pointer', textAlign: 'left', border: `1px solid ${isSelected ? 'rgba(0,240,255,0.5)' : 'rgba(255,255,255,0.06)'}`, background: isSelected ? 'rgba(0,240,255,0.08)' : 'rgba(255,255,255,0.01)', color: isSelected ? '#00f0ff' : '#c8d8e8', fontSize: 14 }}>
+                <button key={oi} onClick={() => setAnswers(p => ({ ...p, [currentQ]: opt }))} style={{ padding: '13px 16px', borderRadius: 10, cursor: 'pointer', textAlign: 'left', border: `1px solid ${isSelected ? 'rgba(0,217,163,0.5)' : 'rgba(255,255,255,0.06)'}`, background: isSelected ? 'rgba(0,217,163,0.08)' : 'rgba(255,255,255,0.01)', color: isSelected ? '#00d9a3' : '#c8d8e8', fontSize: 14 }}>
                   <span style={{ marginRight: 10, fontFamily: 'var(--font-mono)', fontWeight: 700 }}>{letters[oi]}.</span>{opt}
                 </button>
               );
@@ -266,9 +266,9 @@ export default function InterviewSimulatorPage() {
         <div style={{ display: 'flex', gap: 10 }}>
           {currentQ > 0 && <button onClick={() => setCurrentQ(c => c - 1)} style={{ flex: 1, padding: '13px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 14 }}>← Prev</button>}
           {currentQ < questions.length - 1 ? (
-            <button onClick={() => setCurrentQ(c => c + 1)} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>Next Question →</button>
+            <button onClick={() => setCurrentQ(c => c + 1)} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>Next Question →</button>
           ) : (
-            <button onClick={submitRound} disabled={submitting} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: submitting ? 'not-allowed' : 'pointer', background: submitting ? 'rgba(0,240,255,0.2)' : 'linear-gradient(135deg,#1D9E75,#00f0ff)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+            <button onClick={submitRound} disabled={submitting} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: submitting ? 'not-allowed' : 'pointer', background: submitting ? 'rgba(0,217,163,0.2)' : 'linear-gradient(135deg,#1D9E75,#00d9a3)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
               {submitting ? 'Interviewer evaluating...' : `Submit Round (${answeredCount}/${questions.length}) →`}
             </button>
           )}
@@ -289,7 +289,7 @@ export default function InterviewSimulatorPage() {
         </p>
       </div>
 
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00f0ff', letterSpacing: 2, marginBottom: 14 }}>PICK COMPANY TYPE</div>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00d9a3', letterSpacing: 2, marginBottom: 14 }}>PICK COMPANY TYPE</div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 12, marginBottom: 24 }}>
         {Object.entries(types).map(([key, c]) => {
           const selected = selectedType === key;
@@ -311,7 +311,7 @@ export default function InterviewSimulatorPage() {
 
       {selectedType && (
         <>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00f0ff', letterSpacing: 2, marginBottom: 14 }}>PICK SPECIFIC COMPANY</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00d9a3', letterSpacing: 2, marginBottom: 14 }}>PICK SPECIFIC COMPANY</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
             {types[selectedType].examples.map(c => (
               <button key={c} onClick={() => setSelectedCompany(c)} style={{ padding: '8px 16px', borderRadius: 20, border: 'none', cursor: 'pointer', background: selectedCompany === c ? types[selectedType].color : 'rgba(255,255,255,0.05)', color: selectedCompany === c ? '#020812' : '#5a7a9a', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600 }}>

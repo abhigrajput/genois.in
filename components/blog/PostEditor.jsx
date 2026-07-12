@@ -262,14 +262,14 @@ export default function PostEditor({ postId = null }) {
           <button 
             onClick={() => handleSave('draft')}
             disabled={saving}
-            style={{ padding: '10px 20px', background: '#0d1117', border: '1px solid rgba(0,240,255,0.2)', color: '#00f0ff', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
+            style={{ padding: '10px 20px', background: '#0d1117', border: '1px solid rgba(0,217,163,0.2)', color: '#00d9a3', borderRadius: '8px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}
           >
             {saving ? 'Saving...' : '💾 Save Draft'}
           </button>
           <button 
             onClick={() => handleSave('published')}
             disabled={saving}
-            style={{ padding: '10px 22px', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 0 12px rgba(0, 240, 255, 0.1)' }}
+            style={{ padding: '10px 22px', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', border: 'none', borderRadius: '8px', fontSize: '13px', fontWeight: 700, cursor: 'pointer', boxShadow: '0 0 12px rgba(0, 217, 163, 0.1)' }}
           >
             🚀 Publish Article
           </button>
@@ -277,16 +277,16 @@ export default function PostEditor({ postId = null }) {
       </div>
 
       {/* Workspace Tabs */}
-      <div style={{ display: 'flex', borderBottom: '1px solid rgba(0,240,255,0.1)', marginBottom: '24px', gap: '16px' }}>
+      <div style={{ display: 'flex', borderBottom: '1px solid rgba(0,217,163,0.1)', marginBottom: '24px', gap: '16px' }}>
         <button 
           onClick={() => setActiveTab('edit')}
-          style={{ padding: '10px 16px', background: 'transparent', border: 'none', borderBottom: `2px solid ${activeTab === 'edit' ? '#00f0ff' : 'transparent'}`, color: activeTab === 'edit' ? '#00f0ff' : '#5a7a9a', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
+          style={{ padding: '10px 16px', background: 'transparent', border: 'none', borderBottom: `2px solid ${activeTab === 'edit' ? '#00d9a3' : 'transparent'}`, color: activeTab === 'edit' ? '#00d9a3' : '#5a7a9a', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
         >
           📝 Write Content
         </button>
         <button 
           onClick={() => setActiveTab('preview')}
-          style={{ padding: '10px 16px', background: 'transparent', border: 'none', borderBottom: `2px solid ${activeTab === 'preview' ? '#00f0ff' : 'transparent'}`, color: activeTab === 'preview' ? '#00f0ff' : '#5a7a9a', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
+          style={{ padding: '10px 16px', background: 'transparent', border: 'none', borderBottom: `2px solid ${activeTab === 'preview' ? '#00d9a3' : 'transparent'}`, color: activeTab === 'preview' ? '#00d9a3' : '#5a7a9a', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}
         >
           👁️ Live Preview
         </button>
@@ -294,7 +294,7 @@ export default function PostEditor({ postId = null }) {
 
       {activeTab === 'preview' ? (
         /* Preview Tab */
-        <div style={{ background: '#0a0a0f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: '16px', padding: '32px', maxWidth: '860px', margin: '0 auto', minHeight: '500px' }}>
+        <div style={{ background: '#0a0a0f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: '16px', padding: '32px', maxWidth: '860px', margin: '0 auto', minHeight: '500px' }}>
           {coverImage && (
             <img 
               src={coverImage} 
@@ -304,7 +304,7 @@ export default function PostEditor({ postId = null }) {
             />
           )}
           <div style={{ display: 'flex', gap: '10px', marginBottom: '12px' }}>
-            <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '12px', background: 'rgba(0,240,255,0.1)', color: '#00f0ff', fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>
+            <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '12px', background: 'rgba(0,217,163,0.1)', color: '#00d9a3', fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>
               {topic.toUpperCase()}
             </span>
             <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '12px', background: 'rgba(29,158,117,0.1)', color: '#1d9e75', fontFamily: 'var(--font-mono)', fontWeight: 'bold' }}>
@@ -326,7 +326,7 @@ export default function PostEditor({ postId = null }) {
 
           {cppCode && (
             <div style={{ marginTop: '40px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#00f0ff', fontFamily: 'var(--font-heading)', fontSize: '18px', fontWeight: 700, marginBottom: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#00d9a3', fontFamily: 'var(--font-heading)', fontSize: '18px', fontWeight: 700, marginBottom: '12px' }}>
                 <span>{'{ }'}</span> C++ Implementation
               </div>
               <MarkdownRenderer content={`\`\`\`cpp\n${cppCode}\n\`\`\``} />
@@ -337,7 +337,7 @@ export default function PostEditor({ postId = null }) {
         /* Edit Tab */
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {/* Metadata Section */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', background: '#070f1f', border: '1px solid rgba(0,240,255,0.05)', borderRadius: '12px', padding: '20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', background: '#070f1f', border: '1px solid rgba(0,217,163,0.05)', borderRadius: '12px', padding: '20px' }}>
             {/* Title */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', gridColumn: '1 / -1' }}>
               <label style={{ fontSize: '12px', fontFamily: 'var(--font-mono)', color: '#5a7a9a', fontWeight: 'bold' }}>ARTICLE TITLE</label>
@@ -346,7 +346,7 @@ export default function PostEditor({ postId = null }) {
                 value={title} 
                 onChange={(e) => handleFieldChange(setTitle, e.target.value)}
                 placeholder="How to implement AVL Trees from scratch..."
-                style={{ background: '#0a0a0f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '8px', padding: '12px 16px', color: '#e8e8ed', fontSize: '15px', fontWeight: 'bold', outline: 'none' }}
+                style={{ background: '#0a0a0f', border: '1px solid rgba(0,217,163,0.15)', borderRadius: '8px', padding: '12px 16px', color: '#e8e8ed', fontSize: '15px', fontWeight: 'bold', outline: 'none' }}
               />
             </div>
 
@@ -361,7 +361,7 @@ export default function PostEditor({ postId = null }) {
                   handleFieldChange(setSlug, e.target.value.toLowerCase().replace(/\s+/g, '-'));
                 }}
                 placeholder="avl-trees-implementation"
-                style={{ background: '#0a0a0f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#00f0ff', fontFamily: 'var(--font-mono)', fontSize: '13px', outline: 'none' }}
+                style={{ background: '#0a0a0f', border: '1px solid rgba(0,217,163,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#00d9a3', fontFamily: 'var(--font-mono)', fontSize: '13px', outline: 'none' }}
               />
             </div>
 
@@ -371,7 +371,7 @@ export default function PostEditor({ postId = null }) {
               <select 
                 value={topic} 
                 onChange={(e) => handleFieldChange(setTopic, e.target.value)}
-                style={{ background: '#0a0a0f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#e8e8ed', outline: 'none', cursor: 'pointer' }}
+                style={{ background: '#0a0a0f', border: '1px solid rgba(0,217,163,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#e8e8ed', outline: 'none', cursor: 'pointer' }}
               >
                 {TOPIC_OPTIONS.map(opt => (
                   <option key={opt.value} value={opt.value} style={{ background: '#070f1f' }}>{opt.label}</option>
@@ -385,7 +385,7 @@ export default function PostEditor({ postId = null }) {
               <select 
                 value={difficulty} 
                 onChange={(e) => handleFieldChange(setDifficulty, e.target.value)}
-                style={{ background: '#0a0a0f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#e8e8ed', outline: 'none', cursor: 'pointer' }}
+                style={{ background: '#0a0a0f', border: '1px solid rgba(0,217,163,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#e8e8ed', outline: 'none', cursor: 'pointer' }}
               >
                 {DIFFICULTY_OPTIONS.map(opt => (
                   <option key={opt.value} value={opt.value} style={{ background: '#070f1f' }}>{opt.label}</option>
@@ -401,7 +401,7 @@ export default function PostEditor({ postId = null }) {
                 value={coverImage} 
                 onChange={(e) => handleFieldChange(setCoverImage, e.target.value)}
                 placeholder="https://images.unsplash.com/photo-..."
-                style={{ background: '#0a0a0f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#e8e8ed', fontSize: '13px', outline: 'none' }}
+                style={{ background: '#0a0a0f', border: '1px solid rgba(0,217,163,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#e8e8ed', fontSize: '13px', outline: 'none' }}
               />
             </div>
 
@@ -413,14 +413,14 @@ export default function PostEditor({ postId = null }) {
                 value={tags} 
                 onChange={(e) => handleFieldChange(setTags, e.target.value)}
                 placeholder="avl tree, BST, self-balancing, trees"
-                style={{ background: '#0a0a0f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#e8e8ed', fontSize: '13px', outline: 'none' }}
+                style={{ background: '#0a0a0f', border: '1px solid rgba(0,217,163,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#e8e8ed', fontSize: '13px', outline: 'none' }}
               />
             </div>
 
             {/* Read Time Info */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', justifyContent: 'center' }}>
               <span style={{ fontSize: '11px', fontFamily: 'var(--font-mono)', color: '#5a7a9a' }}>ESTIMATED READ TIME</span>
-              <span style={{ fontSize: '15px', color: '#00f0ff', fontWeight: 'bold' }}>⏱ {calculateReadTime()} Minute{calculateReadTime() > 1 ? 's' : ''}</span>
+              <span style={{ fontSize: '15px', color: '#00d9a3', fontWeight: 'bold' }}>⏱ {calculateReadTime()} Minute{calculateReadTime() > 1 ? 's' : ''}</span>
             </div>
 
             {/* Excerpt */}
@@ -430,15 +430,15 @@ export default function PostEditor({ postId = null }) {
                 value={excerpt} 
                 onChange={(e) => handleFieldChange(setExcerpt, e.target.value)}
                 placeholder="A detailed walkthrough of AVL trees, exploring height metrics, balance factors, single/double rotations, and full C++ implementation..."
-                style={{ background: '#0a0a0f', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#c8d8e8', fontSize: '13px', outline: 'none', height: '60px', resize: 'vertical' }}
+                style={{ background: '#0a0a0f', border: '1px solid rgba(0,217,163,0.15)', borderRadius: '8px', padding: '10px 14px', color: '#c8d8e8', fontSize: '13px', outline: 'none', height: '60px', resize: 'vertical' }}
               />
             </div>
           </div>
 
           {/* Markdown Content Editor */}
-          <div style={{ display: 'flex', flexDirection: 'column', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '12px', overflow: 'hidden', background: '#070f1f' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', border: '1px solid rgba(0,217,163,0.15)', borderRadius: '12px', overflow: 'hidden', background: '#070f1f' }}>
             {/* Toolbar */}
-            <div style={{ display: 'flex', gap: '4px', padding: '8px 16px', background: '#161b22', borderBottom: '1px solid rgba(0,240,255,0.1)', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '4px', padding: '8px 16px', background: '#161b22', borderBottom: '1px solid rgba(0,217,163,0.1)', flexWrap: 'wrap' }}>
               {[
                 { label: 'Bold', action: () => insertMarkdown('**', '**'), icon: '𝐁' },
                 { label: 'Italic', action: () => insertMarkdown('*', '*'), icon: '𝘐' },
@@ -454,8 +454,8 @@ export default function PostEditor({ postId = null }) {
                   key={t.label} 
                   onClick={t.action}
                   title={`${t.label} (Shortcuts active)`}
-                  style={{ background: 'transparent', border: 'none', color: '#00f0ff', padding: '6px 12px', borderRadius: '4px', fontSize: '12px', cursor: 'pointer', fontFamily: 'var(--font-mono)', fontWeight: 'bold', transition: 'background 0.1s' }}
-                  onMouseOver={(e) => e.target.style.background = 'rgba(0,240,255,0.08)'}
+                  style={{ background: 'transparent', border: 'none', color: '#00d9a3', padding: '6px 12px', borderRadius: '4px', fontSize: '12px', cursor: 'pointer', fontFamily: 'var(--font-mono)', fontWeight: 'bold', transition: 'background 0.1s' }}
+                  onMouseOver={(e) => e.target.style.background = 'rgba(0,217,163,0.08)'}
                   onMouseOut={(e) => e.target.style.background = 'transparent'}
                 >
                   {t.icon}
@@ -486,7 +486,7 @@ export default function PostEditor({ postId = null }) {
               value={cppCode}
               onChange={(e) => handleFieldChange(setCppCode, e.target.value)}
               placeholder={`#include <iostream>\nusing namespace std;\n\n// Write your core C++ implementation here...`}
-              style={{ background: '#0a0a0f', border: 'none', padding: '16px 20px', color: '#00f0ff', fontSize: '13px', fontFamily: 'var(--font-mono)', outline: 'none', height: '240px', resize: 'vertical', lineHeight: '1.6' }}
+              style={{ background: '#0a0a0f', border: 'none', padding: '16px 20px', color: '#00d9a3', fontSize: '13px', fontFamily: 'var(--font-mono)', outline: 'none', height: '240px', resize: 'vertical', lineHeight: '1.6' }}
             />
           </div>
         </div>

@@ -62,8 +62,8 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
   return (
     <div style={{ fontFamily: 'var(--font-body)', width: '100%' }}>
       {taskDescription && (
-        <div style={{ background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 10, padding: '12px 16px', marginBottom: 14 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00f0ff', letterSpacing: 2, marginBottom: 6 }}>TASK</div>
+        <div style={{ background: 'rgba(0,217,163,0.04)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 10, padding: '12px 16px', marginBottom: 14 }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 2, marginBottom: 6 }}>TASK</div>
           <div style={{ fontSize: 14, color: '#c8d8e8', lineHeight: 1.6 }}>{taskDescription}</div>
           {expectedOutput && (
             <div style={{ marginTop: 8, fontSize: 12, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>
@@ -76,7 +76,7 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 8 }}>
         <div style={{ display: 'flex', gap: 6 }}>
           {LANGUAGES.map(l => (
-            <button key={l} onClick={() => changeLanguage(l)} style={{ padding: '5px 12px', borderRadius: 20, border: `1px solid ${language === l ? 'rgba(0,240,255,0.4)' : 'rgba(255,255,255,0.08)'}`, background: language === l ? 'rgba(0,240,255,0.08)' : 'transparent', color: language === l ? '#00f0ff' : '#5a7a9a', cursor: 'pointer', fontSize: 11, fontFamily: 'var(--font-mono)' }}>
+            <button key={l} onClick={() => changeLanguage(l)} style={{ padding: '5px 12px', borderRadius: 20, border: `1px solid ${language === l ? 'rgba(0,217,163,0.4)' : 'rgba(255,255,255,0.08)'}`, background: language === l ? 'rgba(0,217,163,0.08)' : 'transparent', color: language === l ? '#00d9a3' : '#5a7a9a', cursor: 'pointer', fontSize: 11, fontFamily: 'var(--font-mono)' }}>
               {LANGUAGE_LABELS[l]}
             </button>
           ))}
@@ -100,7 +100,7 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
           minHeight: 280,
           padding: '14px 16px',
           borderRadius: 10,
-          border: '1px solid rgba(0,240,255,0.1)',
+          border: '1px solid rgba(0,217,163,0.1)',
           background: '#050d1a',
           color: '#e8e8ed',
           fontSize: 13,
@@ -126,7 +126,7 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
       {showStdin && (
         <div style={{ marginTop: 8 }}>
           <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', marginBottom: 4 }}>STDIN (input for your program)</div>
-          <textarea value={stdin} onChange={e => setStdin(e.target.value)} rows={3} placeholder="Enter program input here..." style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.1)', background: '#050d1a', color: '#e8e8ed', fontSize: 12, fontFamily: 'var(--font-mono)', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }} />
+          <textarea value={stdin} onChange={e => setStdin(e.target.value)} rows={3} placeholder="Enter program input here..." style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(0,217,163,0.1)', background: '#050d1a', color: '#e8e8ed', fontSize: 12, fontFamily: 'var(--font-mono)', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }} />
         </div>
       )}
 
@@ -136,7 +136,7 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
         style={{
           width: '100%', padding: '13px', borderRadius: 10, border: 'none', marginTop: 10,
           cursor: running || isCompleted || !runEligible ? 'not-allowed' : 'pointer',
-          background: isCompleted ? 'rgba(29,158,117,0.2)' : !runEligible ? 'rgba(255,255,255,0.07)' : running ? 'rgba(0,240,255,0.15)' : 'linear-gradient(135deg,#00f0ff,#1D9E75)',
+          background: isCompleted ? 'rgba(29,158,117,0.2)' : !runEligible ? 'rgba(255,255,255,0.07)' : running ? 'rgba(0,217,163,0.15)' : 'linear-gradient(135deg,#00d9a3,#1D9E75)',
           color: isCompleted ? '#1D9E75' : !runEligible ? '#555' : '#020812',
           fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700,
           transition: 'all 0.4s ease',

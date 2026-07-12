@@ -99,7 +99,7 @@ export default function AnxietyPage() {
       {/* ── Header ── */}
       <div style={{
         padding: '20px 24px 16px',
-        borderBottom: '1px solid rgba(0,240,255,0.1)',
+        borderBottom: '1px solid rgba(0,217,163,0.1)',
         background: 'rgba(2,8,18,0.95)',
         backdropFilter: 'blur(20px)',
         flexShrink: 0,
@@ -109,8 +109,8 @@ export default function AnxietyPage() {
             <div className="flex items-center gap-3 mb-1">
               <div style={{
                 width: 10, height: 10, borderRadius: '50%',
-                background: isLateNight ? '#00f0ff' : '#1D9E75',
-                boxShadow: `0 0 8px ${isLateNight ? '#00f0ff' : '#1D9E75'}`,
+                background: isLateNight ? '#00d9a3' : '#1D9E75',
+                boxShadow: `0 0 8px ${isLateNight ? '#00d9a3' : '#1D9E75'}`,
                 animation: 'gentlePulse 2s infinite',
               }} />
               <span style={{
@@ -126,9 +126,9 @@ export default function AnxietyPage() {
                 <span style={{
                   fontSize: 10,
                   fontFamily: 'var(--font-mono)',
-                  color: '#00f0ff',
-                  background: 'rgba(0,240,255,0.1)',
-                  border: '1px solid rgba(0,240,255,0.2)',
+                  color: '#00d9a3',
+                  background: 'rgba(0,217,163,0.1)',
+                  border: '1px solid rgba(0,217,163,0.2)',
                   padding: '2px 8px',
                   borderRadius: 20,
                   letterSpacing: 1,
@@ -167,9 +167,9 @@ export default function AnxietyPage() {
                 <button key={m.label} onClick={() => setMood(m)} style={{
                   padding: '5px 12px',
                   borderRadius: 20,
-                  border: `1px solid ${mood?.label === m.label ? 'rgba(0,240,255,0.5)' : 'rgba(255,255,255,0.08)'}`,
-                  background: mood?.label === m.label ? 'rgba(0,240,255,0.08)' : 'transparent',
-                  color: mood?.label === m.label ? '#00f0ff' : '#5a7a9a',
+                  border: `1px solid ${mood?.label === m.label ? 'rgba(0,217,163,0.5)' : 'rgba(255,255,255,0.08)'}`,
+                  background: mood?.label === m.label ? 'rgba(0,217,163,0.08)' : 'transparent',
+                  color: mood?.label === m.label ? '#00d9a3' : '#5a7a9a',
                   fontSize: 12,
                   cursor: 'pointer',
                   transition: 'all 0.2s',
@@ -221,8 +221,8 @@ export default function AnxietyPage() {
                 <button key={i} onClick={() => send(s)} style={{
                   padding: '12px 16px',
                   borderRadius: 12,
-                  border: '1px solid rgba(0,240,255,0.12)',
-                  background: 'rgba(0,240,255,0.03)',
+                  border: '1px solid rgba(0,217,163,0.12)',
+                  background: 'rgba(0,217,163,0.03)',
                   color: '#8ab4c8',
                   fontSize: 13,
                   cursor: 'pointer',
@@ -249,8 +249,8 @@ export default function AnxietyPage() {
               {m.role === 'assistant' && (
                 <div style={{
                   width: 28, height: 28, borderRadius: '50%',
-                  background: 'rgba(0,240,255,0.1)',
-                  border: '1px solid rgba(0,240,255,0.2)',
+                  background: 'rgba(0,217,163,0.1)',
+                  border: '1px solid rgba(0,217,163,0.2)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 14, flexShrink: 0,
                 }}>🌙</div>
@@ -262,7 +262,7 @@ export default function AnxietyPage() {
                   ? '18px 18px 4px 18px'
                   : '18px 18px 18px 4px',
                 background: m.role === 'user'
-                  ? 'linear-gradient(135deg, rgba(255,107,74,0.35), rgba(0,240,255,0.15))'
+                  ? 'linear-gradient(135deg, rgba(255,107,74,0.35), rgba(0,217,163,0.15))'
                   : 'rgba(255,255,255,0.04)',
                 border: m.role === 'user'
                   ? '1px solid rgba(255,107,74,0.3)'
@@ -286,7 +286,7 @@ export default function AnxietyPage() {
       {/* ── Input ── */}
       <div style={{
         padding: '14px 24px 20px',
-        borderTop: '1px solid rgba(0,240,255,0.08)',
+        borderTop: '1px solid rgba(0,217,163,0.08)',
         background: 'rgba(2,8,18,0.97)',
         flexShrink: 0,
       }}>
@@ -317,7 +317,7 @@ export default function AnxietyPage() {
               width: '100%',
               padding: '12px 16px',
               borderRadius: 12,
-              border: '1px solid rgba(0,240,255,0.15)',
+              border: '1px solid rgba(0,217,163,0.15)',
               background: 'rgba(255,255,255,0.03)',
               color: '#e8e8ed',
               fontSize: 14,
@@ -327,8 +327,8 @@ export default function AnxietyPage() {
               lineHeight: 1.6,
               transition: 'border-color 0.2s',
             }}
-            onFocus={e => { e.target.style.borderColor = 'rgba(0,240,255,0.4)'; }}
-            onBlur={e => { e.target.style.borderColor = 'rgba(0,240,255,0.15)'; }}
+            onFocus={e => { e.target.style.borderColor = 'rgba(0,217,163,0.4)'; }}
+            onBlur={e => { e.target.style.borderColor = 'rgba(0,217,163,0.15)'; }}
           />
           <button
             onClick={() => send()}
@@ -338,7 +338,7 @@ export default function AnxietyPage() {
               borderRadius: 12,
               border: 'none',
               background: !loading && input.trim()
-                ? 'linear-gradient(135deg, #00f0ff, #ff6b4a)'
+                ? 'linear-gradient(135deg, #00d9a3, #ff6b4a)'
                 : 'rgba(255,255,255,0.05)',
               color: !loading && input.trim() ? '#020812' : '#2a4a5a',
               fontWeight: 700,

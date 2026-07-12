@@ -229,7 +229,7 @@ export default function BSTVisualizer() {
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Nodes', value: nodes.length, color: '#00f0ff' },
+          { label: 'Nodes', value: nodes.length, color: '#00d9a3' },
           { label: 'Mode', value: mode.toUpperCase(), color: '#ef9f27' },
           { label: 'Comparisons', value: Math.max(0, highlightStep), color: '#ff6b4a' },
           { label: 'Result', value: searchFound === null ? '—' : searchFound ? 'Found' : 'Not Found', color: searchFound ? '#1d9e75' : searchFound === false ? '#ff2d78' : '#5a7a9a' },
@@ -241,13 +241,13 @@ export default function BSTVisualizer() {
         ))}
       </div>
 
-      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, overflow: 'hidden' }}>
+      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, overflow: 'hidden' }}>
         <svg width="100%" viewBox={`0 0 ${SVG_W} ${SVG_H}`} style={{ display: 'block' }}>
           {edges.map((e, i) => {
             const p = laidOut.find(n => n.id === e.parentId);
             const c = laidOut.find(n => n.id === e.id);
             return p && c ? (
-              <line key={i} x1={p.x} y1={p.y} x2={c.x} y2={c.y} stroke="rgba(0,240,255,0.2)" strokeWidth={1.5} />
+              <line key={i} x1={p.x} y1={p.y} x2={c.x} y2={c.y} stroke="rgba(0,217,163,0.2)" strokeWidth={1.5} />
             ) : null;
           })}
           {laidOut.map(n => {
@@ -276,14 +276,14 @@ export default function BSTVisualizer() {
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
         <input type="number" value={inputVal} onChange={e => setInputVal(e.target.value)} onKeyDown={e => e.key === 'Enter' && doInsert()}
-          placeholder="Value..." style={{ background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.2)', borderRadius: 8, padding: '7px 12px', color: '#e8e8ed', fontFamily: 'var(--font-mono)', fontSize: 13, outline: 'none', width: 100 }} />
-        <button onClick={doInsert} style={btn('#00f0ff')}>Insert</button>
+          placeholder="Value..." style={{ background: 'rgba(0,217,163,0.04)', border: '1px solid rgba(0,217,163,0.2)', borderRadius: 8, padding: '7px 12px', color: '#e8e8ed', fontFamily: 'var(--font-mono)', fontSize: 13, outline: 'none', width: 100 }} />
+        <button onClick={doInsert} style={btn('#00d9a3')}>Insert</button>
         <button onClick={doSearch} style={btn('#ff6b4a')}>Search</button>
         <button onClick={() => setIsPlaying(p => !p)} style={btn('#ef9f27')}>{isPlaying ? '⏸ Pause' : '▶ Play'}</button>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a' }}>SPEED</span>
           {[1, 2, 3, 4].map(s => (
-            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid #00f0ff' : '1px solid rgba(0,240,255,0.15)', background: speed === s ? 'rgba(0,240,255,0.12)' : 'transparent', color: speed === s ? '#00f0ff' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×', '1×', '2×', '3×'][s - 1]}</button>
+            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid #00d9a3' : '1px solid rgba(0,217,163,0.15)', background: speed === s ? 'rgba(0,217,163,0.12)' : 'transparent', color: speed === s ? '#00d9a3' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×', '1×', '2×', '3×'][s - 1]}</button>
           ))}
         </div>
         <button onClick={reset} style={btn('#ff2d78')}>↺ Reset</button>

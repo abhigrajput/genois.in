@@ -159,7 +159,7 @@ export default function UnionFindVisualizer() {
   };
 
   const SVG_W = 700, SVG_H = 240;
-  const COLORS = ['#00f0ff','#ff6b4a','#1d9e75','#ef9f27','#ff2d78','#378ADD','#e86af3','#f8d748'];
+  const COLORS = ['#00d9a3','#ff6b4a','#1d9e75','#ef9f27','#ff2d78','#378ADD','#e86af3','#f8d748'];
 
   function rootOf(id) {
     let cur = id;
@@ -183,7 +183,7 @@ export default function UnionFindVisualizer() {
       />
 
       {/* Parent array */}
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:10, padding:'12px 16px' }}>
+      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:10, padding:'12px 16px' }}>
         <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', letterSpacing:1, marginBottom:8 }}>PARENT ARRAY</div>
         <div style={{ display:'flex', gap:0 }}>
           {uf.parent.map((p, i) => {
@@ -203,14 +203,14 @@ export default function UnionFindVisualizer() {
       </div>
 
       {/* Tree SVG */}
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:12, overflow:'hidden' }}>
+      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, overflow:'hidden' }}>
         <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', letterSpacing:1, padding:'10px 16px 0' }}>FOREST VIEW</div>
         <svg width="100%" viewBox={`0 0 ${SVG_W} ${SVG_H}`} style={{ display:'block' }}>
           {uf.parent.map((p, i) => {
             if (p === i) return null;
             const from = layout[i], to = layout[p];
             if (!from || !to) return null;
-            return <line key={i} x1={from.x} y1={from.y} x2={to.x} y2={to.y} stroke="rgba(0,240,255,0.2)" strokeWidth={1.5} />;
+            return <line key={i} x1={from.x} y1={from.y} x2={to.x} y2={to.y} stroke="rgba(0,217,163,0.2)" strokeWidth={1.5} />;
           })}
           {Array.from({length:N},(_,i)=>{
             const pos = layout[i];
@@ -261,4 +261,4 @@ export default function UnionFindVisualizer() {
 function btn(color) {
   return { padding:'8px 16px', borderRadius:8, border:`1px solid ${color}30`, background:`${color}10`, color, fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' };
 }
-const inputStyle = { background:'rgba(0,240,255,0.04)', border:'1px solid rgba(0,240,255,0.2)', borderRadius:8, padding:'7px 12px', color:'#e8e8ed', fontFamily:'var(--font-mono)', fontSize:13, outline:'none', width:70 };
+const inputStyle = { background:'rgba(0,217,163,0.04)', border:'1px solid rgba(0,217,163,0.2)', borderRadius:8, padding:'7px 12px', color:'#e8e8ed', fontFamily:'var(--font-mono)', fontSize:13, outline:'none', width:70 };

@@ -12,7 +12,7 @@ export default function VisualizerControls({
   return (
     <div style={{
       background: 'rgba(10,15,30,0.9)',
-      border: '1px solid rgba(0,240,255,0.12)',
+      border: '1px solid rgba(0,217,163,0.12)',
       borderRadius: 12,
       padding: '14px 18px',
       display: 'flex',
@@ -29,10 +29,10 @@ export default function VisualizerControls({
         {/* Play/Pause */}
         <button onClick={onPlayPause}
           style={{
-            ...btnStyle('#00f0ff'),
-            background: 'rgba(0,240,255,0.12)',
-            border: '1px solid rgba(0,240,255,0.35)',
-            color: '#00f0ff',
+            ...btnStyle('#00d9a3'),
+            background: 'rgba(0,217,163,0.12)',
+            border: '1px solid rgba(0,217,163,0.35)',
+            color: '#00d9a3',
             minWidth: 80,
             fontFamily: 'var(--font-body)',
             fontWeight: 600,
@@ -64,7 +64,7 @@ export default function VisualizerControls({
             color: '#5a7a9a',
             marginLeft: 'auto',
           }}>
-            Step <span style={{ color: '#00f0ff' }}>{currentStep}</span> / {totalSteps}
+            Step <span style={{ color: '#00d9a3' }}>{currentStep}</span> / {totalSteps}
           </span>
         )}
       </div>
@@ -79,9 +79,9 @@ export default function VisualizerControls({
               style={{
                 padding: '3px 10px',
                 borderRadius: 6,
-                border: speed === s ? '1px solid #00f0ff' : '1px solid rgba(0,240,255,0.15)',
-                background: speed === s ? 'rgba(0,240,255,0.12)' : 'transparent',
-                color: speed === s ? '#00f0ff' : '#5a7a9a',
+                border: speed === s ? '1px solid #00d9a3' : '1px solid rgba(0,217,163,0.15)',
+                background: speed === s ? 'rgba(0,217,163,0.12)' : 'transparent',
+                color: speed === s ? '#00d9a3' : '#5a7a9a',
                 fontSize: 11,
                 fontFamily: 'var(--font-mono)',
                 cursor: 'pointer',
@@ -99,8 +99,8 @@ export default function VisualizerControls({
               <span style={labelStyle}>Size</span>
               <input type="range" min={5} max={12} value={arraySize}
                 onChange={e => onArraySizeChange(Number(e.target.value))}
-                style={{ width: 80, accentColor: '#00f0ff', cursor: 'pointer' }} />
-              <span style={{ ...labelStyle, color: '#00f0ff', minWidth: 14 }}>{arraySize}</span>
+                style={{ width: 80, accentColor: '#00d9a3', cursor: 'pointer' }} />
+              <span style={{ ...labelStyle, color: '#00d9a3', minWidth: 14 }}>{arraySize}</span>
             </div>
             <button onClick={onRandomize}
               style={{

@@ -70,7 +70,7 @@ const PLANS = [
     tagline: 'Main character arc. Full access. Get placed.',
     price: '₹199',
     period: '/month',
-    color: '#00f0ff',
+    color: '#00d9a3',
     featured: true,
     badge: '🔥 Most Popular',
     cta: 'Go Performer →',
@@ -128,26 +128,26 @@ export default function PricingPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: '#020812', color: '#e8e8ed', fontFamily: 'var(--font-body)' }}>
-      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(0,240,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,0.02) 1px,transparent 1px)', backgroundSize: '60px 60px' }} />
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(0,217,163,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,217,163,0.02) 1px,transparent 1px)', backgroundSize: '60px 60px' }} />
 
-      <nav style={{ position: 'sticky', top: 0, zIndex: 100, background: 'rgba(2,8,18,0.95)', borderBottom: '1px solid rgba(0,240,255,0.08)', backdropFilter: 'blur(20px)', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <nav style={{ position: 'sticky', top: 0, zIndex: 100, background: 'rgba(2,8,18,0.95)', borderBottom: '1px solid rgba(0,217,163,0.08)', backdropFilter: 'blur(20px)', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link href="/landing" style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 800, letterSpacing: -1, textDecoration: 'none' }}>
-          <span style={{ color: '#00f0ff' }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
+          <span style={{ color: '#00d9a3' }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
         </Link>
         <div style={{ display: 'flex', gap: 10 }}>
           <Link href="/college-war" style={{ padding: '6px 14px', borderRadius: 7, color: '#5a7a9a', textDecoration: 'none', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>College War</Link>
-          <Link href="/login" style={{ padding: '7px 16px', borderRadius: 8, border: '1px solid rgba(0,240,255,0.2)', color: '#e8e8ed', textDecoration: 'none', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>Sign In</Link>
-          <Link href="/onboarding" style={{ padding: '7px 18px', borderRadius: 8, background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', textDecoration: 'none', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 700 }}>Start Free →</Link>
+          <Link href="/login" style={{ padding: '7px 16px', borderRadius: 8, border: '1px solid rgba(0,217,163,0.2)', color: '#e8e8ed', textDecoration: 'none', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>Sign In</Link>
+          <Link href="/onboarding" style={{ padding: '7px 18px', borderRadius: 8, background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', textDecoration: 'none', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 700 }}>Start Free →</Link>
         </div>
       </nav>
 
       <div style={{ position: 'relative', zIndex: 1, maxWidth: 1100, margin: '0 auto', padding: '60px 20px' }}>
 
         <div style={{ textAlign: 'center', marginBottom: 56 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00f0ff', letterSpacing: 2, marginBottom: 12 }}>PRICING</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00d9a3', letterSpacing: 2, marginBottom: 12 }}>PRICING</div>
           <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(28px,5vw,52px)', fontWeight: 800, marginBottom: 12 }}>
             Pick your level.<br />
-            <span style={{ background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Start proving yourself.</span>
+            <span style={{ background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Start proving yourself.</span>
           </h1>
           <p style={{ color: '#5a7a9a', fontSize: 16 }}>30-day free trial on all plans. No credit card required to start.</p>
         </div>
@@ -159,15 +159,15 @@ export default function PricingPage() {
               onMouseEnter={() => setHovered(plan.id)}
               onMouseLeave={() => setHovered(null)}
               style={{
-                background: plan.featured ? 'rgba(0,240,255,0.03)' : '#070f1f',
-                border: plan.featured ? '2px solid rgba(0,240,255,0.4)' : `1px solid ${plan.color}20`,
+                background: plan.featured ? 'rgba(0,217,163,0.03)' : '#070f1f',
+                border: plan.featured ? '2px solid rgba(0,217,163,0.4)' : `1px solid ${plan.color}20`,
                 borderRadius: 16,
                 padding: '28px 24px',
                 position: 'relative',
                 overflow: 'hidden',
                 transition: 'transform 0.2s, box-shadow 0.2s',
                 transform: hovered === plan.id ? 'translateY(-4px)' : 'translateY(0)',
-                boxShadow: plan.featured ? '0 0 40px rgba(0,240,255,0.12)' : hovered === plan.id ? `0 8px 30px ${plan.color}20` : 'none',
+                boxShadow: plan.featured ? '0 0 40px rgba(0,217,163,0.12)' : hovered === plan.id ? `0 8px 30px ${plan.color}20` : 'none',
               }}>
 
               <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg,transparent,${plan.color},transparent)` }} />
@@ -205,14 +205,14 @@ export default function PricingPage() {
           ))}
         </div>
 
-        <div style={{ textAlign: 'center', marginTop: 48, padding: '32px', background: '#070f1f', border: '1px solid rgba(0,240,255,0.08)', borderRadius: 16 }}>
+        <div style={{ textAlign: 'center', marginTop: 48, padding: '32px', background: '#070f1f', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 16 }}>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: '#e8e8ed', marginBottom: 8 }}>
             Still not sure? Start as Spectator.
           </div>
           <div style={{ color: '#5a7a9a', fontSize: 14, marginBottom: 20 }}>
             30 days free. Full access. No credit card. Upgrade anytime.
           </div>
-          <Link href="/onboarding" style={{ display: 'inline-block', padding: '12px 32px', borderRadius: 10, background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', textDecoration: 'none', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 }}>
+          <Link href="/onboarding" style={{ display: 'inline-block', padding: '12px 32px', borderRadius: 10, background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', textDecoration: 'none', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 }}>
             Start Free — No Card Needed →
           </Link>
         </div>

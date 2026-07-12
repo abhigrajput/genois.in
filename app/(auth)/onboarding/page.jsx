@@ -143,20 +143,20 @@ export default function OnboardingPage() {
   });
 
   const backBtn = { flex: 1, padding: '14px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 14 };
-  const nextBtn = (active) => ({ flex: 2, padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: active ? 'linear-gradient(135deg,#00f0ff,#ff6b4a)' : 'rgba(255,255,255,0.05)', color: active ? '#020812' : '#3a4a5a', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 });
+  const nextBtn = (active) => ({ flex: 2, padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: active ? 'linear-gradient(135deg,#00d9a3,#ff6b4a)' : 'rgba(255,255,255,0.05)', color: active ? '#020812' : '#3a4a5a', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 });
 
   return (
     <div style={{ minHeight: '100vh', background: '#020812', color: '#e8e8ed', fontFamily: 'var(--font-body)' }}>
-      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(0,240,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,240,255,0.015) 1px,transparent 1px)', backgroundSize: '56px 56px' }} />
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(0,217,163,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,217,163,0.015) 1px,transparent 1px)', backgroundSize: '56px 56px' }} />
 
       <div style={{ position: 'relative', zIndex: 1, maxWidth: 560, margin: '0 auto', padding: '40px 20px' }}>
 
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, marginBottom: 20 }}>
-            <span style={{ color: '#00f0ff' }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
+            <span style={{ color: '#00d9a3' }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
           </div>
           <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, marginBottom: 8, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: progress + '%', background: 'linear-gradient(90deg,#00f0ff,#ff6b4a)', borderRadius: 2, transition: 'width 0.4s' }} />
+            <div style={{ height: '100%', width: progress + '%', background: 'linear-gradient(90deg,#00d9a3,#ff6b4a)', borderRadius: 2, transition: 'width 0.4s' }} />
           </div>
           <div style={{ fontSize: 11, color: '#3a4a5a', fontFamily: 'var(--font-mono)' }}>
             Step {step + 1} of {STEPS.length}
@@ -179,7 +179,7 @@ export default function OnboardingPage() {
             <p style={{ color: '#5a7a9a', fontSize: 16, lineHeight: 1.8, marginBottom: 32 }}>
               GENOIS ranks you on real daily performance. Daily coding, timed tests, actual projects. No shortcuts.
             </p>
-            <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 14, padding: 20, marginBottom: 28, textAlign: 'left' }}>
+            <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 20, marginBottom: 28, textAlign: 'left' }}>
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 14 }}>WHAT YOU GET</div>
               {[
                 { icon: '📅', text: '30-day AI-powered daily roadmap' },
@@ -194,11 +194,11 @@ export default function OnboardingPage() {
                 </div>
               ))}
             </div>
-            <button onClick={() => setStep(1)} style={{ width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 17, fontWeight: 800, boxShadow: '0 0 30px rgba(0,240,255,0.3)' }}>
+            <button onClick={() => setStep(1)} style={{ width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 17, fontWeight: 800, boxShadow: '0 0 30px rgba(0,217,163,0.3)' }}>
               Start Free — No Card Needed →
             </button>
             <p style={{ marginTop: 12, color: '#3a4a5a', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
-              Already have an account? <a href="/login" style={{ color: '#00f0ff', textDecoration: 'none' }}>Login →</a>
+              Already have an account? <a href="/login" style={{ color: '#00d9a3', textDecoration: 'none' }}>Login →</a>
             </p>
           </div>
         )}
@@ -256,14 +256,14 @@ export default function OnboardingPage() {
               ].map(f => (
                 <div key={f.key}>
                   <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 6 }}>{f.label}</div>
-                  <input type={f.type} value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))} placeholder={f.placeholder} style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,240,255,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                  <input type={f.type} value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))} placeholder={f.placeholder} style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,217,163,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
                 </div>
               ))}
               <div>
                 <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 6 }}>CURRENT YEAR</div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   {['1', '2', '3', '4'].map(y => (
-                    <button key={y} onClick={() => setForm(p => ({ ...p, year: y }))} style={{ flex: 1, padding: '10px', borderRadius: 10, border: `1px solid ${form.year === y ? 'rgba(0,240,255,0.4)' : 'rgba(255,255,255,0.08)'}`, background: form.year === y ? 'rgba(0,240,255,0.08)' : 'transparent', color: form.year === y ? '#00f0ff' : '#5a7a9a', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
+                    <button key={y} onClick={() => setForm(p => ({ ...p, year: y }))} style={{ flex: 1, padding: '10px', borderRadius: 10, border: `1px solid ${form.year === y ? 'rgba(0,217,163,0.4)' : 'rgba(255,255,255,0.08)'}`, background: form.year === y ? 'rgba(0,217,163,0.08)' : 'transparent', color: form.year === y ? '#00d9a3' : '#5a7a9a', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
                       Year {y}
                     </button>
                   ))}
@@ -359,7 +359,7 @@ export default function OnboardingPage() {
                 value={cgpa}
                 onChange={e => setCgpa(e.target.value)}
                 placeholder="e.g. 7.2"
-                style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,240,255,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,217,163,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
               />
               <div style={{ fontSize: 11, color: '#3a4a5a', marginTop: 6, fontFamily: 'var(--font-mono)' }}>
                 Helps show companies you&apos;re eligible for. Not shared publicly.
@@ -387,7 +387,7 @@ export default function OnboardingPage() {
               </p>
             </div>
 
-            <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: '12px 16px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: '12px 16px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
               <div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#e8e8ed' }}>{form.name} · {form.college}</div>
                 <div style={{ fontSize: 12, color: '#5a7a9a' }}>Domain: {DOMAINS.find(d => d.id === selectedDomain)?.label} · Year {form.year}</div>
@@ -406,7 +406,7 @@ export default function OnboardingPage() {
               ].map(f => (
                 <div key={f.key}>
                   <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 6 }}>{f.label}</div>
-                  <input type={f.type} value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))} placeholder={f.placeholder} onKeyDown={e => e.key === 'Enter' && signup()} style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,240,255,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                  <input type={f.type} value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))} placeholder={f.placeholder} onKeyDown={e => e.key === 'Enter' && signup()} style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,217,163,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
                 </div>
               ))}
             </div>
@@ -419,7 +419,7 @@ export default function OnboardingPage() {
 
             <div style={{ display: 'flex', gap: 10 }}>
               <button onClick={() => setStep(4)} style={backBtn}>← Back</button>
-              <button onClick={signup} disabled={loading} style={{ flex: 2, padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: loading ? 'rgba(0,240,255,0.2)' : 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, boxShadow: '0 0 20px rgba(0,240,255,0.2)' }}>
+              <button onClick={signup} disabled={loading} style={{ flex: 2, padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: loading ? 'rgba(0,217,163,0.2)' : 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, boxShadow: '0 0 20px rgba(0,217,163,0.2)' }}>
                 {loading ? 'Creating account...' : 'Start Free — 30 Days →'}
               </button>
             </div>

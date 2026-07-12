@@ -31,7 +31,7 @@ export default function WelcomePage() {
       <div style={{ maxWidth: 480, width: '100%', textAlign: 'center' }}>
 
         <div style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 800, marginBottom: 32 }}>
-          <span style={{ color: '#00f0ff' }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
+          <span style={{ color: '#00d9a3' }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
         </div>
 
         <div style={{ fontSize: 64, marginBottom: 20, transition: 'all 0.3s' }}>{current.icon}</div>
@@ -46,16 +46,16 @@ export default function WelcomePage() {
 
         <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 32 }}>
           {STEPS.map((_, i) => (
-            <div key={i} style={{ width: i === step ? 24 : 8, height: 8, borderRadius: 4, background: i === step ? '#00f0ff' : 'rgba(255,255,255,0.1)', transition: 'all 0.3s' }} />
+            <div key={i} style={{ width: i === step ? 24 : 8, height: 8, borderRadius: 4, background: i === step ? '#00d9a3' : 'rgba(255,255,255,0.1)', transition: 'all 0.3s' }} />
           ))}
         </div>
 
         {step < STEPS.length - 1 ? (
-          <button onClick={() => setStep(s => s + 1)} style={{ width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700 }}>
+          <button onClick={() => setStep(s => s + 1)} style={{ width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700 }}>
             Next →
           </button>
         ) : (
-          <Link href="/diagnostic" style={{ display: 'block', width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, textDecoration: 'none', textAlign: 'center', boxSizing: 'border-box' }}>
+          <Link href="/diagnostic" style={{ display: 'block', width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, textDecoration: 'none', textAlign: 'center', boxSizing: 'border-box' }}>
             Start Day 1 — Let us Go 🚀
           </Link>
         )}

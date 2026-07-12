@@ -123,7 +123,7 @@ function computeTopoSteps() {
 function nodeColor(id, step) {
   if (!step) return '#1a2a3a';
   if (step.current === id && step.phase === 'push') return '#1d9e75';
-  if (step.current === id) return '#00f0ff';
+  if (step.current === id) return '#00d9a3';
   if (step.checking === id) return '#ef9f27';
   if (step.callStack?.includes(id)) return '#ff6b4a';
   if (step.visited?.[id]) return '#1d9e75';
@@ -170,7 +170,7 @@ export default function TopologicalSortVisualizer() {
 
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
-          { label:'Vertices', value:6, color:'#00f0ff' },
+          { label:'Vertices', value:6, color:'#00d9a3' },
           { label:'Edges', value:EDGES.length, color:'#ff6b4a' },
           { label:'Visited', value:current?.visited?.filter(Boolean).length??0, color:'#1d9e75' },
           { label:'Result Size', value:current?.result?.length??0, color:'#ef9f27' },
@@ -183,18 +183,18 @@ export default function TopologicalSortVisualizer() {
       </div>
 
       {current?.label && (
-        <div style={{ background:current.phase==='push'?'rgba(29,158,117,0.08)':'rgba(0,240,255,0.05)', border:`1px solid ${current.phase==='push'?'rgba(29,158,117,0.3)':'rgba(0,240,255,0.15)'}`, borderRadius:8, padding:'8px 14px', fontFamily:'var(--font-mono)', fontSize:11, color:current.phase==='push'?'#1d9e75':'#00f0ff' }}>
+        <div style={{ background:current.phase==='push'?'rgba(29,158,117,0.08)':'rgba(0,217,163,0.05)', border:`1px solid ${current.phase==='push'?'rgba(29,158,117,0.3)':'rgba(0,217,163,0.15)'}`, borderRadius:8, padding:'8px 14px', fontFamily:'var(--font-mono)', fontSize:11, color:current.phase==='push'?'#1d9e75':'#00d9a3' }}>
           {current.phase==='push'?'✓ ':'▶ '}{current.label || `Processing node ${current.current}`}
         </div>
       )}
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
         {/* DAG SVG */}
-        <div style={{ flex:2, background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,240,255,0.1)', borderRadius:12, overflow:'hidden', minWidth:280 }}>
+        <div style={{ flex:2, background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, overflow:'hidden', minWidth:280 }}>
           <svg width="100%" viewBox={`0 0 ${SVG_W} ${SVG_H}`} style={{ display:'block' }}>
             <defs>
               <marker id="topo-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-                <path d="M0,0 L0,6 L8,3 z" fill="rgba(0,240,255,0.4)" />
+                <path d="M0,0 L0,6 L8,3 z" fill="rgba(0,217,163,0.4)" />
               </marker>
             </defs>
             {EDGES.map(([u,v],i)=>{
@@ -204,7 +204,7 @@ export default function TopologicalSortVisualizer() {
               const isActive = current?.current===u && current?.checking===v;
               return (
                 <line key={i} x1={nu.x} y1={nu.y+50} x2={ex} y2={ey+50}
-                  stroke={isActive?'#ef9f27':'rgba(0,240,255,0.2)'} strokeWidth={isActive?2.5:1.5}
+                  stroke={isActive?'#ef9f27':'rgba(0,217,163,0.2)'} strokeWidth={isActive?2.5:1.5}
                   markerEnd="url(#topo-arrow)" style={{transition:'all 0.3s'}} />
               );
             })}
@@ -228,7 +228,7 @@ export default function TopologicalSortVisualizer() {
             <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#ff6b4a', letterSpacing:1, marginBottom:8 }}>CALL STACK</div>
             <div style={{ display:'flex', flexDirection:'column', gap:3, minHeight:60 }}>
               {[...(current?.callStack||[])].reverse().map((v,i)=>(
-                <div key={i} style={{ padding:'4px 10px', borderRadius:6, background:i===0?'rgba(0,240,255,0.12)':'rgba(255,107,74,0.08)', border:`1px solid ${i===0?'rgba(0,240,255,0.3)':'rgba(255,107,74,0.15)'}`, fontFamily:'var(--font-mono)', fontSize:12, fontWeight:700, color:i===0?'#00f0ff':'#ff6b4a', display:'flex', justifyContent:'space-between' }}>
+                <div key={i} style={{ padding:'4px 10px', borderRadius:6, background:i===0?'rgba(0,217,163,0.12)':'rgba(255,107,74,0.08)', border:`1px solid ${i===0?'rgba(0,217,163,0.3)':'rgba(255,107,74,0.15)'}`, fontFamily:'var(--font-mono)', fontSize:12, fontWeight:700, color:i===0?'#00d9a3':'#ff6b4a', display:'flex', justifyContent:'space-between' }}>
                   dfs({v}){i===0&&<span style={{fontSize:9,opacity:0.6}}>← top</span>}
                 </div>
               ))}
@@ -256,19 +256,19 @@ export default function TopologicalSortVisualizer() {
       />
 
       <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
-        <button onClick={start} style={btn('#00f0ff')}>▶ Run Topo Sort</button>
+        <button onClick={start} style={btn('#00d9a3')}>▶ Run Topo Sort</button>
         <button onClick={()=>setIsPlaying(p=>!p)} style={btn('#ff6b4a')}>{isPlaying?'⏸ Pause':'▶ Resume'}</button>
         <button onClick={()=>setStepIdx(p=>Math.min(p+1,steps.length-1))} style={btn('#ef9f27')}>⏭ Step</button>
         <div style={{ display:'flex', gap:4 }}>
           {[1,2,3,4].map(s=>(
-            <button key={s} onClick={()=>setSpeed(s)} style={{ padding:'3px 10px', borderRadius:6, border:speed===s?'1px solid #00f0ff':'1px solid rgba(0,240,255,0.15)', background:speed===s?'rgba(0,240,255,0.12)':'transparent', color:speed===s?'#00f0ff':'#5a7a9a', fontSize:11, fontFamily:'var(--font-mono)', cursor:'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
+            <button key={s} onClick={()=>setSpeed(s)} style={{ padding:'3px 10px', borderRadius:6, border:speed===s?'1px solid #00d9a3':'1px solid rgba(0,217,163,0.15)', background:speed===s?'rgba(0,217,163,0.12)':'transparent', color:speed===s?'#00d9a3':'#5a7a9a', fontSize:11, fontFamily:'var(--font-mono)', cursor:'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
           ))}
         </div>
         <button onClick={reset} style={btn('#ff2d78')}>↺ Reset</button>
       </div>
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
-        {[['#00f0ff','Current'],['#ff6b4a','In Call Stack'],['#ef9f27','Checking'],['#1d9e75','Finished']].map(([c,l])=>(
+        {[['#00d9a3','Current'],['#ff6b4a','In Call Stack'],['#ef9f27','Checking'],['#1d9e75','Finished']].map(([c,l])=>(
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:'50%', background:c+'44', border:`2px solid ${c}` }}/>
             <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>

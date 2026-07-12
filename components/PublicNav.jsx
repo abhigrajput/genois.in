@@ -18,7 +18,7 @@ export default function PublicNav() {
     <nav style={{
       position: 'sticky', top: 0, zIndex: 100,
       background: 'rgba(2,8,18,0.96)',
-      borderBottom: '1px solid rgba(0,240,255,0.08)',
+      borderBottom: '1px solid rgba(0,217,163,0.08)',
       backdropFilter: 'blur(20px)',
       padding: '0 24px',
       height: 56,
@@ -28,7 +28,7 @@ export default function PublicNav() {
     }}>
 
       <Link href="/landing" style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 800, textDecoration: 'none', flexShrink: 0 }}>
-        <span style={{ color: '#00f0ff' }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
+        <span style={{ color: '#00d9a3' }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
       </Link>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -45,7 +45,7 @@ export default function PublicNav() {
               style={{
                 position: 'absolute', top: 38, right: 0,
                 background: '#070f1f',
-                border: '1px solid rgba(0,240,255,0.15)',
+                border: '1px solid rgba(0,217,163,0.15)',
                 borderRadius: 12, padding: 8,
                 minWidth: 180, zIndex: 200,
                 boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
@@ -62,7 +62,7 @@ export default function PublicNav() {
                     display: 'flex', alignItems: 'center', gap: 10,
                     padding: '10px 12px', borderRadius: 8,
                     textDecoration: 'none',
-                    background: pathname === item.href ? 'rgba(0,240,255,0.06)' : 'transparent',
+                    background: pathname === item.href ? 'rgba(0,217,163,0.06)' : 'transparent',
                   }}>
                   <span style={{ fontSize: 16 }}>{item.icon}</span>
                   <div>
@@ -79,7 +79,7 @@ export default function PublicNav() {
           <Link href="/login" style={{ padding: '8px 18px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', color: '#e8e8ed', textDecoration: 'none', fontSize: 14, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
             Login
           </Link>
-          <Link href="/onboarding" style={{ padding: '8px 18px', borderRadius: 8, background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', textDecoration: 'none', fontSize: 14, fontFamily: 'var(--font-heading)', fontWeight: 700 }}>
+          <Link href="/onboarding" style={{ padding: '8px 18px', borderRadius: 8, background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', textDecoration: 'none', fontSize: 14, fontFamily: 'var(--font-heading)', fontWeight: 700 }}>
             Sign Up Free →
           </Link>
         </>
@@ -96,7 +96,7 @@ export default function PublicNav() {
         <div style={{
           position: 'fixed', top: 56, left: 0, right: 0,
           background: 'rgba(2,8,18,0.98)',
-          borderBottom: '1px solid rgba(0,240,255,0.08)',
+          borderBottom: '1px solid rgba(0,217,163,0.08)',
           padding: '12px 20px 20px',
           display: 'flex', flexDirection: 'column', gap: 8,
           zIndex: 99,
@@ -113,7 +113,7 @@ export default function PublicNav() {
             <Link href="/login" onClick={() => setMenuOpen(false)} style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', color: '#e8e8ed', textDecoration: 'none', fontSize: 15, fontFamily: 'var(--font-heading)', fontWeight: 600, textAlign: 'center' }}>
               Login
             </Link>
-            <Link href="/onboarding" onClick={() => setMenuOpen(false)} style={{ padding: '11px 14px', borderRadius: 8, background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', textDecoration: 'none', fontSize: 15, fontFamily: 'var(--font-heading)', fontWeight: 700, textAlign: 'center' }}>
+            <Link href="/onboarding" onClick={() => setMenuOpen(false)} style={{ padding: '11px 14px', borderRadius: 8, background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', textDecoration: 'none', fontSize: 15, fontFamily: 'var(--font-heading)', fontWeight: 700, textAlign: 'center' }}>
               Sign Up Free →
             </Link>
           </>

@@ -300,8 +300,8 @@ export default function SegmentTreeVisualizer() {
     const isCurrent = current.currNode === node;
     const isPath = current.activePath?.includes(node);
 
-    if (isCurrent) return '#00f0ff'; // glowing cyan
-    if (isPath) return '#00f0ff88';
+    if (isCurrent) return '#00d9a3'; // glowing cyan
+    if (isPath) return '#00d9a388';
 
     if (current.visited) {
       const status = current.visited[node];
@@ -314,11 +314,11 @@ export default function SegmentTreeVisualizer() {
   };
 
   const getEdgeColor = (from, to) => {
-    const isFromHl = getNodeColor(from) === '#00f0ff' || current.activePath?.includes(from);
-    const isToHl = getNodeColor(to) === '#00f0ff' || current.activePath?.includes(to);
+    const isFromHl = getNodeColor(from) === '#00d9a3' || current.activePath?.includes(from);
+    const isToHl = getNodeColor(to) === '#00d9a3' || current.activePath?.includes(to);
 
     if (isFromHl && isToHl) {
-      return current.activePath ? '#00f0ff' : '#ef9f27';
+      return current.activePath ? '#00d9a3' : '#ef9f27';
     }
 
     if (current.visited && current.visited[from] && current.visited[to]) {
@@ -328,7 +328,7 @@ export default function SegmentTreeVisualizer() {
       if (parentStat === 'partial' && childStat === 'partial') return '#ef9f27';
     }
 
-    return 'rgba(0, 240, 255, 0.12)';
+    return 'rgba(0, 217, 163, 0.12)';
   };
 
   const randomize = () => {
@@ -352,7 +352,7 @@ export default function SegmentTreeVisualizer() {
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
           { label: 'Total Range Sum', value: treeVals[1] ?? '—', color: '#1d9e75' },
-          { label: 'Leaf Nodes', value: 8, color: '#00f0ff' },
+          { label: 'Leaf Nodes', value: 8, color: '#00d9a3' },
           { label: 'Total Segment Nodes', value: 15, color: '#ff6b4a' },
           { label: 'Query Result', value: current.sum ?? '—', color: '#ef9f27' },
         ].map(s => (
@@ -365,23 +365,23 @@ export default function SegmentTreeVisualizer() {
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {/* Leaf Array Box Representation */}
-        <div style={{ width: '100%', background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 16 }}>
+        <div style={{ width: '100%', background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 16 }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 12 }}>UNDERLYING LEAF ARRAY (arr[])</div>
           <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
             {arr.map((val, idx) => {
               const isActive = current.activePath?.includes(idx + 8); // Nodes 8 to 15 are index 0 to 7
               const isQuery = current.visited && current.visited[idx + 8] === 'inside';
-              const color = isActive ? '#00f0ff' : isQuery ? '#1d9e75' : 'rgba(0,240,255,0.15)';
+              const color = isActive ? '#00d9a3' : isQuery ? '#1d9e75' : 'rgba(0,217,163,0.15)';
               return (
                 <div key={idx} style={{
                   flex: 1, maxWidth: 60, height: 48, borderRadius: 6,
                   border: `2px solid ${color}`,
-                  background: isActive ? 'rgba(0,240,255,0.06)' : isQuery ? 'rgba(29,158,117,0.06)' : 'rgba(10,15,30,0.6)',
+                  background: isActive ? 'rgba(0,217,163,0.06)' : isQuery ? 'rgba(29,158,117,0.06)' : 'rgba(10,15,30,0.6)',
                   display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                   transition: 'all 0.2s',
                 }}>
                   <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: '#5a7a9a' }}>idx={idx}</span>
-                  <span style={{ fontSize: 13, fontFamily: 'var(--font-mono)', color: isActive ? '#00f0ff' : '#e8e8ed', fontWeight: 'bold' }}>{val}</span>
+                  <span style={{ fontSize: 13, fontFamily: 'var(--font-mono)', color: isActive ? '#00d9a3' : '#e8e8ed', fontWeight: 'bold' }}>{val}</span>
                 </div>
               );
             })}
@@ -389,7 +389,7 @@ export default function SegmentTreeVisualizer() {
         </div>
 
         {/* SVG Segment Tree */}
-        <div style={{ flex: 1.5, minWidth: 320, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 16, overflow: 'auto', display: 'flex', justifyContent: 'center' }}>
+        <div style={{ flex: 1.5, minWidth: 320, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 16, overflow: 'auto', display: 'flex', justifyContent: 'center' }}>
           <svg width="640" height="240" style={{ display: 'block' }}>
             {/* Draw Links */}
             {EDGES.map((edge, i) => {
@@ -401,7 +401,7 @@ export default function SegmentTreeVisualizer() {
                   x1={fromLayout.x} y1={fromLayout.y}
                   x2={toLayout.x} y2={toLayout.y}
                   stroke={stroke}
-                  strokeWidth={stroke !== 'rgba(0, 240, 255, 0.12)' ? 2.5 : 1.5}
+                  strokeWidth={stroke !== 'rgba(0, 217, 163, 0.12)' ? 2.5 : 1.5}
                   style={{ transition: 'all 0.3s' }}
                 />
               );
@@ -412,13 +412,13 @@ export default function SegmentTreeVisualizer() {
               const id = parseInt(idStr);
               const val = getRenderedTreeVal(id);
               const nodeColor = getNodeColor(id);
-              const isHl = nodeColor === '#00f0ff';
+              const isHl = nodeColor === '#00d9a3';
               const textCol = isHl ? '#0d1424' : '#e8e8ed';
-              const fillVal = isHl ? '#00f0ff' : 'rgba(13,20,36,0.9)';
+              const fillVal = isHl ? '#00d9a3' : 'rgba(13,20,36,0.9)';
 
               return (
                 <g key={id}>
-                  {isHl && <circle cx={layout.x} cy={layout.y} r={22} fill="none" stroke="#00f0ff" strokeWidth={1.5} opacity={0.4} />}
+                  {isHl && <circle cx={layout.x} cy={layout.y} r={22} fill="none" stroke="#00d9a3" strokeWidth={1.5} opacity={0.4} />}
                   <circle cx={layout.x} cy={layout.y} r={18} fill={fillVal} stroke={nodeColor} strokeWidth={2} style={{ transition: 'all 0.3s' }} />
                   <text x={layout.x} y={layout.y + 4} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: 10, fill: textCol, fontWeight: 'bold', transition: 'all 0.3s' }}>
                     {val}
@@ -442,9 +442,9 @@ export default function SegmentTreeVisualizer() {
       />
 
       {/* Controls row */}
-      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,240,255,0.1)', borderRadius: 12, padding: 16 }}>
+      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 16 }}>
         {/* Query Controls */}
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center', borderRight: '1px solid rgba(0,240,255,0.1)', paddingRight: 16, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', borderRight: '1px solid rgba(0,217,163,0.1)', paddingRight: 16, flexWrap: 'wrap' }}>
           <span style={labelStyle}>Query Range:</span>
           <input type="number" min={0} max={7} value={queryL} onChange={e => setQueryL(Math.min(7, Math.max(0, parseInt(e.target.value) || 0)))} style={numStyle} />
           <span style={{ color: '#5a7a9a' }}>to</span>
@@ -459,7 +459,7 @@ export default function SegmentTreeVisualizer() {
           <input type="number" min={0} max={7} value={updateIdx} onChange={e => setUpdateIdx(Math.min(7, Math.max(0, parseInt(e.target.value) || 0)))} style={numStyle} />
           <span style={{ color: '#5a7a9a' }}>Value</span>
           <input type="number" min={0} max={100} value={updateVal} onChange={e => setUpdateVal(parseInt(e.target.value) || 0)} style={numStyle} />
-          <button onClick={startUpdateSimulation} style={btnStyle('#00f0ff')}>✏️ Update</button>
+          <button onClick={startUpdateSimulation} style={btnStyle('#00d9a3')}>✏️ Update</button>
         </div>
 
         <button onClick={randomize} style={{ ...btnStyle('#ef9f27'), marginLeft: 'auto' }}>🎲 Randomize</button>
@@ -468,7 +468,7 @@ export default function SegmentTreeVisualizer() {
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {[
-          { color: '#00f0ff', label: 'Currently visited node / Path of update' },
+          { color: '#00d9a3', label: 'Currently visited node / Path of update' },
           { color: '#1d9e75', label: 'Completely inside query range (matched segment)' },
           { color: '#ef9f27', label: 'Partially overlaps query range (sub-divided segment)' },
           { color: '#ff2d7840', label: 'Completely outside query range (ignored node)' },
@@ -501,8 +501,8 @@ export default function SegmentTreeVisualizer() {
 
 const numStyle = {
   width: 44,
-  background: 'rgba(0,240,255,0.04)',
-  border: '1px solid rgba(0,240,255,0.2)',
+  background: 'rgba(0,217,163,0.04)',
+  border: '1px solid rgba(0,217,163,0.2)',
   borderRadius: 6,
   padding: '5px',
   color: '#e8e8ed',

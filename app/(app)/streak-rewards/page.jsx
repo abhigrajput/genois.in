@@ -53,8 +53,8 @@ export default function StreakRewardsPage() {
       </div>
 
       {data.unclaimed.length > 0 && (
-        <div style={{ background: 'linear-gradient(135deg,rgba(0,240,255,0.08),rgba(255,107,74,0.04))', border: '1px solid rgba(0,240,255,0.3)', borderRadius: 14, padding: 24, marginBottom: 20 }}>
-          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#00f0ff', marginBottom: 12 }}>
+        <div style={{ background: 'linear-gradient(135deg,rgba(0,217,163,0.08),rgba(255,107,74,0.04))', border: '1px solid rgba(0,217,163,0.3)', borderRadius: 14, padding: 24, marginBottom: 20 }}>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: '#00d9a3', marginBottom: 12 }}>
             🎁 {data.unclaimed.length} reward{data.unclaimed.length > 1 ? 's' : ''} ready to claim
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
@@ -65,7 +65,7 @@ export default function StreakRewardsPage() {
               </div>
             ))}
           </div>
-          <button onClick={claimAll} disabled={claiming} style={{ width: '100%', padding: 12, borderRadius: 10, border: 'none', cursor: claiming ? 'wait' : 'pointer', background: 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+          <button onClick={claimAll} disabled={claiming} style={{ width: '100%', padding: 12, borderRadius: 10, border: 'none', cursor: claiming ? 'wait' : 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
             {claiming ? 'Claiming...' : 'Claim All Rewards →'}
           </button>
         </div>

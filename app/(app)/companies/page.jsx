@@ -30,7 +30,7 @@ export default function CompaniesPage() {
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
         {['all', 'service', 'product', 'startup'].map(t => (
-          <button key={t} onClick={() => setFilter(t)} style={{ padding: '7px 14px', borderRadius: 20, border: `1px solid ${filter === t ? 'rgba(0,240,255,0.4)' : 'rgba(255,255,255,0.08)'}`, background: filter === t ? 'rgba(0,240,255,0.08)' : 'transparent', color: filter === t ? '#00f0ff' : '#8a9ab0', cursor: 'pointer', fontSize: 12, fontFamily: 'var(--font-heading)', fontWeight: 600, textTransform: 'capitalize' }}>
+          <button key={t} onClick={() => setFilter(t)} style={{ padding: '7px 14px', borderRadius: 20, border: `1px solid ${filter === t ? 'rgba(0,217,163,0.4)' : 'rgba(255,255,255,0.08)'}`, background: filter === t ? 'rgba(0,217,163,0.08)' : 'transparent', color: filter === t ? '#00d9a3' : '#8a9ab0', cursor: 'pointer', fontSize: 12, fontFamily: 'var(--font-heading)', fontWeight: 600, textTransform: 'capitalize' }}>
             {t === 'all' ? 'All' : TIER_LABELS[t]}
           </button>
         ))}
@@ -38,7 +38,7 @@ export default function CompaniesPage() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))', gap: 14 }}>
         {filtered.map(c => (
-          <button key={c.slug} onClick={() => router.push(`/companies/${c.slug}`)} style={{ padding: 18, borderRadius: 14, border: '1px solid rgba(0,240,255,0.1)', background: '#070f1f', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s' }}>
+          <button key={c.slug} onClick={() => router.push(`/companies/${c.slug}`)} style={{ padding: 18, borderRadius: 14, border: '1px solid rgba(0,217,163,0.1)', background: '#070f1f', cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
               <div style={{ fontSize: 32 }}>{c.logo}</div>
               <div>

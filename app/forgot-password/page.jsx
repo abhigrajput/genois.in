@@ -30,7 +30,7 @@ export default function ForgotPasswordPage() {
       <div style={{ width: '100%', maxWidth: 400 }}>
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, marginBottom: 8 }}>
-            <span style={{ color: '#00f0ff' }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
+            <span style={{ color: '#00d9a3' }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
           </div>
           <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>
             Forgot Password?
@@ -49,12 +49,12 @@ export default function ForgotPasswordPage() {
             <div style={{ color: '#5a7a9a', fontSize: 14, marginBottom: 20, lineHeight: 1.6 }}>
               If <strong style={{ color: '#e8e8ed' }}>{email}</strong> is registered we have sent a reset link. Check your inbox and spam folder.
             </div>
-            <Link href="/login" style={{ color: '#00f0ff', textDecoration: 'none', fontSize: 14, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
+            <Link href="/login" style={{ color: '#00d9a3', textDecoration: 'none', fontSize: 14, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
               ← Back to Login
             </Link>
           </div>
         ) : (
-          <div style={{ background: '#070f1f', border: '1px solid rgba(0,240,255,0.12)', borderRadius: 14, padding: 28 }}>
+          <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.12)', borderRadius: 14, padding: 28 }}>
             <div style={{ marginBottom: 16 }}>
               <div style={{ fontSize: 12, color: '#5a7a9a', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>EMAIL ADDRESS</div>
               <input
@@ -63,7 +63,7 @@ export default function ForgotPasswordPage() {
                 onChange={e => setEmail(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && submit()}
                 placeholder="your@email.com"
-                style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,240,255,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,217,163,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
               />
             </div>
 
@@ -73,7 +73,7 @@ export default function ForgotPasswordPage() {
               </div>
             )}
 
-            <button onClick={submit} disabled={loading} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: loading ? 'rgba(0,240,255,0.2)' : 'linear-gradient(135deg,#00f0ff,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, marginBottom: 16 }}>
+            <button onClick={submit} disabled={loading} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: loading ? 'rgba(0,217,163,0.2)' : 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, marginBottom: 16 }}>
               {loading ? 'Sending...' : 'Send Reset Link →'}
             </button>
 
