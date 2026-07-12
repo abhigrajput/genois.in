@@ -5,11 +5,11 @@ import toast from 'react-hot-toast';
 import MarkdownRenderer from '@/components/blog/MarkdownRenderer';
 
 const TOPIC_COLORS = {
-  arrays: '#00d9a3', strings: '#ff6b4a', linkedlist: '#1d9e75',
-  trees: '#ef9f27', graphs: '#ff2d78', dp: '#a855f7',
-  greedy: '#ffb020', sorting: '#00b389', searching: '#10b981',
-  backtracking: '#ec4899', heap: '#f97316', trie: '#8b5cf6',
-  'system-design': '#64748b', other: '#6b7280'
+  arrays: '#00d9a3', strings: '#2ee6b0', linkedlist: '#1d9e75',
+  trees: '#34d399', graphs: '#10b981', dp: '#14b8a6',
+  greedy: '#6ee7b7', sorting: '#00b389', searching: '#059669',
+  backtracking: '#5eead4', heap: '#4ade80', trie: '#22c55e',
+  'system-design': '#0d9488', other: '#3f7d6e'
 };
 
 const DIFFICULTY_COLORS = {
