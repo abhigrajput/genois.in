@@ -399,6 +399,16 @@ export default function VoiceInterviewPage() {
   const startListening = async () => {
     if (typeof window === 'undefined') return;
 
+    // Auto-cancel any in-flight question TTS the instant the mic is tapped, so
+    // the mentor's audio can't bleed into the transcript. If it was still
+    // mid-sentence, tapping over it still reads as an interrupt — flash the
+    // micro-animation; otherwise just clear any queued speech silently.
+    if (isAISpeakingRef.current) {
+      triggerInterrupt();
+    } else {
+      try { window.speechSynthesis?.cancel(); } catch {}
+    }
+
     // Seed the dedup ref from whatever's already transcribed so a resumed
     // ("Tap to add more") session appends instead of overwriting. A fresh
     // question resets transcript to '' first, so this starts empty then.
