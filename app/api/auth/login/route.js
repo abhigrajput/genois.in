@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { NextResponse } from 'next/server';
 import { getAdminClient } from '@/lib/supabaseAdmin';
-import { generateToken } from '@/lib/auth';
+import { generateToken, sessionCookie } from '@/lib/auth';
 import { successResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse, isLockedOut, recordFailedLogin, clearFailedLogins, lockoutResponse } from '@/lib/rateLimit';
 import { csrfCheck, getClientIp } from '@/lib/security';
@@ -117,11 +117,7 @@ export async function POST(request) {
       token,
     }, 'Login successful');
 
-    const isProduction = process.env.NODE_ENV === 'production';
-    res.headers.set(
-      'Set-Cookie',
-      `genois_token=${token}; Path=/; HttpOnly; ${isProduction ? 'Secure; ' : ''}SameSite=Strict; Max-Age=${7 * 24 * 3600}`
-    );
+    res.headers.set('Set-Cookie', sessionCookie(token));
 
     return res;
   } catch (error) {

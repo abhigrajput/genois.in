@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { Resend } from 'resend';
 import crypto from 'crypto';
 import { getAdminClient } from '@/lib/supabaseAdmin';
-import { generateToken } from '@/lib/auth';
+import { generateToken, sessionCookie } from '@/lib/auth';
 import { successResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { csrfCheck, checkPasswordStrength, getClientIp } from '@/lib/security';
@@ -221,7 +221,12 @@ export async function POST(request) {
     const token = await generateToken({ userId: user.id });
     const { password_hash: _drop, ...safeUser } = user;
 
-    return successResponse({ user: safeUser, token }, 'Account created successfully', 201);
+    // FIX P4: set the httpOnly session cookie so post-signup requests and
+    // middleware gating ride the XSS-inaccessible cookie, not just the body
+    // token the client copies into localStorage.
+    const res = successResponse({ user: safeUser, token }, 'Account created successfully', 201);
+    res.headers.set('Set-Cookie', sessionCookie(token));
+    return res;
   } catch (error) {
     // FIX 09: Sanitize errors — log the real cause, return a specific,
     // human-readable reason. Never a bare 500, never a raw stack.

@@ -1,4 +1,4 @@
-import { getUserFromRequest, generateToken } from '@/lib/auth';
+import { getUserFromRequest, generateToken, sessionCookie } from '@/lib/auth';
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
@@ -22,7 +22,10 @@ export async function POST(request) {
     if (!user) return errorResponse('User not found', 401);
 
     const newToken = generateToken({ userId: user.id });
-    return successResponse({ token: newToken });
+    // FIX P4: rotate the httpOnly cookie alongside the body token.
+    const res = successResponse({ token: newToken });
+    res.headers.set('Set-Cookie', sessionCookie(newToken));
+    return res;
   } catch (error) {
     return errorResponse('Internal server error', 500);
   }

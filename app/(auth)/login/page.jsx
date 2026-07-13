@@ -145,13 +145,14 @@ export default function LoginPage() {
       }
 
       // ── State & routing synchronization ──
-      // 1. Persist the token to every place the app reads it BEFORE navigating:
-      //    localStorage (lib/api Authorization header) + a non-httpOnly cookie
-      //    (middleware/edge route guards). These writes are synchronous.
+      // 1. Persist the token for the localStorage-based Bearer path. The
+      //    middleware/edge cookie is now the httpOnly `genois_token` set by the
+      //    /api/auth/login response (FIX P4), so we no longer write a
+      //    JS-readable duplicate cookie here — that copy was XSS-exfiltratable
+      //    and, being shadowed by the httpOnly cookie, was already a no-op.
       if (typeof window !== 'undefined') {
         localStorage.setItem('genois_token', token);
         localStorage.setItem('genois_plan', user.plan || 'spectator');
-        document.cookie = `genois_token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
       }
       // 2. Hydrate the global store so any client subscriber sees the session.
       setAuth(user, token, progress, score, skill);
