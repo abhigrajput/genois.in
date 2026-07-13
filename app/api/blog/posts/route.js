@@ -57,14 +57,18 @@ export async function GET(request) {
       query = query.eq('author_id', authorId);
     }
     if (search) {
-      // PostgREST .or() takes a filter expression. We strip characters that
-      // could let attacker-controlled `search` break out of the intended
-      // grouping (`,` `(` `)` `*` `%`) and cap length so a giant string can't
-      // be used to DoS the query parser. The ilike wildcards are reintroduced
-      // around the cleaned value.
+      // PostgREST .or() takes a raw filter *string*, not a bound parameter, so
+      // any attacker-controlled value must be stripped of every char that
+      // carries meaning in the filter grammar before interpolation:
+      //   ,  → starts a new OR clause (condition injection)
+      //   () → grouping / nested and()/or()
+      //   "  → value quoting (lets a value smuggle reserved chars back in)
+      //   \  → escape char inside a quoted value
+      //   *% → ilike wildcards (re-added by us around the cleaned value)
+      // Length is capped so a giant string can't DoS the query parser.
       const cleanSearch = String(search)
         .slice(0, 100)
-        .replace(/[,()*%]/g, '')
+        .replace(/[,()"\\*%]/g, '')
         .trim();
       if (cleanSearch) {
         query = query.or(

@@ -41,12 +41,10 @@ const FEATURES = [
   { icon: TrendingUp, title: 'Progress Analytics', desc: 'See the days you shipped stack up. Proof that consistency is working.' },
 ];
 
-const PLANS = [
-  { name: 'Spectator', price: '₹0',   cadence: '/forever', desc: 'Explore the platform free.',     features: ['Full engine unlocked 30 days', '1 career domain', 'AI daily milestone', 'Instant AI code review'], cta: 'Start Free',       highlight: false },
-  { name: 'Player',    price: '₹199', cadence: '/month',   desc: 'Get serious about prep.',        features: ['Everything in Spectator', '3 domains at once', 'Skill-identity tracking', 'College leaderboard'],  cta: 'Choose Player',    highlight: false },
-  { name: 'Performer', price: '₹299', cadence: '/month',   desc: 'The complete placement engine.', features: ['Everything in Player', 'AI voice mock interviews', '6-axis skill identity', 'Recruiter profile + Job-Ready badge'], cta: 'Choose Performer', highlight: true  },
-  { name: 'Dominator', price: '₹499', cadence: '/month',   desc: 'For elite placement goals.',     features: ['Everything in Performer', 'GitHub-verified commit sync', 'Company-specific prep (TCS, Infosys…)', 'Direct mentor escalation'], cta: 'Go Dominator', highlight: false },
-];
+// NOTE: The paid-plan matrix (Spectator/Player/Performer/Dominator @ ₹0/199/299/499)
+// is switched OFF for the Placement Beta and has been removed from this page's UI.
+// The billing data + Razorpay wiring + PermissionGate remain intact in the backend
+// (/api/payment/*, lib) — dormant, not deleted — so paid tiers can be re-enabled later.
 
 // The single day-1 task the interactive demo walks through.
 const DEMO_TASK = {
@@ -297,24 +295,23 @@ export default function LandingPage() {
             {/* Left — copy */}
             <div className="gen-hero-copy">
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: SP.xs, padding: '6px 14px', borderRadius: 999, background: 'rgba(255,107,74,0.1)', border: `1px solid ${CORAL}55`, color: CORAL, fontSize: 12, fontWeight: 600, marginBottom: 26, fontFamily: 'var(--font-mono)', letterSpacing: 0.5 }}>
-                <Rocket size={13} strokeWidth={2} color={CORAL} /> JUST LAUNCHED · FIRST 100 SEATS
+                <Rocket size={13} strokeWidth={2} color={CORAL} /> PLACEMENT BETA · FIRST 100 SEATS
               </div>
-              <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(40px, 7vw, 82px)', fontWeight: 700, lineHeight: 0.98, letterSpacing: -2, margin: '0 0 22px', color: TEXT }}>
-                You don&apos;t lack<br />resources.<br />
-                <span style={{ color: TEAL }}>You lack a plan</span><br />for today.
+              <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(38px, 6.6vw, 78px)', fontWeight: 700, lineHeight: 0.98, letterSpacing: -2, margin: '0 0 22px', color: TEXT }}>
+                The ATS-bypassing<br /><span style={{ color: TEAL }}>career OS</span><br />for engineers.
               </h1>
               <p style={{ fontSize: 'clamp(16px, 2vw, 18px)', color: '#b6b6c2', lineHeight: 1.6, margin: '0 0 18px', maxWidth: 520 }}>
-                Every student has a thousand PDFs, ten YouTube playlists, and a 500-problem sheet. That&apos;s not why placements go wrong. They go wrong because on any given morning, <span style={{ color: TEXT, fontWeight: 600 }}>you don&apos;t know what to actually do next.</span>
+                Your resume dies in a keyword filter before a human ever reads it. GENOIS flips that: you build a <span style={{ color: TEXT, fontWeight: 600 }}>mathematical, GitHub-verified skill identity</span> that recruiters can open and actually trust — proof, not keywords.
               </p>
               <p style={{ fontSize: 15, color: '#cbccd6', lineHeight: 1.6, margin: '0 0 32px', maxWidth: 520, fontWeight: 500 }}>
-                GENOIS gives you <span style={{ color: TEAL_LT, fontWeight: 700 }}>one milestone a day</span> — the single right task for your level, your target company, your timeline. Open it. Finish it. That&apos;s the whole system.
+                One <span style={{ color: TEAL_LT, fontWeight: 700 }}>verified profile</span>, built from your real coding, test and project performance — with live AI voice interviews, GitHub-synced commits, and a recruiter-ready page at <span style={{ color: TEAL_LT, fontWeight: 600 }}>genois.in/u/you</span>.
               </p>
               <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: SP.lg }}>
                 <Link href="/signup" className="gen-press" style={{
                   padding: '15px 30px', borderRadius: 12, textDecoration: 'none', background: TEAL, color: BG,
                   fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15,
                   display: 'inline-flex', alignItems: 'center', gap: 8, boxShadow: '0 12px 34px rgba(0,217,163,0.32)',
-                }}>Get My Daily Milestone <ArrowRight size={17} strokeWidth={2.5} /></Link>
+                }}>Claim My Beta Seat <ArrowRight size={17} strokeWidth={2.5} /></Link>
                 <button onClick={startDemo} className="gen-press" style={{
                   padding: '15px 26px', borderRadius: 12, cursor: 'pointer',
                   background: 'transparent', border: `1px solid rgba(0,217,163,0.3)`, color: TEAL_LT,
@@ -494,46 +491,30 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ═══ PRICING ═══ */}
+        {/* ═══ BETA GATE — no price matrix during the Placement Beta ═══ */}
         <section id="pricing" style={{ padding: 'clamp(56px, 9vw, 88px) clamp(20px, 5vw, 28px)', background: BG2, borderTop: '1px solid rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-          <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-            <SectionHeader eyebrow="Pricing" title="Start free. Upgrade when the streak is real." sub="Every tier runs on the same engine — live voice interviews, GitHub-verified commits, and a 6-axis skill identity. Not a prompt with a logo on it." />
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 18 }}>
-              {PLANS.map((p, i) => (
-                <div key={p.name} data-reveal data-reveal-delay={(i % 4) + 1} style={{
-                  padding: 'clamp(24px, 3vw, 28px)', borderRadius: 18, position: 'relative', background: p.highlight ? 'rgba(0,217,163,0.06)' : BG,
-                  border: `1px solid ${p.highlight ? 'rgba(0,217,163,0.45)' : 'rgba(255,255,255,0.08)'}`,
-                  boxShadow: p.highlight ? '0 0 44px rgba(0,217,163,0.12)' : 'none',
-                  display: 'flex', flexDirection: 'column',
-                }}>
-                  {p.highlight && <div style={{ position: 'absolute', top: -11, left: 24, padding: '4px 12px', borderRadius: 999, background: TEAL, color: BG, fontSize: 10, fontWeight: 700, fontFamily: 'var(--font-mono)', letterSpacing: 1, whiteSpace: 'nowrap' }}>MOST POPULAR</div>}
-                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: TEXT, marginBottom: 6 }}>{p.name}</div>
-                  <div style={{ fontSize: 13, color: '#a6a6b3', marginBottom: 18, minHeight: 36, lineHeight: 1.4 }}>{p.desc}</div>
-                  <div style={{ marginBottom: SP.md }}>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 38, fontWeight: 800, color: TEXT, letterSpacing: -1 }}>{p.price}</span>
-                    <span style={{ color: MUTED, fontSize: 14, marginLeft: 4 }}>{p.cadence}</span>
-                  </div>
-                  <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px', flex: 1 }}>
-                    {p.features.map(f => (
-                      <li key={f} style={{ display: 'flex', gap: 10, marginBottom: 11, color: '#cbccd6', fontSize: 13, lineHeight: 1.4, alignItems: 'flex-start' }}>
-                        <span className="gen-bullet" style={{ marginTop: 6 }} />{f}
-                      </li>
-                    ))}
-                  </ul>
-                  <Link href="/signup" className="gen-press" style={{
-                    display: 'block', textAlign: 'center', padding: '12px 18px', borderRadius: 10,
-                    background: p.highlight ? TEAL : 'rgba(255,255,255,0.05)',
-                    color: p.highlight ? BG : TEXT,
-                    fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14,
-                    border: p.highlight ? 'none' : '1px solid rgba(255,255,255,0.12)',
-                    textDecoration: 'none', boxShadow: p.highlight ? '0 8px 22px rgba(0,217,163,0.3)' : 'none',
-                  }}>{p.cta}</Link>
+          <div style={{ maxWidth: 820, margin: '0 auto', textAlign: 'center' }} data-reveal>
+            <div style={{ display: 'flex', justifyContent: 'center' }}><Eyebrow align="center">Pricing</Eyebrow></div>
+            <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(26px, 4vw, 40px)', fontWeight: 700, color: TEXT, margin: '0 0 16px', lineHeight: 1.1, letterSpacing: -1 }}>
+              No plans. No card. <span style={{ color: TEAL }}>Just a beta gate.</span>
+            </h2>
+            <p style={{ color: '#a6a6b3', fontSize: 'clamp(15px, 1.8vw, 17px)', lineHeight: 1.65, margin: '0 auto 30px', maxWidth: 560 }}>
+              We&apos;re onboarding the first 100 engineers by hand. During the beta the entire engine —
+              live voice interviews, GitHub-verified commit sync, and your 6-axis skill identity — is
+              fully unlocked, free. Paid tiers return later; beta testers keep founder pricing.
+            </p>
+            <Link href="/signup" className="gen-press" style={{
+              display: 'inline-flex', alignItems: 'center', gap: 10,
+              padding: '16px 38px', borderRadius: 12, textDecoration: 'none', background: TEAL, color: BG,
+              fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, boxShadow: '0 14px 36px rgba(0,217,163,0.32)',
+            }}>Apply for Free Beta Access <ArrowRight size={18} strokeWidth={2.5} /></Link>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: '10px 20px', flexWrap: 'wrap', marginTop: 22 }}>
+              {['Every feature unlocked', 'No credit card', 'Set up in 60 seconds'].map(t => (
+                <div key={t} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: MUTED, whiteSpace: 'nowrap' }}>
+                  <span className="gen-bullet" />{t}
                 </div>
               ))}
             </div>
-            <p style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: MUTED, fontSize: 12.5, marginTop: 22 }}>
-              <Zap size={13} strokeWidth={2} color={AMBER} /> Payments launching soon — start your 30-day free trial today, no card required.
-            </p>
           </div>
         </section>
 
@@ -576,7 +557,7 @@ export default function LandingPage() {
           </div>
           <nav style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }} aria-label="Footer">
             {[
-              { title: 'Product', links: [{ l: 'How it works', h: '#how' }, { l: 'Features', h: '#features' }, { l: 'Pricing', h: '#pricing' }, { l: 'Blog', h: '/blog' }] },
+              { title: 'Product', links: [{ l: 'How it works', h: '#how' }, { l: 'Features', h: '#features' }, { l: 'Beta Access', h: '#pricing' }, { l: 'Blog', h: '/blog' }] },
               { title: 'Company', links: [{ l: 'Login', h: '/login' }, { l: 'Sign up', h: '/signup' }, { l: 'Privacy', h: '/privacy' }, { l: 'Terms', h: '/terms' }] },
             ].map(col => (
               <div key={col.title}>

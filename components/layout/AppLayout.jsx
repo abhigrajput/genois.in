@@ -7,7 +7,7 @@ import { authAPI } from '@/lib/api';
 import NotificationBell from '@/components/NotificationBell';
 import DailyCheckIn from '@/components/DailyCheckIn';
 import {
-  Home, Calendar, FileText, Map, Code2, Play, Bot, Mic, Zap, User, CreditCard,
+  Home, Calendar, FileText, Map, Code2, Play, Bot, Mic, Zap, User, Rocket,
   Flame, LogOut, Menu, X, PanelLeftClose, PanelLeftOpen, FolderGit2, Brain,
 } from 'lucide-react';
 
@@ -32,7 +32,7 @@ const NAV_ITEMS = [
   { group: 'PRACTICE', href:'/voice-interview', label:'Voice Interview', icon:Mic },
   { group: 'PRACTICE', href:'/ai-vs-human',     label:'AI vs Human',     icon:Zap },
   { group: 'ACCOUNT',  href:'/profile',         label:'Profile',         icon:User },
-  { group: 'ACCOUNT',  href:'/subscription',    label:'Subscription',    icon:CreditCard },
+  { group: 'ACCOUNT',  href:'/subscription',    label:'Beta Access',     icon:Rocket },
 ];
 
 const DOMAIN_LABELS = {

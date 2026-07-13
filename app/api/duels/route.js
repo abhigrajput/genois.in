@@ -8,6 +8,16 @@ export async function GET(request) {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
     if (!await rateLimit(`api_${payload.userId}`, 5, 60000)) return rateLimitResponse();
+
+    // `.or()` interpolates userId into a raw PostgREST filter string. The id
+    // comes from a server-signed JWT (so it can't normally be tampered with),
+    // but we still constrain it to the UUID grammar before it touches the
+    // filter — defense in depth against a mis-issued/legacy token smuggling
+    // filter control chars (`,` `.` `()`) into the query.
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!UUID_RE.test(String(payload.userId || ''))) {
+      return errorResponse('Invalid session', 401);
+    }
     const supabase = getAdminClient();
 
     const { data: duels } = await supabase

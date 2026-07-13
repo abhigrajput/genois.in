@@ -2,107 +2,45 @@
 import { useRouter } from 'next/navigation';
 
 // ─── GENOIS Green System — dark slate architecture ───────────────────────────
-// Single-accent green on a slate-900 / slate-800 surface stack. No per-plan
-// rainbow colors, no raw gradients, no legacy indigo/purple leftovers.
 const BG900 = '#0f172a'; // slate-900 — master page background
-const BG800 = '#1e293b'; // slate-800 — internal plan cards
+const BG800 = '#1e293b'; // slate-800 — internal cards
 const BORDER = 'rgba(148,163,184,0.18)'; // slate-400 @ low alpha — clean borders
 const GREEN = '#00d9a3'; // GENOIS green — primary action / accent
 const ON_GREEN = '#0f172a'; // high-contrast dark text on green (WCAG AA ~10:1)
 const TEXT = '#e2e8f0'; // slate-200 — primary copy
-const TEXT_STRONG = '#f8fafc'; // slate-50 — headings / moat features
+const TEXT_STRONG = '#f8fafc'; // slate-50 — headings
 const MUTED = '#94a3b8'; // slate-400 — secondary copy
 
-// 4px-based spacing scale (p-4 / p-6 / space-y-4 / space-y-6 equivalents).
+// 4px-based spacing scale.
 const SP = { 1: 4, 2: 8, 3: 12, 4: 16, 6: 24, 8: 32 };
 
-// ─── Plans ───────────────────────────────────────────────────────────────────
-// PRESERVED EXACTLY as wired to billing/webhooks: names + prices + periods.
+// ─── RETAINED, INTENTIONALLY UNRENDERED ──────────────────────────────────────
+// Paid tiers are OFF for the Placement Beta. The plan data, Razorpay wiring
+// (/api/payment/*), PermissionGate and subscription status/activate/cancel APIs
+// are all left intact and dormant — nothing here deletes the ability to charge.
+// Re-enabling paid billing = re-rendering a plan matrix from this constant.
 //   Spectator ₹0 · Player ₹199 · Performer ₹299 · Dominator ₹499
-// Only the feature copy (anti-"ChatGPT wrapper" proof) and visuals changed.
-// Every claim below maps to a shipped surface: /voice-interview, /github (sync),
-// /analytics/skill-identity, /certificate, /u/[username] recruiter profiles,
-// /mentors, /companies (TCS/Infosys/Wipro), /projects, /referral.
-const plans = [
-  {
-    name: 'Spectator',
-    price: '₹0',
-    period: '/forever',
-    highlight: false,
-    features: [
-      { label: 'The full engine, unlocked for 30 days — no card', moat: true },
-      { label: 'Pick 1 of 10 career domains' },
-      { label: 'AI-generated 30-day daily roadmap' },
-      { label: 'Daily coding challenge with instant AI code review', moat: true },
-      { label: 'Daily test — 5 AI-generated questions' },
-      { label: 'Domain AI chatbot + auto-generated AI notes' },
-      { label: 'Guided, step-by-step real-project builder' },
-      { label: '2AM Anxiety Chat — we answer when you panic' },
-    ],
-  },
-  {
-    name: 'Player',
-    price: '₹199',
-    period: '/month',
-    highlight: false,
-    features: [
-      { label: 'Everything in Spectator' },
-      { label: '3 domains active simultaneously' },
-      { label: 'Daily + weekly adaptive tests' },
-      { label: 'Coding challenges with guided hints' },
-      { label: 'Skill-identity tracking — a profile, not a chat log', moat: true },
-      { label: 'Streak tracker + weekly progress analytics' },
-      { label: 'College leaderboard ranking' },
-    ],
-  },
-  {
-    name: 'Performer',
-    price: '₹299',
-    period: '/month',
-    highlight: true,
-    badge: 'MOST POPULAR',
-    features: [
-      { label: 'Everything in Player' },
-      { label: 'All 10 domains — switch anytime' },
-      { label: 'Real-time AI Voice Mock Interviews — a prompt can’t grade how you speak', moat: true },
-      { label: '6-axis Skill Identity radar built from your real performance', moat: true },
-      { label: 'AI Mentor — 5 expert modes that read your actual scores' },
-      { label: 'Public recruiter profile + verifiable Job-Ready badge', moat: true },
-      { label: 'Global + college + domain leaderboards' },
-      { label: '26 unique projects per domain' },
-    ],
-  },
-  {
-    name: 'Dominator',
-    price: '₹499',
-    period: '/month',
-    highlight: false,
-    badge: 'BEST VALUE',
-    features: [
-      { label: 'Everything in Performer' },
-      { label: 'GitHub-verified commit sync — proof you shipped, not just studied', moat: true },
-      { label: 'AI placement-strategy session, personalised to you', moat: true },
-      { label: 'Company-specific prep — TCS, Infosys, Wipro & more' },
-      { label: 'Referral rewards — refer a friend, get a free month' },
-      { label: 'Private top-performer community + direct mentor escalation' },
-      { label: 'Extended AI review across all 26 projects' },
-      { label: 'Shareable annual report + AI LinkedIn recommendation' },
-    ],
-  },
+const RETAINED_PLANS = [
+  { name: 'Spectator', price: '₹0', period: '/forever' },
+  { name: 'Player', price: '₹199', period: '/month' },
+  { name: 'Performer', price: '₹299', period: '/month' },
+  { name: 'Dominator', price: '₹499', period: '/month' },
 ];
 
-// The four proof points that a plain chatbot structurally cannot replicate.
-const PROOF_CHIPS = [
-  'Live AI voice interview panel',
-  'GitHub-verified commit sync',
-  '6-axis skill identity',
-  'Recruiter-facing public profile',
+// The four proof points a plain chatbot structurally cannot replicate — each maps
+// to a SHIPPED surface (/voice-interview, /api/github/sync,
+// /api/analytics/skill-identity, /u/[username]).
+const BETA_INCLUDES = [
+  { icon: '🎙️', title: 'Live AI voice mock interviews', body: 'A spoken panel that grades how you actually speak — accuracy, clarity, confidence.' },
+  { icon: '🔗', title: 'GitHub-verified commit sync', body: 'Your real repos, stars and commits, pulled in as proof you shipped.' },
+  { icon: '📊', title: '6-axis skill identity', body: 'A mathematical profile built from your real test, coding and project scores.' },
+  { icon: '🪪', title: 'Recruiter-facing public profile', body: 'A shareable genois.in/u/ page a recruiter can open and trust.' },
 ];
 
 export default function SubscriptionPage() {
   const router = useRouter();
 
-  // Every backend trigger on this page — preserved exactly as originally wired.
+  // Only backend trigger on this page — preserved exactly as originally wired.
   const goToDashboard = () => router.push('/dashboard');
 
   return (
@@ -112,243 +50,119 @@ export default function SubscriptionPage() {
         background: BG900,
         width: '100%',
         borderRadius: 20,
-        padding: SP[6],
+        padding: 'clamp(16px, 3vw, 24px)',
         paddingBottom: SP[8] + SP[6],
+        boxSizing: 'border-box',
+        overflowX: 'hidden',
       }}
     >
       {/* ─── Header ─────────────────────────────────────────────────────────── */}
       <div style={{ marginBottom: SP[6] }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: GREEN, letterSpacing: 1.5, marginBottom: SP[2] }}>
+          GENOIS PLACEMENT BETA
+        </div>
         <h1
           style={{
             fontFamily: 'var(--font-heading)',
-            fontSize: 'clamp(24px, 5vw, 30px)',
+            fontSize: 'clamp(22px, 5vw, 30px)',
             fontWeight: 800,
             color: TEXT_STRONG,
             margin: 0,
             marginBottom: SP[2],
             letterSpacing: -0.5,
+            lineHeight: 1.1,
           }}
         >
-          Subscription Plans
+          You&apos;re early. Everything is unlocked.
         </h1>
-        <p style={{ color: MUTED, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
-          Pick your level. Cancel anytime. Every plan is built on the engine below —
-          not a prompt with a logo on it.
+        <p style={{ color: MUTED, fontSize: 14, margin: 0, lineHeight: 1.6, maxWidth: 620 }}>
+          There are no plans to pick and nothing to pay during the beta. Every feature below is
+          already active on your account — this page just confirms it.
         </p>
       </div>
 
-      {/* ─── Anti-"wrapper" proof strip ─────────────────────────────────────── */}
+      {/* ─── The gate ───────────────────────────────────────────────────────── */}
       <div
         style={{
-          background: BG800,
-          border: `1px solid ${BORDER}`,
-          borderRadius: 16,
-          padding: SP[6],
+          background: `linear-gradient(160deg, rgba(0,217,163,0.07), ${BG800})`,
+          border: '1px solid rgba(0,217,163,0.4)',
+          borderRadius: 18,
+          padding: 'clamp(20px, 4vw, 32px)',
           marginBottom: SP[6],
+          boxSizing: 'border-box',
         }}
       >
-        <div
+        <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(18px,3vw,22px)', fontWeight: 800, color: TEXT_STRONG, marginBottom: SP[2], letterSpacing: -0.5 }}>
+          GENOIS Placement Beta — full access, ₹0
+        </div>
+        <p style={{ color: MUTED, fontSize: 13.5, margin: `0 0 ${SP[6]}px`, maxWidth: 560, lineHeight: 1.6 }}>
+          We&apos;re upgrading payment infrastructure before launch. Until it&apos;s live, all four tiers
+          are fully unlocked at no cost and your progress is safe. Keep building — we&apos;ll notify you
+          well before paid billing returns.
+        </p>
+        {/* Solid GENOIS green + high-contrast dark text (WCAG AA). Preserves the only
+            existing backend trigger: router → /dashboard. */}
+        <button
+          onClick={goToDashboard}
           style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: 11,
-            letterSpacing: 1.5,
-            textTransform: 'uppercase',
-            color: GREEN,
-            marginBottom: SP[3],
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: SP[2],
+            padding: '15px 32px',
+            borderRadius: 12,
+            border: 'none',
+            cursor: 'pointer',
+            background: GREEN,
+            color: ON_GREEN,
+            fontFamily: 'var(--font-heading)',
+            fontSize: 15,
+            fontWeight: 800,
+            boxShadow: '0 12px 34px rgba(0,217,163,0.28)',
           }}
         >
-          Not a ChatGPT wrapper
-        </div>
-        <p style={{ color: TEXT, fontSize: 14, lineHeight: 1.7, margin: 0, marginBottom: SP[4], maxWidth: 620 }}>
-          A single prompt can’t run a live voice-interview panel, verify your GitHub
-          commits, track a 6-axis skill identity across 90 days, or hand a recruiter a
-          public profile. GENOIS is the architecture around the model — that’s the part
-          a copy-paste can’t clone.
-        </p>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: SP[2] }}>
-          {PROOF_CHIPS.map((chip) => (
-            <span
-              key={chip}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: SP[2],
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11.5,
-                color: TEXT,
-                background: 'rgba(0,217,163,0.08)',
-                border: `1px solid rgba(0,217,163,0.28)`,
-                borderRadius: 999,
-                padding: '6px 12px',
-                whiteSpace: 'nowrap',
-              }}
-            >
+          Apply for Free Beta Access →
+        </button>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 18px', marginTop: SP[6] }}>
+          {['Every feature unlocked', 'No credit card', 'Progress always safe'].map((t) => (
+            <span key={t} style={{ display: 'inline-flex', alignItems: 'center', gap: SP[2], fontSize: 12.5, color: MUTED }}>
               <span style={{ color: GREEN }}>✓</span>
-              {chip}
+              {t}
             </span>
           ))}
         </div>
       </div>
 
-      {/* ─── Beta notice — honest operational state ─────────────────────────── */}
+      {/* ─── Anti-"wrapper" proof grid — mobile-first, no clipping to 360px ──── */}
       <div
         style={{
-          background: 'rgba(0,217,163,0.06)',
-          border: `1px solid rgba(0,217,163,0.22)`,
+          background: BG800,
+          border: `1px solid ${BORDER}`,
           borderRadius: 16,
-          padding: SP[6],
-          marginBottom: SP[8],
-          display: 'flex',
-          alignItems: 'flex-start',
-          gap: SP[4],
+          padding: 'clamp(16px, 3vw, 24px)',
+          marginBottom: SP[6],
+          boxSizing: 'border-box',
         }}
       >
-        <span style={{ fontSize: 24, flexShrink: 0, lineHeight: 1.2 }} aria-hidden="true">
-          🚀
-        </span>
-        <div>
-          <div
-            style={{
-              fontFamily: 'var(--font-heading)',
-              fontSize: 15,
-              fontWeight: 700,
-              color: GREEN,
-              marginBottom: SP[2],
-            }}
-          >
-            Free beta — every tier is unlocked right now
-          </div>
-          <div style={{ fontSize: 13, color: MUTED, lineHeight: 1.7 }}>
-            We’re upgrading our payment infrastructure before launch. Until it goes live,
-            every feature across all four plans is fully accessible at no cost, and your
-            progress is safe. We’ll notify you the moment paid billing returns.
-          </div>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: 1.5, textTransform: 'uppercase', color: GREEN, marginBottom: SP[4] }}>
+          Not a ChatGPT wrapper — what your seat includes
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: SP[4] }}>
+          {BETA_INCLUDES.map((f) => (
+            <div key={f.title} style={{ display: 'flex', gap: SP[3], alignItems: 'flex-start' }}>
+              <span style={{ fontSize: 22, flexShrink: 0, lineHeight: 1.2 }} aria-hidden="true">{f.icon}</span>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: TEXT_STRONG, marginBottom: SP[1], lineHeight: 1.35 }}>
+                  {f.title}
+                </div>
+                <div style={{ fontSize: 12.5, color: MUTED, lineHeight: 1.6, wordBreak: 'break-word' }}>{f.body}</div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* ─── Plan grid — mobile-first, no horizontal clipping down to 360px ──── */}
-      {/* min(100%, 260px) collapses tracks to a single clean column on narrow
-          viewports instead of overflowing the row. */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))',
-          gap: SP[4],
-        }}
-      >
-        {plans.map((plan) => {
-          const isPremium = plan.name !== 'Spectator';
-          return (
-            <div
-              key={plan.name}
-              style={{
-                background: BG800,
-                border: `1px solid ${plan.highlight ? 'rgba(0,217,163,0.55)' : BORDER}`,
-                borderRadius: 16,
-                padding: SP[6],
-                position: 'relative',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              {plan.badge && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    top: -11,
-                    left: SP[6],
-                    padding: '4px 12px',
-                    borderRadius: 999,
-                    background: GREEN,
-                    color: ON_GREEN,
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    fontWeight: 700,
-                    letterSpacing: 1,
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {plan.badge}
-                </div>
-              )}
-
-              {/* Name + price */}
-              <div style={{ marginBottom: SP[4] }}>
-                <div
-                  style={{
-                    fontFamily: 'var(--font-heading)',
-                    fontSize: 19,
-                    fontWeight: 800,
-                    color: TEXT_STRONG,
-                    marginBottom: SP[1],
-                  }}
-                >
-                  {plan.name}
-                </div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: SP[1], flexWrap: 'wrap' }}>
-                  <span
-                    style={{
-                      fontFamily: 'var(--font-heading)',
-                      fontSize: 32,
-                      fontWeight: 900,
-                      color: TEXT_STRONG,
-                      letterSpacing: -1,
-                    }}
-                  >
-                    {plan.price}
-                  </span>
-                  <span style={{ fontSize: 13, color: MUTED }}>{plan.period}</span>
-                </div>
-              </div>
-
-              {/* Features — moat items are brighter + heavier */}
-              <div style={{ flex: 1, marginBottom: SP[6], display: 'flex', flexDirection: 'column', gap: SP[3] }}>
-                {plan.features.map((f, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: SP[2] }}>
-                    <span style={{ color: GREEN, flexShrink: 0, marginTop: 1, fontSize: 13 }} aria-hidden="true">
-                      ✓
-                    </span>
-                    <span
-                      style={{
-                        fontSize: 12.5,
-                        color: f.moat ? TEXT_STRONG : MUTED,
-                        fontWeight: f.moat ? 600 : 400,
-                        lineHeight: 1.5,
-                        wordBreak: 'break-word',
-                      }}
-                    >
-                      {f.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Action — solid GENOIS green + high-contrast dark text (WCAG AA).
-                  Preserves the only existing backend trigger: router → /dashboard. */}
-              <button
-                onClick={goToDashboard}
-                style={{
-                  width: '100%',
-                  padding: '13px 16px',
-                  borderRadius: 12,
-                  border: 'none',
-                  cursor: 'pointer',
-                  background: GREEN,
-                  color: ON_GREEN,
-                  fontFamily: 'var(--font-heading)',
-                  fontSize: 14,
-                  fontWeight: 800,
-                }}
-              >
-                {isPremium ? 'Unlock Free in Beta →' : 'Start Free →'}
-              </button>
-            </div>
-          );
-        })}
-      </div>
-
       {/* ─── Footer action ──────────────────────────────────────────────────── */}
-      <div style={{ marginTop: SP[8], textAlign: 'center' }}>
+      <div style={{ textAlign: 'center' }}>
         <button
           onClick={goToDashboard}
           style={{
