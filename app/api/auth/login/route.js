@@ -69,6 +69,10 @@ export async function POST(request) {
     // We deliberately return the SAME message/code for "no such user" and "wrong
     // password" so the endpoint never reveals which emails are registered.
     if (error || !user) {
+      // FIX P7: run a dummy bcrypt compare so the no-such-user path costs the
+      // same as a wrong-password path — closes the email-enumeration timing
+      // oracle. The hash is a valid cost-12 dummy; the result is discarded.
+      await bcrypt.compare(password, '$2b$12$yqaegrOo1.IpaTnX7Us5u.jMeu5C9pOXAjwlV3IY0zsXcMLjrjz3e');
       await recordFailedLogin(ip);
       return fail('invalid_credentials', 'That email or password is incorrect.', 401);
     }

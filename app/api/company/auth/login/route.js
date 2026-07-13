@@ -41,6 +41,9 @@ export async function POST(request) {
       .single();
 
     if (!company) {
+      // FIX P7: dummy compare equalizes timing with the wrong-password path so
+      // the endpoint doesn't leak which company emails are registered.
+      await bcrypt.compare(password, '$2b$12$yqaegrOo1.IpaTnX7Us5u.jMeu5C9pOXAjwlV3IY0zsXcMLjrjz3e');
       await recordFailedLogin(ip);
       return errorResponse('Invalid email or password', 401);
     }

@@ -1,5 +1,6 @@
 import { errorResponse, successResponse } from '@/lib/response';
 import { getAdminClient } from '@/lib/supabaseAdmin';
+import { timingSafeEqualStr } from '@/lib/security';
 import pg from 'pg';
 
 export const dynamic = 'force-dynamic';
@@ -94,8 +95,11 @@ CREATE INDEX IF NOT EXISTS kb_domain_idx ON knowledge_base (domain);
 // Auth: accepts either the Supabase service role key (X-Service-Key header)
 // or the standard admin JWT (Authorization header via getAdminFromRequest).
 async function isAuthorized(request) {
+  // FIX P7: constant-time compare so the service key can't be recovered byte-by-
+  // byte from response timing.
   const serviceKey = request.headers.get('x-service-key');
-  if (serviceKey && serviceKey === process.env.SUPABASE_SERVICE_ROLE_KEY) return true;
+  const expectedKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (serviceKey && expectedKey && timingSafeEqualStr(serviceKey, expectedKey)) return true;
 
   // Fall back to JWT admin check
   try {
