@@ -1,7 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import { trackSignup } from '@/lib/analytics';
+import useAuthStore from '@/store/authStore';
 
 const DOMAINS = [
   { id: 'fullstack', label: 'Full Stack', icon: '⬡', color: '#00d9a3', desc: 'HTML CSS React Node.js' },
@@ -49,6 +51,7 @@ const STEPS = ['welcome', 'domain', 'details', 'placement', 'assessment', 'accou
 
 export default function OnboardingPage() {
   const router = useRouter();
+  const { user, updateUser } = useAuthStore();
   const [step, setStep] = useState(0);
   const [selectedDomain, setSelectedDomain] = useState(null);
   const [form, setForm] = useState({ name: '', email: '', password: '', college: '', year: '2' });
@@ -59,6 +62,10 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [referralCode, setReferralCode] = useState('');
+  // "Authed mode": the user is already signed in (Google OAuth, or an email
+  // account with an incomplete profile). We skip the account-creation steps and
+  // just collect the missing placement details, then save via the profile API.
+  const [authedMode, setAuthedMode] = useState(false);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -70,7 +77,90 @@ export default function OnboardingPage() {
       const stored = localStorage.getItem('genois_ref');
       if (stored) setReferralCode(stored);
     }
+
+    const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('genois_token');
+    if (params.get('from') === 'google' || hasToken) {
+      setAuthedMode(true);
+      setStep(1); // skip the marketing welcome — go straight to picking a domain
+    }
   }, []);
+
+  // Pre-fill from the signed-in user (Google gives us name/email; returning
+  // email users may already have college/domain/placement data).
+  useEffect(() => {
+    if (!user) return;
+    setForm(prev => ({
+      ...prev,
+      name: prev.name || user.name || '',
+      email: prev.email || user.email || '',
+      college: prev.college || user.college || '',
+      year: user.year || prev.year,
+    }));
+    if (user.domain_slug) setSelectedDomain(d => d || user.domain_slug);
+    if (Array.isArray(user.target_companies) && user.target_companies.length) {
+      setTargetCompanies(c => (c.length ? c : user.target_companies));
+    }
+    if (user.months_to_placement) setMonthsToPlacement(m => (m !== 8 ? m : user.months_to_placement));
+    if (Array.isArray(user.weak_subjects) && user.weak_subjects.length) {
+      setWeakSubjects(w => (w.length ? w : user.weak_subjects));
+    }
+    if (user.cgpa != null) setCgpa(c => (c !== '' ? c : String(user.cgpa)));
+  }, [user]);
+
+  // Post-OAuth / incomplete-profile finish: no new account is created. We set the
+  // domain (which also clears any stale roadmap), save the placement profile, then
+  // land on the dashboard — where the freshly personalized roadmap awaits.
+  async function finishAuthed() {
+    if (!selectedDomain) { setStep(1); setError('Pick a domain'); return; }
+    if (!form.name.trim()) { setStep(2); setError('Enter your name'); return; }
+    if (!form.college.trim()) { setStep(2); setError('Enter your college name'); return; }
+    setLoading(true);
+    setError('');
+    try {
+      const token = localStorage.getItem('genois_token');
+      if (!token) { router.push('/login'); return; }
+      const headers = { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token };
+
+      // 1. Domain — sets domain_slug and resets progress + roadmap cache.
+      await fetch('/api/auth/change-domain', {
+        method: 'POST', headers,
+        body: JSON.stringify({ domain: selectedDomain }),
+      });
+
+      // 2. Placement profile. Keep at least one target company so the profile
+      // reads as "complete" and we don't bounce back into onboarding.
+      const picked = targetCompanies.filter(c => c !== 'Not sure yet');
+      const finalCompanies = picked.length ? picked : ['Not sure yet'];
+      const profilePayload = {
+        name: form.name.trim(),
+        college: form.college.trim(),
+        year: String(form.year),
+        target_companies: finalCompanies,
+        months_to_placement: monthsToPlacement,
+        weak_subjects: weakSubjects,
+      };
+      if (cgpa && !isNaN(parseFloat(cgpa))) profilePayload.cgpa = parseFloat(cgpa);
+
+      const pr = await fetch('/api/auth/profile', {
+        method: 'PUT', headers, body: JSON.stringify(profilePayload),
+      });
+      const pd = await pr.json();
+      if (pd?.data?.user) {
+        localStorage.setItem('genois_user', JSON.stringify(pd.data.user));
+        updateUser(pd.data.user);
+      } else {
+        // change-domain already set domain_slug; reflect the rest locally so the
+        // dashboard guard sees a complete profile.
+        updateUser({ domain_slug: selectedDomain, ...profilePayload });
+      }
+
+      toast.success('Profile saved. Building your roadmap…');
+      router.push('/dashboard');
+    } catch {
+      setError('Could not save your profile. Please try again.');
+      setLoading(false);
+    }
+  }
 
   function toggleCompany(id) {
     if (id === 'Not sure yet') { setTargetCompanies(['Not sure yet']); return; }
@@ -229,7 +319,7 @@ export default function OnboardingPage() {
               ))}
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => setStep(0)} style={backBtn}>← Back</button>
+              {!authedMode && <button onClick={() => setStep(0)} style={backBtn}>← Back</button>}
               <button onClick={() => { if (!selectedDomain) { setError('Pick a domain'); return; } setError(''); setStep(2); }} style={nextBtn(!!selectedDomain)}>
                 Continue →
               </button>
@@ -368,10 +458,17 @@ export default function OnboardingPage() {
 
             <div style={{ display: 'flex', gap: 10 }}>
               <button onClick={() => setStep(3)} style={backBtn}>← Back</button>
-              <button onClick={() => { setError(''); setStep(5); }} style={nextBtn(true)}>
-                Continue →
-              </button>
+              {authedMode ? (
+                <button onClick={finishAuthed} disabled={loading} style={{ ...nextBtn(true), opacity: loading ? 0.6 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}>
+                  {loading ? 'Saving…' : 'Finish & Build My Roadmap →'}
+                </button>
+              ) : (
+                <button onClick={() => { setError(''); setStep(5); }} style={nextBtn(true)}>
+                  Continue →
+                </button>
+              )}
             </div>
+            {authedMode && error && <div style={{ color: '#ff2d78', fontSize: 13, textAlign: 'center', marginTop: 10 }}>{error}</div>}
           </div>
         )}
 

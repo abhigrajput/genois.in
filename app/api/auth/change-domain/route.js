@@ -1,6 +1,7 @@
 import { getUserFromRequest } from '@/lib/auth';
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { successResponse, errorResponse } from '@/lib/response';
+import { invalidateUserRoadmap } from '@/lib/roadmapCache';
 
 export async function POST(request) {
   try {
@@ -14,6 +15,9 @@ export async function POST(request) {
     await supabase.from('users').update({ domain_slug: domain }).eq('id', payload.userId);
     await supabase.from('progress').update({ current_day: 1, streak: 0, tasks_completed_today: 0 }).eq('user_id', payload.userId);
     await supabase.from('dsa_roadmap_progress').update({ current_day: 1, completed_days: [], diagnostic_taken: false }).eq('user_id', payload.userId);
+    // Per-user roadmap rows are keyed by (user_id, day) — NOT domain — so day 1
+    // still holds the OLD domain's content until we invalidate it.
+    await invalidateUserRoadmap(payload.userId, supabase);
     return successResponse({ message: 'Domain changed successfully', domain });
   } catch (error) {
     console.error(error);

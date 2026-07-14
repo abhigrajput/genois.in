@@ -7,6 +7,7 @@ import useAuthStore from '@/store/authStore'
 import { useToken } from '@/lib/useApi'
 import TrialBanner from '@/components/TrialBanner'
 import OnboardingTour from '@/components/OnboardingTour'
+import { isProfileComplete } from '@/lib/profile'
 import { toEmbedUrl } from '@/lib/youtubeEmbed'
 import {
   Flame, Zap, Trophy, Play, BookOpen, Code2, ClipboardCheck, FileText, Target,
@@ -146,8 +147,11 @@ export default function DashboardPage() {
   const [isMobile, setIsMobile] = useState(false)
   const [insight, setInsight] = useState(null)
 
+  // Gate the dashboard on a complete profile. An incomplete one (missing domain,
+  // college, or target company — e.g. a fresh Google sign-in) gets a generic
+  // default roadmap, so route them into onboarding to finish setup first.
   useEffect(() => {
-    if (user && !user.domain_slug) router.push('/onboarding')
+    if (user && !isProfileComplete(user)) router.push('/onboarding?from=google')
   }, [user, router])
 
   useEffect(() => {

@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import useAuthStore from '@/store/authStore';
 import { apiFetch } from '@/lib/useApi';
+import { isProfileComplete } from '@/lib/profile';
 
 export default function GoogleCallbackPage() {
   const { data: session, status } = useSession();
@@ -51,17 +52,20 @@ export default function GoogleCallbackPage() {
           const { user, progress, score, skill } = r.data;
           setAuth(user, token, progress, score, skill);
 
-          // 4. Redirect: new user → onboarding, returning user → dashboard
-          if (session.isNewUser || !user?.domain_slug) {
+          // 4. Redirect: any incomplete profile → onboarding (college, domain,
+          // target company, timeline, weak areas). Only fully-set-up returning
+          // users go straight to the dashboard.
+          if (!isProfileComplete(user)) {
             router.replace('/onboarding?from=google');
           } else {
             router.replace('/dashboard');
           }
         })
         .catch(() => {
-          // Partial hydration — still let them in
+          // Partial hydration — we couldn't confirm the profile, so send new
+          // sign-ins through onboarding; returning users hit the dashboard guard.
           setAuth({ email: session.userEmail, name: session.userName }, token, null, null, null);
-          router.replace('/dashboard');
+          router.replace(session.isNewUser ? '/onboarding?from=google' : '/dashboard');
         });
     }
   }, [status, session]);

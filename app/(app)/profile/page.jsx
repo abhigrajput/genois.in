@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import useAuthStore from '@/store/authStore';
-import { authAPI } from '@/lib/api';
+import { authAPI, roadmapAPI } from '@/lib/api';
 import { useToken, apiFetch } from '@/lib/useApi';
 import Link from 'next/link';
 
@@ -150,9 +150,29 @@ export default function ProfilePage() {
         body: JSON.stringify(payload),
       });
       const d = await res.json();
-      if (d.success) { updateUser(d.data.user); toast.success('Placement profile saved!'); }
+      if (d.success) {
+        updateUser(d.data.user);
+        if (d.data.roadmapInvalidated) {
+          // The API already cleared the cached roadmap; take them to it so the
+          // fresh, personalized version generates on load.
+          toast.success('Profile saved. Regenerating your roadmap…');
+          router.push('/roadmap');
+        } else {
+          toast.success('Placement profile saved!');
+        }
+      }
       else toast.error(d.message || 'Save failed');
     } catch { toast.error('Save failed'); }
+    setPlacementLoading(false);
+  }
+
+  async function regenerateRoadmap() {
+    setPlacementLoading(true);
+    try {
+      await roadmapAPI.regenerate();
+      toast.success('Regenerating your roadmap…');
+      router.push('/roadmap');
+    } catch { toast.error('Could not regenerate roadmap'); }
     setPlacementLoading(false);
   }
 
@@ -486,9 +506,17 @@ export default function ProfilePage() {
             <div style={{ fontSize: 11, color: '#3a4a5a', marginTop: 4, fontFamily: 'var(--font-mono)' }}>Not shared publicly</div>
           </div>
 
-          <button onClick={savePlacementProfile} disabled={placementLoading} style={{ padding: '10px 24px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
-            {placementLoading ? 'Saving...' : 'Save Placement Profile'}
-          </button>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+            <button onClick={savePlacementProfile} disabled={placementLoading} style={{ padding: '10px 24px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+              {placementLoading ? 'Saving...' : 'Save Placement Profile'}
+            </button>
+            <button onClick={regenerateRoadmap} disabled={placementLoading} title="Force a fresh, personalized roadmap from your current target" style={{ padding: '10px 20px', borderRadius: 8, border: '1px solid rgba(0,217,163,0.3)', cursor: 'pointer', background: 'transparent', color: '#00d9a3', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+              ↻ Regenerate My Roadmap
+            </button>
+          </div>
+          <div style={{ fontSize: 11, color: '#3a4a5a', marginTop: 8, fontFamily: 'var(--font-mono)' }}>
+            Saving with a new target company, timeline or weak areas automatically rebuilds your roadmap.
+          </div>
         </div>
 
         {/* SETTINGS - full width */}

@@ -82,15 +82,19 @@ export async function GET(request, { params }) {
     const level = user.level || 'beginner';
 
     // ── Cache first, then AI on miss (never advances progress) ──────────────
+    // Per-user cache (see /api/roadmap/daily) — each student's day reflects their
+    // own profile. A row left over from a previous domain is treated as a miss.
     let { data: roadmapItem } = await supabase
       .from('roadmap')
       .select('*')
-      .eq('domain_slug', user.domain_slug)
+      .eq('user_id', payload.userId)
       .eq('day_number', dayNumber)
       .maybeSingle();
 
+    const domainMatches = !roadmapItem || roadmapItem.domain_slug === user.domain_slug;
+
     let dayContent;
-    if (isComplete(roadmapItem)) {
+    if (domainMatches && isComplete(roadmapItem)) {
       dayContent = {
         topic: roadmapItem.topic,
         description: roadmapItem.description,
@@ -110,6 +114,7 @@ export async function GET(request, { params }) {
       dayContent = await generateDayContent(user.domain_slug, dayNumber, level, user);
 
       const cachePayload = {
+        user_id: payload.userId,
         domain_slug: user.domain_slug,
         week_number: week,
         day_number: dayNumber,
@@ -133,7 +138,7 @@ export async function GET(request, { params }) {
 
       let { data: upserted, error: upsertErr } = await supabase
         .from('roadmap')
-        .upsert(cachePayload, { onConflict: 'domain_slug,day_number' })
+        .upsert(cachePayload, { onConflict: 'user_id,day_number' })
         .select()
         .single();
 

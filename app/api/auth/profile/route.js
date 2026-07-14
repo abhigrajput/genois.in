@@ -3,6 +3,11 @@ import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { getCollegeTier } from '@/lib/contextBuilder';
+import { invalidateUserRoadmap } from '@/lib/roadmapCache';
+
+// Changing any of these reshapes what the AI generates, so a save must throw
+// away the cached roadmap and force a personalized regeneration.
+const ROADMAP_AFFECTING = ['target_companies', 'weak_subjects', 'months_to_placement', 'cgpa', 'college', 'college_tier'];
 
 const ProfileUpdateSchema = z.object({
   name:                z.string().trim().min(1).max(50).optional(),
@@ -104,8 +109,15 @@ export async function PUT(request) {
 
     if (error) throw new Error(error.message);
 
+    // If the placement target/timeline/weaknesses changed, blow away the cached
+    // roadmap so the next /roadmap fetch regenerates it against the new profile.
+    const roadmapInvalidated = ROADMAP_AFFECTING.some(f => parsed.data[f] !== undefined);
+    if (roadmapInvalidated) {
+      await invalidateUserRoadmap(payload.userId, supabase);
+    }
+
     const { password_hash: _, ...safeUser } = user;
-    return successResponse({ user: safeUser }, 'Profile updated');
+    return successResponse({ user: safeUser, roadmapInvalidated }, 'Profile updated');
   } catch (error) {
     console.error('Profile update error:', error);
     return errorResponse('Internal server error', 500);

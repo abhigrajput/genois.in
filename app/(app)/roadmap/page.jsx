@@ -68,6 +68,7 @@ export default function DailyRoadmapPage() {
   const [overview, setOverview] = useState(null);
   const [showOverview, setShowOverview] = useState(false);
   const [skipping, setSkipping] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
 
   const [test, setTest] = useState(null);
   const [testAnswers, setTestAnswers] = useState({});
@@ -143,6 +144,22 @@ export default function DailyRoadmapPage() {
     } finally {
       setLoading(false);
       setNavLoading(false);
+    }
+  }
+
+  // Force a fresh, personalized roadmap. Clears the server-side cache, then
+  // reloads the current day so the new content generates immediately.
+  async function handleRegenerate() {
+    if (regenerating) return;
+    setRegenerating(true);
+    try {
+      await roadmapAPI.regenerate();
+      toast.success('Regenerating your roadmap…');
+      await loadDay(null);
+    } catch (err) {
+      toast.error(err.message || 'Could not regenerate roadmap');
+    } finally {
+      setRegenerating(false);
     }
   }
 
@@ -350,6 +367,14 @@ export default function DailyRoadmapPage() {
             className="cursor-pointer whitespace-nowrap rounded-[10px] border border-primary/25 bg-primary/10 px-4 py-2.5 font-display text-[13px] font-bold text-primary transition-all hover:border-primary/50 hover:bg-primary/20 active:scale-[0.97]"
           >
             🗺 View Full Path
+          </button>
+          <button
+            onClick={handleRegenerate}
+            disabled={regenerating || navLoading}
+            title="Rebuild this roadmap from your current profile (target company, timeline, weak areas)"
+            className="cursor-pointer whitespace-nowrap rounded-[10px] border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 font-display text-[13px] font-bold text-primary transition-all hover:enabled:border-primary/40 hover:enabled:bg-primary/10 active:enabled:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {regenerating ? 'Regenerating…' : '↻ Regenerate'}
           </button>
           <div className="rounded-xl border border-primary/15 bg-primary/5 px-4 py-2 text-right">
             <div className="font-mono text-[11px] text-muted">GENERATION LAYER</div>

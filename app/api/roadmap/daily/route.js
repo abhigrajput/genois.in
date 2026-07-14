@@ -3,6 +3,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { successResponse, errorResponse } from '@/lib/response';
 import { generateDayContent } from '@/lib/curriculumGenerator';
+import { roadmapTotalDays } from '@/lib/roadmapCache';
 import { youtubeSearchUrl } from '@/lib/youtubeEmbed';
 
 const TASK_TYPES = ['video', 'resource', 'coding', 'test', 'notes'];
@@ -83,9 +84,13 @@ export async function GET(request) {
     const tasksToday = progress?.tasks_completed_today || 0;
     const currentDay = progress?.current_day || 1;
 
+    // The roadmap length follows the student's placement timeline: a 1-3 month
+    // runway caps at a compressed 60-day plan, a full runway at 365.
+    const totalDays = roadmapTotalDays(user.months_to_placement);
+
     let displayDay = currentDay;
     if (lastCompleted && lastCompleted < today && tasksToday >= 5) {
-      displayDay = Math.min(currentDay + 1, 365);
+      displayDay = Math.min(currentDay + 1, totalDays);
       const newWeek = Math.ceil(displayDay / 7);
       const newProgressPercent = Math.min(100, Math.round(((displayDay - 1) / 30) * 100));
       await supabase
@@ -104,17 +109,25 @@ export async function GET(request) {
     const week = Math.ceil(displayDay / 7);
 
     // ── 1. Try cache first ─────────────────────────────────────────────────
+    // Keyed PER USER (not per domain) so each student's roadmap reflects their
+    // own target companies / weak subjects / timeline. Pre-migration (no user_id
+    // column yet) this errors → roadmapItem null → miss → we regenerate against
+    // THIS user every time, which is still correct, just uncached.
     let { data: roadmapItem } = await supabase
       .from('roadmap')
       .select('*')
-      .eq('domain_slug', user.domain_slug)
+      .eq('user_id', payload.userId)
       .eq('day_number', displayDay)
       .maybeSingle();
+
+    // A row from a previous domain (user switched domains) is stale even if it
+    // looks complete — regenerate rather than serve the wrong track.
+    const domainMatches = !roadmapItem || roadmapItem.domain_slug === user.domain_slug;
 
     let dayContent;
     let cacheHit = false;
 
-    if (isComplete(roadmapItem)) {
+    if (domainMatches && isComplete(roadmapItem)) {
       // Hydrate dayContent shape from the cached row — no AI call.
       cacheHit = true;
       dayContent = {
@@ -142,6 +155,7 @@ export async function GET(request) {
       dayContent.video_url = youtubeSearchUrl(dayContent.topic);
 
       const cachePayload = {
+        user_id: payload.userId,
         domain_slug: user.domain_slug,
         week_number: week,
         day_number: displayDay,
@@ -165,12 +179,13 @@ export async function GET(request) {
 
       let { data: upserted, error: upsertErr } = await supabase
         .from('roadmap')
-        .upsert(cachePayload, { onConflict: 'domain_slug,day_number' })
+        .upsert(cachePayload, { onConflict: 'user_id,day_number' })
         .select()
         .single();
 
-      // If the enrichment migration hasn't been applied yet, fall back to the
-      // legacy column set so we still cache *something* and don't 500 the user.
+      // If the per-user / enrichment migration hasn't been applied yet, fall back
+      // to the legacy domain-keyed column set so we still cache *something* and
+      // don't 500 the user. (Legacy path is domain-global — pre-migration only.)
       if (upsertErr) {
         const legacy = {
           domain_slug: cachePayload.domain_slug,
