@@ -206,7 +206,7 @@ export default function TestsPage() {
       {loading && (
         <div style={{ ...C, textAlign: 'center', padding: 48 }}>
           <div style={{ fontSize: 36, marginBottom: 12 }}>⏳</div>
-          <div style={{ color: '#00d9a3', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 600 }}>Claude is generating your test...</div>
+          <div style={{ color: '#00d9a3', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 600 }}>GENOIS Engine is generating your test...</div>
           <div style={{ color: '#5a7a9a', fontSize: 13, marginTop: 6 }}>Takes about 15 seconds</div>
         </div>
       )}

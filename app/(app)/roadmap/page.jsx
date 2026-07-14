@@ -341,11 +341,15 @@ export default function DailyRoadmapPage() {
   }
 
   return (
-    <div className="w-full space-y-6 font-sans">
-      {/* Top Banner Area */}
-      <div className="flex items-center justify-between border-b border-white/[0.06] pb-4">
-        <div>
-          <h1 className="font-display text-2xl font-bold text-dark">
+    <div className="w-full max-w-full space-y-6 overflow-x-hidden font-sans">
+      {/* Top Banner Area — stacks vertically on mobile so the title never
+          collides with the action buttons; becomes a single row at ≥md. */}
+      <div className="flex flex-col gap-4 border-b border-white/[0.06] pb-4 md:flex-row md:items-center md:justify-between">
+        <div className="min-w-0">
+          <h1
+            className="line-clamp-3 font-display font-bold text-dark"
+            style={{ fontSize: 'clamp(20px, 5vw, 32px)' }}
+          >
             Day {currentDay} — {roadmapItem?.topic}
           </h1>
           <p className="mt-1 text-sm text-gray-400">
@@ -361,7 +365,7 @@ export default function DailyRoadmapPage() {
             )}
           </p>
         </div>
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={openOverview}
             className="cursor-pointer whitespace-nowrap rounded-[10px] border border-primary/25 bg-primary/10 px-4 py-2.5 font-display text-[13px] font-bold text-primary transition-all hover:border-primary/50 hover:bg-primary/20 active:scale-[0.97]"
@@ -379,7 +383,7 @@ export default function DailyRoadmapPage() {
           <div className="rounded-xl border border-primary/15 bg-primary/5 px-4 py-2 text-right">
             <div className="font-mono text-[11px] text-muted">GENERATION LAYER</div>
             <div className="text-[13px] font-bold uppercase text-primary">
-              {daily.generatedBy || 'Supabase Cache'}
+              GENOIS ENGINE
             </div>
           </div>
         </div>
@@ -725,7 +729,7 @@ export default function DailyRoadmapPage() {
                 <h3 className="section-title">✎ Daily Test — {roadmapItem?.topic}</h3>
                 {!test && !testResult && (
                   <button onClick={generateTest} disabled={testLoading} className={ACTION_BTN}>
-                    {testLoading ? 'Claude is generating...' : 'Generate 5 Questions'}
+                    {testLoading ? 'GENOIS Engine is generating...' : 'Generate 5 Questions'}
                   </button>
                 )}
                 {test && !testResult && (
@@ -822,7 +826,7 @@ export default function DailyRoadmapPage() {
                 </div>
                 {!note ? (
                   <button onClick={generateNotes} disabled={noteLoading} className={ACTION_BTN}>
-                    {noteLoading ? 'Claude is writing notes...' : `Generate ${noteType} notes`}
+                    {noteLoading ? 'GENOIS Engine is writing notes...' : `Generate ${noteType} notes`}
                   </button>
                 ) : (
                   <div className="whitespace-pre-wrap rounded-xl border border-primary/[0.08] bg-[#0a1628] p-5 text-sm leading-[1.9] text-dark">

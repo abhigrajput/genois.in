@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from 'react';
 import { useToken, apiFetch } from '@/lib/useApi';
 import { DSA_LEVELS } from '@/lib/dsaCurriculumLevels';
 import toast from 'react-hot-toast';
-import PermissionGate from '@/components/PermissionGate';
 import { usePermission } from '@/lib/usePermission';
 import { useRouter } from 'next/navigation';
 
@@ -205,7 +204,10 @@ export default function DSARoadmapPage() {
   ];
 
   return (
-    <PermissionGate feature="dsa_roadmap">
+    // Public beta: DSA Roadmap renders directly to every tester. The shared
+    // <PermissionGate feature="dsa_roadmap"> wrapper was removed here so no
+    // "Feature Locked / Paid plans coming soon" state can block a beta user.
+    // Re-wrap this return (and restore the import) to re-gate the feature.
     <div style={{ fontFamily: 'var(--font-body)', width: '100%' }}>
       <div style={{ marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
         <div>
@@ -335,6 +337,5 @@ export default function DSARoadmapPage() {
         </div>
       )}
     </div>
-    </PermissionGate>
   );
 }

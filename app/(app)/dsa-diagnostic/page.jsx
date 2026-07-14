@@ -47,7 +47,7 @@ function IntroScreen({ onStart, loading, previousResult }) {
           <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 28 }}>
             {[['📺', '10 Code Snippets', 'Predict output & find errors'],
               ['📖', '15 Theory MCQs', 'DSA concepts & logic'],
-              ['🤖', 'AI Evaluation', 'DeepSeek analyzes your strengths']].map(([icon, title, desc]) => (
+              ['🤖', 'AI Evaluation', 'GENOIS Engine analyzes your strengths']].map(([icon, title, desc]) => (
               <div key={title} style={{ background: 'rgba(0,217,163,0.04)', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 12, padding: '14px 18px', flex: '1 1 180px', textAlign: 'left' }}>
                 <div style={{ fontSize: 20, marginBottom: 6 }}>{icon}</div>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#e8e8ed', marginBottom: 3 }}>{title}</div>
@@ -362,7 +362,7 @@ export default function DSADiagnosticPage() {
       <div style={{ ...S.page, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 56, marginBottom: 20 }}>🤖</div>
-          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, color: '#e8e8ed', marginBottom: 8 }}>DeepSeek is analyzing your answers...</h2>
+          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, color: '#e8e8ed', marginBottom: 8 }}>GENOIS Engine is analyzing your answers...</h2>
           <p style={{ color: '#5a7a9a', fontSize: 14 }}>Evaluating topic mastery, code accuracy, and learning path. This takes ~10 seconds.</p>
           <div style={{ marginTop: 24, display: 'flex', gap: 6, justifyContent: 'center' }}>
             {[0, 1, 2].map(i => (

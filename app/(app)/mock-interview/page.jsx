@@ -273,7 +273,7 @@ export default function MockInterviewPage() {
           {[
             { step: '1', icon: '🎯', title: '10 real interview questions', desc: 'Generated specifically for your domain. Mix of technical, conceptual and behavioral questions.' },
             { step: '2', icon: '✍️', title: 'Answer each question in text', desc: 'Type your answer as if you are speaking in a real interview. Be detailed and give examples.' },
-            { step: '3', icon: '🤖', title: 'AI evaluates every answer', desc: 'Claude rates each answer 0-10, tells you what was good, what was missing, and gives a better answer.' },
+            { step: '3', icon: '🤖', title: 'AI evaluates every answer', desc: 'GENOIS Engine rates each answer 0-10, tells you what was good, what was missing, and gives a better answer.' },
             { step: '4', icon: '📊', title: 'Get your Interview Readiness Score', desc: 'Final score out of 100% showing how ready you are for placement interviews right now.' },
           ].map(s => (
             <div key={s.step} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>

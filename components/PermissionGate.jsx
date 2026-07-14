@@ -1,11 +1,14 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { hasPermission, getUpgradeMessage } from '@/lib/permissions';
+import { hasPermission, getUpgradeMessage, BETA_MODE } from '@/lib/permissions';
 import { usePermission } from '@/lib/usePermission';
 
 export default function PermissionGate({ feature, children }) {
   const router = useRouter();
   const { userPlan, trialEndsAt, isInTrial, trialDaysLeft, planLoaded } = usePermission();
+
+  // Public beta: render the feature immediately, skip all gating.
+  if (BETA_MODE) return children;
 
   if (!planLoaded) return null;
 

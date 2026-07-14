@@ -1,5 +1,5 @@
 'use client';
-import { useState, Suspense, Component } from 'react';
+import { useState, useEffect, Suspense, Component } from 'react';
 import { useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
@@ -139,6 +139,18 @@ function DSAVisualizerInner() {
   const [search, setSearch] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  // Mobile-first breakpoint. Below md (768px) the desktop row-split collapses
+  // into a clean vertical stack — sidebar on top, visualizer beneath — so the
+  // layout stays overflow-free down to 360px. Mirrors `flex-col md:flex-row`.
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
+
   const selected = ALGORITHMS.find(a => a.id === selectedId) || ALGORITHMS[0];
   const VisualizerComponent = selected.component;
 
@@ -150,19 +162,29 @@ function DSAVisualizerInner() {
   const categories = [...new Set(ALGORITHMS.map(a => a.category))];
 
   return (
-    <div style={{ display: 'flex', gap: 0, height: 'calc(100vh - 96px)', overflow: 'hidden', position: 'relative' }}>
-      {/* Left sidebar */}
+    <div style={{
+      display: 'flex',
+      flexDirection: isMobile ? 'column' : 'row',
+      gap: 0,
+      height: isMobile ? 'auto' : 'calc(100vh - 96px)',
+      overflow: isMobile ? 'visible' : 'hidden',
+      overflowX: 'hidden',
+      position: 'relative',
+    }}>
+      {/* Left sidebar — full-width row on mobile, fixed 240px rail on desktop */}
       <div style={{
-        width: sidebarOpen ? 240 : 0,
+        width: isMobile ? '100%' : (sidebarOpen ? 240 : 0),
         flexShrink: 0,
         overflow: 'hidden',
         transition: 'width 0.25s ease',
-        borderRight: sidebarOpen ? '1px solid rgba(0,217,163,0.1)' : 'none',
+        borderRight: !isMobile && sidebarOpen ? '1px solid rgba(0,217,163,0.1)' : 'none',
+        borderBottom: isMobile && sidebarOpen ? '1px solid rgba(0,217,163,0.1)' : 'none',
         display: 'flex',
         flexDirection: 'column',
         background: 'rgba(6,15,30,0.7)',
         backdropFilter: 'blur(12px)',
-        height: '100%',
+        height: isMobile ? (sidebarOpen ? 'auto' : 0) : '100%',
+        maxHeight: isMobile ? '44vh' : undefined,
       }}>
         <div style={{ padding: '14px 12px 8px', flexShrink: 0 }}>
           <div style={{ position: 'relative' }}>
@@ -217,8 +239,8 @@ function DSAVisualizerInner() {
         </div>
       </div>
 
-      {/* Main area */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '20px 24px', minWidth: 0 }}>
+      {/* Main area — flows beneath the sidebar on mobile, right column on desktop */}
+      <div style={{ flex: 1, width: isMobile ? '100%' : undefined, overflowY: 'auto', overflowX: 'hidden', padding: isMobile ? '16px 12px' : '20px 24px', minWidth: 0 }}>
         {/* Header bar */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
           <button
@@ -285,7 +307,7 @@ function DSAVisualizerInner() {
 
 export default function DSAVisualizerPage() {
   return (
-    <div style={{ margin: -24 }}>
+    <div style={{ margin: -24, overflowX: 'hidden' }}>
       <Suspense fallback={<AlgoSkeleton />}>
         <DSAVisualizerInner />
       </Suspense>

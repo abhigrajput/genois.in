@@ -420,7 +420,7 @@ export default function BadgePage() {
     <div style={{ ...S.page, display:'flex', alignItems:'center', justifyContent:'center' }}>
       <div style={{ textAlign:'center' }}>
         <div style={{ fontSize:48, marginBottom:16 }}>⚙️</div>
-        <p style={{ color:'#5a7a9a' }}>Generating 30 advanced questions via Claude AI...</p>
+        <p style={{ color:'#5a7a9a' }}>Generating 30 advanced questions via GENOIS Engine...</p>
       </div>
     </div>
   );
@@ -429,7 +429,7 @@ export default function BadgePage() {
     <div style={{ ...S.page, display:'flex', alignItems:'center', justifyContent:'center' }}>
       <div style={{ textAlign:'center' }}>
         <div style={{ fontSize:48, marginBottom:16 }}>🤖</div>
-        <h2 style={{ fontFamily:'var(--font-heading)', fontSize:20, color:'#e8e8ed', marginBottom:8 }}>DeepSeek R1 is evaluating...</h2>
+        <h2 style={{ fontFamily:'var(--font-heading)', fontSize:20, color:'#e8e8ed', marginBottom:8 }}>GENOIS Engine is evaluating...</h2>
         <p style={{ color:'#5a7a9a', fontSize:13 }}>Analyzing topic mastery, code understanding, and skill level.</p>
       </div>
     </div>
