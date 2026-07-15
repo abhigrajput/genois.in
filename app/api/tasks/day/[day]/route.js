@@ -24,11 +24,14 @@ export async function GET(request, { params }) {
 
     const completedCount = (tasks || []).filter(t => t.status === 'completed').length;
 
+    // A day has exactly 5 tasks (video, resource, coding, test, notes) — matching
+    // TASK_TYPES in roadmap/daily. Was hardcoded to 6, so a fully-done day could
+    // never read as complete here.
     return successResponse({
       tasks: tasks || [],
       completedCount,
-      totalTasks: 6,
-      isComplete: completedCount === 6,
+      totalTasks: 5,
+      isComplete: completedCount >= 5,
       dayScore: (tasks || []).reduce((a, t) => a + (t.score || 0), 0),
     });
   } catch (error) {

@@ -4,16 +4,23 @@ import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { askClaudeJSON } from '@/lib/claude';
 
+// Shape MUST match a `coding_tests` row (title/problem/example_input/
+// example_output/hints/difficulty) — that is what the coding page + roadmap
+// render. It is returned under `codingTests`, the same key as a real hit, so the
+// UI can display it. The synthetic `id` is recognised by /api/coding/submit,
+// which reviews it and awards points without an FK-bound coding_tests row.
 const FALLBACK_PROBLEM = {
+  id: 'fallback-two-sum',
   title: "Two Sum",
-  description: "Given array of integers and a target, return indices of two numbers that add up to target.",
+  problem: "Given an array of integers `nums` and an integer `target`, return the indices of the two numbers that add up to `target`. Assume exactly one solution exists and you may not use the same element twice.",
   difficulty: "Easy",
   example_input: "nums = [2,7,11,15], target = 9",
   example_output: "[0,1]",
-  hint: "Use a hash map to store complement values",
-  solution_approach: "For each element, check if complement (target - element) exists in hash map",
-  language: "cpp",
-  starter_code: "#include<bits/stdc++.h>\nusing namespace std;\n\nvector<int> twoSum(vector<int>& nums, int target) {\n    // Write your solution\n}"
+  hints: [
+    "A brute-force double loop is O(n²) — can you do better?",
+    "Scan once, storing each value → its index in a hash map.",
+    "For each element, check if (target − element) is already in the map.",
+  ],
 };
 
 export async function GET(request, { params }) {
@@ -24,7 +31,7 @@ export async function GET(request, { params }) {
 
     const { day } = await params;
     const dayNumber = parseInt(day);
-    if (isNaN(dayNumber)) return successResponse({ data: FALLBACK_PROBLEM });
+    if (isNaN(dayNumber)) return successResponse({ codingTests: [FALLBACK_PROBLEM] });
     const supabase = getAdminClient();
 
     const { data: user } = await supabase
@@ -78,10 +85,10 @@ Return JSON array with exactly 5 objects:
       );
     } catch (aiErr) {
       console.error('Claude coding generation error:', aiErr);
-      return successResponse({ data: FALLBACK_PROBLEM });
+      return successResponse({ codingTests: [FALLBACK_PROBLEM] });
     }
 
-    if (!generated) return successResponse({ data: FALLBACK_PROBLEM });
+    if (!generated) return successResponse({ codingTests: [FALLBACK_PROBLEM] });
 
     const problems = Array.isArray(generated) ? generated : [generated];
 
@@ -123,6 +130,6 @@ Return JSON array with exactly 5 objects:
 
   } catch (error) {
     console.error('Get coding tests error:', error);
-    return successResponse({ data: FALLBACK_PROBLEM });
+    return successResponse({ codingTests: [FALLBACK_PROBLEM] });
   }
 }

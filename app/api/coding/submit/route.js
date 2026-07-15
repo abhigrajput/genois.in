@@ -16,10 +16,18 @@ export async function POST(request) {
     const { data: user } = await supabase
       .from('users').select('domain_slug, level').eq('id', payload.userId).single();
 
-    const { data: codingTest } = await supabase
+    // A non-UUID id (e.g. the "fallback-two-sum" problem served when AI
+    // generation is unavailable) can't match the uuid PK, so this returns null —
+    // fall back to an inline problem instead of 404ing the submission.
+    const { data: dbTest } = await supabase
       .from('coding_tests').select('*').eq('id', codingTestId).single();
 
-    if (!codingTest) return errorResponse('Coding test not found', 404);
+    const FALLBACK_TITLE = 'Two Sum';
+    const FALLBACK_PROBLEM = 'Given an array of integers `nums` and an integer `target`, return the indices of the two numbers that add up to `target`.';
+    const isFallback = !dbTest && codingTestId === 'fallback-two-sum';
+    if (!dbTest && !isFallback) return errorResponse('Coding test not found', 404);
+
+    const codingTest = dbTest || { id: null, title: FALLBACK_TITLE, problem: FALLBACK_PROBLEM };
 
     const review = await reviewCode(
       codingTest.problem, code,
@@ -34,7 +42,7 @@ export async function POST(request) {
 
     const { data: submission } = await supabase.from('coding_submissions').insert({
       user_id: payload.userId,
-      coding_test_id: codingTestId,
+      coding_test_id: codingTest.id, // null for the inline fallback (FK is nullable)
       code,
       language: language || 'javascript',
       status,

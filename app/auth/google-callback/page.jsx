@@ -46,8 +46,11 @@ export default function GoogleCallbackPage() {
 
       setMessage('Loading your profile...');
 
-      // 3. Fetch full user data
-      apiFetch('/api/user/me', token)
+      // 3. Fetch the FULL profile — /api/auth/profile returns the complete user
+      // row (college, target_companies, …) plus progress/score/skill. /api/user/me
+      // omits college & target_companies, so isProfileComplete() could never see
+      // them and every OAuth user was misrouted.
+      apiFetch('/api/auth/profile', token)
         .then(r => {
           const { user, progress, score, skill } = r.data;
           setAuth(user, token, progress, score, skill);

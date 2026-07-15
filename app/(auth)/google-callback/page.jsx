@@ -4,6 +4,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import useAuthStore from '@/store/authStore';
 import { apiFetch } from '@/lib/useApi';
+import { isProfileComplete } from '@/lib/profile';
 
 export default function GoogleCallbackPage() {
   const { data: session, status } = useSession();
@@ -45,23 +46,27 @@ export default function GoogleCallbackPage() {
 
       setMessage('Loading your profile...');
 
-      // 3. Fetch full user data
-      apiFetch('/api/user/me', token)
+      // 3. Fetch the FULL profile (college, target_companies, …) so the
+      // completeness gate below can actually see those fields. /api/user/me omits
+      // them; /api/auth/profile returns the whole user + progress/score/skill.
+      apiFetch('/api/auth/profile', token)
         .then(r => {
           const { user, progress, score, skill } = r.data;
           setAuth(user, token, progress, score, skill);
 
-          // 4. Redirect: new user → onboarding, returning user → dashboard
-          if (session.isNewUser || !user?.domain_slug) {
+          // 4. Redirect: any incomplete profile → onboarding. Only fully-set-up
+          // returning users go straight to the dashboard.
+          if (!isProfileComplete(user)) {
             router.replace('/onboarding?from=google');
           } else {
             router.replace('/dashboard');
           }
         })
         .catch(() => {
-          // Partial hydration — still let them in
+          // Partial hydration — couldn't confirm the profile, so send new
+          // sign-ins through onboarding; returning users hit the dashboard guard.
           setAuth({ email: session.userEmail, name: session.userName }, token, null, null, null);
-          router.replace('/dashboard');
+          router.replace(session.isNewUser ? '/onboarding?from=google' : '/dashboard');
         });
     }
   }, [status, session]);
