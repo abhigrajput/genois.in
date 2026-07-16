@@ -1,6 +1,7 @@
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
+import { saveAttemptReview } from '@/lib/attemptReview';
 
 export async function POST(request) {
   try {
@@ -45,6 +46,27 @@ export async function POST(request) {
       score,
       result,
     }).eq('id', testId);
+
+    // Persist the full question set (question + user pick + correct +
+    // explanation) so the review page can render this attempt. No-op if the
+    // test_questions migration isn't applied yet.
+    const attemptId = await saveAttemptReview({
+      userId: payload.userId,
+      attemptType: test.type || 'daily',
+      sourceId: test.id,
+      topic: test.topic,
+      score,
+      questions: (test.questions || []).map((q, i) => ({
+        question: q.question,
+        code: q.code || null,
+        options: q.options ?? null,
+        correct_answer: storedAnswers[i]?.correct,
+        user_answer: (userAnswers || [])[i]?.answer,
+        is_correct: (userAnswers || [])[i]?.answer === storedAnswers[i]?.correct,
+        explanation: storedAnswers[i]?.explanation,
+        topic: q.topic || test.topic,
+      })),
+    });
 
     if (test.topic) {
       if (score < 60) {
@@ -109,6 +131,7 @@ export async function POST(request) {
       total: test.total_questions,
       feedback,
       pointsEarned: testPoints,
+      attemptId,
     });
   } catch (error) {
     console.error('Submit test error:', error);

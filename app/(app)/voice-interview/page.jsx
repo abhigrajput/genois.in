@@ -301,6 +301,7 @@ export default function VoiceInterviewPage() {
   const [elapsed, setElapsed] = useState(0);
   const [summary, setSummary] = useState(null);
   const [percentile, setPercentile] = useState(null);
+  const [reviewAttemptId, setReviewAttemptId] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [sharing, setSharing] = useState(false);
 
@@ -630,7 +631,7 @@ export default function VoiceInterviewPage() {
 
   function startInterview() {
     if (!company.trim()) { toast.error('Pick or type a target company.'); return; }
-    setQuestions([]); setAnswers([]); setEvaluations([]); setSummary(null); setPercentile(null); setShowDetails(false);
+    setQuestions([]); setAnswers([]); setEvaluations([]); setSummary(null); setPercentile(null); setReviewAttemptId(null); setShowDetails(false);
     setEvalError(null); setPendingAnswer(null);
     setStartTime(Date.now());
     fetchQuestion(1, 'idle');
@@ -722,8 +723,21 @@ export default function VoiceInterviewPage() {
         mode, domain, targetCompany: company,
         totalScore: overall, technicalAccuracy: ta, communicationClarity: cc, confidenceScore: cs,
         grade, questionsAnswered: evaluations.length, durationSeconds: duration,
+        // Full Q&A transcript so the attempt lands on the review page.
+        turns: evaluations.map((ev, i) => ({
+          question: questions[i]?.question || '',
+          type: questions[i]?.type || 'technical',
+          answer: answers[i]?.transcript || '',
+          evaluation: {
+            overallScore: ev.overallScore,
+            idealAnswer: ev.idealAnswer,
+            verdict: ev.verdict,
+            improvements: ev.improvements,
+          },
+        })),
       });
       setPercentile(r.data.percentile);
+      setReviewAttemptId(r.data.attemptId || null);
     } catch { setPercentile(null); }
   }
 
@@ -731,7 +745,7 @@ export default function VoiceInterviewPage() {
     stopListening();
     finalTranscriptRef.current = '';
     setStatus('idle'); setQuestions([]); setAnswers([]); setEvaluations([]); setQIndex(0);
-    setSummary(null); setPercentile(null); setTranscript(''); setInterim(''); setShowDetails(false);
+    setSummary(null); setPercentile(null); setReviewAttemptId(null); setTranscript(''); setInterim(''); setShowDetails(false);
     setEvalError(null); setPendingAnswer(null);
   }
 
@@ -1110,6 +1124,11 @@ export default function VoiceInterviewPage() {
           <button onClick={shareScore} disabled={sharing} style={{ flex: 1, minWidth: 150, padding: 13, borderRadius: 12, border: 'none', background: `linear-gradient(135deg,${PURPLE},${CYAN})`, color: '#020812', cursor: sharing ? 'wait' : 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>{sharing ? 'Generating…' : 'Share Score 📤'}</button>
           <button onClick={retake} style={{ flex: 1, minWidth: 150, padding: 13, borderRadius: 12, border: 'none', background: `linear-gradient(135deg,${GREEN},${CYAN})`, color: '#020812', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>Retake Interview</button>
         </div>
+        {reviewAttemptId && (
+          <a href={`/review/${reviewAttemptId}`} style={{ display: 'block', textAlign: 'center', marginBottom: 14, color: GENOIS, fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600, textDecoration: 'none' }}>
+            📋 Saved to your review history — open full answer review →
+          </a>
+        )}
 
         {/* full session transcript — every Q + score persists here. Slate-800
             containers over the Slate-900 matrix; the candidate's own words get

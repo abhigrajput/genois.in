@@ -4,6 +4,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { csrfCheck } from '@/lib/security';
+import { saveAttemptReview } from '@/lib/attemptReview';
 
 export const dynamic = 'force-dynamic';
 
@@ -102,7 +103,7 @@ export async function POST(request) {
 
     let body;
     try { body = await request.json(); } catch { return errorResponse('Invalid JSON', 400); }
-    const { answers, timeTaken } = body || {};
+    const { answers, timeTaken, questions } = body || {};
 
     // FIX 08: Zod validation
     if (!Array.isArray(answers) || answers.length < 15 || answers.length > 25) {
@@ -145,6 +146,34 @@ export async function POST(request) {
     const level = (result.level || 'BEGINNER').toUpperCase();
     const levelLower = level.toLowerCase();
 
+    // Persist the full question set for the review page. The page sends the
+    // questions it rendered (text/options/correct/explanation) alongside the
+    // answers; older clients that omit them simply skip review persistence.
+    let attemptId = null;
+    if (Array.isArray(questions) && questions.length > 0) {
+      const answerById = new Map(answers.map(a => [a.questionId, a]));
+      attemptId = await saveAttemptReview({
+        userId: payload.userId,
+        attemptType: 'dsa_diagnostic',
+        topic: 'DSA Diagnostic',
+        score: result.score,
+        questions: questions.slice(0, 25).map(q => {
+          const a = answerById.get(q.id);
+          const selected = a?.selected || null;
+          return {
+            question: q.question,
+            code: q.code || null,
+            options: q.options ?? null,
+            correct_answer: q.correct,
+            user_answer: selected,
+            is_correct: selected != null && selected === q.correct,
+            explanation: q.explanation,
+            topic: q.topic,
+          };
+        }),
+      });
+    }
+
     // Save diagnostic result
     await supabase.from('diagnostic_results').insert({
       user_id: payload.userId,
@@ -177,6 +206,7 @@ export async function POST(request) {
       weaknesses: result.weaknesses || [],
       recommendation: result.recommendation || '',
       fromCache: false,
+      attemptId,
     });
   } catch (error) {
     console.error('[dsa-diagnostic/evaluate] Error:', error);

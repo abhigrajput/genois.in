@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { useToken, apiFetch } from '@/lib/useApi';
 import toast from 'react-hot-toast';
 import CodeEditor from '@/components/CodeEditor';
+import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
+import ErrorCard, { friendlyError } from '@/components/ui/ErrorCard';
 
 export default function CodingPage() {
   const { token, ready } = useToken();
@@ -18,6 +20,7 @@ export default function CodingPage() {
   const [hintIndex, setHintIndex] = useState(-1);
   const [codeEligible, setCodeEligible] = useState(false);
   const [codeTimeLeft, setCodeTimeLeft] = useState(30);
+  const [loadError, setLoadError] = useState(null);
 
   // 30-second read gate: resets each time a new problem loads
   useEffect(() => {
@@ -33,8 +36,9 @@ export default function CodingPage() {
     return () => clearInterval(interval);
   }, [codingTest]);
 
-  useEffect(() => {
-    if (!ready || !token) return;
+  async function loadChallenge() {
+    setLoadError(null);
+    setPageLoading(true);
 
     function applyChallenge(r) {
       const tests = r.data.codingTests || (r.data.codingTest ? [r.data.codingTest] : []);
@@ -42,21 +46,28 @@ export default function CodingPage() {
       setCodingTest(tests[0] || null);
     }
 
-    apiFetch('/api/roadmap/daily', token)
-      .then(r => {
-        const day = r.data?.currentDay;
-        if (!day) throw new Error('No current day');
-        setCurrentDay(day);
-        return apiFetch('/api/coding/day/' + day, token);
-      })
-      .then(applyChallenge)
-      .catch(() => {
+    try {
+      const r = await apiFetch('/api/roadmap/daily', token);
+      const day = r.data?.currentDay;
+      if (!day) throw new Error('No current day');
+      setCurrentDay(day);
+      applyChallenge(await apiFetch('/api/coding/day/' + day, token));
+    } catch {
+      // Roadmap day unavailable — fall back to day 1 before giving up.
+      try {
         setCurrentDay(1);
-        return apiFetch('/api/coding/day/1', token)
-          .then(applyChallenge)
-          .catch(() => toast.error('Failed to load challenge'));
-      })
-      .finally(() => setPageLoading(false));
+        applyChallenge(await apiFetch('/api/coding/day/1', token));
+      } catch (err) {
+        setLoadError(friendlyError(err, "load today's coding challenge"));
+      }
+    } finally {
+      setPageLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    if (!ready || !token) return;
+    loadChallenge();
   }, [ready, token]);
 
   async function submitCode() {
@@ -71,7 +82,7 @@ export default function CodingPage() {
       setResult(res.data);
       toast.success('Code reviewed!');
     } catch (err) {
-      toast.error('Submit failed: ' + err.message);
+      toast.error(friendlyError(err, 'review your code — the AI reviewer may be busy'));
     } finally {
       setLoading(false);
     }
@@ -79,10 +90,15 @@ export default function CodingPage() {
 
   const card = { background:'#070f1f', border:'1px solid rgba(0,217,163,0.1)', borderRadius:14, padding:20, marginBottom:16 };
 
-  if (!ready || pageLoading) return (
-    <div style={{textAlign:'center',paddingTop:80,color:'#5a7a9a',fontFamily:'var(--font-mono)',fontSize:13}}>
-      Loading challenge...
-    </div>
+  if (!ready || pageLoading) return <LoadingSkeleton variant="page" label="Loading today's coding challenge…" />;
+
+  if (loadError) return (
+    <ErrorCard
+      title="Couldn't load the challenge"
+      message={loadError}
+      primaryLabel="↻ Retry"
+      onPrimary={loadChallenge}
+    />
   );
 
   if (!codingTest) return (

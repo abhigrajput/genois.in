@@ -262,13 +262,21 @@ export default function TestsPage() {
               {f.explanation && <div style={{ fontSize: 12, color: '#5a7a9a', marginTop: 3 }}>{f.explanation}</div>}
             </div>
           ))}
+          {result.attemptId && (
+            <a href={`/review/${result.attemptId}`} style={{ display: 'block', textAlign: 'center', marginTop: 12, padding: 12, borderRadius: 8, background: 'rgba(0,217,163,0.08)', color: '#00d9a3', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 600, textDecoration: 'none', border: '1px solid rgba(0,217,163,0.2)' }}>
+              📋 Full answer review (questions, your picks &amp; explanations) →
+            </a>
+          )}
           <button onClick={() => { setTest(null); setResult(null); setAnswers({}); setActiveType(null); }} style={{ marginTop: 12, width: '100%', padding: 12, borderRadius: 8, border: '1px solid rgba(0,217,163,0.2)', background: 'transparent', color: '#00d9a3', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Take Another Test</button>
         </div>
       )}
 
       {history.length > 0 && !activeType && (
         <div style={C}>
-          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: '#e8e8ed', marginBottom: 14 }}>Past Tests</div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: '#e8e8ed' }}>Past Tests</div>
+            <a href="/review" style={{ color: '#00d9a3', fontSize: 12, fontFamily: 'var(--font-heading)', fontWeight: 600, textDecoration: 'none' }}>📋 Answer reviews →</a>
+          </div>
           {history.slice(0, 8).map((t, i) => (
             <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
               <div>

@@ -3,6 +3,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { askClaudeJSON } from '@/lib/claude';
+import { getRecentSeenQuestions, seenOverlap, shuffle } from '@/lib/attemptReview';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,7 +39,7 @@ Return a JSON array of exactly 25 question objects.`;
 // ---------------------------------------------------------------------------
 // DeepSeek fallback via NVIDIA endpoint
 // ---------------------------------------------------------------------------
-async function askDeepSeekDiagnostic(timeoutMs = 25000) {
+async function askDeepSeekDiagnostic(timeoutMs = 25000, userPrompt = USER_PROMPT) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -60,7 +61,7 @@ async function askDeepSeekDiagnostic(timeoutMs = 25000) {
           model: 'deepseek-ai/deepseek-r1',
           messages: [
             { role: 'system', content: systemPrompt },
-            { role: 'user',   content: USER_PROMPT },
+            { role: 'user',   content: userPrompt },
           ],
           temperature: 0.6,
           max_tokens: 6000,
@@ -96,20 +97,36 @@ export async function GET(request) {
 
     const supabase = getAdminClient();
 
-    // Check for cached questions (7-day cache)
+    // Retake randomization: `diagnostic_questions` is treated as a POOL of
+    // recent sets, not a single winner. A random set the user hasn't mostly
+    // seen (per their last 2 attempts in test_questions) is served; if every
+    // cached set is familiar, a fresh one is generated with an avoid-list and
+    // added to the pool. Before: one global set for 7 days → identical
+    // retakes with only the order shuffled.
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-    const { data: cached } = await supabase
+    const { data: cachedSets } = await supabase
       .from('diagnostic_questions')
       .select('id, questions, created_at')
       .gte('created_at', sevenDaysAgo)
       .order('created_at', { ascending: false })
-      .limit(1)
-      .single();
+      .limit(5);
 
-    if (cached?.questions) {
-      const shuffled = [...cached.questions].sort(() => Math.random() - 0.5);
-      return successResponse({ questions: shuffled, cached: true });
+    const seen = await getRecentSeenQuestions({
+      userId: payload.userId, attemptTypes: 'dsa_diagnostic', attempts: 2,
+    });
+
+    const unseenSets = (cachedSets || []).filter(
+      s => Array.isArray(s.questions) && s.questions.length >= 20 && seenOverlap(s.questions, seen) < 0.4
+    );
+    if (unseenSets.length > 0) {
+      const pick = unseenSets[Math.floor(Math.random() * unseenSets.length)];
+      return successResponse({ questions: shuffle(pick.questions), cached: true });
     }
+
+    const avoidList = [...seen].slice(0, 15);
+    const userPrompt = avoidList.length
+      ? `${USER_PROMPT}\n\nIMPORTANT: Do NOT repeat or lightly rephrase any of these questions the student already saw:\n${avoidList.map((q, i) => `${i + 1}. ${q}`).join('\n')}`
+      : USER_PROMPT;
 
     // --- Primary: Claude with 25-second timeout ---
     let questions = null;
@@ -119,7 +136,7 @@ export async function GET(request) {
       const claudeController = new AbortController();
       const claudeTimer = setTimeout(() => claudeController.abort(), 25000);
       try {
-        questions = await askClaudeJSON(USER_PROMPT, SYSTEM_PROMPT, 6000);
+        questions = await askClaudeJSON(userPrompt, SYSTEM_PROMPT, 6000);
         // Unwrap if Claude returned { questions: [...] }
         if (!Array.isArray(questions) && Array.isArray(questions?.questions)) {
           questions = questions.questions;
@@ -135,7 +152,7 @@ export async function GET(request) {
     // --- Fallback: DeepSeek via NVIDIA ---
     if (!Array.isArray(questions) || questions.length < 20) {
       try {
-        questions = await askDeepSeekDiagnostic(25000);
+        questions = await askDeepSeekDiagnostic(25000, userPrompt);
         if (!Array.isArray(questions) && Array.isArray(questions?.questions)) {
           questions = questions.questions;
         }

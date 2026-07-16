@@ -5,6 +5,8 @@ import { roadmapAPI, taskAPI, testAPI, codingAPI, notesAPI } from '@/lib/api';
 import useAuthStore from '@/store/authStore';
 import CodeEditor from '@/components/CodeEditor';
 import { toEmbedUrl } from '@/lib/youtubeEmbed';
+import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
+import ErrorCard, { friendlyError } from '@/components/ui/ErrorCard';
 
 // ── Shared Tailwind class tokens (native utilities only) ──
 const CARD =
@@ -140,7 +142,7 @@ export default function DailyRoadmapPage() {
       setCodeResult(null);
       setNote(null);
     } catch (err) {
-      toast.error('Failed to load roadmap');
+      toast.error(friendlyError(err, 'load your roadmap'));
     } finally {
       setLoading(false);
       setNavLoading(false);
@@ -219,8 +221,8 @@ export default function DailyRoadmapPage() {
     try {
       const res = await testAPI.generateDaily({ roadmapId: daily.roadmapItem.id, dayNumber: daily.currentDay });
       setTest(res.data);
-    } catch {
-      toast.error('Failed to generate test');
+    } catch (err) {
+      toast.error(friendlyError(err, 'generate the test — the AI generator may be busy'));
     } finally {
       setTestLoading(false);
     }
@@ -234,8 +236,8 @@ export default function DailyRoadmapPage() {
       const res = await testAPI.submit({ testId: test.testId, answers });
       setTestResult(res.data);
       await completeTask('test');
-    } catch {
-      toast.error('Failed to submit test');
+    } catch (err) {
+      toast.error(friendlyError(err, 'submit the test — your answers are still on screen'));
     } finally {
       setTestLoading(false);
     }
@@ -247,8 +249,8 @@ export default function DailyRoadmapPage() {
       const res = await codingAPI.submit({ codingTestId: codingTest.id, code, language: codeLanguage });
       setCodeResult(res.data);
       await completeTask('coding');
-    } catch {
-      toast.error('Code submission failed');
+    } catch (err) {
+      toast.error(friendlyError(err, 'review your code — the AI reviewer may be busy'));
     } finally {
       setCodeLoading(false);
     }
@@ -260,8 +262,8 @@ export default function DailyRoadmapPage() {
       const res = await notesAPI.generate({ roadmapId: daily.roadmapItem.id, noteType });
       setNote(res.data.note);
       if (!isTaskDone('notes')) await completeTask('notes');
-    } catch {
-      toast.error('Failed to generate notes');
+    } catch (err) {
+      toast.error(friendlyError(err, 'generate notes — the AI writer may be busy'));
     } finally {
       setNoteLoading(false);
     }
@@ -309,8 +311,15 @@ export default function DailyRoadmapPage() {
     }
   };
 
-  if (loading) return <div className="text-sm text-gray-400">Loading your roadmap...</div>;
-  if (!daily) return <div className="text-sm text-gray-400">No roadmap found.</div>;
+  if (loading) return <LoadingSkeleton variant="page" label="Loading your roadmap…" />;
+  if (!daily) return (
+    <ErrorCard
+      title="Couldn't load your roadmap"
+      message="Your roadmap didn't come through — this is usually a connection hiccup or the AI generating your day. Nothing is lost."
+      primaryLabel="↻ Retry"
+      onPrimary={() => { setLoading(true); loadDay(null); }}
+    />
+  );
 
   const {
     roadmapItem,
@@ -801,6 +810,14 @@ export default function DailyRoadmapPage() {
                         {f.explanation && <p className="mt-1 text-xs text-muted">{f.explanation}</p>}
                       </div>
                     ))}
+                    {testResult.attemptId && (
+                      <a
+                        href={`/review/${testResult.attemptId}`}
+                        className="block text-center text-[13px] font-semibold text-primary no-underline hover:underline"
+                      >
+                        📋 Open full answer review →
+                      </a>
+                    )}
                   </div>
                 )}
               </div>

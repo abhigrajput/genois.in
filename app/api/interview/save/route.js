@@ -1,6 +1,7 @@
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
+import { saveAttemptReview } from '@/lib/attemptReview';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,6 +35,28 @@ export async function POST(request) {
     let saved = false;
     let percentile = clampPct(totalScore * 0.9); // score-based estimate by default
 
+    // Persist the full Q&A transcript for the review page. `turns` is
+    // [{ question, type, answer, evaluation }] from the voice-interview page;
+    // older clients that omit it just skip review persistence.
+    let attemptId = null;
+    if (Array.isArray(body.turns) && body.turns.length > 0) {
+      attemptId = await saveAttemptReview({
+        userId: payload.userId,
+        attemptType: 'voice_interview',
+        topic: body.targetCompany ? `${body.targetCompany} interview` : 'Voice interview',
+        score: num(body.totalScore),
+        questions: body.turns.slice(0, 15).map(t => ({
+          question: t.question,
+          correct_answer: t.evaluation?.idealAnswer || '',
+          user_answer: t.answer,
+          is_correct: Number(t.evaluation?.overallScore) >= 60,
+          explanation: [t.evaluation?.verdict, ...(t.evaluation?.improvements || [])]
+            .filter(Boolean).join(' — '),
+          topic: t.type || 'technical',
+        })),
+      });
+    }
+
     try {
       await supabase.from('interview_results').insert(row);
       saved = true;
@@ -52,7 +75,7 @@ export async function POST(request) {
       console.warn('[interview/save] insert/percentile skipped:', e.message);
     }
 
-    return successResponse({ saved, percentile });
+    return successResponse({ saved, percentile, attemptId });
   } catch (error) {
     console.error('[interview/save] Error:', error);
     return errorResponse('Could not save results', 500);

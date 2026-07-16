@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import { mentorAPI } from '@/lib/api';
 import PermissionGate from '@/components/PermissionGate';
 import { usePermission } from '@/lib/usePermission';
+import { friendlyError } from '@/components/ui/ErrorCard';
 
 const MODES = [
   { value:'explain', label:'Explain Concept' },
@@ -67,9 +68,10 @@ export default function MentorPage() {
     try {
       const res = await mentorAPI.sendMessage({ message: msg, mode, conversationHistory: history });
       setMessages(prev => [...prev.slice(0,-1), { role:'assistant', content: res.data.response }]);
-    } catch {
+    } catch (e) {
       setMessages(prev => prev.slice(0,-1));
-      toast.error('Mentor failed to respond');
+      setInput(msg); // put the question back so a retry is one keypress away
+      toast.error(friendlyError(e, 'get a mentor reply — the AI may be busy'));
     } finally { setLoading(false); }
   }
 

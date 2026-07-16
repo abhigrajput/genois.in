@@ -4,6 +4,7 @@ import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { APTITUDE_CATEGORIES } from '@/lib/aptitudeConfig';
 import { getCached, setCached, buildCacheKey } from '@/lib/aiCache';
+import { saveAttemptReview, getRecentSeenQuestions, seenOverlap, shuffle } from '@/lib/attemptReview';
 
 async function callClaude(prompt) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -59,25 +60,52 @@ Format:
 
 Make sure all 10 questions are included and JSON is valid.`;
 
-    const cacheKey = buildCacheKey('aptitude', category, topic, difficulty);
-    const cached = await getCached(cacheKey);
+    const supabase = getAdminClient();
+
+    // Retake randomization: the cache key rotates through 3 pools per
+    // (category, topic, difficulty) based on the user's session count, so a
+    // retake lands on a different pool instead of the identical cached set.
+    // If the chosen pool still overlaps what this user recently saw, it is
+    // regenerated with an explicit avoid-list. Caching stays — cost unchanged
+    // for first-time takers.
+    const { count: priorSessions } = await supabase
+      .from('aptitude_sessions')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', payload.userId)
+      .eq('category', category)
+      .eq('topic', topic);
+
+    const variant = (priorSessions || 0) % 3;
+    const cacheKey = buildCacheKey('aptitude', category, topic, difficulty, `set${variant}`);
+    const seen = await getRecentSeenQuestions({
+      userId: payload.userId, attemptTypes: 'aptitude', topic, attempts: 3,
+    });
+
+    let cached = await getCached(cacheKey);
+    if (cached && seenOverlap(cached, seen) >= 0.5) cached = null; // mostly seen — force fresh below
+
     if (cached) {
-      const supabase = getAdminClient();
+      const questions = shuffle(cached);
       const { data: session } = await supabase
         .from('aptitude_sessions')
         .insert({
           user_id: payload.userId,
           category,
           topic,
-          questions: cached,
-          total_questions: cached.length,
+          questions,
+          total_questions: questions.length,
         })
         .select()
         .single();
-      return successResponse({ session, questions: cached, topicName: topicData.name, categoryLabel: catData.label, fromCache: true });
+      return successResponse({ session, questions, topicName: topicData.name, categoryLabel: catData.label, fromCache: true });
     }
 
-    const text = await callClaude(prompt);
+    const avoidList = [...seen].slice(0, 20);
+    const genPrompt = avoidList.length
+      ? `${prompt}\n\nIMPORTANT: Do NOT repeat or lightly rephrase any of these questions the student already saw:\n${avoidList.map((q, i) => `${i + 1}. ${q}`).join('\n')}`
+      : prompt;
+
+    const text = await callClaude(genPrompt);
     let questions = [];
     try {
       questions = JSON.parse(text.replace(/```json|```/g, '').trim());
@@ -86,8 +114,6 @@ Make sure all 10 questions are included and JSON is valid.`;
     } catch {
       return errorResponse('Failed to generate questions. Try again.', 500);
     }
-
-    const supabase = getAdminClient();
     const { data: session } = await supabase
       .from('aptitude_sessions')
       .insert({
@@ -143,6 +169,25 @@ export async function POST(request) {
     });
 
     const percentage = Math.round((correct / questions.length) * 100);
+
+    // Persist full per-question data for the review page (and retake
+    // exclusion). No-op if the test_questions migration isn't applied.
+    const attemptId = await saveAttemptReview({
+      userId: payload.userId,
+      attemptType: 'aptitude',
+      sourceId: session.id,
+      topic: session.topic,
+      score: percentage,
+      questions: questions.map((q, i) => ({
+        question: q.question,
+        options: q.options ?? null,
+        correct_answer: q.correct,
+        user_answer: answers[i],
+        is_correct: answers[i] === q.correct,
+        explanation: q.explanation,
+        topic: q.topic || session.topic,
+      })),
+    });
 
     await supabase.from('aptitude_sessions').update({
       answers,
@@ -204,6 +249,7 @@ export async function POST(request) {
       total: questions.length,
       results,
       pointsEarned: percentage >= 70 ? 15 : 0,
+      attemptId,
     });
   } catch (error) {
     return errorResponse('Internal server error', 500);

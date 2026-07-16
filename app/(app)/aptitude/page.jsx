@@ -5,6 +5,8 @@ import toast from 'react-hot-toast';
 import PermissionGate from '@/components/PermissionGate';
 import { usePermission } from '@/lib/usePermission';
 import { Search, Zap, BookOpen } from 'lucide-react';
+import ErrorCard from '@/components/ui/ErrorCard';
+import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 
 // Explicit wall-clock caps so a slow/hung backend can never leave the UI on a
 // dead spinner. The dashboard read is light; AI question-generation is heavy.
@@ -162,26 +164,6 @@ function ShortcutsView({ mode, setMode }) {
   );
 }
 
-// One recovery surface for every dead-end: a failed dashboard load, a timed-out
-// generation, an empty question set. Always gives the user a way forward.
-function ErrorCard({ icon = '⚠️', title, message, primaryLabel, onPrimary, secondaryLabel, onSecondary }) {
-  return (
-    <div style={{ maxWidth: 560, margin: '40px auto 0', fontFamily: 'var(--font-body)' }}>
-      <div style={{ background: '#070f1f', border: '1px solid rgba(239,159,39,0.28)', borderRadius: 16, padding: 28, textAlign: 'center' }}>
-        <div style={{ fontSize: 34, marginBottom: 12 }}>{icon}</div>
-        <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>{title}</div>
-        <div style={{ fontSize: 14, color: '#c8d8e8', lineHeight: 1.6, marginBottom: 20 }}>{message}</div>
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
-          <button onClick={onPrimary} style={{ flex: 1, minWidth: 160, padding: 13, borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>{primaryLabel}</button>
-          {secondaryLabel && (
-            <button onClick={onSecondary} style={{ flex: 1, minWidth: 160, padding: 13, borderRadius: 12, border: '1px solid rgba(255,255,255,0.14)', cursor: 'pointer', background: 'transparent', color: '#c8d8e8', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14 }}>{secondaryLabel}</button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function AptitudePage() {
   const { token, ready } = useToken();
   const { userPlan } = usePermission();
@@ -287,7 +269,7 @@ export default function AptitudePage() {
     </PermissionGate>
   );
 
-  if (loading) return <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center', fontFamily: 'var(--font-mono)' }}>Loading aptitude...</div>;
+  if (loading) return <LoadingSkeleton variant="page" label="Loading your aptitude dashboard…" />;
 
   // Dashboard load failed → offer a retry instead of a permanent "Loading…".
   if (loadError && !data) return (
@@ -300,10 +282,7 @@ export default function AptitudePage() {
   );
 
   if (phase === 'loading') return (
-    <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center', fontFamily: 'var(--font-mono)' }}>
-      <div style={{ fontSize: 48, marginBottom: 16 }}>🧠</div>
-      <div style={{ fontSize: 16, color: '#e8e8ed', fontFamily: 'var(--font-heading)', fontWeight: 700 }}>Generating 10 {activeTopic?.name} questions...</div>
-    </div>
+    <LoadingSkeleton variant="quiz" label={`🧠 GENOIS Engine is generating 10 ${activeTopic?.name || ''} questions…`} />
   );
 
   // Generation failed / timed out / came back empty → never a dead spinner.
@@ -353,6 +332,11 @@ export default function AptitudePage() {
         <button onClick={() => { setPhase('list'); setActiveTopic(null); setResult(null); }} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, marginTop: 20 }}>
           Back to Topics →
         </button>
+        {result.attemptId && (
+          <a href={`/review/${result.attemptId}`} style={{ display: 'block', textAlign: 'center', marginTop: 12, color: '#00d9a3', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600, textDecoration: 'none' }}>
+            📋 Open full review (saved to your history) →
+          </a>
+        )}
       </div>
     );
   }

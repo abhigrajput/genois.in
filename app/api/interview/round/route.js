@@ -115,7 +115,17 @@ Return ONLY valid JSON array with exactly ${roundConfig.questionCount} questions
 ]`;
     }
 
-    const cacheKey = buildCacheKey('interview', session.company_type, currentRound.type);
+    // Retake randomization: rotate through 3 cached question pools per
+    // (company type, round type) based on how many sessions this user has,
+    // so a second mock interview doesn't replay the identical round.
+    const { count: priorSessions } = await supabase
+      .from('interview_sessions')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', payload.userId)
+      .eq('company_type', session.company_type);
+
+    const variant = Math.max(0, (priorSessions || 1) - 1) % 3;
+    const cacheKey = buildCacheKey('interview', session.company_type, currentRound.type, `set${variant}`);
     const cachedQuestions = await getCached(cacheKey);
     if (cachedQuestions) {
       const updatedRounds = [...rounds];

@@ -294,10 +294,15 @@ function ResultScreen({ result, onStartRoadmap }) {
           </div>
         )}
 
-        <div style={{ textAlign: 'center' }}>
+        <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center' }}>
           <button onClick={onStartRoadmap} style={{ ...S.btn, fontSize: 16, padding: '16px 40px' }}>
             Start Your {cfg.label} Roadmap →
           </button>
+          {result.attemptId && (
+            <a href={`/review/${result.attemptId}`} style={{ ...S.btnGhost, textDecoration: 'none', display: 'inline-block' }}>
+              📋 Review your answers — see what was wrong &amp; why
+            </a>
+          )}
         </div>
       </div>
     </div>
@@ -343,7 +348,9 @@ export default function DSADiagnosticPage() {
     setSubmitting(true);
     setScreen('evaluating');
     try {
-      const r = await apiFetch('/api/dsa-diagnostic/evaluate', token, 'POST', { answers, timeTaken });
+      // `questions` rides along so the server can persist the full set
+      // (text/options/correct/explanation) for the post-test review page.
+      const r = await apiFetch('/api/dsa-diagnostic/evaluate', token, 'POST', { answers, timeTaken, questions });
       setResult(r.data);
       setScreen('result');
     } catch (e) {
