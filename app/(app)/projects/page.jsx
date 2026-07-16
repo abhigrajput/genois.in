@@ -2,83 +2,95 @@
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import useAuthStore from '@/store/authStore';
+import { useToken, apiFetch } from '@/lib/useApi';
+import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
+import ErrorCard, { friendlyError } from '@/components/ui/ErrorCard';
+import { DOMAIN_PROJECTS, githubSearchUrl } from '@/lib/projectTemplates';
 
-const DOMAIN_PROJECTS = {
-  fullstack: [
-    { week: 4, title: 'Personal Portfolio Website', difficulty: 'beginner', description: 'Build a responsive portfolio with HTML/CSS showing your profile, skills, and contact form', steps: ['Setup VS Code project', 'Create index.html structure', 'Design responsive stylesheet', 'Add contact form with input validations', 'Push code to GitHub', 'Deploy on Vercel/Netlify'] },
-    { week: 8, title: 'JavaScript Quiz App', difficulty: 'beginner', description: 'Build an interactive quiz app with timer, score tracking, and local storage', steps: ['Setup HTML/CSS layout', 'Write quiz questions data', 'Implement timer countdown logic', 'Handle question transitions & grading', 'Store user highscores in LocalStorage'] },
-    { week: 12, title: 'React Todo App with Authentication', difficulty: 'beginner', description: 'Full todo app with React hooks, user auth, and persistent storage', steps: ['Create React app with Vite', 'Build interactive todo components', 'Integrate state management using Hooks', 'Add login/signup forms', 'Connect to Supabase backend'] },
-    { week: 16, title: 'REST API with Node.js', difficulty: 'intermediate', description: 'Build a complete REST API with Express, JWT auth, and PostgreSQL', steps: ['Setup Express server structure', 'Design database schemas', 'Implement JWT token signing middleware', 'Write CRUD handlers for items', 'Test end-to-end with Postman'] },
-    { week: 20, title: 'Full Stack Blog Platform', difficulty: 'intermediate', description: 'Complete blog with React frontend, Node backend, PostgreSQL database', steps: ['Create project workspace directories', 'Build database migrations & seeds', 'Develop Node.js auth & post handlers', 'Construct React feed & editor panels', 'Connect API endpoints to client'] },
-    { week: 24, title: 'E-commerce App with Next.js', difficulty: 'advanced', description: 'Full e-commerce with product listing, cart, payments, and admin panel', steps: ['Initialize Next.js application', 'Design product listing layouts', 'Implement shopping cart state actions', 'Integrate Stripe checkout API', 'Build vendor control dashboard'] },
-    { week: 28, title: 'Real-time Chat Application', difficulty: 'advanced', description: 'Chat app with WebSockets, rooms, message history, and notifications', steps: ['Design client-server socket events', 'Setup Socket.io with Node server', 'Create real-time chat room states', 'Persist messages in database', 'Add browser push notifications'] },
-    { week: 32, title: 'Social Media Platform', difficulty: 'advanced', description: 'Social app with posts, likes, comments, follows, and real-time updates', steps: ['Design relational database tables', 'Build post and media uploading API', 'Create interactive likes & comments', 'Implement user follow mechanics', 'Integrate visual news feed activity'] },
-    { week: 40, title: 'SaaS Application', difficulty: 'expert', description: 'Complete SaaS product with subscriptions, dashboard, and analytics', steps: ['Map core value offering features', 'Build Stripe subscription pricing tiers', 'Construct user analytics dashboard', 'Implement usage limits middleware', 'Add visual usage charts'] },
-    { week: 52, title: 'Portfolio Capstone Project', difficulty: 'expert', description: 'Your best project combining all skills - deploy and present to employers', steps: ['Brainstorm capstone scope & specs', 'Design UI system and schema', 'Develop fullstack features securely', 'Deploy with CI/CD pipelines', 'Create video demo and case study'] }
-  ],
-  dsa: [
-    { week: 4, title: 'Array & String Problem Set', difficulty: 'beginner', description: 'Solve 20 array and string problems on LeetCode, write C++ solutions with explanations', steps: ['Select 10 Easy & 10 Medium problems', 'Implement highly optimized solutions', 'Write space/time complexity analyses', 'Push solution codes to GitHub', 'Create markdown documentation'] },
-    { week: 8, title: 'Linked List Library', difficulty: 'beginner', description: 'Build a complete linked list implementation in C++ with all operations and visualizer', steps: ['Design Node structures in C++', 'Implement Singly & Doubly List classes', 'Write insert, delete, reverse methods', 'Build command-line visualizer', 'Add thorough memory management'] },
-    { week: 12, title: 'Custom Stack & Queue Implementation', difficulty: 'beginner', description: 'Implement stack, queue, and deque from scratch in C++ with all edge cases', steps: ['Design Array and Node backed states', 'Implement push, pop, enqueue, dequeue', 'Write boundary & capacity validations', 'Include sliding window maximum test', 'Publish as reusable headers'] },
-    { week: 16, title: 'Binary Tree Visualizer', difficulty: 'intermediate', description: 'Build a C++ program that builds and visualizes binary trees with all traversals', steps: ['Build tree node representations', 'Write level-order insertion methods', 'Implement DFS & BFS traversal steps', 'Create textual tree printer visual', 'Compile and execute test scenarios'] },
-    { week: 20, title: 'Graph Problem Solver', difficulty: 'intermediate', description: 'Implement BFS, DFS, Dijkstra, and Kruskal in C++ with a graph visualizer', steps: ['Design Adjacency List graph class', 'Implement BFS and DFS search patterns', 'Develop Dijkstra shortest-path logic', 'Write Union-Find Kruskal MST code', 'Generate dot layouts for visualization'] },
-    { week: 24, title: 'DP Problem Collection', difficulty: 'advanced', description: 'Solve 30 DP problems with detailed explanations, time/space analysis in C++', steps: ['Aggregate 30 core DP problem statements', 'Provide recursive top-down solutions', 'Add memoization array structures', 'Implement optimized bottom-up tables', 'Document time & space gains'] },
-    { week: 28, title: 'Competitive Programming Toolkit', difficulty: 'advanced', description: 'Build a C++ template with all common algorithms ready for competitive programming', steps: ['Write fast I/O configuration macros', 'Include custom vector/string helpers', 'Implement modular arithmetic math library', 'Add segment tree template class', 'Verify on standard contest problems'] },
-    { week: 36, title: 'LeetCode 100 Challenge', difficulty: 'expert', description: 'Solve 100 LeetCode problems (easy/medium/hard mix) and document all solutions', steps: ['Formulate a checklist of 100 problems', 'Commit solutions divided by patterns', 'Add exhaustive descriptive comments', 'Outline alternative strategies', 'Track performance benchmarks'] },
-    { week: 44, title: 'Mock Interview Preparation', difficulty: 'expert', description: 'Complete 50 mock interview problems with time constraints and explanations', steps: ['Select 50 popular interview questions', 'Simulate 45-minute solving trials', 'Refine verbal problem explanation notes', 'Write dry-run execution tables', 'Verify edge case optimizations'] },
-    { week: 52, title: 'Complete DSA Portfolio', difficulty: 'expert', description: 'GitHub repo with all solutions, complexity analysis, and study notes', steps: ['Organize repository layout logically', 'Write extensive master README.md', 'Create topical category directories', 'Format code files elegantly', 'Promote portfolio link to LinkedIn'] }
-  ],
-  cybersecurity: [
-    { week: 4, title: 'Network Scanner Tool', difficulty: 'beginner', description: 'Build a Python network scanner using sockets to discover hosts and open ports', steps: ['Import socket and sys modules', 'Setup target IP range parsing', 'Implement multi-threaded port scanner', 'Add timeout and error handling', 'Output scan report nicely'] },
-    { week: 8, title: 'Password Cracker', difficulty: 'beginner', description: 'Build a Python dictionary attack tool for educational purposes', steps: ['Review hash algorithms (SHA256, MD5)', 'Read password dictionary file safely', 'Implement hashing comparison functions', 'Optimize verification throughput', 'Add clear terminal alerts'] }
-  ]
+const DIFFICULTY_META = {
+  beginner:     { label: 'STARTER',      color: '#00d9a3' },
+  intermediate: { label: 'INTERMEDIATE', color: '#ef9f27' },
+  advanced:     { label: 'ADVANCED',     color: '#ff6b4a' },
+  expert:       { label: 'EXPERT',       color: '#ff2d78' },
 };
+
+// Small copy-to-clipboard helper shared by the resume bullets.
+function copyText(text, label = 'Copied to clipboard') {
+  try {
+    navigator.clipboard.writeText(text);
+    toast.success(label);
+  } catch {
+    toast.error('Copy failed — select and copy manually');
+  }
+}
+
+function TechChips({ tech }) {
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+      {tech.map((t) => (
+        <span key={t} style={{
+          fontFamily: 'var(--font-mono)', fontSize: 10.5, color: '#8aa2b9',
+          background: 'rgba(0,217,163,0.05)', border: '1px solid rgba(0,217,163,0.14)',
+          borderRadius: 20, padding: '3px 10px',
+        }}>{t}</span>
+      ))}
+    </div>
+  );
+}
+
+function SectionLabel({ children, color = '#5a7a9a' }) {
+  return (
+    <div style={{ fontSize: 11, color, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.6px', marginBottom: 8 }}>
+      {children}
+    </div>
+  );
+}
 
 export default function ProjectsPortfolioPage() {
   const { user } = useAuthStore();
+  const { token, ready } = useToken();
+  // domains.slug values are e.g. 'cybersec' (not 'cybersecurity') — the old key
+  // silently fell back to fullstack for several domains. Resolve against the
+  // real catalog, then fall back to fullstack only when a domain has no templates yet.
   const domain = user?.domain_slug || 'fullstack';
+  const projects = DOMAIN_PROJECTS[domain] || DOMAIN_PROJECTS.fullstack;
+
   const [currentWeek, setCurrentWeek] = useState(1);
   const [historyList, setHistoryList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Submission form states per project
-  const [activeSubmitting, setActiveSubmitting] = useState(null); // project title
+  // Submission form state (one project open at a time)
+  const [activeSubmitting, setActiveSubmitting] = useState(null);
   const [githubUrl, setGithubUrl] = useState('');
   const [projectNotes, setProjectNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [expanded, setExpanded] = useState({}); // title -> bool (guidance drawer)
 
   useEffect(() => {
+    if (!ready || !token) return;
     fetchHistory();
-  }, []);
+  }, [ready, token]);
 
-  const fetchHistory = async () => {
+  async function fetchHistory() {
+    setError(null);
+    setLoading(true);
     try {
-      const token = localStorage.getItem('genois_token');
-      // Fetch dynamic current progress first
-      const rRes = await fetch('/api/roadmap/daily', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const rData = await rRes.json();
-      if (rData.success) {
+      const rData = await apiFetch('/api/roadmap/daily', token).catch(() => null);
+      if (rData?.success) {
         const currentDay = rData.data?.currentDay || 1;
         setCurrentWeek(Math.ceil(currentDay / 7));
       }
-
-      const res = await fetch('/api/projects/history', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
-      if (data.success) {
-        setHistoryList(data.data.projects || []);
-      }
-    } catch {
-      toast.error('Failed to load project portfolio data');
+      const data = await apiFetch('/api/projects/history', token);
+      if (data.success) setHistoryList(data.data.projects || []);
+    } catch (e) {
+      setError(friendlyError(e, 'load your project portfolio'));
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  const submitProject = async (e, project) => {
+  async function submitProject(e, project) {
     e.preventDefault();
     if (!githubUrl || !githubUrl.includes('github.com')) {
       toast.error('Please enter a valid GitHub repository URL');
@@ -86,295 +98,288 @@ export default function ProjectsPortfolioPage() {
     }
     setSubmitting(true);
     try {
-      const token = localStorage.getItem('genois_token');
-      const res = await fetch('/api/projects/submit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          projectTitle: project.title,
-          githubUrl,
-          week: project.week,
-          domain,
-          notes: projectNotes,
-          projectId: project.id || 'p_week_' + project.week // fallback or generated UUID
-        })
+      const data = await apiFetch('/api/projects/submit', token, 'POST', {
+        projectTitle: project.title,
+        githubUrl,
+        week: project.week,
+        domain,
+        difficulty: project.difficulty,
+        description: project.description,
+        notes: projectNotes,
       });
-      const data = await res.json();
       if (data.success) {
-        toast.success(data.message);
+        toast.success(data.message || 'Project submitted!');
         setActiveSubmitting(null);
         setGithubUrl('');
         setProjectNotes('');
-        fetchHistory(); // reload history
+        fetchHistory();
       } else {
-        toast.error(data.message);
+        toast.error(data.message || 'Submission failed');
       }
-    } catch {
-      toast.error('Project submission failed');
+    } catch (err) {
+      toast.error(friendlyError(err, 'submit your project'));
     } finally {
       setSubmitting(false);
     }
-  };
+  }
 
-  const getProjectStatus = (projTitle) => {
-    const record = historyList.find(h => h.projects?.title === projTitle);
-    return record ? record.status : 'not_started';
-  };
+  const getRecord = (title) => historyList.find((h) => h.projects?.title === title) || null;
+  const getStatus = (title) => getRecord(title)?.status || 'not_started';
 
-  const getProjectProgress = (projTitle) => {
-    return historyList.find(h => h.projects?.title === projTitle) || null;
-  };
+  if (!ready || loading) {
+    return <LoadingSkeleton variant="cards" label="Loading your project portfolio…" />;
+  }
 
-  const projects = DOMAIN_PROJECTS[domain] || DOMAIN_PROJECTS.fullstack;
-
-  if (loading) return <div className="text-gray-400 text-sm">Loading projects portfolio...</div>;
+  if (error) {
+    return <ErrorCard title="Couldn't load your portfolio" message={error} primaryLabel="↻ Retry" onPrimary={fetchHistory} />;
+  }
 
   return (
     <div className="w-full space-y-6" style={{ fontFamily: 'var(--font-body)' }}>
-      
       {/* Page Header */}
       <div>
         <h1 className="text-2xl font-bold text-dark" style={{ fontFamily: 'var(--font-heading)' }}>🎓 Career Projects Portfolio</h1>
-        <p className="text-sm text-gray-400 mt-1">Build outstanding, real-world portfolio assets as you progress through your 52-week curriculum.</p>
+        <p className="text-sm text-gray-400 mt-1">Real, resume-worthy builds mapped to your 52-week track — each with phased guidance, a tech stack, deployment steps, and copy-ready resume bullets.</p>
       </div>
 
-      {/* Main Grid Layout */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        
-        {/* Left Column: All Projects Timeline & Accordeon (2/3 width) */}
+        {/* Left column: project timeline */}
         <div className="xl:col-span-2 space-y-4">
           {projects.map((proj, idx) => {
-            const status = getProjectStatus(proj.title);
+            const status = getStatus(proj.title);
             const isLocked = idx >= 2 && proj.week > currentWeek + 2;
-            const progressRecord = getProjectProgress(proj.title);
+            const record = getRecord(proj.title);
+            const diff = DIFFICULTY_META[proj.difficulty] || DIFFICULTY_META.beginner;
+            const isOpen = !!expanded[proj.title];
 
-            // Parse AI feedback if available
             let feedback = null;
-            if (progressRecord?.ai_feedback) {
+            if (record?.ai_feedback) {
               try {
-                feedback = typeof progressRecord.ai_feedback === 'string'
-                  ? JSON.parse(progressRecord.ai_feedback)
-                  : progressRecord.ai_feedback;
-              } catch (e) {
-                console.error(e);
-              }
+                feedback = typeof record.ai_feedback === 'string' ? JSON.parse(record.ai_feedback) : record.ai_feedback;
+              } catch { /* malformed feedback — ignore */ }
             }
 
             return (
               <div key={idx} style={{
                 background: '#070f1a',
-                border: isLocked ? '1px solid rgba(255,255,255,0.03)' : '1px solid rgba(0,217,163,0.08)',
-                borderRadius: '16px', padding: '20px', opacity: isLocked ? 0.5 : 1,
-                position: 'relative', overflow: 'hidden', transition: 'all 0.25s'
+                border: isLocked ? '1px solid rgba(255,255,255,0.03)' : `1px solid ${diff.color}18`,
+                borderRadius: 16, padding: 20, opacity: isLocked ? 0.5 : 1,
+                position: 'relative', overflow: 'hidden', transition: 'all 0.25s',
               }}>
-                {/* Horizontal flow line for timeline */}
+                {/* Timeline accent */}
                 <div style={{
-                  position: 'absolute', top: 0, left: 0, width: '4px', height: '100%',
-                  background: isLocked ? 'rgba(255,255,255,0.05)' : status === 'reviewed' ? '#1D9E75' : status === 'submitted' ? '#00d9a3' : 'rgba(0,217,163,0.15)'
+                  position: 'absolute', top: 0, left: 0, width: 4, height: '100%',
+                  background: isLocked ? 'rgba(255,255,255,0.05)' : status === 'reviewed' ? '#1D9E75' : status === 'submitted' ? '#00d9a3' : `${diff.color}55`,
                 }} />
 
-                {/* Title & Badge Row */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', paddingLeft: '12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '11px', color: '#5a7a9a', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>WEEK {proj.week}</span>
-                    <span style={{
-                      background: 'rgba(255,255,255,0.03)', color: '#c8d8e8', fontSize: '10px',
-                      textTransform: 'uppercase', padding: '3px 8px', borderRadius: '4px', fontWeight: 600
-                    }}>{proj.difficulty}</span>
+                {/* Title & badge row */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8, paddingLeft: 12 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', fontWeight: 700 }}>WEEK {proj.week}</span>
+                    <span style={{ background: `${diff.color}14`, color: diff.color, fontSize: 10, letterSpacing: 0.5, padding: '3px 8px', borderRadius: 4, fontWeight: 700, fontFamily: 'var(--font-mono)' }}>{diff.label}</span>
                   </div>
-
-                  {/* Status Badge */}
                   <div>
                     {isLocked && <span className="text-gray-500 text-xs font-semibold">🔒 Locked</span>}
                     {!isLocked && status === 'not_started' && <span className="text-gray-400 text-xs font-semibold">⏳ Not Started</span>}
-                    {!isLocked && status === 'submitted' && <span style={{ color: '#00d9a3', fontSize: '12px', fontWeight: 700 }}>🛸 Under AI Audit</span>}
-                    {!isLocked && status === 'reviewed' && <span style={{ color: '#1D9E75', fontSize: '12px', fontWeight: 700 }}>✅ Audit Completed</span>}
+                    {!isLocked && status === 'submitted' && <span style={{ color: '#00d9a3', fontSize: 12, fontWeight: 700 }}>🛸 Under AI Audit</span>}
+                    {!isLocked && status === 'reviewed' && <span style={{ color: '#1D9E75', fontSize: 12, fontWeight: 700 }}>✅ Audit Completed</span>}
                   </div>
                 </div>
 
-                {/* Project Details */}
-                <div style={{ paddingLeft: '12px', marginTop: '8px' }}>
-                  <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#e8e8ed', fontFamily: 'var(--font-heading)' }}>{proj.title}</h2>
-                  <p style={{ fontSize: '13.5px', color: '#8aa2b9', marginTop: '4px', lineHeight: 1.5 }}>{proj.description}</p>
+                {/* Project details */}
+                <div style={{ paddingLeft: 12, marginTop: 8 }}>
+                  <h2 style={{ fontSize: 18, fontWeight: 800, color: '#e8e8ed', fontFamily: 'var(--font-heading)' }}>{proj.title}</h2>
+                  <p style={{ fontSize: 13.5, color: '#8aa2b9', marginTop: 4, lineHeight: 1.5 }}>{proj.description}</p>
 
-                  {/* Steps Accordion */}
-                  <div style={{ marginTop: '16px' }}>
-                    <div style={{ fontSize: '12px', color: '#5a7a9a', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>Implementation steps</div>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '8px' }}>
-                      {proj.steps.map((st, i) => (
-                        <div key={i} style={{
-                          display: 'flex', gap: '8px', background: 'rgba(255,255,255,0.02)',
-                          padding: '8px 10px', borderRadius: '8px', fontSize: '12px', color: '#b2c8dc',
-                          border: '1px solid rgba(255,255,255,0.02)'
-                        }}>
-                          <span style={{ color: '#00d9a3', fontWeight: 700 }}>{i+1}</span>
-                          <span>{st}</span>
-                        </div>
-                      ))}
-                    </div>
+                  {/* Tech stack — always visible */}
+                  <div style={{ marginTop: 14 }}>
+                    <SectionLabel>Tech stack</SectionLabel>
+                    <TechChips tech={proj.tech} />
                   </div>
 
-                  {/* Submit Repository Section */}
-                  {!isLocked && status === 'not_started' && activeSubmitting !== proj.title && (
-                    <button onClick={() => {
-                      setActiveSubmitting(proj.title);
-                      // Assign dynamically generated project UUID or standard ID if exists in db
-                      proj.id = progressRecord?.project_id || 'dummy-uuid-needed';
-                    }} style={{
-                      marginTop: '16px', background: 'linear-gradient(135deg, #00d9a3, #ff6b4a)',
-                      color: '#020812', fontWeight: 700, fontSize: '13px', padding: '10px 20px',
-                      borderRadius: '8px', border: 'none', cursor: 'pointer'
+                  {/* Expand / collapse the deep guidance so cards stay scannable */}
+                  <button onClick={() => setExpanded((p) => ({ ...p, [proj.title]: !p[proj.title] }))}
+                    style={{
+                      marginTop: 16, background: 'rgba(0,217,163,0.04)', border: '1px solid rgba(0,217,163,0.15)',
+                      color: '#00d9a3', fontSize: 12, fontWeight: 600, padding: '8px 14px', borderRadius: 8,
+                      cursor: 'pointer', fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center', gap: 6,
                     }}>
-                      Start Project & Submit Code →
+                    {isOpen ? '▲ Hide build guide' : '▼ Show build guide, deployment & resume bullets'}
+                  </button>
+
+                  {isOpen && (
+                    <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 18 }}>
+                      {/* Phased implementation guidance */}
+                      <div>
+                        <SectionLabel>Implementation guide</SectionLabel>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                          {proj.phases.map((phase, pi) => (
+                            <div key={pi} style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.03)', borderRadius: 10, padding: '12px 14px' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                                <span style={{ width: 20, height: 20, borderRadius: '50%', background: `${diff.color}18`, color: diff.color, fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-mono)' }}>{pi + 1}</span>
+                                <span style={{ fontSize: 13, fontWeight: 700, color: '#c8d8e8' }}>{phase.name}</span>
+                              </div>
+                              <ul style={{ margin: 0, paddingLeft: 4, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 6 }}>
+                                {phase.steps.map((st, si) => (
+                                  <li key={si} style={{ display: 'flex', gap: 8, fontSize: 12.5, color: '#b2c8dc', lineHeight: 1.5 }}>
+                                    <span style={{ color: diff.color, flexShrink: 0 }}>▸</span>
+                                    <span>{st}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Deployment guidance */}
+                      <div style={{ background: 'rgba(0,217,163,0.03)', border: '1px solid rgba(0,217,163,0.12)', borderRadius: 10, padding: '12px 14px' }}>
+                        <SectionLabel color="#00d9a3">🚀 Where & how to deploy</SectionLabel>
+                        <div style={{ fontSize: 12.5, color: '#c8d8e8', fontWeight: 600, marginBottom: 6 }}>{proj.deploy.platform}</div>
+                        <ul style={{ margin: 0, paddingLeft: 4, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 5 }}>
+                          {proj.deploy.notes.map((n, ni) => (
+                            <li key={ni} style={{ display: 'flex', gap: 8, fontSize: 12, color: '#8aa2b9', lineHeight: 1.5 }}>
+                              <span style={{ color: '#00d9a3', flexShrink: 0 }}>•</span>
+                              <span>{n}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {/* Resume bullets — copy-ready */}
+                      <div>
+                        <SectionLabel color="#ef9f27">📄 Resume bullets (click to copy)</SectionLabel>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                          {proj.resumeBullets.map((b, bi) => (
+                            <button key={bi} onClick={() => copyText(b, 'Resume bullet copied')}
+                              title="Click to copy"
+                              style={{
+                                textAlign: 'left', background: 'rgba(239,159,39,0.04)', border: '1px solid rgba(239,159,39,0.18)',
+                                borderRadius: 8, padding: '10px 12px', cursor: 'pointer', display: 'flex', gap: 8, alignItems: 'flex-start',
+                                fontFamily: 'var(--font-body)',
+                              }}>
+                              <span style={{ color: '#ef9f27', fontSize: 12, flexShrink: 0, marginTop: 1 }}>⧉</span>
+                              <span style={{ fontSize: 12.5, color: '#d8c4a0', lineHeight: 1.5 }}>{b}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* GitHub reference search — never a hardcoded/invented repo URL */}
+                      <div>
+                        <SectionLabel>🔗 Reference implementations</SectionLabel>
+                        <a href={githubSearchUrl(proj.searchTerms)} target="_blank" rel="noopener noreferrer"
+                          style={{
+                            display: 'inline-flex', alignItems: 'center', gap: 8, fontSize: 12.5, color: '#00d9a3',
+                            background: 'rgba(0,217,163,0.05)', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 8,
+                            padding: '8px 12px', textDecoration: 'none',
+                          }}>
+                          <span>🐙</span> Browse similar projects on GitHub →
+                        </a>
+                        <p style={{ fontSize: 11, color: '#5a7a9a', marginTop: 6, lineHeight: 1.5 }}>
+                          Opens a live GitHub search for <span style={{ fontFamily: 'var(--font-mono)', color: '#8aa2b9' }}>{proj.searchTerms}</span> — study real repos, don&apos;t copy them.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Submit repository */}
+                  {!isLocked && status === 'not_started' && activeSubmitting !== proj.title && (
+                    <button onClick={() => setActiveSubmitting(proj.title)} style={{
+                      marginTop: 16, background: 'linear-gradient(135deg, #00d9a3, #ff6b4a)',
+                      color: '#020812', fontWeight: 700, fontSize: 13, padding: '10px 20px',
+                      borderRadius: 8, border: 'none', cursor: 'pointer',
+                    }}>
+                      Submit Your Build for AI Audit →
                     </button>
                   )}
 
                   {activeSubmitting === proj.title && (
                     <form onSubmit={(e) => submitProject(e, proj)} style={{
-                      marginTop: '16px', padding: '14px', borderRadius: '12px',
+                      marginTop: 16, padding: 14, borderRadius: 12,
                       border: '1px solid rgba(0,217,163,0.2)', background: 'rgba(0,0,0,0.15)',
-                      display: 'flex', flexDirection: 'column', gap: '10px'
+                      display: 'flex', flexDirection: 'column', gap: 10,
                     }}>
                       <div>
-                        <label style={{ display: 'block', fontSize: '11px', color: '#5a7a9a', textTransform: 'uppercase', marginBottom: '4px' }}>GitHub Repo URL</label>
-                        <input type="url" required value={githubUrl} onChange={e => setGithubUrl(e.target.value)}
-                          placeholder="https://github.com/yourusername/portfolio"
-                          style={{
-                            width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid rgba(0,217,163,0.15)',
-                            background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: '13px', outline: 'none'
-                          }} />
+                        <label style={{ display: 'block', fontSize: 11, color: '#5a7a9a', textTransform: 'uppercase', marginBottom: 4 }}>GitHub Repo URL</label>
+                        <input type="url" required value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)}
+                          placeholder="https://github.com/yourusername/your-project"
+                          style={{ width: '100%', padding: 10, borderRadius: 6, border: '1px solid rgba(0,217,163,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 13, outline: 'none' }} />
                       </div>
                       <div>
-                        <label style={{ display: 'block', fontSize: '11px', color: '#5a7a9a', textTransform: 'uppercase', marginBottom: '4px' }}>Submission Notes</label>
-                        <textarea value={projectNotes} onChange={e => setProjectNotes(e.target.value)} rows={2}
-                          placeholder="List technologies used, features implemented..."
-                          style={{
-                            width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid rgba(0,217,163,0.15)',
-                            background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: '13px', outline: 'none', resize: 'none'
-                          }} />
+                        <label style={{ display: 'block', fontSize: 11, color: '#5a7a9a', textTransform: 'uppercase', marginBottom: 4 }}>Submission Notes</label>
+                        <textarea value={projectNotes} onChange={(e) => setProjectNotes(e.target.value)} rows={2}
+                          placeholder="List technologies used, features implemented, live URL…"
+                          style={{ width: '100%', padding: 10, borderRadius: 6, border: '1px solid rgba(0,217,163,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 13, outline: 'none', resize: 'none' }} />
                       </div>
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        <button type="submit" disabled={submitting} style={{
-                          flex: 1, padding: '10px', borderRadius: '6px', border: 'none', fontWeight: 700,
-                          background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', cursor: 'pointer'
-                        }}>{submitting ? 'Submitting...' : 'Submit Repository'}</button>
-                        <button type="button" onClick={() => setActiveSubmitting(null)} style={{
-                          padding: '10px 16px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.15)',
-                          background: 'transparent', color: '#c8d8e8', cursor: 'pointer'
-                        }}>Cancel</button>
+                      <div style={{ display: 'flex', gap: 8 }}>
+                        <button type="submit" disabled={submitting} style={{ flex: 1, padding: 10, borderRadius: 6, border: 'none', fontWeight: 700, background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', cursor: 'pointer' }}>{submitting ? 'Submitting…' : 'Submit Repository'}</button>
+                        <button type="button" onClick={() => setActiveSubmitting(null)} style={{ padding: '10px 16px', borderRadius: 6, border: '1px solid rgba(255,255,255,0.15)', background: 'transparent', color: '#c8d8e8', cursor: 'pointer' }}>Cancel</button>
                       </div>
                     </form>
                   )}
 
-                  {/* AI feedback view */}
+                  {/* AI feedback */}
                   {status === 'reviewed' && feedback && (
-                    <div style={{
-                      marginTop: '16px', padding: '16px', borderRadius: '12px',
-                      border: '1px solid rgba(29,158,117,0.2)', background: 'rgba(29,158,117,0.03)'
-                    }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                        <span style={{ fontSize: '13px', color: '#1D9E75', fontWeight: 700 }}>🎯 Senior AI Audit Report</span>
-                        <span style={{
-                          background: 'rgba(29,158,117,0.15)', color: '#1D9E75', fontSize: '14px',
-                          fontWeight: 800, padding: '3px 10px', borderRadius: '6px'
-                        }}>{feedback.grade} ({feedback.score}/100)</span>
+                    <div style={{ marginTop: 16, padding: 16, borderRadius: 12, border: '1px solid rgba(29,158,117,0.2)', background: 'rgba(29,158,117,0.03)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                        <span style={{ fontSize: 13, color: '#1D9E75', fontWeight: 700 }}>🎯 Senior AI Audit Report</span>
+                        {feedback.grade && <span style={{ background: 'rgba(29,158,117,0.15)', color: '#1D9E75', fontSize: 14, fontWeight: 800, padding: '3px 10px', borderRadius: 6 }}>{feedback.grade} ({feedback.score}/100)</span>}
                       </div>
-                      
-                      <p style={{ fontSize: '13px', color: '#b2c8dc', lineHeight: 1.5, marginBottom: '10px' }}>{feedback.overall_feedback}</p>
-                      
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', fontSize: '12.5px', marginBottom: '10px' }}>
+                      {feedback.overall_feedback && <p style={{ fontSize: 13, color: '#b2c8dc', lineHeight: 1.5, marginBottom: 10 }}>{feedback.overall_feedback}</p>}
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, fontSize: 12.5, marginBottom: 10 }}>
                         <div>
-                          <div style={{ color: '#1D9E75', fontWeight: 700, marginBottom: '4px' }}>✓ Key Strengths</div>
-                          {feedback.strengths?.map((str, i) => <div key={i}>• {str}</div>)}
+                          <div style={{ color: '#1D9E75', fontWeight: 700, marginBottom: 4 }}>✓ Key Strengths</div>
+                          {feedback.strengths?.map((str, i) => <div key={i} style={{ color: '#b2c8dc' }}>• {str}</div>)}
                         </div>
                         <div>
-                          <div style={{ color: '#ff5c8a', fontWeight: 700, marginBottom: '4px' }}>⚡ Recommendations</div>
-                          {feedback.improvements?.map((imp, i) => <div key={i}>• {imp}</div>)}
+                          <div style={{ color: '#ff5c8a', fontWeight: 700, marginBottom: 4 }}>⚡ Recommendations</div>
+                          {feedback.improvements?.map((imp, i) => <div key={i} style={{ color: '#b2c8dc' }}>• {imp}</div>)}
                         </div>
                       </div>
-
                       {feedback.encouragement && (
-                        <div style={{
-                          fontStyle: 'italic', fontSize: '12px', color: '#5a7a9a', borderTop: '1px solid rgba(255,255,255,0.05)',
-                          paddingTop: '8px', marginTop: '8px'
-                        }}>
-                          "{feedback.encouragement}"
+                        <div style={{ fontStyle: 'italic', fontSize: 12, color: '#5a7a9a', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: 8, marginTop: 8 }}>
+                          &ldquo;{feedback.encouragement}&rdquo;
                         </div>
                       )}
                     </div>
                   )}
-
                 </div>
-
               </div>
             );
           })}
         </div>
 
-        {/* Right Column: VS Code guide & Stats (1/3 width) */}
+        {/* Right column: stats + guide */}
         <div className="space-y-6">
-          
-          {/* Portfolio Stats */}
-          <div style={{
-            background: 'linear-gradient(135deg, #091322, #070f1a)',
-            border: '1px solid rgba(0,217,163,0.12)',
-            borderRadius: '16px', padding: '20px'
-          }}>
-            <h3 style={{
-              fontSize: '13px', fontWeight: 800, color: '#e8e8ed', marginBottom: '16px',
-              fontFamily: 'var(--font-heading)', textTransform: 'uppercase', letterSpacing: '1px'
-            }}>📊 Portfolio Metrics</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-              <div style={{ background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
-                <div style={{ fontSize: '24px', fontWeight: 800, color: '#00d9a3' }}>
-                  {historyList.filter(h => h.status === 'reviewed').length}
-                </div>
-                <div style={{ fontSize: '11px', color: '#5a7a9a', marginTop: '2px' }}>Audited Projects</div>
+          <div style={{ background: 'linear-gradient(135deg, #091322, #070f1a)', border: '1px solid rgba(0,217,163,0.12)', borderRadius: 16, padding: 20 }}>
+            <h3 style={{ fontSize: 13, fontWeight: 800, color: '#e8e8ed', marginBottom: 16, fontFamily: 'var(--font-heading)', textTransform: 'uppercase', letterSpacing: 1 }}>📊 Portfolio Metrics</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div style={{ background: 'rgba(255,255,255,0.02)', padding: 12, borderRadius: 10, textAlign: 'center' }}>
+                <div style={{ fontSize: 24, fontWeight: 800, color: '#00d9a3' }}>{historyList.filter((h) => h.status === 'reviewed').length}</div>
+                <div style={{ fontSize: 11, color: '#5a7a9a', marginTop: 2 }}>Audited Projects</div>
               </div>
-              <div style={{ background: 'rgba(255,255,255,0.02)', padding: '12px', borderRadius: '10px', textAlign: 'center' }}>
-                <div style={{ fontSize: '24px', fontWeight: 800, color: '#ff6b4a' }}>
-                  {historyList.filter(h => h.status === 'submitted').length}
-                </div>
-                <div style={{ fontSize: '11px', color: '#5a7a9a', marginTop: '2px' }}>Pending Audit</div>
+              <div style={{ background: 'rgba(255,255,255,0.02)', padding: 12, borderRadius: 10, textAlign: 'center' }}>
+                <div style={{ fontSize: 24, fontWeight: 800, color: '#ff6b4a' }}>{historyList.filter((h) => h.status === 'submitted').length}</div>
+                <div style={{ fontSize: 11, color: '#5a7a9a', marginTop: 2 }}>Pending Audit</div>
               </div>
+            </div>
+            <div style={{ marginTop: 14, background: 'rgba(255,255,255,0.02)', padding: 12, borderRadius: 10, textAlign: 'center' }}>
+              <div style={{ fontSize: 24, fontWeight: 800, color: '#ef9f27' }}>{projects.length}</div>
+              <div style={{ fontSize: 11, color: '#5a7a9a', marginTop: 2 }}>Projects in Your Track</div>
             </div>
           </div>
 
-          {/* VS Code Setup Guide */}
-          <div style={{
-            background: '#070f1a', border: '1px solid rgba(0,217,163,0.08)',
-            borderRadius: '16px', padding: '20px'
-          }}>
-            <h3 style={{
-              fontSize: '13px', fontWeight: 800, color: '#e8e8ed', marginBottom: '12px',
-              fontFamily: 'var(--font-heading)', textTransform: 'uppercase', letterSpacing: '1px'
-            }}>💻 VS Code Workspace Guide</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '12.5px', color: '#a2b9cd', lineHeight: 1.6 }}>
-              <div>
-                <strong>1. Initialize Workspace</strong>
-                <pre style={{
-                  background: 'rgba(0,0,0,0.3)', padding: '8px', borderRadius: '6px',
-                  fontFamily: 'var(--font-mono)', fontSize: '11px', color: '#00d9a3', marginTop: '4px'
-                }}>mkdir genois-portfolio && cd genois-portfolio</pre>
-              </div>
-              <div>
-                <strong>2. Create Project directory</strong>
-                <p style={{ marginTop: '2px' }}>Create subfolders for each milestone week to keep your workspace organized.</p>
-              </div>
-              <div>
-                <strong>3. Commit and push regularly</strong>
-                <p style={{ marginTop: '2px' }}>Push to a public GitHub repository. Ensure a clear <code>README.md</code> is present in the root for senior AI evaluations.</p>
-              </div>
+          <div style={{ background: '#070f1a', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 16, padding: 20 }}>
+            <h3 style={{ fontSize: 13, fontWeight: 800, color: '#e8e8ed', marginBottom: 12, fontFamily: 'var(--font-heading)', textTransform: 'uppercase', letterSpacing: 1 }}>💻 How to Use This Page</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 12.5, color: '#a2b9cd', lineHeight: 1.6 }}>
+              <div><strong style={{ color: '#c8d8e8' }}>1. Open the build guide</strong><p style={{ marginTop: 2 }}>Each project has phased steps, a real tech stack, and deployment instructions for that exact stack.</p></div>
+              <div><strong style={{ color: '#c8d8e8' }}>2. Build & deploy</strong><p style={{ marginTop: 2 }}>Follow the phases, push to a public GitHub repo with a clear <code>README.md</code>, and deploy using the guidance provided.</p></div>
+              <div><strong style={{ color: '#c8d8e8' }}>3. Submit & get audited</strong><p style={{ marginTop: 2 }}>Submit your repo URL for an AI code audit, then paste the copy-ready resume bullets straight into your CV.</p></div>
             </div>
           </div>
-
         </div>
-
       </div>
-
     </div>
   );
 }

@@ -26,6 +26,8 @@ const SelectionSortVisualizer = dynamic(() => import('@/components/visualizer/Se
 const InsertionSortVisualizer = dynamic(() => import('@/components/visualizer/InsertionSortVisualizer'), { ssr: false });
 const MergeSortVisualizer     = dynamic(() => import('@/components/visualizer/MergeSortVisualizer'),     { ssr: false });
 const QuickSortVisualizer     = dynamic(() => import('@/components/visualizer/QuickSortVisualizer'),     { ssr: false });
+const HeapSortVisualizer      = dynamic(() => import('@/components/visualizer/HeapSortVisualizer'),      { ssr: false });
+const CountingSortVisualizer  = dynamic(() => import('@/components/visualizer/CountingSortVisualizer'),  { ssr: false });
 // Searching
 const LinearSearchVisualizer  = dynamic(() => import('@/components/visualizer/LinearSearchVisualizer'),  { ssr: false });
 const BinarySearchVisualizer  = dynamic(() => import('@/components/visualizer/BinarySearchVisualizer'),  { ssr: false });
@@ -46,6 +48,7 @@ const BFSVisualizer           = dynamic(() => import('@/components/visualizer/BF
 const DFSVisualizer           = dynamic(() => import('@/components/visualizer/DFSVisualizer'),           { ssr: false });
 const GraphVisualizer         = dynamic(() => import('@/components/visualizer/GraphVisualizer'),         { ssr: false });
 const DijkstraVisualizer      = dynamic(() => import('@/components/visualizer/DijkstraVisualizer'),      { ssr: false });
+const BellmanFordVisualizer   = dynamic(() => import('@/components/visualizer/BellmanFordVisualizer'),   { ssr: false });
 const FloydWarshallVisualizer = dynamic(() => import('@/components/visualizer/FloydWarshallVisualizer'), { ssr: false });
 const TopologicalSortVisualizer = dynamic(() => import('@/components/visualizer/TopologicalSortVisualizer'), { ssr: false });
 const PrimVisualizer          = dynamic(() => import('@/components/visualizer/PrimVisualizer'),          { ssr: false });
@@ -54,8 +57,17 @@ const KruskalVisualizer       = dynamic(() => import('@/components/visualizer/Kr
 const FibonacciDPVisualizer   = dynamic(() => import('@/components/visualizer/FibonacciDPVisualizer'),   { ssr: false });
 const KnapsackDPVisualizer    = dynamic(() => import('@/components/visualizer/KnapsackDPVisualizer'),    { ssr: false });
 const LCSVisualizer           = dynamic(() => import('@/components/visualizer/LCSVisualizer'),           { ssr: false });
+const KadaneVisualizer        = dynamic(() => import('@/components/visualizer/KadaneVisualizer'),        { ssr: false });
+const CoinChangeVisualizer    = dynamic(() => import('@/components/visualizer/CoinChangeVisualizer'),    { ssr: false });
+const LISVisualizer           = dynamic(() => import('@/components/visualizer/LISVisualizer'),           { ssr: false });
 // String Algorithms
 const KMPVisualizer           = dynamic(() => import('@/components/visualizer/KMPVisualizer'),           { ssr: false });
+const RabinKarpVisualizer     = dynamic(() => import('@/components/visualizer/RabinKarpVisualizer'),     { ssr: false });
+// Arrays & Techniques
+const SlidingWindowVisualizer = dynamic(() => import('@/components/visualizer/SlidingWindowVisualizer'), { ssr: false });
+const TwoPointersVisualizer   = dynamic(() => import('@/components/visualizer/TwoPointersVisualizer'),   { ssr: false });
+// Math
+const SieveVisualizer         = dynamic(() => import('@/components/visualizer/SieveVisualizer'),         { ssr: false });
 // Backtracking
 const NQueensVisualizer       = dynamic(() => import('@/components/visualizer/NQueensVisualizer'),       { ssr: false });
 
@@ -66,6 +78,8 @@ const ALGORITHMS = [
   { id: 'insertion-sort',    name: 'Insertion Sort',    category: 'Sorting',         component: InsertionSortVisualizer,   complexity: 'O(n²)',      icon: '🃏' },
   { id: 'merge-sort',        name: 'Merge Sort',        category: 'Sorting',         component: MergeSortVisualizer,       complexity: 'O(n log n)', icon: '⚡' },
   { id: 'quick-sort',        name: 'Quick Sort',        category: 'Sorting',         component: QuickSortVisualizer,       complexity: 'O(n log n)', icon: '🚀' },
+  { id: 'heap-sort',         name: 'Heap Sort',         category: 'Sorting',         component: HeapSortVisualizer,        complexity: 'O(n log n)', icon: '🗻' },
+  { id: 'counting-sort',     name: 'Counting Sort',     category: 'Sorting',         component: CountingSortVisualizer,    complexity: 'O(n + k)',   icon: '🧮' },
   // Searching
   { id: 'linear-search',     name: 'Linear Search',     category: 'Searching',       component: LinearSearchVisualizer,    complexity: 'O(n)',       icon: '🔎' },
   { id: 'binary-search',     name: 'Binary Search',     category: 'Searching',       component: BinarySearchVisualizer,    complexity: 'O(log n)',   icon: '⚖️' },
@@ -86,6 +100,7 @@ const ALGORITHMS = [
   { id: 'bfs',               name: 'BFS',               category: 'Graphs',          component: BFSVisualizer,             complexity: 'O(V+E)',     icon: '🔵' },
   { id: 'dfs',               name: 'DFS',               category: 'Graphs',          component: DFSVisualizer,             complexity: 'O(V+E)',     icon: '🟣' },
   { id: 'dijkstra',          name: 'Dijkstra',          category: 'Graphs',          component: DijkstraVisualizer,        complexity: 'O(E log V)', icon: '🗺️' },
+  { id: 'bellman-ford',      name: 'Bellman-Ford',      category: 'Graphs',          component: BellmanFordVisualizer,     complexity: 'O(V·E)',     icon: '💱' },
   { id: 'floyd-warshall',    name: 'Floyd-Warshall',    category: 'Graphs',          component: FloydWarshallVisualizer,   complexity: 'O(V³)',      icon: '📊' },
   { id: 'topological-sort',  name: 'Topological Sort',  category: 'Graphs',          component: TopologicalSortVisualizer, complexity: 'O(V+E)',     icon: '📋' },
   { id: 'prim',              name: "Prim's MST",        category: 'Graphs',          component: PrimVisualizer,            complexity: 'O(E log V)', icon: '🌲' },
@@ -94,8 +109,17 @@ const ALGORITHMS = [
   { id: 'fibonacci-dp',      name: 'Fibonacci DP',      category: 'Dynamic Programming', component: FibonacciDPVisualizer, complexity: 'O(n)',       icon: '🌀' },
   { id: 'knapsack-dp',       name: '0/1 Knapsack DP',   category: 'Dynamic Programming', component: KnapsackDPVisualizer,  complexity: 'O(nW)',      icon: '🎒' },
   { id: 'lcs-dp',            name: 'LCS DP',            category: 'Dynamic Programming', component: LCSVisualizer,         complexity: 'O(mn)',      icon: '🧵' },
+  { id: 'kadane',            name: "Kadane's (Max Subarray)", category: 'Dynamic Programming', component: KadaneVisualizer, complexity: 'O(n)',    icon: '📈' },
+  { id: 'coin-change',       name: 'Coin Change',       category: 'Dynamic Programming', component: CoinChangeVisualizer,  complexity: 'O(n·k)',     icon: '🪙' },
+  { id: 'lis',               name: 'Longest Incr. Subseq.', category: 'Dynamic Programming', component: LISVisualizer,     complexity: 'O(n²)',      icon: '🪜' },
   // String Algorithms
   { id: 'kmp-search',        name: 'KMP Search',        category: 'String Algorithms', component: KMPVisualizer,           complexity: 'O(n+m)',     icon: '🧵' },
+  { id: 'rabin-karp',        name: 'Rabin-Karp',        category: 'String Algorithms', component: RabinKarpVisualizer,     complexity: 'O(n+m)',     icon: '#️⃣' },
+  // Arrays & Techniques
+  { id: 'sliding-window',    name: 'Sliding Window Max', category: 'Arrays & Techniques', component: SlidingWindowVisualizer, complexity: 'O(n)',   icon: '🪟' },
+  { id: 'two-pointers',      name: 'Two Pointers',      category: 'Arrays & Techniques', component: TwoPointersVisualizer, complexity: 'O(n)',       icon: '👉' },
+  // Math
+  { id: 'sieve',             name: 'Sieve of Eratosthenes', category: 'Math',        component: SieveVisualizer,           complexity: 'O(n log log n)', icon: '🔢' },
   // Backtracking
   { id: 'n-queens',          name: 'N-Queens',          category: 'Backtracking',    component: NQueensVisualizer,         complexity: 'O(N!)',      icon: '👑' },
 ];
@@ -108,6 +132,8 @@ const CATEGORY_COLORS = {
   'Graphs':              '#ff2d78',
   'Dynamic Programming': '#ef2dff',
   'String Algorithms':   '#00ff88',
+  'Arrays & Techniques': '#37c0e8',
+  'Math':                '#f8d748',
   'Backtracking':        '#ff5e00',
 };
 
@@ -119,6 +145,8 @@ const CATEGORY_ICONS = {
   'Graphs':              '⬡',
   'Dynamic Programming': '⬘',
   'String Algorithms':   '⎔',
+  'Arrays & Techniques': '⇄',
+  'Math':                '∑',
   'Backtracking':        '⤾',
 };
 
