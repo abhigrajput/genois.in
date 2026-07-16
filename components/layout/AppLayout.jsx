@@ -9,7 +9,7 @@ import DailyCheckIn from '@/components/DailyCheckIn';
 import {
   Home, Calendar, FileText, Map, Code2, Play, Bot, Mic, Zap, User, Rocket,
   Flame, LogOut, Menu, X, PanelLeftClose, PanelLeftOpen, FolderGit2, Brain,
-  ClipboardList,
+  ClipboardList, BarChart3,
 } from 'lucide-react';
 
 // GENOIS design system — green is the established brand accent used across all app pages.
@@ -19,7 +19,7 @@ const G20 = 'rgba(0,217,163,0.2)';
 const AMBER = '#ffb020';
 const SB_BG = '#0a0a0f';
 
-// The 13 nav items — grouped visually in the sidebar (MAIN / LEARN / PRACTICE / ACCOUNT).
+// Nav items — grouped visually in the sidebar (MAIN / LEARN / PRACTICE / INSIGHTS / ACCOUNT).
 const NAV_ITEMS = [
   { group: 'MAIN',     href:'/dashboard',       label:'Dashboard',       icon:Home },
   { group: 'LEARN',    href:'/roadmap',         label:'Daily Roadmap',   icon:Calendar },
@@ -33,6 +33,7 @@ const NAV_ITEMS = [
   { group: 'PRACTICE', href:'/voice-interview', label:'Voice Interview', icon:Mic },
   { group: 'PRACTICE', href:'/ai-vs-human',     label:'AI vs Human',     icon:Zap },
   { group: 'PRACTICE', href:'/review',          label:'Answer Review',   icon:ClipboardList },
+  { group: 'INSIGHTS', href:'/analytics',       label:'Analytics',       icon:BarChart3 },
   { group: 'ACCOUNT',  href:'/profile',         label:'Profile',         icon:User },
   { group: 'ACCOUNT',  href:'/subscription',    label:'Beta Access',     icon:Rocket },
 ];
@@ -43,7 +44,7 @@ const DOMAIN_LABELS = {
   blockchain:'Blockchain', gamedev:'Game Dev',
 };
 
-const GROUPS = ['LEARN', 'PRACTICE', 'ACCOUNT'];
+const GROUPS = ['LEARN', 'PRACTICE', 'INSIGHTS', 'ACCOUNT'];
 
 // Hover/active states are pure CSS (group-hover / active classes) so hovering a link
 // never triggers a React re-render. memo() keeps items static across header state changes.

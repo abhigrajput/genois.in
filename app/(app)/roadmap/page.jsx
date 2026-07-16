@@ -54,6 +54,45 @@ const STEP_LABELS = {
 
 const MAX_DAY = 365;
 
+// Day-difficulty badge styles (roadmap depth metadata — easy/medium/hard).
+const DIFF_BADGE = {
+  easy: 'border-success/25 bg-success/10 text-success',
+  medium: 'border-[#ffb020]/25 bg-[#ffb020]/10 text-[#ffb020]',
+  hard: 'border-[#ff2d78]/25 bg-[#ff2d78]/10 text-[#ff5c8a]',
+};
+
+// Compact metadata strip under the day title. Every field is optional — old
+// cached roadmap rows have no metadata and simply render nothing here.
+function DayMetaStrip({ meta }) {
+  if (!meta) return null;
+  const hasAny = meta.estimated_time || meta.difficulty || meta.prerequisites?.length > 0;
+  if (!hasAny) return null;
+  return (
+    <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+      {meta.estimated_time && (
+        <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 font-mono text-[10px] font-bold text-[#c8d8e8]">
+          ⏱ ~{meta.estimated_time} min
+        </span>
+      )}
+      {meta.difficulty && (
+        <span className={`rounded-full border px-2.5 py-1 font-mono text-[10px] font-bold uppercase ${DIFF_BADGE[meta.difficulty] || DIFF_BADGE.easy}`}>
+          {meta.difficulty}
+        </span>
+      )}
+      {meta.prerequisites?.length > 0 && (
+        <span className="inline-flex flex-wrap items-center gap-1 font-mono text-[10px] text-muted">
+          builds on:
+          {meta.prerequisites.slice(0, 4).map((p) => (
+            <span key={p} className="rounded-full border border-primary/15 bg-primary/[0.06] px-2 py-0.5 text-[10px] text-[#8fd9c4]">
+              {p}
+            </span>
+          ))}
+        </span>
+      )}
+    </div>
+  );
+}
+
 export default function DailyRoadmapPage() {
   const { updateProgress } = useAuthStore();
   const [daily, setDaily] = useState(null);
@@ -333,6 +372,7 @@ export default function DailyRoadmapPage() {
     codingProblemUrl,
     isProjectDay,
     project,
+    dayMeta,
   } = daily;
   const completedCount = tasks.filter((t) => t.status === 'completed').length;
 
@@ -373,6 +413,7 @@ export default function DailyRoadmapPage() {
               </span>
             )}
           </p>
+          <DayMetaStrip meta={dayMeta} />
         </div>
         <div className="flex flex-wrap items-center gap-2.5">
           <button
@@ -869,6 +910,23 @@ export default function DailyRoadmapPage() {
 
         {/* Right Column: objectives, key concepts, coding problem (1/3 width) */}
         <div className="space-y-6">
+          {/* Learning Outcomes (roadmap depth metadata — absent on old cached rows) */}
+          {dayMeta?.learning_objectives?.length > 0 && (
+            <div className={CARD}>
+              <h3 className="mb-3 font-display text-sm font-extrabold uppercase tracking-[1px] text-dark">
+                🎓 After Today You Can
+              </h3>
+              <div className="flex flex-col gap-2">
+                {dayMeta.learning_objectives.map((o, i) => (
+                  <div key={i} className="flex items-start gap-2 text-[13px] leading-normal text-[#c8d8e8]">
+                    <span className="flex-shrink-0 text-success">✓</span>
+                    <span>{o}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Daily Objectives Card */}
           {objectives && objectives.length > 0 && (
             <div className={CARD}>

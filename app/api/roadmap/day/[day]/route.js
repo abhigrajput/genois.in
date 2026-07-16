@@ -2,7 +2,7 @@ import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { successResponse, errorResponse } from '@/lib/response';
-import { generateDayContent } from '@/lib/curriculumGenerator';
+import { generateDayContent, buildDayMeta } from '@/lib/curriculumGenerator';
 import { youtubeSearchUrl } from '@/lib/youtubeEmbed';
 
 const TASK_TYPES = ['video', 'resource', 'coding', 'test', 'notes'];
@@ -109,9 +109,12 @@ export async function GET(request, { params }) {
         is_project_day: !!roadmapItem.is_project_day,
         project: roadmapItem.project || null,
         generated_by: roadmapItem.generated_by || 'cache',
+        // Old rows (pre-20260716) have no meta — page renders without badges.
+        meta: roadmapItem.meta || null,
       };
     } else {
       dayContent = await generateDayContent(user.domain_slug, dayNumber, level, user);
+      dayContent.meta = buildDayMeta(dayContent);
 
       const cachePayload = {
         user_id: payload.userId,
@@ -134,6 +137,7 @@ export async function GET(request, { params }) {
         cached_at: new Date().toISOString(),
         difficulty: dayContent.generated_by === 'static_fallback' ? 'beginner' : level,
         estimated_min: dayContent.estimated_minutes || 90,
+        meta: dayContent.meta,
       };
 
       let { data: upserted, error: upsertErr } = await supabase
@@ -141,6 +145,21 @@ export async function GET(request, { params }) {
         .upsert(cachePayload, { onConflict: 'user_id,day_number' })
         .select()
         .single();
+
+      // The meta column may not exist yet (20260716 migration). Retry the
+      // per-user upsert WITHOUT it before touching the legacy path, so an
+      // unapplied meta migration can't silently undo per-user caching.
+      if (upsertErr) {
+        const noMeta = { ...cachePayload };
+        delete noMeta.meta;
+        const retryNoMeta = await supabase
+          .from('roadmap')
+          .upsert(noMeta, { onConflict: 'user_id,day_number' })
+          .select()
+          .single();
+        upserted = retryNoMeta.data;
+        upsertErr = retryNoMeta.error;
+      }
 
       if (upsertErr) {
         const legacy = {
@@ -248,6 +267,9 @@ export async function GET(request, { params }) {
       project: dayContent.project || null,
       projectProgress,
       generatedBy: dayContent.generated_by,
+      // Roadmap depth metadata. Old cached rows fall back to their stored
+      // estimated_min (real, previously generated) — never invented fields.
+      dayMeta: buildDayMeta(dayContent.meta) || buildDayMeta({ estimated_time: roadmapItem?.estimated_min }),
     });
   } catch (error) {
     console.error('Roadmap day view error:', error);

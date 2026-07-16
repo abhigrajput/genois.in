@@ -2,7 +2,7 @@ import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { successResponse, errorResponse } from '@/lib/response';
-import { generateDayContent } from '@/lib/curriculumGenerator';
+import { generateDayContent, buildDayMeta } from '@/lib/curriculumGenerator';
 import { roadmapTotalDays } from '@/lib/roadmapCache';
 import { youtubeSearchUrl } from '@/lib/youtubeEmbed';
 
@@ -144,10 +144,13 @@ export async function GET(request) {
         is_project_day: !!roadmapItem.is_project_day,
         project: roadmapItem.project || null,
         generated_by: roadmapItem.generated_by || 'cache',
+        // Old rows (pre-20260716) have no meta — page renders without badges.
+        meta: roadmapItem.meta || null,
       };
     } else {
       // ── 2. Cache miss — call AI then persist for next time ──────────────
       dayContent = await generateDayContent(user.domain_slug, displayDay, level, user);
+      dayContent.meta = buildDayMeta(dayContent);
 
       // The model is asked for a "best YouTube URL" but hallucinates video ids
       // that embed as "Video unavailable". Never trust an AI-produced video URL:
@@ -175,6 +178,7 @@ export async function GET(request) {
         cached_at: new Date().toISOString(),
         difficulty: dayContent.generated_by === 'static_fallback' ? 'beginner' : level,
         estimated_min: dayContent.estimated_minutes || 90,
+        meta: dayContent.meta,
       };
 
       let { data: upserted, error: upsertErr } = await supabase
@@ -182,6 +186,21 @@ export async function GET(request) {
         .upsert(cachePayload, { onConflict: 'user_id,day_number' })
         .select()
         .single();
+
+      // The meta column may not exist yet (20260716 migration). Retry the
+      // per-user upsert WITHOUT it before touching the legacy path, so an
+      // unapplied meta migration can't silently undo per-user caching.
+      if (upsertErr) {
+        const noMeta = { ...cachePayload };
+        delete noMeta.meta;
+        const retryNoMeta = await supabase
+          .from('roadmap')
+          .upsert(noMeta, { onConflict: 'user_id,day_number' })
+          .select()
+          .single();
+        upserted = retryNoMeta.data;
+        upsertErr = retryNoMeta.error;
+      }
 
       // If the per-user / enrichment migration hasn't been applied yet, fall back
       // to the legacy domain-keyed column set so we still cache *something* and
@@ -297,6 +316,9 @@ export async function GET(request) {
       projectProgress,
       generatedBy: dayContent.generated_by,
       cacheHit,
+      // Roadmap depth metadata. Old cached rows fall back to their stored
+      // estimated_min (real, previously generated) — never invented fields.
+      dayMeta: buildDayMeta(dayContent.meta) || buildDayMeta({ estimated_time: roadmapItem?.estimated_min }),
     });
   } catch (error) {
     console.error('Daily roadmap error:', error);
