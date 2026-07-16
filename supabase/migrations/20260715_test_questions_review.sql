@@ -16,9 +16,12 @@
 -- fire-and-forget, and the review page shows a "review data not available"
 -- state instead of erroring.
 
-CREATE TABLE IF NOT EXISTS test_questions (
+-- Schema-qualified throughout: an unqualified CREATE TABLE lands in the first
+-- schema of the executing role's search_path, which is not always `public`
+-- (this bit us — PostgREST then never sees the table).
+CREATE TABLE IF NOT EXISTS public.test_questions (
   id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  user_id         UUID NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
   attempt_type    TEXT NOT NULL,   -- dsa_diagnostic | aptitude | daily | weekly | monthly | revision | voice_interview | mock_interview
   source_id       UUID,            -- id of the row in the source table (tests / aptitude_sessions / ...), when one exists
   topic           TEXT,
@@ -31,6 +34,9 @@ CREATE TABLE IF NOT EXISTS test_questions (
 );
 
 CREATE INDEX IF NOT EXISTS test_questions_user_taken_idx
-  ON test_questions(user_id, taken_at DESC);
+  ON public.test_questions(user_id, taken_at DESC);
 CREATE INDEX IF NOT EXISTS test_questions_user_type_idx
-  ON test_questions(user_id, attempt_type, taken_at DESC);
+  ON public.test_questions(user_id, attempt_type, taken_at DESC);
+
+-- Make PostgREST pick up the new table immediately.
+NOTIFY pgrst, 'reload schema';
