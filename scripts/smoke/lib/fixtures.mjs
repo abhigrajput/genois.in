@@ -21,6 +21,11 @@ export function onTrialUser() {
       user: {
         id: 'smoke-user', name: 'Smoke Test', email: 'smoke@example.com',
         domain_slug: 'software-engineering',
+        // Dashboard gates on isProfileComplete (domain + college + target
+        // companies) and bounces incomplete profiles to /onboarding — the
+        // stub must be complete or every "routes to /dashboard" check fails.
+        college: 'Smoke Institute of Technology',
+        target_companies: ['TCS'],
         subscription_plan: 'spectator', is_on_trial: true, trial_ends_at: trialEnds,
       },
       progress: {}, score: {}, skill: {},
