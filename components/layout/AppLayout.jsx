@@ -9,7 +9,7 @@ import DailyCheckIn from '@/components/DailyCheckIn';
 import {
   Home, Calendar, FileText, Map, Code2, Play, Bot, Mic, Zap, User, Rocket,
   Flame, LogOut, Menu, X, PanelLeftClose, PanelLeftOpen, FolderGit2, Brain,
-  ClipboardList, BarChart3,
+  ClipboardList, BarChart3, FileSearch,
 } from 'lucide-react';
 
 // GENOIS design system — green is the established brand accent used across all app pages.
@@ -26,6 +26,7 @@ const NAV_ITEMS = [
   { group: 'LEARN',    href:'/notes',           label:'AI Notes',        icon:FileText },
   { group: 'LEARN',    href:'/dsa-roadmap',     label:'DSA Roadmap',     icon:Map },
   { group: 'LEARN',    href:'/aptitude',        label:'Aptitude',        icon:Brain },
+  { group: 'LEARN',    href:'/resume',          label:'Resume ATS',      icon:FileSearch },
   { group: 'PRACTICE', href:'/coding',          label:'Coding',          icon:Code2 },
   { group: 'PRACTICE', href:'/dsa-visualizer',  label:'DSA Visualizer',  icon:Play },
   { group: 'PRACTICE', href:'/projects',        label:'Projects',        icon:FolderGit2 },
