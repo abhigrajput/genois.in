@@ -50,7 +50,10 @@ function domainFocusFor(domain) {
 
 function modeDirective(mode, questionNumber) {
   if (mode === 'hr') {
-    return 'This is an HR / behavioural round. Ask about motivation, conflict, failure, teamwork, placement strategy, or communication. NO coding problems.';
+    return 'This is an HR round. Ask about motivation ("why this company / this role"), career goals, strengths and weaknesses, relocation or shift flexibility, salary expectations, or company fit. NO coding problems and NO "tell me about a time" stories — this is fit and motivation, not situational behaviour.';
+  }
+  if (mode === 'behavioral') {
+    return 'This is a BEHAVIOURAL round. Ask exactly ONE STAR-style situational question ("Tell me about a time...") about teamwork, conflict, failure, ownership, deadlines, or leadership. Demand a concrete Situation, Task, Action, and Result from their real projects or internships. NO coding problems.';
   }
   if (mode === 'mixed') {
     // Alternate so a 10-question set is roughly half technical, half behavioural.
@@ -61,11 +64,37 @@ function modeDirective(mode, questionNumber) {
   return 'This is a TECHNICAL round. Ask about DSA, system design, coding logic, complexity, or core CS fundamentals.';
 }
 
+// Round-specific interviewer persona. Technical (and mixed) keep the exact
+// original hostile-senior-engineer persona; behavioural/HR swap in the person
+// who would actually run that round.
+function personaFor(mode, company) {
+  if (mode === 'hr') return `You are a sharp, experienced HR manager at ${company} conducting a real placement HR round.`;
+  if (mode === 'behavioral') return `You are a demanding engineering manager at ${company} conducting a real behavioural interview round.`;
+  return `You are a hostile, senior engineer at ${company} conducting a real placement interview.`;
+}
+
+// Round-specific use of the candidate's domain. The technical/mixed block is
+// byte-identical to the original prompt; HR/behavioural use the domain as
+// context instead of quiz material.
+function domainBlockFor(mode, domainFocus, level) {
+  if (mode === 'hr') {
+    return `The candidate's primary domain is: ${domainFocus}
+Keep the round about motivation, fit, and self-awareness — reference their domain or target role only for context, never to quiz technical content.`;
+  }
+  if (mode === 'behavioral') {
+    return `The candidate's primary domain is: ${domainFocus}
+Ground each situational question in scenarios a ${level || 'Fresher'} candidate from this domain would plausibly have faced (college projects, internships, team assignments).`;
+  }
+  return `The candidate's primary domain is: ${domainFocus}
+Generate a question SPECIFIC to this domain. Do NOT ask generic questions.
+- Ask about real concepts, algorithms, tools, or frameworks from ${domainFocus}.`;
+}
+
 function buildPrompts({ domain, level, targetCompany, mode, questionNumber, previousQuestions }) {
   const company = targetCompany || 'a top product company';
   const domainFocus = domainFocusFor(domain);
   const difficultyBand = questionNumber <= 3 ? 'easy' : questionNumber <= 7 ? 'medium' : 'hard';
-  const system = `You are a hostile, senior engineer at ${company} conducting a real placement interview.
+  const system = `${personaFor(mode, company)}
 Communicate exclusively in professional, concise English. No slang, no filler.
 DO NOT be friendly. Be direct, challenging, and probe weaknesses — but ask exactly ONE clear, answerable question.
 Candidate profile:
@@ -73,9 +102,7 @@ Candidate profile:
 - Level: ${level || 'Fresher'}
 - Target: ${company}
 - Question: ${questionNumber}/10
-The candidate's primary domain is: ${domainFocus}
-Generate a question SPECIFIC to this domain. Do NOT ask generic questions.
-- Ask about real concepts, algorithms, tools, or frameworks from ${domainFocus}.
+${domainBlockFor(mode, domainFocus, level)}
 - Make questions progressively harder: Q1-3 easy, Q4-7 medium, Q8-10 hard. This is question ${questionNumber}/10, so target ${difficultyBand} difficulty.
 Interview style for ${company}: ${styleFor(targetCompany)}
 ${modeDirective(mode, questionNumber)}`;
@@ -159,12 +186,20 @@ function fallbackQuestion(mode, questionNumber) {
     'What is your biggest weakness, and what concrete steps are you taking to fix it?',
     'Tell me about the hardest technical problem you have solved on your own.',
   ];
-  const pool = mode === 'hr' ? behavioral
+  const hr = [
+    'Why do you want to join this company specifically, and what do you know about what we actually do?',
+    'Where do you see yourself in five years, and how does this role fit into that plan?',
+    'What are your salary expectations, and how did you arrive at that number?',
+    'Are you open to relocation or rotating shifts if the role requires it? Walk me through your thinking.',
+    'What is your biggest strength, and give me one concrete example of it from your work or studies.',
+  ];
+  const pool = mode === 'hr' ? hr
+    : mode === 'behavioral' ? behavioral
     : mode === 'mixed' ? (questionNumber % 2 === 0 ? technical : behavioral)
     : technical;
   return normalize({
     question: pool[questionNumber % pool.length],
-    type: mode === 'hr' ? 'behavioral' : 'technical',
+    type: (mode === 'hr' || mode === 'behavioral') ? 'behavioral' : 'technical',
     hint: 'Looking for structure, a concrete example, and clear reasoning.',
     difficulty: 'medium',
     expectedDuration: 60,
@@ -178,7 +213,7 @@ export async function POST(request) {
     if (!await rateLimit(`vi_q_${payload.userId}`, 30, 60000)) return rateLimitResponse();
 
     const body = await request.json();
-    const mode = ['technical', 'hr', 'mixed'].includes(body.mode) ? body.mode : 'technical';
+    const mode = ['technical', 'behavioral', 'hr', 'mixed'].includes(body.mode) ? body.mode : 'technical';
     const questionNumber = Math.min(Math.max(parseInt(body.questionNumber, 10) || 1, 1), 10);
     const params = {
       domain: body.domain,

@@ -18,7 +18,7 @@ export async function POST(request) {
 
     const row = {
       user_id: payload.userId,
-      mode: ['technical', 'hr', 'mixed'].includes(body.mode) ? body.mode : 'technical',
+      mode: ['technical', 'behavioral', 'hr', 'mixed'].includes(body.mode) ? body.mode : 'technical',
       domain: body.domain || null,
       target_company: body.targetCompany || null,
       total_score: num(body.totalScore),

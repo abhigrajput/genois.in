@@ -18,7 +18,21 @@ function gradeFromScore(s) {
   return 'F';
 }
 
-function buildPrompt({ question, answer, domain, targetCompany, questionType, wordCount }) {
+// Round-type-aware rubric for the first metric. The metric KEY stays
+// technicalAccuracy (it maps to the technical_accuracy DB column and the
+// 3-metric UI) — only what it MEASURES shifts with the round. Technical (and
+// mixed / absent mode) keeps the exact original wording.
+function metricOneFor(mode) {
+  if (mode === 'behavioral') {
+    return '1. TECHNICAL_ACCURACY: STAR completeness — did they give a real Situation, their specific Task, concrete Actions THEY personally took, and a measurable Result? Penalise hypothetical answers and vague "we did" stories with no personal contribution.';
+  }
+  if (mode === 'hr') {
+    return '1. TECHNICAL_ACCURACY: Fit & motivation quality — specific, researched reasons for this company/role, honest self-assessment, realistic career thinking; for salary/logistics questions, a tactful and reasoned position. Penalise generic flattery and memorised template lines.';
+  }
+  return '1. TECHNICAL_ACCURACY: Correct concept? Right complexity/approach? (For behavioural questions, judge relevance, specificity, and use of a concrete example instead.)';
+}
+
+function buildPrompt({ question, answer, domain, targetCompany, questionType, wordCount, mode }) {
   return `You are an expert placement interviewer evaluating a student's VERBAL answer (transcribed from speech, so ignore minor punctuation/transcription noise). Be tough but fair. Indian engineering student context.
 
 Target company: ${targetCompany || 'a top product company'}
@@ -28,7 +42,7 @@ Question: ${question}
 Student's answer (${wordCount} words): ${answer}
 
 Evaluate on exactly 3 metrics (0-100 each):
-1. TECHNICAL_ACCURACY: Correct concept? Right complexity/approach? (For behavioural questions, judge relevance, specificity, and use of a concrete example instead.)
+${metricOneFor(mode)}
 2. COMMUNICATION_CLARITY: Clear, structured, easy to follow? Correct use of terms?
 3. CONFIDENCE_SCORE: Completeness and directness. Penalise excessive hedging and filler; reward a decisive, well-scoped answer.
 
@@ -95,6 +109,8 @@ export async function POST(request) {
       targetCompany: body.targetCompany,
       questionType: body.questionType,
       wordCount,
+      // Round type steers the metric-1 rubric only; unknown/absent → technical.
+      mode: ['technical', 'behavioral', 'hr', 'mixed'].includes(body.mode) ? body.mode : 'technical',
     });
 
     let evaluation = null;

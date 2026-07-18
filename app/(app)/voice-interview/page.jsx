@@ -37,6 +37,14 @@ const SP = { 1: 4, 2: 8, 3: 12, 4: 16, 5: 20, 6: 24, 7: 28, 8: 32 };
 const TOTAL_QUESTIONS = 10;
 const MIN_WORDS = 10;
 
+// Adaptive follow-ups: after a MAIN answer is scored, the interviewer MAY probe
+// once, based on what the candidate actually said. Bounded twice over — max 1
+// follow-up per main question (never chained on a follow-up) and MAX_FOLLOWUPS
+// per session — so an interview can never balloon past 10 + MAX_FOLLOWUPS turns.
+const MAX_FOLLOWUPS = 3;
+const FOLLOWUP_WAIT_MS = 4000;     // extra wait allowed on "Continue" for an in-flight decision
+const FOLLOWUP_TIMEOUT_MS = 20000; // network cap for the background follow-up request
+
 // Long technical answers can be slow to score; cap the wait so the UI never
 // strands the user on a spinner. Question generation is lighter → shorter cap.
 const EVAL_TIMEOUT_MS = 45000;
@@ -81,7 +89,8 @@ const QUESTION_TIMEOUT_MS = 30000;
 
 const MODES = [
   { key: 'technical', icon: '⚙️', label: 'Technical', desc: 'DSA, system design, coding logic, core CS.' },
-  { key: 'hr', icon: '💬', label: 'HR / Behavioural', desc: 'Motivation, teamwork, failure, communication.' },
+  { key: 'behavioral', icon: '🤝', label: 'Behavioral', desc: 'STAR-style situations: teamwork, conflict, failure, ownership.' },
+  { key: 'hr', icon: '💬', label: 'HR', desc: 'Motivation, company fit, career goals, salary expectations.' },
   { key: 'mixed', icon: '🎲', label: 'Mixed', desc: 'A realistic blend of technical and behavioural.' },
 ];
 
@@ -309,6 +318,14 @@ export default function VoiceInterviewPage() {
   const [pendingAnswer, setPendingAnswer] = useState(null); // { transcript, wordCount } awaiting (re)scoring
   const [evalError, setEvalError] = useState(null);         // { timedOut, message }
 
+  // adaptive follow-up — queued in the background the moment a MAIN answer is
+  // scored (while the user reads their result card), presented (if any) when
+  // they tap Continue. Ref = the in-flight decision promise; state = a resolved
+  // follow-up, used only to relabel the Continue button. Stale entries are
+  // inert: both are checked against the current turn index before use.
+  const followupPromiseRef = useRef(null);                  // { forIndex, promise } | null
+  const [followupReady, setFollowupReady] = useState(null); // { forIndex, q } | null
+
   // speech
   const [speechSupported, setSpeechSupported] = useState(true);
   const [isChromium, setIsChromium] = useState(true);
@@ -346,6 +363,14 @@ export default function VoiceInterviewPage() {
   const currentEval = evaluations[qIndex];
   const liveText = (transcript + ' ' + interim).trim();
   const liveWords = wordsOf(liveText);
+
+  // Follow-ups live in the same append-only questions/answers/evaluations
+  // arrays as main questions (so scoring, /save turns and /review all include
+  // them for free) — which means qIndex is a TURN index, not a main-question
+  // number. These derive the honest "Q4/10" numbers for the header/progress.
+  const followupsUsed = questions.filter(q => q.isFollowUp).length;
+  const mainAsked = questions.length - followupsUsed;
+  const mainNumber = questions.slice(0, qIndex + 1).filter(q => !q.isFollowUp).length;
 
   // Single source of truth for what the visualizer + pad label should show.
   // Interrupt reads as "listening" because the student is, in fact, now speaking.
@@ -611,16 +636,22 @@ export default function VoiceInterviewPage() {
     finalTranscriptRef.current = '';
     setTranscript(''); setInterim(''); setElapsed(0);
     setEvalError(null); setPendingAnswer(null);
+    setFollowupReady(null);
     setStatus('loadingQ');
     try {
-      const prev = questions.map(q => q.question);
+      // Avoid-list = MAIN questions only (follow-ups are answer-specific and
+      // can't recur), which also keeps it inside the server's 12-item cap.
+      const prev = questions.filter(q => !q.isFollowUp).map(q => q.question);
       const r = await apiFetchWithTimeout('/api/interview/questions', token, 'POST', {
         domain, level, targetCompany: company, mode, questionNumber: qNum, previousQuestions: prev,
       }, QUESTION_TIMEOUT_MS);
       const q = r.data.question;
+      // qNum is the MAIN-question number (drives API difficulty banding), but
+      // the new turn lands at the END of the mixed main+follow-up array.
+      const newIndex = questions.length;
       setQuestions(arr => [...arr, q]); // append-only — never replaces history
       speakQuestion(q.question); // 🔊 read the new question aloud (start + every "Next")
-      setQIndex(qNum - 1);
+      setQIndex(newIndex);
       setQStartTime(Date.now());
       setStatus('question');
     } catch (e) {
@@ -629,16 +660,71 @@ export default function VoiceInterviewPage() {
     }
   }
 
+  // Present an already-generated follow-up as the next turn — same reset ritual
+  // as fetchQuestion, but zero network: the question was decided in the
+  // background while the user read their result card.
+  function presentFollowup(qObj) {
+    stopListening();
+    finalTranscriptRef.current = '';
+    setTranscript(''); setInterim(''); setElapsed(0);
+    setEvalError(null); setPendingAnswer(null);
+    setFollowupReady(null);
+    const newIndex = questions.length;
+    setQuestions(arr => [...arr, qObj]); // append-only — follow-up joins the same history
+    speakQuestion(qObj.question);
+    setQIndex(newIndex);
+    setQStartTime(Date.now());
+    setStatus('question');
+  }
+
+  // Fire-and-forget follow-up decision for the MAIN answer just scored. The
+  // promise is parked in a ref; continueNext() collects it (with a short cap)
+  // when the user moves on. Any failure resolves to null = no follow-up.
+  function maybeQueueFollowup(turnIndex, q, answer) {
+    if (!q || q.isFollowUp) return;              // never chain a follow-up on a follow-up
+    if (followupsUsed >= MAX_FOLLOWUPS) return;  // session-wide bound
+    const recentTurns = [];
+    for (let i = Math.max(0, turnIndex - 2); i < turnIndex; i++) {
+      recentTurns.push({ question: questions[i]?.question || '', answer: answers[i]?.transcript || '' });
+    }
+    const promise = apiFetchWithTimeout('/api/interview/followup', token, 'POST', {
+      question: q.question, questionType: q.type, hint: q.hint,
+      answer: answer.transcript, wordCount: answer.wordCount,
+      mode, domain, targetCompany: company, level,
+      followupsUsed, recentTurns,
+    }, FOLLOWUP_TIMEOUT_MS)
+      .then(r => {
+        const fq = r?.data?.followup;
+        if (!fq || typeof fq.question !== 'string' || !fq.question.trim()) return null;
+        const qObj = {
+          question: fq.question.trim(),
+          type: ['technical', 'behavioral', 'situational'].includes(fq.type) ? fq.type : 'technical',
+          hint: typeof fq.hint === 'string' ? fq.hint : '',
+          difficulty: fq.difficulty || 'medium',
+          isFollowUp: true,
+        };
+        setFollowupReady({ forIndex: turnIndex, q: qObj });
+        return qObj;
+      })
+      .catch(() => null);
+    followupPromiseRef.current = { forIndex: turnIndex, promise };
+  }
+
   function startInterview() {
     if (!company.trim()) { toast.error('Pick or type a target company.'); return; }
     setQuestions([]); setAnswers([]); setEvaluations([]); setSummary(null); setPercentile(null); setReviewAttemptId(null); setShowDetails(false);
     setEvalError(null); setPendingAnswer(null);
+    followupPromiseRef.current = null; setFollowupReady(null);
     setStartTime(Date.now());
     fetchQuestion(1, 'idle');
   }
 
   // Commit one scored turn to immutable, append-only history.
   function commitEvaluation(answer, evaluation) {
+    // Decide (in the background) whether this answer earns a follow-up — the
+    // call races the user's result-card reading time, so the happy path adds
+    // zero latency before the next question.
+    maybeQueueFollowup(qIndex, currentQ, answer);
     setAnswers(arr => [...arr, answer]);
     setEvaluations(arr => [...arr, evaluation]);
     setPendingAnswer(null);
@@ -658,6 +744,7 @@ export default function VoiceInterviewPage() {
         targetCompany: company,
         questionType: currentQ.type || 'technical',
         wordCount: answer.wordCount,
+        mode, // round type steers the evaluation rubric (technical unchanged)
       }, EVAL_TIMEOUT_MS);
       const evaluation = r?.data?.evaluation;
       if (!evaluation) throw new Error('Evaluation response was empty');
@@ -693,8 +780,22 @@ export default function VoiceInterviewPage() {
   }
 
   async function continueNext() {
-    if (qIndex + 1 < TOTAL_QUESTIONS) {
-      fetchQuestion(qIndex + 2, 'result');
+    // Follow-up gate: only directly after a MAIN question, only under the
+    // session cap. The decision was requested when the result card appeared —
+    // usually it has already resolved; if it's still in flight we give it a
+    // short bounded wait, then move on without one. A late resolution is inert.
+    const pending = followupPromiseRef.current;
+    if (pending && pending.forIndex === qIndex && !currentQ?.isFollowUp && followupsUsed < MAX_FOLLOWUPS) {
+      followupPromiseRef.current = null;
+      setStatus('loadingQ');
+      const fq = await Promise.race([
+        pending.promise,
+        new Promise(res => setTimeout(() => res(null), FOLLOWUP_WAIT_MS)),
+      ]);
+      if (fq) { presentFollowup(fq); return; }
+    }
+    if (mainAsked < TOTAL_QUESTIONS) {
+      fetchQuestion(mainAsked + 1, 'result');
     } else {
       finishInterview();
     }
@@ -723,9 +824,10 @@ export default function VoiceInterviewPage() {
         mode, domain, targetCompany: company,
         totalScore: overall, technicalAccuracy: ta, communicationClarity: cc, confidenceScore: cs,
         grade, questionsAnswered: evaluations.length, durationSeconds: duration,
-        // Full Q&A transcript so the attempt lands on the review page.
+        // Full Q&A transcript so the attempt lands on the review page —
+        // follow-up turns ride along, labelled so /review reads naturally.
         turns: evaluations.map((ev, i) => ({
-          question: questions[i]?.question || '',
+          question: (questions[i]?.isFollowUp ? '[Follow-up] ' : '') + (questions[i]?.question || ''),
           type: questions[i]?.type || 'technical',
           answer: answers[i]?.transcript || '',
           evaluation: {
@@ -747,6 +849,7 @@ export default function VoiceInterviewPage() {
     setStatus('idle'); setQuestions([]); setAnswers([]); setEvaluations([]); setQIndex(0);
     setSummary(null); setPercentile(null); setReviewAttemptId(null); setTranscript(''); setInterim(''); setShowDetails(false);
     setEvalError(null); setPendingAnswer(null);
+    followupPromiseRef.current = null; setFollowupReady(null);
   }
 
   async function shareScore() {
@@ -805,7 +908,7 @@ export default function VoiceInterviewPage() {
           <AudioWaveform state="processing" analyserRef={analyserRef} />
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16, color: TXT_WHITE }}>Interviewer is thinking…</div>
-            <div style={{ fontSize: 13, marginTop: SP[2], color: TXT_MUTE }}>Preparing question {Math.min(questions.length + 1, TOTAL_QUESTIONS)} of {TOTAL_QUESTIONS}</div>
+            <div style={{ fontSize: 13, marginTop: SP[2], color: TXT_MUTE }}>Preparing question {Math.min(mainAsked + 1, TOTAL_QUESTIONS)} of {TOTAL_QUESTIONS}</div>
           </div>
         </div>
       </div>
@@ -896,8 +999,8 @@ export default function VoiceInterviewPage() {
             </div>
           </div>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 16, color: GENOIS }}>Q{qIndex + 1} / {TOTAL_QUESTIONS}</div>
-            <div style={{ fontSize: 11, color: TXT_MUTE, fontFamily: 'var(--font-mono)' }}>⏱ {Math.floor(elapsed / 60)}:{String(elapsed % 60).padStart(2, '0')}</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 16, color: GENOIS }}>Q{mainNumber} / {TOTAL_QUESTIONS}</div>
+            <div style={{ fontSize: 11, color: TXT_MUTE, fontFamily: 'var(--font-mono)' }}>{currentQ.isFollowUp ? '↳ follow-up · ' : ''}⏱ {Math.floor(elapsed / 60)}:{String(elapsed % 60).padStart(2, '0')}</div>
           </div>
         </div>
 
@@ -905,7 +1008,7 @@ export default function VoiceInterviewPage() {
 
         {/* progress */}
         <div style={{ height: 5, background: SLATE_800, borderRadius: 3, marginBottom: SP[5], overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${((qIndex + 1) / TOTAL_QUESTIONS) * 100}%`, background: `linear-gradient(90deg,${GENOIS},${GENOIS_SOFT})`, borderRadius: 3, transition: 'width .4s' }} />
+          <div style={{ height: '100%', width: `${(mainNumber / TOTAL_QUESTIONS) * 100}%`, background: `linear-gradient(90deg,${GENOIS},${GENOIS_SOFT})`, borderRadius: 3, transition: 'width .4s' }} />
         </div>
 
         {/* ── chat matrix: Slate-800 message containers on a Slate-900 master ── */}
@@ -914,8 +1017,9 @@ export default function VoiceInterviewPage() {
           {/* interviewer (AI mentor) message — green left-accent, green label */}
           <div style={{ position: 'relative', background: SLATE_800, border: `1px solid ${SLATE_700}`, borderLeft: `3px solid ${GENOIS}`, borderRadius: 12, padding: SP[5], marginBottom: SP[4], boxSizing: 'border-box' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: SP[2], marginBottom: SP[3], flexWrap: 'wrap' }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: GENOIS, letterSpacing: 1.5, textTransform: 'uppercase' }}>🤖 Interviewer asks</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: GENOIS, letterSpacing: 1.5, textTransform: 'uppercase' }}>{currentQ.isFollowUp ? '🤖 Interviewer probes deeper' : '🤖 Interviewer asks'}</div>
               <div style={{ display: 'flex', gap: SP[2] }}>
+                {currentQ.isFollowUp && <span style={{ fontSize: 9, padding: '3px 9px', borderRadius: 10, background: `${AMBER}1a`, color: AMBER, fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>↳ follow-up</span>}
                 <span style={{ fontSize: 9, padding: '3px 9px', borderRadius: 10, background: `${GENOIS}1a`, color: GENOIS, fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>{currentQ.type}</span>
                 <span style={{ fontSize: 9, padding: '3px 9px', borderRadius: 10, background: `${AMBER}1a`, color: AMBER, fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>{currentQ.difficulty}</span>
               </div>
@@ -1021,13 +1125,16 @@ export default function VoiceInterviewPage() {
   // ── per-answer result ──────────────────────────────────────────────────
   if (status === 'result' && currentEval) {
     const ev = currentEval;
-    const isLast = qIndex + 1 >= TOTAL_QUESTIONS;
+    const isLast = mainAsked >= TOTAL_QUESTIONS;
+    // A resolved follow-up for THIS turn relabels the button; if the decision
+    // is still in flight, continueNext() collects it anyway (bounded wait).
+    const fuNext = followupReady && followupReady.forIndex === qIndex && !currentQ?.isFollowUp && followupsUsed < MAX_FOLLOWUPS;
     return (
       <div style={{ maxWidth: 720, margin: '0 auto', width: '100%', boxSizing: 'border-box', fontFamily: 'var(--font-body)', animation: 'vi-fade .3s ease' }}>
         <style dangerouslySetInnerHTML={{ __html: keyframes }} />
         <div style={{ background: CARD, border: `1px solid ${gradeColor(ev.grade)}33`, borderRadius: 16, padding: 24, marginBottom: 16, minHeight: 300 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, flexWrap: 'wrap', gap: 10 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: MUTED, letterSpacing: 1.5 }}>QUESTION {qIndex + 1} / {TOTAL_QUESTIONS} · {currentQ?.type?.toUpperCase()}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: MUTED, letterSpacing: 1.5 }}>{currentQ?.isFollowUp ? `FOLLOW-UP · Q${mainNumber}` : `QUESTION ${mainNumber} / ${TOTAL_QUESTIONS}`} · {currentQ?.type?.toUpperCase()}</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
               <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 30, color: gradeColor(ev.grade) }}>{ev.grade}</span>
               <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 22, color: LIGHT }}>{ev.overallScore}<span style={{ fontSize: 12, color: MUTED }}>/100</span></span>
@@ -1063,7 +1170,7 @@ export default function VoiceInterviewPage() {
         )}
 
         <button onClick={continueNext} style={{ width: '100%', padding: 15, borderRadius: 12, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${GENOIS},${GENOIS_SOFT})`, color: '#04120d', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15 }}>
-          {isLast ? 'See Final Results 🎉' : `Continue to Q${qIndex + 2} →`}
+          {fuNext ? 'Answer Follow-up ↳' : isLast ? 'See Final Results 🎉' : `Continue to Q${mainAsked + 1} →`}
         </button>
       </div>
     );
@@ -1138,10 +1245,12 @@ export default function VoiceInterviewPage() {
             {questions.map((q, i) => {
               const e = evaluations[i];
               if (!e) return null;
+              // Number by MAIN question; a follow-up shares its parent's number.
+              const qNum = questions.slice(0, i + 1).filter(x => !x.isFollowUp).length;
               return (
                 <div key={i} style={{ background: SLATE_800, border: `1px solid ${SLATE_700}`, borderRadius: 12, padding: SP[4], boxSizing: 'border-box' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', gap: SP[3], marginBottom: SP[2] }}>
-                    <div style={{ fontSize: 13, color: TXT_WHITE, fontWeight: 600, lineHeight: 1.5 }}>Q{i + 1}. {q.question}</div>
+                    <div style={{ fontSize: 13, color: TXT_WHITE, fontWeight: 600, lineHeight: 1.5 }}>{q.isFollowUp ? <span style={{ color: AMBER }}>↳ Q{qNum} follow-up. </span> : `Q${qNum}. `}{q.question}</div>
                     <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 16, color: gradeColor(e.grade), flexShrink: 0 }}>{e.overallScore}</div>
                   </div>
                   {answers[i]?.transcript && <div style={{ fontSize: 12.5, color: TXT_WHITE, lineHeight: 1.6, marginBottom: SP[2], padding: SP[2], background: SLATE_850, borderLeft: `2px solid ${GENOIS}`, borderRadius: 6 }}>🗣 {answers[i].transcript}</div>}
@@ -1160,7 +1269,7 @@ export default function VoiceInterviewPage() {
     <div style={{ maxWidth: 760, margin: '0 auto', width: '100%', boxSizing: 'border-box', fontFamily: 'var(--font-body)' }}>
       <div style={{ marginBottom: 22 }}>
         <h1 style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 27, color: LIGHT, margin: '0 0 6px' }}>🎤 Voice Mock Interview</h1>
-        <p style={{ color: MUTED, fontSize: 13.5, lineHeight: 1.6, margin: 0 }}>Practice <b style={{ color: SOFT }}>speaking</b> your answers out loud — not typing. The AI plays a tough interviewer and scores you on accuracy, clarity, and confidence. 10 questions.</p>
+        <p style={{ color: MUTED, fontSize: 13.5, lineHeight: 1.6, margin: 0 }}>Practice <b style={{ color: SOFT }}>speaking</b> your answers out loud — not typing. The AI plays a tough interviewer and scores you on accuracy, clarity, and confidence. 10 questions — and it may probe deeper with a follow-up when your answer invites one.</p>
       </div>
 
       {micBlockedBanner}
