@@ -4,31 +4,10 @@ import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { askClaudeJSON } from '@/lib/claude';
 import { COMPANY_PROFILES } from '@/lib/curriculumGenerator';
-
-// Company practice problems live in the existing coding_tests bank, keyed by
-// the free-text `topic` column — no schema change. Two buckets per company so
-// provenance survives persistence:
-//   "Company OA (Real): TCS"   — verbatim knowledge_base OA questions
-//   "Company Practice: TCS"    — AI-generated in the company's style
-// Rows get real uuids, so /api/coding/submit reviews and scores them unchanged.
-const realTopic = (company) => `Company OA (Real): ${company}`;
-const practiceTopic = (company) => `Company Practice: ${company}`;
-
-// A knowledge_base oa_question is served verbatim as a "real" problem ONLY if
-// it contains an actual task statement (imperative verbs). Entries that merely
-// describe the round ("3 problems — 1 easy, 1 medium…") aren't solvable, so
-// they instead ground the AI generator in the company's real OA pattern.
-const TASK_STATEMENT = /\b(given|find|implement|write|return|compute|calculate|count|print|reverse|sort)\b/i;
+import { realTopic, practiceTopic, TASK_STATEMENT, titleFromContent, kbOaId } from '@/lib/companyPractice';
 
 const TARGET_COUNT = 5;
 const TEST_COLUMNS = 'id,title,problem,input_desc,output_desc,example_input,example_output,hints,difficulty,topic';
-
-// Deterministic title from RAG content — doubles as the dedupe key, so the
-// same knowledge_base entry never inserts twice.
-function titleFromContent(content) {
-  const first = (content || '').split('. ')[0].trim();
-  return first.length > 90 ? first.slice(0, 87) + '…' : first;
-}
 
 export async function GET(request) {
   try {
@@ -66,11 +45,15 @@ export async function GET(request) {
     const REAL = realTopic(company);
     const PRACTICE = practiceTopic(company);
 
-    const { data: existingRows } = await supabase
+    // If this select errors the problem bank itself is unavailable (the
+    // coding_tests migration hasn't been applied) — degrade to serving real KB
+    // questions ephemerally and skip AI generation (nothing could be saved).
+    const { data: existingRows, error: bankError } = await supabase
       .from('coding_tests')
       .select(TEST_COLUMNS)
       .eq('domain_slug', user.domain_slug)
       .in('topic', [REAL, PRACTICE]);
+    let bankAvailable = !bankError;
 
     const realRows = (existingRows || []).filter(r => r.topic === REAL);
     const aiRows = (existingRows || []).filter(r => r.topic === PRACTICE);
@@ -84,29 +67,47 @@ export async function GET(request) {
       .eq('domain', 'dsa');
     const kbEntries = kbData || [];
 
-    // Lazily persist verbatim task statements so they're submittable rows.
+    // Persist verbatim task statements so they're submittable bank rows; while
+    // the bank is down, serve them ephemerally via self-verifying kb-oa ids
+    // that /api/coding/submit resolves back to trusted knowledge_base content.
     for (const entry of kbEntries.filter(e => TASK_STATEMENT.test(e.content))) {
       const title = titleFromContent(entry.content);
       if (!title || realRows.some(r => r.title === title)) continue;
-      const { data: saved } = await supabase
-        .from('coding_tests')
-        .insert({
-          domain_slug: user.domain_slug,
-          topic: REAL,
-          title,
-          problem: entry.content,
-          hints: [],
-          difficulty: entry.difficulty || 'medium',
-        })
-        .select(TEST_COLUMNS)
-        .single();
-      if (saved) realRows.push(saved);
+
+      let saved = null;
+      if (bankAvailable) {
+        const { data, error } = await supabase
+          .from('coding_tests')
+          .insert({
+            domain_slug: user.domain_slug,
+            topic: REAL,
+            title,
+            problem: entry.content,
+            hints: [],
+            difficulty: entry.difficulty || 'medium',
+          })
+          .select(TEST_COLUMNS)
+          .single();
+        saved = data;
+        if (error) bankAvailable = false;
+      }
+
+      realRows.push(saved || {
+        id: kbOaId(company, entry.content),
+        title,
+        problem: entry.content,
+        hints: [],
+        difficulty: entry.difficulty || 'medium',
+        topic: REAL,
+      });
     }
 
-    // Top up with AI-generated problems in the company's style — never labeled real.
+    // Top up with AI-generated problems in the company's style — never labeled
+    // real. Skipped while the bank is down: generated problems couldn't be
+    // saved, so they'd be unsubmittable and the tokens wasted.
     const needed = TARGET_COUNT - realRows.length - aiRows.length;
     let generationFailed = false;
-    if (needed > 0) {
+    if (needed > 0 && bankAvailable) {
       const patternNotes = kbEntries
         .filter(e => !TASK_STATEMENT.test(e.content))
         .map(e => `- ${e.content}`)
@@ -141,7 +142,7 @@ Return JSON array with exactly ${needed} objects:
         for (const prob of problems.slice(0, needed)) {
           if (!prob?.title || !prob?.problem) continue;
           if ([...realRows, ...aiRows].some(r => r.title === prob.title)) continue;
-          const { data: saved } = await supabase
+          const { data: saved, error } = await supabase
             .from('coding_tests')
             .insert({
               domain_slug: user.domain_slug,
@@ -158,6 +159,7 @@ Return JSON array with exactly ${needed} objects:
             .select(TEST_COLUMNS)
             .single();
           if (saved) aiRows.push(saved);
+          else if (error) { bankAvailable = false; break; }
         }
       } catch (aiErr) {
         console.error(`Company practice generation failed for ${company}:`, aiErr);
@@ -172,9 +174,11 @@ Return JSON array with exactly ${needed} objects:
 
     if (!codingTests.length) {
       return errorResponse(
-        generationFailed
-          ? `Problem generation for ${company} is unavailable right now and no verified OA questions exist for it yet. Try again in a minute.`
-          : `No problems available for ${company} yet. Try again in a minute.`,
+        !bankAvailable
+          ? `The ${company} problem bank isn't ready yet and there are no verified past questions for it. Try another company (TCS has real OA questions) or check back soon.`
+          : generationFailed
+            ? `Problem generation for ${company} is unavailable right now and no verified OA questions exist for it yet. Try again in a minute.`
+            : `No problems available for ${company} yet. Try again in a minute.`,
         503
       );
     }

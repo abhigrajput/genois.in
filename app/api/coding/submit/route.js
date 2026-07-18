@@ -2,6 +2,25 @@ import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { reviewCode } from '@/lib/claudeHelpers';
+import { parseKbOaId, kbContentHash, titleFromContent } from '@/lib/companyPractice';
+
+// Resolve an ephemeral company-practice id (kb-oa:<company>:<hash>) back to
+// the knowledge_base row it was minted from. The hash is re-derived from DB
+// content, so the id can only select trusted server-side text — it can never
+// carry client-supplied problem text into the AI reviewer.
+async function resolveKbOaProblem(supabase, codingTestId) {
+  const parsed = parseKbOaId(codingTestId);
+  if (!parsed) return null;
+  const { data: rows } = await supabase
+    .from('knowledge_base')
+    .select('content')
+    .eq('category', 'oa_question')
+    .eq('company', parsed.company)
+    .eq('domain', 'dsa');
+  const match = (rows || []).find(r => kbContentHash(r.content) === parsed.hash);
+  if (!match) return null;
+  return { id: null, title: titleFromContent(match.content), problem: match.content };
+}
 
 export async function POST(request) {
   try {
@@ -25,9 +44,12 @@ export async function POST(request) {
     const FALLBACK_TITLE = 'Two Sum';
     const FALLBACK_PROBLEM = 'Given an array of integers `nums` and an integer `target`, return the indices of the two numbers that add up to `target`.';
     const isFallback = !dbTest && codingTestId === 'fallback-two-sum';
-    if (!dbTest && !isFallback) return errorResponse('Coding test not found', 404);
+    // Ephemeral company-practice problem (real KB OA question served while the
+    // coding_tests bank migration is pending) — resolves from knowledge_base.
+    const kbOaTest = !dbTest && !isFallback ? await resolveKbOaProblem(supabase, codingTestId) : null;
+    if (!dbTest && !isFallback && !kbOaTest) return errorResponse('Coding test not found', 404);
 
-    const codingTest = dbTest || { id: null, title: FALLBACK_TITLE, problem: FALLBACK_PROBLEM };
+    const codingTest = dbTest || kbOaTest || { id: null, title: FALLBACK_TITLE, problem: FALLBACK_PROBLEM };
 
     const review = await reviewCode(
       codingTest.problem, code,
