@@ -1,5 +1,5 @@
 import { getUserFromRequest } from '@/lib/auth';
-import { getAdminClient } from '@/lib/supabaseAdmin';
+import { getAdminClient, logWriteError } from '@/lib/supabaseAdmin';
 import { successResponse, errorResponse } from '@/lib/response';
 import { updateStreak } from '@/lib/streak';
 
@@ -69,9 +69,10 @@ export async function POST(request) {
         }
       }
 
-      await supabase.from('tasks').update({
+      const { error: completeErr } = await supabase.from('tasks').update({
         status: 'completed', completed_at: new Date().toISOString(), score: TASK_POINTS,
       }).eq('id', existing.id);
+      logWriteError('tasks/complete', 'tasks.update(complete)', completeErr);
 
       // Points live in the `scores` table (task_score + total_score) — the single
       // source every dashboard / leaderboard / mentor reads. They were previously
@@ -79,35 +80,40 @@ export async function POST(request) {
       const { data: cur } = await supabase
         .from('scores').select('total_score, task_score').eq('user_id', userId).single();
       if (cur) {
-        await supabase.from('scores').update({
+        const { error: awardErr } = await supabase.from('scores').update({
           total_score: (cur.total_score || 0) + TASK_POINTS,
           task_score: (cur.task_score || 0) + TASK_POINTS,
           updated_at: new Date().toISOString(),
         }).eq('user_id', userId);
+        logWriteError('tasks/complete', 'scores.update(award)', awardErr);
       } else {
-        await supabase.from('scores').insert({
+        const { error: awardErr } = await supabase.from('scores').insert({
           user_id: userId, total_score: TASK_POINTS, task_score: TASK_POINTS,
         });
+        logWriteError('tasks/complete', 'scores.insert(award)', awardErr);
       }
 
-      await supabase.from('score_events').insert({
+      const { error: eventErr } = await supabase.from('score_events').insert({
         user_id: userId, type: 'task', points: TASK_POINTS,
         reason: `Completed ${taskType} — day ${dayNumber}`,
       });
+      logWriteError('tasks/complete', 'score_events.insert', eventErr);
       await updateStreak(userId);
     } else if (!completed && wasCompleted) {
       // Un-complete: reverse the award so points can't be farmed by toggling.
-      await supabase.from('tasks').update({
+      const { error: uncompleteErr } = await supabase.from('tasks').update({
         status: 'pending', completed_at: null, score: 0,
       }).eq('id', existing.id);
+      logWriteError('tasks/complete', 'tasks.update(uncomplete)', uncompleteErr);
       const { data: cur } = await supabase
         .from('scores').select('total_score, task_score').eq('user_id', userId).single();
       if (cur) {
-        await supabase.from('scores').update({
+        const { error: reverseErr } = await supabase.from('scores').update({
           total_score: Math.max(0, (cur.total_score || 0) - TASK_POINTS),
           task_score: Math.max(0, (cur.task_score || 0) - TASK_POINTS),
           updated_at: new Date().toISOString(),
         }).eq('user_id', userId);
+        logWriteError('tasks/complete', 'scores.update(reverse)', reverseErr);
       }
     }
 
@@ -123,16 +129,19 @@ export async function POST(request) {
         // Advance to the next day and RESET today's counter to 0 — the new day
         // starts with nothing done. (Leaving it at 5 made roadmap/daily's
         // "auto-advance when tasksToday >= 5" fire again and skip a whole day.)
-        await supabase.from('progress').update({
+        const { error: advanceErr } = await supabase.from('progress').update({
           current_day: dayNumber + 1,
           tasks_completed_today: 0,
           last_completed_date: new Date().toISOString(),
         }).eq('user_id', userId);
+        logWriteError('tasks/complete', 'progress.update(advance-day)', advanceErr);
       } else {
-        await supabase.from('progress').update({ tasks_completed_today: completedCount }).eq('user_id', userId);
+        const { error: progressErr } = await supabase.from('progress').update({ tasks_completed_today: completedCount }).eq('user_id', userId);
+        logWriteError('tasks/complete', 'progress.update(today-count)', progressErr);
       }
     } else {
-      await supabase.from('progress').update({ tasks_completed_today: completedCount }).eq('user_id', userId);
+      const { error: progressErr } = await supabase.from('progress').update({ tasks_completed_today: completedCount }).eq('user_id', userId);
+      logWriteError('tasks/complete', 'progress.update(today-count)', progressErr);
     }
 
     return successResponse({ success: true, taskType, completed: !!completed, dayNumber, allDone, completedCount });

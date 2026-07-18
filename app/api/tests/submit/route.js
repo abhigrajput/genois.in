@@ -1,4 +1,4 @@
-import { getAdminClient } from '@/lib/supabaseAdmin';
+import { getAdminClient, logWriteError } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { saveAttemptReview } from '@/lib/attemptReview';
@@ -41,11 +41,12 @@ export async function POST(request) {
     const score = Math.round((correct / test.total_questions) * 100);
     const result = score >= 60 ? 'passed' : 'failed';
 
-    await supabase.from('tests').update({
+    const { error: testUpdErr } = await supabase.from('tests').update({
       correct_answers: correct,
       score,
       result,
     }).eq('id', testId);
+    logWriteError('tests/submit', 'tests.update(result)', testUpdErr);
 
     // Persist the full question set (question + user pick + correct +
     // explanation) so the review page can render this attempt. No-op if the
@@ -70,7 +71,7 @@ export async function POST(request) {
 
     if (test.topic) {
       if (score < 60) {
-        await supabase.from('weak_topics').upsert({
+        const { error: weakErr } = await supabase.from('weak_topics').upsert({
           user_id: payload.userId,
           topic: test.topic,
           domain_slug: test.domain_slug,
@@ -78,10 +79,12 @@ export async function POST(request) {
           avg_score: score,
           updated_at: new Date().toISOString(),
         }, { onConflict: 'user_id,topic' });
-        await supabase.from('strong_topics')
+        logWriteError('tests/submit', 'weak_topics.upsert', weakErr);
+        const { error: strongDelErr } = await supabase.from('strong_topics')
           .delete().eq('user_id', payload.userId).eq('topic', test.topic);
+        logWriteError('tests/submit', 'strong_topics.delete', strongDelErr);
       } else if (score >= 80) {
-        await supabase.from('strong_topics').upsert({
+        const { error: strongErr } = await supabase.from('strong_topics').upsert({
           user_id: payload.userId,
           topic: test.topic,
           domain_slug: test.domain_slug,
@@ -89,8 +92,10 @@ export async function POST(request) {
           avg_score: score,
           updated_at: new Date().toISOString(),
         }, { onConflict: 'user_id,topic' });
-        await supabase.from('weak_topics')
+        logWriteError('tests/submit', 'strong_topics.upsert', strongErr);
+        const { error: weakDelErr } = await supabase.from('weak_topics')
           .delete().eq('user_id', payload.userId).eq('topic', test.topic);
+        logWriteError('tests/submit', 'weak_topics.delete', weakDelErr);
       }
     }
 
@@ -99,18 +104,20 @@ export async function POST(request) {
       .from('scores').select('total_score, test_score').eq('user_id', payload.userId).single();
 
     if (currentScore) {
-      await supabase.from('scores').update({
+      const { error: scoresErr } = await supabase.from('scores').update({
         total_score: (currentScore.total_score || 0) + testPoints,
         test_score: (currentScore.test_score || 0) + testPoints,
       }).eq('user_id', payload.userId);
+      logWriteError('tests/submit', 'scores.update(award)', scoresErr);
     }
 
-    await supabase.from('score_events').insert({
+    const { error: eventErr } = await supabase.from('score_events').insert({
       user_id: payload.userId,
       type: 'test',
       points: testPoints,
       reason: `Daily test on ${test.topic}: ${score}%`,
     });
+    logWriteError('tests/submit', 'score_events.insert', eventErr);
 
     // Auto-award streak insurance token for 100% on weekly test
     if (score >= 100 && test.type === 'weekly') {
@@ -119,9 +126,10 @@ export async function POST(request) {
         .select('streak_tokens')
         .eq('user_id', payload.userId)
         .single();
-      await supabase.from('progress').update({
+      const { error: tokenErr } = await supabase.from('progress').update({
         streak_tokens: (prog?.streak_tokens || 0) + 1,
       }).eq('user_id', payload.userId);
+      logWriteError('tests/submit', 'progress.update(streak-token)', tokenErr);
     }
 
     return successResponse({

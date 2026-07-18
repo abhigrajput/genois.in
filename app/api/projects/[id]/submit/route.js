@@ -1,4 +1,4 @@
-import { getAdminClient } from '@/lib/supabaseAdmin';
+import { getAdminClient, logWriteError } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { generateProjectFeedback } from '@/lib/claudeHelpers';
@@ -34,32 +34,36 @@ export async function POST(request, { params }) {
     );
 
     const score = 30;
-    await supabase.from('project_progress').update({
+    const { error: progressErr } = await supabase.from('project_progress').update({
       status: 'completed',
       score,
       ai_feedback: aiFeedback,
       submitted_at: new Date().toISOString(),
     }).eq('user_id', payload.userId).eq('project_id', projectId);
+    logWriteError('projects/[id]/submit', 'project_progress.update(completed)', progressErr);
 
     const { data: currentScore } = await supabase
       .from('scores').select('total_score, project_score').eq('user_id', payload.userId).single();
 
     if (currentScore) {
-      await supabase.from('scores').update({
+      const { error: scoresErr } = await supabase.from('scores').update({
         total_score: (currentScore.total_score || 0) + score,
         project_score: (currentScore.project_score || 0) + score,
       }).eq('user_id', payload.userId);
+      logWriteError('projects/[id]/submit', 'scores.update(award)', scoresErr);
     }
 
-    await supabase.from('score_events').insert({
+    const { error: eventErr } = await supabase.from('score_events').insert({
       user_id: payload.userId,
       type: 'project',
       points: score,
       reason: `Completed project: ${project.title}`,
     });
+    logWriteError('projects/[id]/submit', 'score_events.insert', eventErr);
 
     return successResponse({ score, aiFeedback, message: 'Project submitted!' });
   } catch (error) {
+    console.error('projects/[id]/submit error:', error);
     return errorResponse('Internal server error', 500);
   }
 }

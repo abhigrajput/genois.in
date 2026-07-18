@@ -1,4 +1,4 @@
-import { getAdminClient } from '@/lib/supabaseAdmin';
+import { getAdminClient, logWriteError } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { reviewCode } from '@/lib/claudeHelpers';
@@ -62,7 +62,7 @@ export async function POST(request) {
     if (review.score >= 70) { status = 'correct'; points = 20; }
     else if (review.score >= 40) { status = 'partial'; points = 10; }
 
-    const { data: submission } = await supabase.from('coding_submissions').insert({
+    const { data: submission, error: submissionErr } = await supabase.from('coding_submissions').insert({
       user_id: payload.userId,
       coding_test_id: codingTest.id, // null for the inline fallback (FK is nullable)
       code,
@@ -71,23 +71,26 @@ export async function POST(request) {
       score: points,
       ai_feedback: JSON.stringify(review),
     }).select().single();
+    logWriteError('coding/submit', 'coding_submissions.insert', submissionErr);
 
     const { data: currentScore } = await supabase
       .from('scores').select('total_score, coding_score').eq('user_id', payload.userId).single();
 
     if (currentScore) {
-      await supabase.from('scores').update({
+      const { error: scoresErr } = await supabase.from('scores').update({
         total_score: (currentScore.total_score || 0) + points,
         coding_score: (currentScore.coding_score || 0) + points,
       }).eq('user_id', payload.userId);
+      logWriteError('coding/submit', 'scores.update(award)', scoresErr);
     }
 
-    await supabase.from('score_events').insert({
+    const { error: eventErr } = await supabase.from('score_events').insert({
       user_id: payload.userId,
       type: 'coding',
       points,
       reason: `Coding: ${codingTest.title} — ${review.score}/100`,
     });
+    logWriteError('coding/submit', 'score_events.insert', eventErr);
 
     return successResponse({ submission, review, points, status });
   } catch (error) {

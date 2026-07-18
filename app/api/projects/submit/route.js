@@ -1,6 +1,6 @@
 import { createHash } from 'crypto';
 import { getUserFromRequest } from '@/lib/auth';
-import { getAdminClient } from '@/lib/supabaseAdmin';
+import { getAdminClient, logWriteError } from '@/lib/supabaseAdmin';
 import { successResponse, errorResponse } from '@/lib/response';
 
 // Deterministic RFC-4122 v5 UUID (SHA-1, fixed namespace). The `projects` table
@@ -90,17 +90,20 @@ export async function POST(request) {
 async function awardProjectPoints(supabase, userId, points, projectTitle) {
   const { data: cur } = await supabase.from('scores').select('total_score').eq('user_id', userId).single();
   if (cur) {
-    await supabase.from('scores').update({
+    const { error: awardErr } = await supabase.from('scores').update({
       total_score: (cur.total_score || 0) + points,
       updated_at: new Date().toISOString(),
     }).eq('user_id', userId);
+    logWriteError('projects/submit', 'scores.update(award)', awardErr);
   } else {
-    await supabase.from('scores').insert({ user_id: userId, total_score: points });
+    const { error: awardErr } = await supabase.from('scores').insert({ user_id: userId, total_score: points });
+    logWriteError('projects/submit', 'scores.insert(award)', awardErr);
   }
-  await supabase.from('score_events').insert({
+  const { error: eventErr } = await supabase.from('score_events').insert({
     user_id: userId, type: 'project', points,
     reason: `Project reviewed: ${projectTitle}`,
   });
+  logWriteError('projects/submit', 'score_events.insert', eventErr);
 }
 
 async function reviewProjectWithAI(userId, projectId, projectTitle, githubUrl, domain, week) {
@@ -148,12 +151,13 @@ Return ONLY valid JSON:
     content = content.replace(/```json/g, '').replace(/```/g, '').trim();
     const review = JSON.parse(content);
 
-    await supabase.from('project_progress').update({
+    const { error: reviewErr } = await supabase.from('project_progress').update({
       score: review.score || 75,
       ai_feedback: JSON.stringify(review),
       status: 'reviewed',
       updated_at: new Date().toISOString(),
     }).eq('user_id', userId).eq('project_id', projectId);
+    logWriteError('projects/submit', 'project_progress.update(reviewed)', reviewErr);
 
     await awardProjectPoints(supabase, userId, review.score || 75, projectTitle);
   } catch (e) {
@@ -163,12 +167,13 @@ Return ONLY valid JSON:
     try {
       const { askClaudeJSON } = await import('@/lib/claude');
       const review = await askClaudeJSON(prompt);
-      await supabase.from('project_progress').update({
+      const { error: reviewErr } = await supabase.from('project_progress').update({
         score: review.score || 75,
         ai_feedback: JSON.stringify(review),
         status: 'reviewed',
         updated_at: new Date().toISOString(),
       }).eq('user_id', userId).eq('project_id', projectId);
+      logWriteError('projects/submit', 'project_progress.update(reviewed-claude)', reviewErr);
       await awardProjectPoints(supabase, userId, review.score || 75, projectTitle);
       return;
     } catch (e2) {
@@ -177,12 +182,13 @@ Return ONLY valid JSON:
 
     // Save default review
     const fallbackScore = 75;
-    await supabase.from('project_progress').update({
+    const { error: fallbackErr } = await supabase.from('project_progress').update({
       score: fallbackScore,
       ai_feedback: JSON.stringify({ score: fallbackScore, grade: 'B', overall_feedback: 'Good work! Keep building and improving.', strengths: ['Project completed', 'Pushed to GitHub'], improvements: ['Add more documentation', 'Add tests'], encouragement: 'Great job completing this project! Keep pushing forward!' }),
       status: 'reviewed',
       updated_at: new Date().toISOString(),
     }).eq('user_id', userId).eq('project_id', projectId);
+    logWriteError('projects/submit', 'project_progress.update(reviewed-fallback)', fallbackErr);
     await awardProjectPoints(supabase, userId, fallbackScore, projectTitle);
   }
 }

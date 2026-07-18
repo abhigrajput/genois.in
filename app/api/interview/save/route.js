@@ -1,4 +1,4 @@
-import { getAdminClient } from '@/lib/supabaseAdmin';
+import { getAdminClient, logWriteError } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { saveAttemptReview } from '@/lib/attemptReview';
@@ -58,7 +58,10 @@ export async function POST(request) {
     }
 
     try {
-      await supabase.from('interview_results').insert(row);
+      // NOTE: supabase doesn't throw on DB errors — this catch only sees
+      // network-level failures, so a rejected insert still reports saved:true.
+      const { error: insertErr } = await supabase.from('interview_results').insert(row);
+      logWriteError('interview/save', 'interview_results.insert', insertErr);
       saved = true;
 
       // Real percentile from peers (only trust it once there's a meaningful sample).

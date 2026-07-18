@@ -1,4 +1,4 @@
-import { getAdminClient } from '@/lib/supabaseAdmin';
+import { getAdminClient, logWriteError } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 
@@ -10,7 +10,12 @@ export async function POST(request) {
     const supabase = getAdminClient();
     const userId = payload.userId;
 
-    await Promise.all([
+    const ops = [
+      'scores.update', 'progress.update', 'skill_identity.update',
+      'tasks.delete', 'tests.delete', 'score_events.delete',
+      'weak_topics.delete', 'strong_topics.delete',
+    ];
+    const results = await Promise.all([
       supabase.from('scores').update({
         total_score: 0, domain_score: 0, task_score: 0,
         test_score: 0, coding_score: 0, project_score: 0, streak_score: 0,
@@ -29,9 +34,11 @@ export async function POST(request) {
       supabase.from('weak_topics').delete().eq('user_id', userId),
       supabase.from('strong_topics').delete().eq('user_id', userId),
     ]);
+    results.forEach((res, i) => logWriteError('auth/reset-progress', ops[i], res?.error));
 
     return successResponse({}, 'Progress reset successfully');
   } catch (error) {
+    console.error('auth/reset-progress error:', error);
     return errorResponse('Internal server error', 500);
   }
 }

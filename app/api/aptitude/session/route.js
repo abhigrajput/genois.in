@@ -1,4 +1,4 @@
-import { getAdminClient } from '@/lib/supabaseAdmin';
+import { getAdminClient, logWriteError } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
@@ -86,7 +86,7 @@ Make sure all 10 questions are included and JSON is valid.`;
 
     if (cached) {
       const questions = shuffle(cached);
-      const { data: session } = await supabase
+      const { data: session, error: sessionErr } = await supabase
         .from('aptitude_sessions')
         .insert({
           user_id: payload.userId,
@@ -97,6 +97,7 @@ Make sure all 10 questions are included and JSON is valid.`;
         })
         .select()
         .single();
+      logWriteError('aptitude/session', 'aptitude_sessions.insert(cached)', sessionErr);
       return successResponse({ session, questions, topicName: topicData.name, categoryLabel: catData.label, fromCache: true });
     }
 
@@ -114,7 +115,7 @@ Make sure all 10 questions are included and JSON is valid.`;
     } catch {
       return errorResponse('Failed to generate questions. Try again.', 500);
     }
-    const { data: session } = await supabase
+    const { data: session, error: sessionErr } = await supabase
       .from('aptitude_sessions')
       .insert({
         user_id: payload.userId,
@@ -125,9 +126,11 @@ Make sure all 10 questions are included and JSON is valid.`;
       })
       .select()
       .single();
+    logWriteError('aptitude/session', 'aptitude_sessions.insert(fresh)', sessionErr);
 
     return successResponse({ session, questions, topicName: topicData.name, categoryLabel: catData.label });
   } catch (error) {
+    console.error('aptitude/session GET error:', error);
     return errorResponse('Internal server error', 500);
   }
 }
@@ -189,13 +192,14 @@ export async function POST(request) {
       })),
     });
 
-    await supabase.from('aptitude_sessions').update({
+    const { error: sessionUpdErr } = await supabase.from('aptitude_sessions').update({
       answers,
       score: percentage,
       time_taken_seconds: timeTaken || 0,
       completed: true,
       completed_at: new Date().toISOString(),
     }).eq('id', sessionId);
+    logWriteError('aptitude/session', 'aptitude_sessions.update(submit)', sessionUpdErr);
 
     const { data: existingProg } = await supabase
       .from('aptitude_progress')
@@ -213,7 +217,7 @@ export async function POST(request) {
           ? existingProg.current_streak + 1
           : 1);
 
-      await supabase.from('aptitude_progress').update({
+      const { error: progUpdErr } = await supabase.from('aptitude_progress').update({
         total_sessions: existingProg.total_sessions + 1,
         total_correct: existingProg.total_correct + correct,
         total_attempted: existingProg.total_attempted + questions.length,
@@ -223,8 +227,9 @@ export async function POST(request) {
         weak_topics: [...new Set([...(existingProg.weak_topics || []), ...wrongTopics])].slice(-20),
         updated_at: new Date().toISOString(),
       }).eq('user_id', payload.userId);
+      logWriteError('aptitude/session', 'aptitude_progress.update', progUpdErr);
     } else {
-      await supabase.from('aptitude_progress').insert({
+      const { error: progInsErr } = await supabase.from('aptitude_progress').insert({
         user_id: payload.userId,
         total_sessions: 1,
         total_correct: correct,
@@ -234,13 +239,15 @@ export async function POST(request) {
         last_session_date: today,
         weak_topics: [...new Set(wrongTopics)],
       });
+      logWriteError('aptitude/session', 'aptitude_progress.insert', progInsErr);
     }
 
     if (percentage >= 70) {
       const { data: currentScore } = await supabase.from('scores').select('total_score').eq('user_id', payload.userId).single();
-      await supabase.from('scores').update({
+      const { error: scoresErr } = await supabase.from('scores').update({
         total_score: (currentScore?.total_score || 0) + 15,
       }).eq('user_id', payload.userId);
+      logWriteError('aptitude/session', 'scores.update(award)', scoresErr);
     }
 
     return successResponse({
@@ -252,6 +259,7 @@ export async function POST(request) {
       attemptId,
     });
   } catch (error) {
+    console.error('aptitude/session POST error:', error);
     return errorResponse('Internal server error', 500);
   }
 }
