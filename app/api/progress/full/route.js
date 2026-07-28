@@ -4,6 +4,10 @@ import { successResponse, errorResponse } from '@/lib/response';
 import { getStreakDay, getStreakDayStart } from '@/lib/streak';
 
 const CALENDAR_DAYS = 30;
+// A mentor-only day counts as activity at the SAME threshold the chatbot uses to
+// bump the streak (app/api/chatbot/message/route.js): 3 messages in a streak-day.
+// Anything lower would light up days progress.streak never counted.
+const MENTOR_MESSAGES_FOR_ACTIVE_DAY = 3;
 
 export async function GET(request) {
   try {
@@ -39,10 +43,12 @@ export async function GET(request) {
     ).size;
 
     // ── 30-day activity calendar for the dashboard streak grid ───────────────
-    // Same definition of "a day of activity" as /api/analytics/insights: real
-    // task completions bucketed by streak-day (5AM IST reset, via lib/streak),
-    // so the grid, the /analytics activity chart and progress.streak all agree.
-    // A user with no completions gets [] — the dashboard then renders its empty
+    // Two real sources, both bucketed by streak-day (5AM IST reset, lib/streak),
+    // so the grid, the /analytics activity chart and progress.streak agree:
+    //   tasks.completed_at  → completions (same definition as analytics/insights)
+    //   chat_history        → a mentor day, but only at the 3-message threshold
+    //                         the chatbot itself uses to bump the streak
+    // Neither present in the window → [] , so the dashboard renders its empty
     // state rather than 30 grey squares dressed up as data.
     const todayStr = getStreakDay();
     const today = new Date(todayStr + 'T00:00:00Z');
@@ -50,15 +56,27 @@ export async function GET(request) {
       new Date(today.getTime() - (CALENDAR_DAYS - 1) * 86400000).toISOString().slice(0, 10)
     );
 
-    const { data: recentTasks, error: calendarError } = await supabase
-      .from('tasks').select('completed_at')
-      .eq('user_id', payload.userId)
-      .eq('status', 'completed')
-      .gte('completed_at', windowStart.toISOString())
-      .limit(500);
+    const [
+      { data: recentTasks, error: tasksError },
+      { data: recentChats, error: chatError },
+    ] = await Promise.all([
+      supabase.from('tasks').select('completed_at')
+        .eq('user_id', payload.userId)
+        .eq('status', 'completed')
+        .gte('completed_at', windowStart.toISOString())
+        .limit(500),
+      // Descending + capped: if a very chatty month exceeds the cap, the recent
+      // days (the ones a user actually looks at) stay accurate.
+      supabase.from('chat_history').select('created_at')
+        .eq('user_id', payload.userId)
+        .gte('created_at', windowStart.toISOString())
+        .order('created_at', { ascending: false })
+        .limit(2000),
+    ]);
 
-    // A missing column/table degrades to the empty state, never a 500.
-    if (calendarError) console.warn('[progress/full] calendar unavailable:', calendarError.message);
+    // A missing column/table degrades that source to nothing, never a 500.
+    if (tasksError) console.warn('[progress/full] task calendar unavailable:', tasksError.message);
+    if (chatError) console.warn('[progress/full] mentor calendar unavailable:', chatError.message);
 
     const countsByDay = new Map();
     for (const t of recentTasks || []) {
@@ -67,10 +85,32 @@ export async function GET(request) {
       countsByDay.set(day, (countsByDay.get(day) || 0) + 1);
     }
 
-    const calendarData = countsByDay.size === 0 ? [] : Array.from({ length: CALENDAR_DAYS }, (_, i) => {
+    const messagesByDay = new Map();
+    for (const c of recentChats || []) {
+      if (!c.created_at) continue;
+      const day = getStreakDay(new Date(c.created_at));
+      messagesByDay.set(day, (messagesByDay.get(day) || 0) + 1);
+    }
+
+    const mentorDays = new Set(
+      [...messagesByDay.entries()]
+        .filter(([, n]) => n >= MENTOR_MESSAGES_FOR_ACTIVE_DAY)
+        .map(([day]) => day)
+    );
+
+    const hasActivity = countsByDay.size > 0 || mentorDays.size > 0;
+    const calendarData = !hasActivity ? [] : Array.from({ length: CALENDAR_DAYS }, (_, i) => {
       const date = new Date(today.getTime() - (CALENDAR_DAYS - 1 - i) * 86400000).toISOString().slice(0, 10);
       const count = countsByDay.get(date) || 0;
-      return { date, count, done: count > 0, isToday: date === todayStr };
+      const mentor = mentorDays.has(date);
+      return {
+        date,
+        count,
+        mentorMessages: messagesByDay.get(date) || 0,
+        mentor,
+        done: count > 0 || mentor,
+        isToday: date === todayStr,
+      };
     });
 
     return successResponse({

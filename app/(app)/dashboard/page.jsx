@@ -834,11 +834,14 @@ export default function DashboardPage() {
                     {cal30.map((d, i) => {
                       const isToday = d.isToday ?? (i === cal30.length - 1)
                       const count = d.count ?? (d.done ? 1 : 0)
-                      // Fill always follows the real count — today is marked by
-                      // its ring, not by being painted green for free.
-                      const bg = count >= 3 ? 'rgba(0,217,163,0.7)' : count >= 2 ? 'rgba(0,217,163,0.45)' : count >= 1 ? 'rgba(0,217,163,0.25)' : 'rgba(255,255,255,0.03)'
+                      // Fill always follows real activity — today is marked by its
+                      // ring, not by being painted green for free. A mentor-only
+                      // day (no task completions) reads as the lightest level.
+                      const level = count >= 3 ? 3 : count >= 2 ? 2 : count >= 1 || d.mentor ? 1 : 0
+                      const bg = level === 3 ? 'rgba(0,217,163,0.7)' : level === 2 ? 'rgba(0,217,163,0.45)' : level === 1 ? 'rgba(0,217,163,0.25)' : 'rgba(255,255,255,0.03)'
+                      const did = [count > 0 && `${count} task${count === 1 ? '' : 's'}`, d.mentor && 'mentor session'].filter(Boolean)
                       return (
-                        <div key={d.date || i} className="streak-day" title={d.date ? `${d.date}: ${count} completed` : undefined} style={{ aspectRatio: '1', background: bg, borderRadius: 2, border: isToday ? `1px solid ${G}` : 'none', position: 'relative' }} />
+                        <div key={d.date || i} className="streak-day" title={d.date ? `${d.date}: ${did.join(' + ') || 'no activity'}` : undefined} style={{ aspectRatio: '1', background: bg, borderRadius: 2, border: isToday ? `1px solid ${G}` : 'none', position: 'relative' }} />
                       )
                     })}
                   </div>
