@@ -45,7 +45,7 @@ export default function DomainExplorerPage() {
 
   const filtered = filter === 'all' ? domains
     : filter === 'hot' ? domains.filter(d => d.hot)
-    : filter === 'high-pay' ? domains.filter(d => parseInt(d.packages.entry) >= 10)
+    : filter === 'high-pay' ? domains.filter(d => d.payBand === 'High')
     : filter === 'fast-job' ? domains.filter(d => d.timeToJob.includes('3-') || d.timeToJob.includes('4-'))
     : filter === 'easy' ? domains.filter(d => d.difficulty === 'Easy' || d.difficulty === 'Medium')
     : domains;
@@ -78,7 +78,7 @@ export default function DomainExplorerPage() {
                 { label: 'Demand', value: selected.demand, color: '#1D9E75' },
                 { label: 'Difficulty', value: selected.difficulty, color: '#EF9F27' },
                 { label: 'Time to Job', value: selected.timeToJob, color: '#00d9a3' },
-                { label: 'Entry Package', value: selected.packages.entry, color: '#ff6b4a' },
+                { label: 'Pay Band', value: selected.payBand, color: '#ff6b4a' },
               ].map(s => (
                 <div key={s.label} style={{ padding: '12px', background: 'rgba(255,255,255,0.02)', borderRadius: 10, textAlign: 'center' }}>
                   <div style={{ fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700, color: s.color }}>{s.value}</div>
@@ -116,10 +116,9 @@ export default function DomainExplorerPage() {
             </div>
 
             <div style={{ background: '#070f1f', border: '1px solid rgba(255,107,74,0.12)', borderRadius: 12, padding: 20 }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#ff6b4a', letterSpacing: 2, marginBottom: 12 }}>PACKAGE RANGE</div>
-              <div style={{ fontSize: 13, color: '#c8d8e8', padding: '4px 0' }}>Entry: <strong style={{ color: '#e8e8ed' }}>{selected.packages.entry}</strong></div>
-              <div style={{ fontSize: 13, color: '#c8d8e8', padding: '4px 0' }}>Mid (3-5 yrs): <strong style={{ color: '#e8e8ed' }}>{selected.packages.mid}</strong></div>
-              <div style={{ fontSize: 13, color: '#c8d8e8', padding: '4px 0' }}>Senior (5+ yrs): <strong style={{ color: '#e8e8ed' }}>{selected.packages.senior}</strong></div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#ff6b4a', letterSpacing: 2, marginBottom: 12 }}>PAY</div>
+              <div style={{ fontSize: 13, color: '#c8d8e8', padding: '4px 0' }}>Relative band: <strong style={{ color: '#e8e8ed' }}>{selected.payBand}</strong></div>
+              <div style={{ fontSize: 12, color: '#5a7a9a', padding: '6px 0 0', lineHeight: 1.6 }}>Positioned against the other domains listed here. We do not publish salary figures &mdash; real offers vary widely by company, city, role and hiring cycle. Check current openings on the employer&apos;s careers page for actual numbers.</div>
             </div>
           </div>
 
@@ -154,7 +153,7 @@ export default function DomainExplorerPage() {
                 <div style={{ flex: 1 }}>
                   <div style={{ fontFamily: 'var(--font-heading)', fontSize: 17, fontWeight: 700, color: d.color, marginBottom: 4 }}>{d.name}</div>
                   <div style={{ fontSize: 13, color: '#5a7a9a', marginBottom: 6 }}>{d.shortDesc}</div>
-                  <div style={{ fontSize: 11, color: '#c8d8e8', fontFamily: 'var(--font-mono)' }}>{d.packages.entry} · {d.timeToJob}</div>
+                  <div style={{ fontSize: 11, color: '#c8d8e8', fontFamily: 'var(--font-mono)' }}>Pay: {d.payBand} · {d.timeToJob}</div>
                 </div>
                 <div style={{ fontSize: 20, color: d.color }}>→</div>
               </div>
@@ -254,7 +253,7 @@ export default function DomainExplorerPage() {
               <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: d.color, marginBottom: 6 }}>{d.name}</div>
               <div style={{ fontSize: 12, color: '#5a7a9a', marginBottom: 12, lineHeight: 1.5 }}>{d.shortDesc}</div>
               <div style={{ display: 'flex', gap: 6, fontSize: 10, color: '#c8d8e8', fontFamily: 'var(--font-mono)', flexWrap: 'wrap' }}>
-                <span style={{ padding: '2px 8px', borderRadius: 8, background: 'rgba(29,158,117,0.08)', color: '#1D9E75' }}>{d.packages.entry}</span>
+                <span style={{ padding: '2px 8px', borderRadius: 8, background: 'rgba(29,158,117,0.08)', color: '#1D9E75' }}>Pay: {d.payBand}</span>
                 <span style={{ padding: '2px 8px', borderRadius: 8, background: 'rgba(0,217,163,0.06)', color: '#00d9a3' }}>{d.timeToJob}</span>
               </div>
             </div>

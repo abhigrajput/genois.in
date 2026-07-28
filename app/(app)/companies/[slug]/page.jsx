@@ -74,8 +74,8 @@ export default function CompanyDetailPage() {
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(140px,1fr))', gap: 10 }}>
           <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 8, padding: 10 }}>
-            <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>PACKAGE</div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: '#1D9E75' }}>{c.package}</div>
+            <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>ENTRY ROLE</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: '#1D9E75' }}>{c.entryRole}</div>
           </div>
           <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: 8, padding: 10 }}>
             <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>PREP TIME</div>

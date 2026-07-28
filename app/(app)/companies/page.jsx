@@ -47,7 +47,7 @@ export default function CompaniesPage() {
               </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <div style={{ fontSize: 12, color: '#8a9ab0' }}>📦 {c.package}</div>
+              <div style={{ fontSize: 12, color: '#8a9ab0' }}>🎯 {c.entryRole}</div>
               <div style={{ fontSize: 12, color: '#8a9ab0' }}>⏱️ Prep: {c.prepTime}</div>
             </div>
           </button>
