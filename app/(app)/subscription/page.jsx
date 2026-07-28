@@ -28,12 +28,13 @@ const RETAINED_PLANS = [
 ];
 
 // The four proof points a plain chatbot structurally cannot replicate — each maps
-// to a SHIPPED surface (/voice-interview, /api/github/sync,
-// /api/analytics/skill-identity, /u/[username]).
+// to a SHIPPED surface (/voice-interview, /api/github/sync, /badge,
+// /u/[username]). The 6-axis "skill identity" left this list: it is not a
+// measured product yet, so claiming it here would be selling a placeholder.
 const BETA_INCLUDES = [
   { icon: '🎙️', title: 'Live AI voice mock interviews', body: 'A spoken panel that grades how you actually speak — accuracy, clarity, confidence.' },
   { icon: '🔗', title: 'GitHub-verified commit sync', body: 'Your real repos, stars and commits, pulled in as proof you shipped.' },
-  { icon: '📊', title: '6-axis skill identity', body: 'A mathematical profile built from your real test, coding and project scores.' },
+  { icon: '🎖️', title: 'Expiring verified skill badges', body: 'Pass a tab-proctored domain test and earn a badge with a public verification link that expires in 60 days — never stale.' },
   { icon: '🪪', title: 'Recruiter-facing public profile', body: 'A shareable genois.in/u/ page a recruiter can open and trust.' },
 ];
 

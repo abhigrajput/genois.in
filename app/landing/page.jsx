@@ -301,7 +301,7 @@ export default function LandingPage() {
                 The ATS-bypassing<br /><span style={{ color: TEAL }}>career OS</span><br />for engineers.
               </h1>
               <p style={{ fontSize: 'clamp(16px, 2vw, 18px)', color: '#b6b6c2', lineHeight: 1.6, margin: '0 0 18px', maxWidth: 520 }}>
-                Your resume dies in a keyword filter before a human ever reads it. GENOIS flips that: you build a <span style={{ color: TEXT, fontWeight: 600 }}>mathematical, GitHub-verified skill identity</span> that recruiters can open and actually trust — proof, not keywords.
+                Your resume dies in a keyword filter before a human ever reads it. GENOIS flips that: you build a <span style={{ color: TEXT, fontWeight: 600 }}>test-verified, GitHub-verified profile</span> that recruiters can open and actually trust — proof, not keywords.
               </p>
               <p style={{ fontSize: 15, color: '#cbccd6', lineHeight: 1.6, margin: '0 0 32px', maxWidth: 520, fontWeight: 500 }}>
                 One <span style={{ color: TEAL_LT, fontWeight: 700 }}>verified profile</span>, built from your real coding, test and project performance — with live AI voice interviews, GitHub-synced commits, and a recruiter-ready page at <span style={{ color: TEAL_LT, fontWeight: 600 }}>genois.in/u/you</span>.
@@ -500,7 +500,7 @@ export default function LandingPage() {
             </h2>
             <p style={{ color: '#a6a6b3', fontSize: 'clamp(15px, 1.8vw, 17px)', lineHeight: 1.65, margin: '0 auto 30px', maxWidth: 560 }}>
               We&apos;re onboarding the first 100 engineers by hand. During the beta the entire engine —
-              live voice interviews, GitHub-verified commit sync, and your 6-axis skill identity — is
+              live voice interviews, GitHub-verified commit sync, and verified skill badges — is
               fully unlocked, free. Paid tiers return later; beta testers keep founder pricing.
             </p>
             <Link href="/signup" className="gen-press" style={{

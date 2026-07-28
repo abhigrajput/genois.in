@@ -29,8 +29,9 @@ const RETAINED_PLANS = [
 
 // ─── What every beta tester gets — all four map to SHIPPED surfaces ──────────
 // Live voice panel (/voice-interview), GitHub-verified sync (/api/github/sync),
-// 6-axis skill identity (/api/analytics/skill-identity), recruiter profile
-// (/u/[username]). No invented capabilities.
+// verified skill badges (/badge, /api/badge/verify/[badgeId]), recruiter profile
+// (/u/[username]). No invented capabilities — the 6-axis "skill identity" was
+// removed from this list because it is not a measured product yet.
 const BETA_INCLUDES = [
   {
     icon: '🎙️',
@@ -43,9 +44,9 @@ const BETA_INCLUDES = [
     body: 'Connect GitHub and your real repos, stars and commits are pulled in as proof you shipped — not just studied.',
   },
   {
-    icon: '📊',
-    title: '6-axis skill identity',
-    body: 'A mathematical profile built from your actual test, coding and project performance across the whole 90 days.',
+    icon: '🎖️',
+    title: 'Expiring verified skill badges',
+    body: 'Pass a tab-proctored domain test at 70+ and earn a badge with its own public verification link — it expires after 60 days, so it always reflects what you can do now.',
   },
   {
     icon: '🪪',
