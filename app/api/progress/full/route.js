@@ -1,6 +1,9 @@
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
+import { getStreakDay, getStreakDayStart } from '@/lib/streak';
+
+const CALENDAR_DAYS = 30;
 
 export async function GET(request) {
   try {
@@ -35,7 +38,43 @@ export async function GET(request) {
       (weekTasks || []).map(t => t.day_number)
     ).size;
 
+    // ── 30-day activity calendar for the dashboard streak grid ───────────────
+    // Same definition of "a day of activity" as /api/analytics/insights: real
+    // task completions bucketed by streak-day (5AM IST reset, via lib/streak),
+    // so the grid, the /analytics activity chart and progress.streak all agree.
+    // A user with no completions gets [] — the dashboard then renders its empty
+    // state rather than 30 grey squares dressed up as data.
+    const todayStr = getStreakDay();
+    const today = new Date(todayStr + 'T00:00:00Z');
+    const windowStart = getStreakDayStart(
+      new Date(today.getTime() - (CALENDAR_DAYS - 1) * 86400000).toISOString().slice(0, 10)
+    );
+
+    const { data: recentTasks, error: calendarError } = await supabase
+      .from('tasks').select('completed_at')
+      .eq('user_id', payload.userId)
+      .eq('status', 'completed')
+      .gte('completed_at', windowStart.toISOString())
+      .limit(500);
+
+    // A missing column/table degrades to the empty state, never a 500.
+    if (calendarError) console.warn('[progress/full] calendar unavailable:', calendarError.message);
+
+    const countsByDay = new Map();
+    for (const t of recentTasks || []) {
+      if (!t.completed_at) continue;
+      const day = getStreakDay(new Date(t.completed_at));
+      countsByDay.set(day, (countsByDay.get(day) || 0) + 1);
+    }
+
+    const calendarData = countsByDay.size === 0 ? [] : Array.from({ length: CALENDAR_DAYS }, (_, i) => {
+      const date = new Date(today.getTime() - (CALENDAR_DAYS - 1 - i) * 86400000).toISOString().slice(0, 10);
+      const count = countsByDay.get(date) || 0;
+      return { date, count, done: count > 0, isToday: date === todayStr };
+    });
+
     return successResponse({
+      calendarData,
       dayProgress: {
         currentDay,
         dayPercent: progress?.day_progress || 0,

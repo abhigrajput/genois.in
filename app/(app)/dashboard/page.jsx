@@ -832,11 +832,13 @@ export default function DashboardPage() {
                 <>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 3 }}>
                     {cal30.map((d, i) => {
-                      const isToday = i === 29 || d.isToday
+                      const isToday = d.isToday ?? (i === cal30.length - 1)
                       const count = d.count ?? (d.done ? 1 : 0)
-                      const bg = isToday ? G : count >= 3 ? 'rgba(0,217,163,0.7)' : count >= 2 ? 'rgba(0,217,163,0.45)' : count >= 1 ? 'rgba(0,217,163,0.25)' : 'rgba(255,255,255,0.03)'
+                      // Fill always follows the real count — today is marked by
+                      // its ring, not by being painted green for free.
+                      const bg = count >= 3 ? 'rgba(0,217,163,0.7)' : count >= 2 ? 'rgba(0,217,163,0.45)' : count >= 1 ? 'rgba(0,217,163,0.25)' : 'rgba(255,255,255,0.03)'
                       return (
-                        <div key={i} className="streak-day" style={{ aspectRatio: '1', background: bg, borderRadius: 2, border: isToday ? `1px solid ${G}` : 'none', position: 'relative' }} />
+                        <div key={d.date || i} className="streak-day" title={d.date ? `${d.date}: ${count} completed` : undefined} style={{ aspectRatio: '1', background: bg, borderRadius: 2, border: isToday ? `1px solid ${G}` : 'none', position: 'relative' }} />
                       )
                     })}
                   </div>
