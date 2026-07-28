@@ -51,7 +51,7 @@ const BETA_INCLUDES = [
   {
     icon: '🪪',
     title: 'Recruiter-facing public profile',
-    body: 'A shareable genois.in/u/ page a recruiter can open and trust — your verified skill identity, in the open.',
+    body: 'A shareable genois.in/u/ page a recruiter can open and trust — your GENOIS score, global rank and verified badges, in the open.',
   },
 ];
 
@@ -158,7 +158,7 @@ export default function PricingPage() {
           </div>
           <p style={{ color: MUTED, fontSize: 14, margin: `0 auto ${SP[6]}px`, maxWidth: 460, lineHeight: 1.6 }}>
             One click gets you the full engine — voice interviews, GitHub-verified proof, and a
-            recruiter-ready skill identity. No payment now, and your progress is always safe.
+            recruiter-ready public profile. No payment now, and your progress is always safe.
           </p>
           {/* Solid GENOIS green + dark text CTA — routes into the beta onboarding flow. */}
           <Link
