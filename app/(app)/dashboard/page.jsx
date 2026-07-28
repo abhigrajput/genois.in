@@ -300,7 +300,7 @@ export default function DashboardPage() {
       await fetch('/api/tasks/complete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
-        body: JSON.stringify({ day: currentDay, taskType }),
+        body: JSON.stringify({ day: currentDay, taskType, completed: true }),
       })
       checkAchievements(newMask)
       if (newMask === 31) { setShowConfetti(true); setTimeout(() => setShowConfetti(false), 3000) }
