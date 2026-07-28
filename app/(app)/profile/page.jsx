@@ -267,7 +267,10 @@ export default function ProfilePage() {
     );
   }
 
-  const areas = skill?.skillAreas || null;
+  // Readiness is rendered only when the API reports it as actually measured
+  // (readinessAvailable). It isn't today — no real Readiness system exists — so
+  // the axes and the job-ready number stay hidden instead of being invented.
+  const areas = skill?.readinessAvailable ? skill?.skillAreas : null;
   const hasSkillData = !!areas && SKILL_AXES.some(a => (areas[a.key] || 0) > 0);
   const jobReady = Math.round(skill?.jobReadyScore || 0);
 
@@ -369,7 +372,7 @@ export default function ProfilePage() {
               </div>
             )}
           </div>
-          <div style={{ fontSize: 12, color: '#5a7a9a', marginBottom: 20 }}>Your 6-axis skill identity, computed from your real tests, coding and projects.</div>
+          <div style={{ fontSize: 12, color: '#5a7a9a', marginBottom: 20 }}>Your 6-axis skill identity — shown only once it can be computed from real tests, coding and projects.</div>
 
           {skillLoading ? (
             // Loading state — skeleton of the 6 axis bars.
@@ -399,10 +402,10 @@ export default function ProfilePage() {
               })}
             </div>
           ) : (
-            // Empty state — new account with no measured performance yet.
+            // Empty state — no measured readiness to show.
             <div style={{ padding: '18px 16px', borderRadius: 10, background: 'rgba(0,217,163,0.04)', border: '1px dashed rgba(0,217,163,0.2)', textAlign: 'center' }}>
               <div style={{ fontSize: 13, color: '#8a9aac', lineHeight: 1.6, marginBottom: 12 }}>
-                No skill data yet. Finish a daily task, take a test, or ship a project and your 6-axis identity starts filling in.
+                Not enough data yet — complete assessments to unlock your 6-axis skill identity.
               </div>
               <Link href="/dashboard" style={{ ...btnSecondary, display: 'inline-block', textDecoration: 'none' }}>Go to today&apos;s task →</Link>
             </div>

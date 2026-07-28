@@ -113,25 +113,29 @@ export async function POST(request) {
       mode: ['technical', 'behavioral', 'hr', 'mixed'].includes(body.mode) ? body.mode : 'technical',
     });
 
-    let evaluation = null;
+    // No fabricated fallback here: a word-count-derived score is worse than an
+    // error — it lands in interview_results and contaminates the mentor's view
+    // of the student. AI failures surface as a retryable 503 instead (same
+    // guardrail as /api/resume/analyze: a real evaluation or a clean error).
+    let evaluation;
     try {
       const raw = await askClaudeJSON(prompt, 'You are a strict but fair technical interviewer.', 1200);
+      if (!raw || typeof raw !== 'object'
+        || raw.technicalAccuracy == null
+        || raw.communicationClarity == null
+        || raw.confidenceScore == null) {
+        throw new Error('AI returned an unusable evaluation');
+      }
       evaluation = normalize(raw, wordCount);
     } catch (e) {
       console.warn('[interview/evaluate] Claude failed:', e.message);
-      // Neutral fallback so the session can continue and still feels honest.
-      const base = wordCount < 30 ? 35 : 58;
-      evaluation = normalize({
-        technicalAccuracy: base,
-        communicationClarity: base,
-        confidenceScore: base,
-        strengths: wordCount >= 30 ? ['You attempted a complete answer.'] : [],
-        improvements: wordCount < 30
-          ? ['Answer was very short — aim for a structured 60-90 second response.']
-          : ['Add a concrete example and state your reasoning step by step.'],
-        idealAnswer: '',
-        verdict: 'Auto-scored — the AI evaluator was briefly unavailable, so treat this as approximate.',
-      }, wordCount);
+      const busy = e.name === 'AbortError' || e.status === 529 || e.status === 429;
+      return errorResponse(
+        busy
+          ? 'The evaluator is busy right now — retry in a moment.'
+          : 'Evaluation unavailable — the AI could not score this answer. Retry.',
+        503
+      );
     }
 
     return successResponse({ evaluation });

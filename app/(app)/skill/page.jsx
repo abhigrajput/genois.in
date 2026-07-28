@@ -19,18 +19,21 @@ export default function SkillIdentityPage() {
   if (!skill) return null;
 
   const skillColor = SKILL_COLORS[skill.skillLevel] || '#888780';
-  const areas = [
-    { label:'Theoretical Knowledge', value: skill.skillAreas?.theoretical||0, color:'#7F77DD' },
-    { label:'Coding Ability', value: skill.skillAreas?.coding||0, color:'#1D9E75' },
-    { label:'Project Experience', value: skill.skillAreas?.projects||0, color:'#BA7517' },
-    { label:'Consistency', value: skill.skillAreas?.consistency||0, color:'#D4537E' },
-    { label:'Problem Solving', value: skill.skillAreas?.problemSolving||0, color:'#378ADD' },
-    { label:'Domain Depth', value: skill.skillAreas?.domainDepth||0, color:'#D85A30' },
-  ];
+  // Readiness (the 6 axes + the job-ready number) is only rendered once the API
+  // reports it as measured. It never is today, so the card shows an empty state
+  // rather than bars derived from arbitrary constants.
+  const readiness = skill.readinessAvailable ? skill.skillAreas : null;
+  const areas = readiness ? [
+    { label:'Theoretical Knowledge', value: readiness.theoretical||0, color:'#7F77DD' },
+    { label:'Coding Ability', value: readiness.coding||0, color:'#1D9E75' },
+    { label:'Project Experience', value: readiness.projects||0, color:'#BA7517' },
+    { label:'Consistency', value: readiness.consistency||0, color:'#D4537E' },
+    { label:'Problem Solving', value: readiness.problemSolving||0, color:'#378ADD' },
+    { label:'Domain Depth', value: readiness.domainDepth||0, color:'#D85A30' },
+  ] : [];
   const tips = [
     skill.weakTopics?.length > 0 && `Review weak topics: ${skill.weakTopics.slice(0,2).map(w=>w.topic).join(', ')}`,
     (skill.stats?.streak||0) < 7 && `Build streak — ${7-(skill.stats?.streak||0)} more days to weekly badge`,
-    (skill.jobReadyScore||0) < 50 && 'Complete daily tasks to boost job readiness score',
     (skill.stats?.completedProjects||0) < 1 && 'Submit weekly projects to gain project experience',
   ].filter(Boolean);
 
@@ -49,12 +52,10 @@ export default function SkillIdentityPage() {
             <div className="text-sm text-gray-400">{user?.domain_slug?.toUpperCase()} · {user?.college}</div>
           </div>
           <div className="flex gap-6">
-            {[{v:skill.progressPercent,l:'Progress',c:'#7F77DD'},{v:skill.jobReadyScore,l:'Job Ready',c:'#D85A30'}].map(s=>(
-              <div key={s.l} className="text-center">
-                <div className="text-2xl font-bold" style={{color:s.c}}>{s.v||0}%</div>
-                <div className="text-xs text-gray-400">{s.l}</div>
-              </div>
-            ))}
+            <div className="text-center">
+              <div className="text-2xl font-bold" style={{color:'#7F77DD'}}>{skill.progressPercent||0}%</div>
+              <div className="text-xs text-gray-400">Progress</div>
+            </div>
           </div>
         </div>
       </div>
@@ -79,19 +80,26 @@ export default function SkillIdentityPage() {
 
       <div className="card">
         <h2 className="section-title mb-4">Skill Areas</h2>
-        <div className="space-y-3">
-          {areas.map(a => (
-            <div key={a.label}>
-              <div className="flex justify-between text-sm mb-1">
-                <span className="text-gray-600">{a.label}</span>
-                <span className="font-mono font-medium" style={{color:a.color}}>{a.value}%</span>
+        {areas.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-gray-200 p-5 text-center">
+            <div className="text-sm text-gray-500">Not enough data yet — complete assessments to unlock.</div>
+            <div className="text-xs text-gray-400 mt-1">Your skill areas appear here once they can be measured from real results.</div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {areas.map(a => (
+              <div key={a.label}>
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="text-gray-600">{a.label}</span>
+                  <span className="font-mono font-medium" style={{color:a.color}}>{a.value}%</span>
+                </div>
+                <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-full rounded-full transition-all duration-700" style={{width:`${a.value}%`, background:a.color}} />
+                </div>
               </div>
-              <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                <div className="h-full rounded-full transition-all duration-700" style={{width:`${a.value}%`, background:a.color}} />
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="card">

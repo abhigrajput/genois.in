@@ -40,23 +40,20 @@ export async function GET(request) {
     const streak = progress?.streak || 0;
     const projectsDone = completedProjects?.length || 0;
 
-    const skillAreas = {
-      theoretical: Math.min(100, avgTestScore),
-      coding: Math.min(100, Math.round((score?.coding_score || 0) / 5)),
-      projects: Math.min(100, projectsDone * 25),
-      consistency: Math.min(100, streak * 5),
-      problemSolving: Math.min(100, Math.round((score?.coding_score || 0) / 8)),
-      domainDepth: Math.min(100, Math.round(progressPct)),
-    };
-
+    // The 6 "skill areas" and job_ready_score used to be derived from arbitrary
+    // constants (coding_score/5, coding_score/8, streak*5, projects*25) while
+    // job_ready_score is never actually written — so both were presented as a
+    // measured profile without measuring anything. Until a real Readiness system
+    // exists we return no axes and no readiness number, and clients render an
+    // empty state. The DB columns are untouched; we simply stop inventing values.
     return successResponse({
       skillLevel: skill?.skill_level || 'beginner',
       progressPercent: Math.round(progressPct),
-      jobReadyScore: Math.round(skill?.job_ready_score || 0),
       domainLevel: skill?.domain_level || 'beginner',
       weakTopics: weak || [],
       strongTopics: strong || [],
-      skillAreas,
+      readinessAvailable: false,
+      skillAreas: null,
       stats: {
         totalTests: tests?.length || 0,
         avgTestScore,

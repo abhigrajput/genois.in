@@ -74,7 +74,8 @@ const QUESTION_TIMEOUT_MS = 30000;
  */
 
 /**
- * The scoring returned by /api/interview/evaluate (or the local fallback).
+ * The scoring returned by /api/interview/evaluate. There is no local fallback:
+ * a turn is either really scored by the AI or stays unscored (null).
  * @typedef {Object} EvaluationPayload
  * @property {number}   technicalAccuracy     0–100.
  * @property {number}   communicationClarity  0–100.
@@ -146,14 +147,6 @@ function gradeFromScore(s) {
   if (s >= 90) return 'A+'; if (s >= 80) return 'A'; if (s >= 75) return 'B+'; if (s >= 70) return 'B';
   if (s >= 65) return 'C+'; if (s >= 55) return 'C'; if (s >= 45) return 'D'; return 'F';
 }
-
-/** @type {EvaluationPayload} — shown only if scoring is unavailable and the user opts in. */
-const ESTIMATED_EVAL = {
-  technicalAccuracy: 70, communicationClarity: 65, confidenceScore: 75,
-  overallScore: 70, grade: 'B',
-  strengths: ['Answer recorded'], improvements: ['Keep practicing'],
-  verdict: 'Good attempt — scoring was unavailable, so this is an estimate.',
-};
 
 // ── Dynamic audio waveform visualizer ──────────────────────────────────────
 // One component, four distinct states, ONE brand green:
@@ -772,11 +765,19 @@ export default function VoiceInterviewPage() {
     runEvaluation({ transcript: answerText, wordCount: wc });
   }
 
-  // "Use estimated score" — accept the fallback so the session can continue.
-  function acceptEstimated() {
-    if (!pendingAnswer) return;
-    toast('Recorded with an estimated score.', { icon: '📝' });
-    commitEvaluation(pendingAnswer, ESTIMATED_EVAL);
+  // "End interview" — scoring is unavailable and the user doesn't want to keep
+  // retrying. Nothing is invented for this answer: the turn is simply not
+  // recorded, and the session ends with only the answers the AI really scored.
+  function endWithScoredOnly() {
+    setPendingAnswer(null);
+    setEvalError(null);
+    if (evaluations.length === 0) {
+      toast('No answer was scored, so there is nothing to save.', { icon: '📝' });
+      retake();
+      return;
+    }
+    toast('Ending here — only AI-scored answers are counted.', { icon: '📝' });
+    finishInterview();
   }
 
   async function continueNext() {
@@ -959,10 +960,10 @@ export default function VoiceInterviewPage() {
             {evalError.timedOut ? 'Still scoring…' : 'Scoring hiccuped'}
           </div>
           <div style={{ fontSize: 14, color: TXT_SLATE, lineHeight: 1.6, marginBottom: SP[2] }}>{evalError.message}</div>
-          <div style={{ fontSize: 12.5, color: TXT_MUTE, lineHeight: 1.6, marginBottom: SP[6] }}>Your answer is safe — nothing was lost. Retry the evaluation, or continue with an estimated score.</div>
+          <div style={{ fontSize: 12.5, color: TXT_MUTE, lineHeight: 1.6, marginBottom: SP[6] }}>Your answer is safe — nothing was lost. We never guess a score, so retry the evaluation, or end here and keep only the answers that were really scored.</div>
           <div style={{ display: 'flex', gap: SP[3], flexWrap: 'wrap' }}>
             <button onClick={() => pendingAnswer && runEvaluation(pendingAnswer)} style={{ flex: 1, minWidth: 160, padding: SP[4], borderRadius: 12, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${GENOIS},${GENOIS_SOFT})`, color: '#04120d', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>↻ Retry evaluation</button>
-            <button onClick={acceptEstimated} style={{ flex: 1, minWidth: 160, padding: SP[4], borderRadius: 12, border: `1px solid ${SLATE_600}`, cursor: 'pointer', background: 'transparent', color: TXT_SLATE, fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14 }}>Use estimated score</button>
+            <button onClick={endWithScoredOnly} style={{ flex: 1, minWidth: 160, padding: SP[4], borderRadius: 12, border: `1px solid ${SLATE_600}`, cursor: 'pointer', background: 'transparent', color: TXT_SLATE, fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14 }}>End interview</button>
           </div>
         </div>
       </div>

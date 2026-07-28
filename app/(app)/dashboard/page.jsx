@@ -414,13 +414,10 @@ export default function DashboardPage() {
   const todayDow = new Date().getDay()
   const weekStart = currentDay - ((todayDow === 0 ? 6 : todayDow - 1))
 
-  // 30-day calendar grid
-  const cal30 = calendarData.length > 0 ? calendarData : Array.from({ length: 30 }, (_, i) => ({
-    date: new Date(Date.now() - (29 - i) * 86400000),
-    done: i >= 30 - streak,
-    isToday: i === 29,
-    count: i >= 30 - streak ? (i % 3 === 0 ? 2 : 1) : 0,
-  }))
+  // 30-day calendar grid — REAL days only. No synthesized activity: when the
+  // API has no calendar data the card shows an empty state instead of a grid
+  // invented from the streak count.
+  const cal30 = calendarData
 
   // Motivation messages
   const nameAbove = lb[Math.max(0, myIdx - 1)]?.name || 'someone'
@@ -827,22 +824,30 @@ export default function DashboardPage() {
             {/* Streak Calendar */}
             <div style={cardBase}>
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 10 }}>30-DAY STREAK</div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 3 }}>
-                {cal30.map((d, i) => {
-                  const isToday = i === 29 || d.isToday
-                  const count = d.count ?? (d.done ? 1 : 0)
-                  const bg = isToday ? G : count >= 3 ? 'rgba(0,217,163,0.7)' : count >= 2 ? 'rgba(0,217,163,0.45)' : count >= 1 ? 'rgba(0,217,163,0.25)' : 'rgba(255,255,255,0.03)'
-                  return (
-                    <div key={i} className="streak-day" style={{ aspectRatio: '1', background: bg, borderRadius: 2, border: isToday ? `1px solid ${G}` : 'none', position: 'relative' }} />
-                  )
-                })}
-              </div>
-              <div style={{ marginTop: 6, display: 'flex', gap: 6, alignItems: 'center' }}>
-                <div style={{ width: 8, height: 8, background: 'rgba(0,217,163,0.25)', borderRadius: 1 }} />
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#555' }}>less</span>
-                <div style={{ width: 8, height: 8, background: G, borderRadius: 1 }} />
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#555' }}>more</span>
-              </div>
+              {cal30.length === 0 ? (
+                <div style={{ fontSize: 11.5, color: '#666', lineHeight: 1.6, padding: '6px 0' }}>
+                  Complete tasks to build your activity history.
+                </div>
+              ) : (
+                <>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 3 }}>
+                    {cal30.map((d, i) => {
+                      const isToday = i === 29 || d.isToday
+                      const count = d.count ?? (d.done ? 1 : 0)
+                      const bg = isToday ? G : count >= 3 ? 'rgba(0,217,163,0.7)' : count >= 2 ? 'rgba(0,217,163,0.45)' : count >= 1 ? 'rgba(0,217,163,0.25)' : 'rgba(255,255,255,0.03)'
+                      return (
+                        <div key={i} className="streak-day" style={{ aspectRatio: '1', background: bg, borderRadius: 2, border: isToday ? `1px solid ${G}` : 'none', position: 'relative' }} />
+                      )
+                    })}
+                  </div>
+                  <div style={{ marginTop: 6, display: 'flex', gap: 6, alignItems: 'center' }}>
+                    <div style={{ width: 8, height: 8, background: 'rgba(0,217,163,0.25)', borderRadius: 1 }} />
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#555' }}>less</span>
+                    <div style={{ width: 8, height: 8, background: G, borderRadius: 1 }} />
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#555' }}>more</span>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Quick Access */}

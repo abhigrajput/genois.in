@@ -2,8 +2,9 @@
 // Speech is disabled so the page renders its typed-answer <textarea>. Starts an
 // interview (stubbed question), submits a typed answer, and forces
 // POST /api/interview/evaluate to 503 — asserting the evalFailed recovery screen
-// (Retry evaluation + Use estimated score) appears and Retry re-fires scoring,
-// instead of stranding the user on the evaluating spinner.
+// (Retry evaluation + End interview) appears and Retry re-fires scoring, instead
+// of stranding the user on the evaluating spinner. There is deliberately no
+// "estimated score" escape hatch: an unscored answer is never given a number.
 import path from 'node:path';
 import { Session, sleep } from './lib/cdp.mjs';
 import { BASE, ARTIFACTS, seedAuthedSession, authRoute, disableSpeech } from './lib/fixtures.mjs';
@@ -50,7 +51,7 @@ export async function run({ headful = false } = {}) {
     const failed = await session.waitFor(`/Scoring hiccuped/i.test(document.body.innerText)`, { timeout: 15000 });
     check('evalFailed card shown (Scoring hiccuped)', failed);
     check('Retry-evaluation button present', await session.eval(`!![...document.querySelectorAll('button')].find(b=>/retry evaluation/i.test(b.textContent))`));
-    check('Use-estimated-score option present', await session.eval(`!![...document.querySelectorAll('button')].find(b=>/estimated score/i.test(b.textContent))`));
+    check('End-interview option present (no estimated score)', await session.eval(`(()=>{const bs=[...document.querySelectorAll('button')];return !!bs.find(b=>/end interview/i.test(b.textContent)) && !bs.some(b=>/estimated score/i.test(b.textContent));})()`));
 
     const p1 = path.join(ARTIFACTS, 'voice-interview-eval-retry-1-failed.png');
     await session.screenshot(p1); artifacts.push(p1);
