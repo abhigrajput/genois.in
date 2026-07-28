@@ -6,6 +6,7 @@ import { successResponse, errorResponse } from '@/lib/response';
 import {
   rateLimit, rateLimitResponse,
   isLockedOut, recordFailedLogin, clearFailedLogins, lockoutResponse,
+  LIMITS,
 } from '@/lib/rateLimit';
 import { csrfCheck, getClientIp } from '@/lib/security';
 
@@ -23,7 +24,7 @@ export async function POST(request) {
   const lockout = await isLockedOut(ip);
   if (lockout.locked) return lockoutResponse(lockout.remainingMs);
 
-  if (!await rateLimit(`company_login_${ip}`, 5, 60000)) return rateLimitResponse(60);
+  if (!await rateLimit(`company_login_${ip}`, LIMITS.auth.max, LIMITS.auth.windowMs)) return rateLimitResponse(60);
 
   try {
     let body;

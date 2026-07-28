@@ -1,14 +1,14 @@
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
-import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
+import { rateLimit, rateLimitResponse, LIMITS } from '@/lib/rateLimit';
 import crypto from 'crypto';
 
 export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!await rateLimit(`resend_verify_${payload.userId}`, 3, 3600000)) return rateLimitResponse();
+    if (!await rateLimit(`resend_verify_${payload.userId}`, LIMITS.authSlow.max, LIMITS.authSlow.windowMs)) return rateLimitResponse();
 
     const supabase = getAdminClient();
     const { data: user } = await supabase

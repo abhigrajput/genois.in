@@ -4,7 +4,7 @@ import { NextResponse } from 'next/server';
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { generateToken, sessionCookie } from '@/lib/auth';
 import { successResponse } from '@/lib/response';
-import { rateLimit, rateLimitResponse, isLockedOut, recordFailedLogin, clearFailedLogins, lockoutResponse } from '@/lib/rateLimit';
+import { rateLimit, rateLimitResponse, isLockedOut, recordFailedLogin, clearFailedLogins, lockoutResponse, LIMITS } from '@/lib/rateLimit';
 import { csrfCheck, getClientIp } from '@/lib/security';
 
 // FIX 08: Zod schema
@@ -37,7 +37,7 @@ export async function POST(request) {
   if (lockout.locked) return lockoutResponse(lockout.remainingMs);
 
   // General rate limit
-  if (!await rateLimit(`login_${ip}`, 5, 60000)) return rateLimitResponse(60);
+  if (!await rateLimit(`login_${ip}`, LIMITS.auth.max, LIMITS.auth.windowMs)) return rateLimitResponse(60);
 
   try {
     let body;

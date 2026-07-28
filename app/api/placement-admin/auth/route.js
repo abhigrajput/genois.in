@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import {
   rateLimit, rateLimitResponse,
   isLockedOut, recordFailedLogin, clearFailedLogins, lockoutResponse,
+  LIMITS,
 } from '@/lib/rateLimit';
 import { getClientIp, timingSafeEqualStr } from '@/lib/security';
 
@@ -19,7 +20,7 @@ export async function POST(request) {
 
   // General throttle: 5 attempts / minute / IP. This is the real brute-force
   // defense — the middleware CSRF origin check only deters browsers, not curl.
-  if (!await rateLimit(`placement_pin_${ip}`, 5, 60000)) return rateLimitResponse(60);
+  if (!await rateLimit(`placement_pin_${ip}`, LIMITS.auth.max, LIMITS.auth.windowMs)) return rateLimitResponse(60);
 
   try {
     // Fail closed: no hardcoded fallback PIN. If PLACEMENT_PIN (or the signing

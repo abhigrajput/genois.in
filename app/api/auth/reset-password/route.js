@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { successResponse, errorResponse } from '@/lib/response';
-import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
+import { rateLimit, rateLimitResponse, LIMITS } from '@/lib/rateLimit';
 import { csrfCheck, checkPasswordStrength, getClientIp } from '@/lib/security';
 import bcrypt from 'bcryptjs';
 
@@ -18,7 +18,7 @@ export async function POST(request) {
 
   try {
     const ip = getClientIp(request);
-    if (!await rateLimit(`reset_pwd_${ip}`, 3, 3600000)) return rateLimitResponse(3600);
+    if (!await rateLimit(`reset_pwd_${ip}`, LIMITS.authSlow.max, LIMITS.authSlow.windowMs)) return rateLimitResponse(3600);
 
     let body;
     try { body = await request.json(); } catch { return errorResponse('Invalid JSON', 400); }
