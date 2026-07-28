@@ -88,7 +88,7 @@ export default function CodingPage() {
     try {
       const r = await apiFetch('/api/coding/company?company=' + encodeURIComponent(name), token);
       const tests = r.data?.codingTests || [];
-      setCompanyInfo({ focus: r.data?.focus, realCount: r.data?.realCount ?? 0, aiCount: r.data?.aiCount ?? 0 });
+      setCompanyInfo({ focus: r.data?.focus });
       setCodingTests(tests);
       setCodingTest(tests[0] || null);
     } catch (err) {
@@ -196,7 +196,7 @@ export default function CodingPage() {
       <h1 style={{fontFamily:'var(--font-heading)',fontSize:24,fontWeight:800,color:'#e8e8ed',marginBottom:6}}>Coding Challenge</h1>
       <p style={{color:'#5a7a9a',fontSize:13,marginBottom:16}}>
         {mode === 'company'
-          ? (selectedCompany ? `${selectedCompany} practice · real OA questions first, AI-generated to fill` : 'Pick a target company to practice its OA pattern')
+          ? (selectedCompany ? `${selectedCompany} practice · problems written in the style of its OA` : 'Pick a target company to practice its OA pattern')
           : `Day ${currentDay} · Submit your solution for AI review`}
       </p>
 
@@ -219,9 +219,7 @@ export default function CodingPage() {
         <div style={{...card, padding:'12px 16px'}}>
           <div style={{fontSize:12,color:'#c8d8e8',lineHeight:1.6}}>{companyInfo.focus}</div>
           <div style={{fontSize:11,color:'#5a7a9a',marginTop:6}}>
-            {companyInfo.realCount > 0
-              ? `${companyInfo.realCount} real past OA question${companyInfo.realCount > 1 ? 's' : ''} from verified placement data · ${companyInfo.aiCount} AI-generated practice`
-              : `No verified past questions for ${selectedCompany} yet — all problems are AI-generated in its style`}
+            Practice problems written in the style of {selectedCompany}&apos;s OA — not real past questions.
           </div>
         </div>
       )}
@@ -252,7 +250,7 @@ export default function CodingPage() {
           background: currentTestIndex===i ? 'linear-gradient(135deg,#00d9a3,#ff6b4a)' : 'rgba(255,255,255,0.05)',
           color: currentTestIndex===i ? '#020812' : '#5a7a9a',
         }}>
-        Problem {i+1} {t.difficulty ? '· '+t.difficulty : ''}{t.source === 'real' ? ' · Real' : ''}
+        Problem {i+1} {t.difficulty ? '· '+t.difficulty : ''}
       </button>
     ))}
   </div>
@@ -260,11 +258,13 @@ export default function CodingPage() {
           <div style={card}>
             <div style={{fontFamily:'var(--font-heading)',fontSize:16,fontWeight:700,color:'#e8e8ed',marginBottom:8}}>{codingTest.title}</div>
             <span style={{fontSize:11,fontFamily:'var(--font-mono)',color:'#1D9E75',background:'rgba(29,158,117,0.1)',padding:'2px 10px',borderRadius:20}}>{codingTest.difficulty}</span>
-            {codingTest.source === 'real' && (
-              <span style={{fontSize:11,fontFamily:'var(--font-mono)',color:'#00d9a3',background:'rgba(0,217,163,0.1)',padding:'2px 10px',borderRadius:20,marginLeft:6}}>✓ Real past OA question</span>
-            )}
-            {codingTest.source === 'ai' && (
-              <span style={{fontSize:11,fontFamily:'var(--font-mono)',color:'#5a7a9a',background:'rgba(255,255,255,0.05)',padding:'2px 10px',borderRadius:20,marginLeft:6}}>AI-generated practice</span>
+            {/* One honest label for every company-practice problem. Nothing in
+                the bank is a sourced past exam question, so no problem carries
+                a "real OA" claim. */}
+            {codingTest.source && (
+              <span style={{fontSize:11,fontFamily:'var(--font-mono)',color:'#5a7a9a',background:'rgba(255,255,255,0.05)',padding:'2px 10px',borderRadius:20,marginLeft:6}}>
+                Practice{selectedCompany ? ` · in the style of ${selectedCompany}` : ''}
+              </span>
             )}
             <div style={{fontSize:13,color:'#c8d8e8',lineHeight:1.7,marginTop:12,marginBottom:16}}>{codingTest.problem}</div>
             {codingTest.example_input && (
