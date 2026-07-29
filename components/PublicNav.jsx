@@ -37,7 +37,7 @@ export default function PublicNav() {
           <button
             onClick={() => setLeaderOpen(!leaderOpen)}
             style={{ padding: '6px 12px', borderRadius: 8, border: 'none', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4 }}>
-            Rankings ▾
+            Explore ▾
           </button>
           {leaderOpen && (
             <div
@@ -52,7 +52,6 @@ export default function PublicNav() {
               }}>
               {[
                 { href: '/domain-explorer', icon: '🎯', label: 'Explore Domains', desc: 'Find your career path' },
-                { href: '/college-war', icon: '⚔️', label: 'College War', desc: 'Top colleges ranked' },
               ].map(item => (
                 <Link
                   key={item.href}
@@ -103,7 +102,6 @@ export default function PublicNav() {
         }}>
           {[
             { href: '/domain-explorer', label: '🎯 Explore Domains' },
-            { href: '/college-war', label: '⚔️ College War' },
           ].map(n => (
             <Link key={n.href} href={n.href} onClick={() => setMenuOpen(false)} style={{ padding: '10px 14px', borderRadius: 8, color: '#8a9ab0', textDecoration: 'none', fontSize: 15, fontFamily: 'var(--font-heading)', fontWeight: 600, background: 'rgba(255,255,255,0.02)' }}>
               {n.label}

@@ -557,7 +557,7 @@ export default function LandingPage() {
           </div>
           <nav style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }} aria-label="Footer">
             {[
-              { title: 'Product', links: [{ l: 'How it works', h: '#how' }, { l: 'Features', h: '#features' }, { l: 'Beta Access', h: '#pricing' }, { l: 'Blog', h: '/blog' }] },
+              { title: 'Product', links: [{ l: 'How it works', h: '#how' }, { l: 'Features', h: '#features' }, { l: 'Beta Access', h: '#pricing' }] },
               { title: 'Company', links: [{ l: 'Login', h: '/login' }, { l: 'Sign up', h: '/signup' }, { l: 'Privacy', h: '/privacy' }, { l: 'Terms', h: '/terms' }] },
             ].map(col => (
               <div key={col.title}>

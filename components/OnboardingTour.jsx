@@ -24,8 +24,8 @@ const TOUR_STEPS = [
     cta: 'Continue',
   },
   {
-    title: '🏆 Leaderboards',
-    description: 'College War, Global Rankings, Shame Board, Graveyard. Climb up. Stay consistent. Get noticed.',
+    title: '🏆 Leaderboard',
+    description: 'Global rankings across every domain. Climb up. Stay consistent. Get noticed.',
     cta: 'Continue',
   },
   {

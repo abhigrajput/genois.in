@@ -35,7 +35,6 @@ export default function PublicPageSidebar({ currentPath }) {
     ]},
     { title: 'COMPETE', items: [
       { href: '/leaderboard', label: 'Leaderboard', icon: '🏆' },
-      { href: '/college-war', label: 'College War', icon: '⚔️' },
     ]},
   ];
 

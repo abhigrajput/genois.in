@@ -207,15 +207,7 @@ async function main() {
       `${limited}/18 returned 429`);
   }
 
-  // ── 12. Blog search injection (H6) — attacker payload should be sanitized
-  {
-    const r = await req('/api/blog/posts?search=' + encodeURIComponent('x),title.eq.draft,foo.(y'), { origin: false });
-    // Endpoint should not 500; sanitizer strips `,()` so the query is still valid.
-    record('Blog search filter injection sanitized', 'H', r.status === 200,
-      `expected 200, got ${r.status}`);
-  }
-
-  // ── 13. Spoofed X-Forwarded-For doesn't bypass rate limit (M4) ───────────
+  // ── 12. Spoofed X-Forwarded-For doesn't bypass rate limit (M4) ───────────
   // We send several login attempts with different fake XFF values; ratelimit
   // should still cap because we now read x-real-ip / last XFF hop. On
   // localhost there's no x-real-ip header, so this confirms the "last entry"
@@ -236,7 +228,7 @@ async function main() {
       saw429 ? 'lockout triggered despite rotated XFF[0]' : 'lockout did not trigger — XFF spoof may still work');
   }
 
-  // ── 14. /api/dsa-video is still open (we did not fix this; flag) ─────────
+  // ── 13. /api/dsa-video is still open (we did not fix this; flag) ─────────
   {
     const r = await req('/api/dsa-video?topic=arrays', { origin: false });
     record('/api/dsa-video requires auth', 'M', r.status === 401,
@@ -244,7 +236,7 @@ async function main() {
         : `status=${r.status}`);
   }
 
-  // ── 15. Honeypot / non-existent paths ────────────────────────────────────
+  // ── 14. Honeypot / non-existent paths ────────────────────────────────────
   {
     const tests = [
       '/.env',

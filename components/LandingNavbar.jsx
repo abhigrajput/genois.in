@@ -36,7 +36,6 @@ export default function LandingNavbar() {
         <a href="#how" className="gen-nav-link">How it works</a>
         <a href="#features" className="gen-nav-link">Features</a>
         <a href="#pricing" className="gen-nav-link">Pricing</a>
-        <Link href="/blog" className="gen-nav-link">Blog</Link>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
