@@ -119,19 +119,6 @@ export async function POST(request) {
     });
     logWriteError('tests/submit', 'score_events.insert', eventErr);
 
-    // Auto-award streak insurance token for 100% on weekly test
-    if (score >= 100 && test.type === 'weekly') {
-      const { data: prog } = await supabase
-        .from('progress')
-        .select('streak_tokens')
-        .eq('user_id', payload.userId)
-        .single();
-      const { error: tokenErr } = await supabase.from('progress').update({
-        streak_tokens: (prog?.streak_tokens || 0) + 1,
-      }).eq('user_id', payload.userId);
-      logWriteError('tests/submit', 'progress.update(streak-token)', tokenErr);
-    }
-
     return successResponse({
       score,
       result,
