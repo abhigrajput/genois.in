@@ -19,7 +19,6 @@ const SignupSchema = z.object({
   domainSlug:    z.string().max(50).optional().nullable(),
   level:         z.enum(['beginner', 'intermediate', 'advanced']).optional(),
   learningSpeed: z.enum(['slow', 'normal', 'fast']).optional(),
-  referralCode:  z.string().max(50).optional().nullable(),
 });
 
 /**
@@ -58,7 +57,7 @@ export async function POST(request) {
         || 'Please check the form and try again.';
       return fail('validation', msg, 400);
     }
-    const { name, email, password, college, year, domainSlug, level, learningSpeed, referralCode } = parsed.data;
+    const { name, email, password, college, year, domainSlug, level, learningSpeed } = parsed.data;
 
     const validDomains = ['fullstack','dsa','cybersecurity','aiml','devops','android','datascience','blockchain','gamedev','systemdesign'];
     const resolvedDomain = validDomains.includes(domainSlug) ? domainSlug : 'fullstack';
@@ -158,31 +157,6 @@ export async function POST(request) {
       // A failed verification email must NEVER fail the signup — the account
       // exists and the user can request a resend later.
       console.error('Failed to send verification email:', e);
-    }
-
-    if (referralCode) {
-      const { data: referrer } = await supabase
-        .from('users')
-        .select('id, referral_count')
-        .eq('referral_code', referralCode)
-        .single();
-
-      if (referrer) {
-        // NOTE: Supabase query builders are thenables that implement `.then()`
-        // only — they have NO `.catch()` method, so `builder.catch(...)` throws
-        // `TypeError: ...catch is not a function` synchronously. Use the
-        // two-arg `.then(undefined, onRejected)` form instead.
-        await supabase.from('referrals').insert({
-          referrer_id: referrer.id,
-          referred_id: user.id,
-          referred_email: email,
-          status: 'pending',
-        }).then(undefined, () => {});
-        await supabase.from('users').update({
-          referred_by_code: referralCode,
-          referral_count: (referrer.referral_count || 0) + 1,
-        }).eq('id', referrer.id).then(undefined, () => {});
-      }
     }
 
     // Seed companion records. Supabase query builders are thenables with NO

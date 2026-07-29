@@ -61,7 +61,6 @@ export default function OnboardingPage() {
   const [cgpa, setCgpa] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [referralCode, setReferralCode] = useState('');
   // "Authed mode": the user is already signed in (Google OAuth, or an email
   // account with an incomplete profile). We skip the account-creation steps and
   // just collect the missing placement details, then save via the profile API.
@@ -69,14 +68,6 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const ref = params.get('ref');
-    if (ref) {
-      setReferralCode(ref);
-      localStorage.setItem('genois_ref', ref);
-    } else {
-      const stored = localStorage.getItem('genois_ref');
-      if (stored) setReferralCode(stored);
-    }
 
     const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('genois_token');
     if (params.get('from') === 'google' || hasToken) {
@@ -186,7 +177,7 @@ export default function OnboardingPage() {
       const r = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, domainSlug: selectedDomain, referralCode }),
+        body: JSON.stringify({ ...form, domainSlug: selectedDomain }),
       });
       const d = await r.json();
       if (!d.success) { setError(d.message || 'Signup failed'); setLoading(false); return; }
