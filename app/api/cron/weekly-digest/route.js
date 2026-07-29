@@ -1,6 +1,7 @@
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { successResponse, errorResponse } from '@/lib/response';
 import { isAuthorizedCron } from '@/lib/security';
+import { loadOptOutSet, optOutUnknown, unsubscribeFooterHtml, unsubscribeHeaders } from '@/lib/emailOptOut';
 
 export async function GET(request) {
   try {
@@ -24,13 +25,23 @@ export async function GET(request) {
       .order('total_score', { ascending: false })
       .limit(10);
 
+    // The weekly digest is marketing mail, so the opt-out flag gates it. An
+    // unreadable flag aborts the run — a missed digest is recoverable, mailing
+    // someone who unsubscribed is not.
+    const { ids: optedOut, status: optOutStatus } = await loadOptOutSet(supabase, (users || []).map(u => u.id));
+    if (optOutUnknown(optOutStatus)) {
+      return errorResponse('Could not read email opt-out state — no digest sent', 503);
+    }
+
     const { Resend } = await import('resend');
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     let sent = 0;
     let skipped = 0;
+    let unsubscribed = 0;
 
     for (const user of (users || [])) {
+      if (optedOut.has(user.id)) { unsubscribed++; continue; }
       try {
         const { data: alreadySent } = await supabase
           .from('weekly_email_log')
@@ -75,6 +86,7 @@ export async function GET(request) {
         await resend.emails.send({
           from: 'GENOIS <noreply@genois.in>',
           to: user.email,
+          headers: unsubscribeHeaders(user.id),
           subject: `📊 Your weekly GENOIS report — Day ${progress?.current_day || 0}`,
           html: `
             <div style="background:#0a0a0f;color:#e8e8ed;font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 24px;border-radius:12px;">
@@ -116,6 +128,7 @@ export async function GET(request) {
               <a href="https://www.genois.in/dashboard" style="display:block;text-align:center;padding:14px;background:linear-gradient(135deg,#00d9a3,#ff6b4a);color:#0a0a0f;text-decoration:none;border-radius:10px;font-weight:800;font-size:14px;">Continue Your Journey →</a>
 
               <div style="color:#3a4a5a;font-size:11px;margin-top:24px;text-align:center;">GENOIS · Built for Tier 2/3 Engineers · genois.in</div>
+              ${unsubscribeFooterHtml(user.id)}
             </div>
           `,
         });
@@ -130,7 +143,7 @@ export async function GET(request) {
       }
     }
 
-    return successResponse({ sent, skipped, total: users?.length || 0 });
+    return successResponse({ sent, skipped, unsubscribed, total: users?.length || 0 });
   } catch (error) {
     return errorResponse('Internal server error', 500);
   }

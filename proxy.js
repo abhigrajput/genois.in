@@ -31,10 +31,18 @@ const PROTECTED_ROUTES = [
 //                       own CSRF endpoint); NextAuth has its own CSRF handling.
 // - /api/payment/     — payment webhooks (Razorpay etc.) when re-enabled must
 //                       validate signatures, not rely on Origin.
+// - /api/email/unsubscribe — RFC 8058 one-click unsubscribe. Gmail and Outlook
+//                       POST here directly from the mail client, so there is no
+//                       genois.in Origin to match and an Origin check would 403
+//                       every native unsubscribe. Authorisation is the HMAC in
+//                       the URL token, verified in the handler; forging it
+//                       requires the signing secret. Same shape as the cron
+//                       exemption above: bearer-style secret, not session.
 const CSRF_EXEMPT_PREFIXES = [
   '/api/cron/',
   '/api/auth/',
   '/api/payment/',
+  '/api/email/unsubscribe',
 ];
 
 function isCsrfExempt(pathname) {
