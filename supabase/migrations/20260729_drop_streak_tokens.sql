@@ -1,3 +1,35 @@
+-- ┌──────────────────────────────────────────────────────────────────────────┐
+-- │ STATUS: DEFERRED — NOT APPLIED. Do not assume this ran.                   │
+-- └──────────────────────────────────────────────────────────────────────────┘
+--
+-- As of 2026-07-29 progress.streak_tokens is STILL PRESENT in production
+-- (project fqfgacmnqppifpzncrip). Applying this was attempted and abandoned:
+--
+--   * Run via the Supabase SQL editor reported success, but the column
+--     survived — verified three ways over PostgREST: select=streak_tokens
+--     returned 200 with values, the key appeared in select=* row objects, and
+--     ?streak_tokens=gte.0 filtered successfully. A stale PostgREST schema
+--     cache cannot explain that: the generated SQL still reaches Postgres, so
+--     a dropped column would raise 42703 (which progress.token_used_date and
+--     a deliberately invented control column both did, in the same response).
+--     Note DROP COLUMN IF EXISTS reports success either way, so the editor's
+--     green check was never evidence.
+--   * Re-run as a bare ALTER (no IF EXISTS) errored. The error text was not
+--     captured, so the cause is UNDIAGNOSED — candidates never ruled out were
+--     a read-only editor session, a dependent object needing CASCADE, or the
+--     session not owning the table.
+--
+-- Deliberately left in place: nothing reads or writes the column (see below),
+-- and a preview across all 38 progress rows found zero non-zero balances, so
+-- the column is inert. Cost of leaving it is cosmetic.
+--
+-- If you pick this up: run the bare ALTER below and READ THE ERROR — that
+-- message is the missing piece, and everything else here is already verified.
+--
+--   ALTER TABLE public.progress DROP COLUMN streak_tokens;
+--
+-- ───────────────────────────────────────────────────────────────────────────
+--
 -- Drop progress.streak_tokens — the streak-insurance feature is gone.
 --
 -- History:
