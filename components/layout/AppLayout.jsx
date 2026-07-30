@@ -6,18 +6,12 @@ import useAuthStore from '@/store/authStore';
 import { authAPI } from '@/lib/api';
 import NotificationBell from '@/components/NotificationBell';
 import DailyCheckIn from '@/components/DailyCheckIn';
+import { Progress } from '@/components/ui';
 import {
   Home, Calendar, FileText, Map, Code2, Play, Bot, Mic, Zap, User, Rocket,
   Flame, LogOut, Menu, X, PanelLeftClose, PanelLeftOpen, FolderGit2, Brain,
   ClipboardList, BarChart3, FileSearch,
 } from 'lucide-react';
-
-// GENOIS design system — green is the established brand accent used across all app pages.
-const G = '#00d9a3';
-const G10 = 'rgba(0,217,163,0.1)';
-const G20 = 'rgba(0,217,163,0.2)';
-const AMBER = '#ffb020';
-const SB_BG = '#0a0a0f';
 
 // Nav items — grouped visually in the sidebar (MAIN / LEARN / PRACTICE / INSIGHTS / ACCOUNT).
 const NAV_ITEMS = [
@@ -54,23 +48,23 @@ const NavItem = memo(function NavItem({ href, label, icon: Icon, active, collaps
     <Link
       href={href}
       title={collapsed ? label : undefined}
-      style={{ fontFamily: 'var(--font-body)' }}
+      aria-current={active ? 'page' : undefined}
       className={[
-        'group relative mb-px flex items-center overflow-hidden rounded-lg border-l-4 text-xs',
+        'group relative mb-px flex items-center overflow-hidden rounded-md border-l-2 text-[13px]',
         'transition-colors duration-150',
         collapsed ? 'justify-center gap-0 px-0 py-2.5' : 'justify-start gap-2.5 px-3 py-2',
         active
-          ? 'border-[#00d9a3] bg-[rgba(0,217,163,0.08)] font-semibold text-[#00d9a3]'
-          : 'border-transparent font-normal text-[#6b7a8d] hover:bg-[rgba(0,217,163,0.04)] hover:text-[#c0c0c0]',
+          ? 'border-[var(--gx-accent)] bg-[var(--gx-accent-soft)] font-semibold text-[var(--gx-accent)]'
+          : 'border-transparent font-normal text-[var(--gx-text-muted)] hover:bg-[var(--gx-surface-2)] hover:text-[var(--gx-text)]',
       ].join(' ')}
     >
       <span
         className={[
           'flex w-[18px] shrink-0 items-center justify-center',
-          active ? 'text-[#00d9a3]' : 'text-[#6b7280] group-hover:text-[#2ee6b0]',
+          active ? 'text-[var(--gx-accent)]' : 'text-[var(--gx-text-subtle)] group-hover:text-[var(--gx-accent)]',
         ].join(' ')}
       >
-        <Icon size={18} strokeWidth={1.8} />
+        <Icon size={17} strokeWidth={1.8} />
       </span>
       {!collapsed && (
         <span className="overflow-hidden text-ellipsis whitespace-nowrap">{label}</span>
@@ -137,12 +131,12 @@ export default function AppLayout({ children }) {
 
   if (checking) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#0a0a0f]">
+      <div className="gx-app flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <div className="genois-loading" style={{ fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800 }}>
-            <span style={{ color: G }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
+          <div className="genois-loading" style={{ fontFamily: 'var(--gx-font-display)', fontSize: 26, fontWeight: 700, letterSpacing: -0.5 }}>
+            <span style={{ color: 'var(--gx-accent)' }}>GEN</span><span style={{ color: 'var(--gx-text)' }}>OIS</span>
           </div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#444', marginTop: 8, letterSpacing: 2 }}>LOADING...</div>
+          <div className="gx-section-label" style={{ marginTop: 8 }}>Loading</div>
         </div>
       </div>
     );
@@ -159,25 +153,19 @@ export default function AppLayout({ children }) {
   const showCollapsed = collapsed && isDesktop;
 
   return (
-    <div className="relative flex h-screen overflow-hidden bg-[#0a0a0f]">
-      {/* Matrix grid bg */}
-      <div
-        className="pointer-events-none fixed inset-0 z-0"
-        style={{ backgroundImage: 'linear-gradient(rgba(0,217,163,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,217,163,0.02) 1px,transparent 1px)', backgroundSize: '60px 60px' }}
-      />
-
+    <div className="gx-app relative flex h-screen overflow-hidden">
       {/* Mobile overlay — fades in behind the drawer, hidden entirely on desktop */}
       {mobileOpen && (
         <div
           onClick={() => setMobileOpen(false)}
-          className="fixed inset-0 z-40 bg-black/80 md:hidden"
+          className="fixed inset-0 z-40 bg-[rgba(16,24,40,0.4)] md:hidden"
           aria-hidden="true"
         />
       )}
 
       {/* SIDEBAR — fixed off-canvas drawer below md, in-flow static column at md+ */}
       <aside
-        style={{ background: SB_BG, borderRight: '1px solid rgba(0,217,163,0.08)' }}
+        style={{ background: 'var(--gx-surface)', borderRight: '1px solid var(--gx-border)' }}
         className={[
           'fixed inset-y-0 left-0 z-50 flex w-[240px] flex-col overflow-hidden',
           'transition-[transform,width] duration-300 ease-in-out md:duration-200',
@@ -189,14 +177,14 @@ export default function AppLayout({ children }) {
         {/* TOP: Logo + toggle */}
         <div className={`flex flex-shrink-0 items-center ${showCollapsed ? 'justify-center px-0 pb-3 pt-4' : 'justify-between px-3.5 pb-3 pt-4'}`}>
           {!showCollapsed && (
-            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 800, letterSpacing: -1, lineHeight: 1 }}>
-              <span style={{ color: G }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
+            <div style={{ fontFamily: 'var(--gx-font-display)', fontSize: 20, fontWeight: 700, letterSpacing: -0.5, lineHeight: 1 }}>
+              <span style={{ color: 'var(--gx-accent)' }}>GEN</span><span style={{ color: 'var(--gx-text)' }}>OIS</span>
             </div>
           )}
           {/* Mobile: close drawer */}
           <button
             onClick={() => setMobileOpen(false)}
-            className="flex items-center rounded-md p-1 leading-none text-[#555] transition-colors hover:text-[#00d9a3] md:hidden"
+            className="flex items-center rounded-md p-1 leading-none text-[var(--gx-text-subtle)] transition-colors hover:text-[var(--gx-text)] md:hidden"
             title="Close menu"
             aria-label="Close menu"
           >
@@ -205,7 +193,7 @@ export default function AppLayout({ children }) {
           {/* Desktop: collapse/expand */}
           <button
             onClick={toggleCollapsed}
-            className="hidden items-center rounded-md p-1 leading-none text-[#555] transition-colors hover:text-[#00d9a3] md:flex"
+            className="hidden items-center rounded-md p-1 leading-none text-[var(--gx-text-subtle)] transition-colors hover:text-[var(--gx-text)] md:flex"
             title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
@@ -218,17 +206,24 @@ export default function AppLayout({ children }) {
           <div className={`flex items-center ${showCollapsed ? 'justify-center gap-0' : 'justify-start gap-2.5'}`}>
             {/* Avatar */}
             <div
-              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${streak > 0 ? 'pulse-amber' : ''}`}
-              style={{ background: 'linear-gradient(135deg, rgba(0,217,163,0.35), rgba(46,230,176,0.12))', border: `2px solid ${G}55`, fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 800, color: G }}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+              style={{
+                background: 'var(--gx-accent-soft)',
+                border: '1px solid var(--gx-accent-border)',
+                fontFamily: 'var(--gx-font-display)',
+                fontSize: 13, fontWeight: 700, color: 'var(--gx-accent)',
+              }}
             >
               {initials}
             </div>
             {!showCollapsed && (
               <div className="min-w-0">
-                <div className="overflow-hidden text-ellipsis whitespace-nowrap" style={{ fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, color: '#e8e8ed' }}>{user?.name}</div>
-                <div className="mt-0.5 flex items-center gap-1.5">
-                  <span style={{ padding: '1px 7px', borderRadius: 20, background: G10, border: `1px solid ${G20}`, fontSize: 9, color: G, fontFamily: 'var(--font-mono)', fontWeight: 700 }}>{domainLabel}</span>
-                  <span className="inline-flex items-center gap-[3px]" style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#555' }}>D{currentDay} · <Flame size={10} strokeWidth={2} color={AMBER} />{streak}</span>
+                <div className="overflow-hidden text-ellipsis whitespace-nowrap" style={{ fontSize: 13, fontWeight: 600, color: 'var(--gx-text)' }}>{user?.name}</div>
+                <div className="mt-1 flex items-center gap-1.5">
+                  <span className="gx-badge gx-badge--accent">{domainLabel}</span>
+                  <span className="gx-num inline-flex items-center gap-[3px]" style={{ fontSize: 11, color: 'var(--gx-text-subtle)' }}>
+                    D{currentDay} · <Flame size={10} strokeWidth={2} color="var(--gx-warning)" />{streak}
+                  </span>
                 </div>
               </div>
             )}
@@ -236,7 +231,7 @@ export default function AppLayout({ children }) {
         </div>
 
         {/* NAV */}
-        <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2">
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden px-2 pt-1">
           {/* Dashboard — always first, no group label */}
           {NAV_ITEMS.filter(n => n.group === 'MAIN').map(n => (
             <NavItem key={n.href} href={n.href} label={n.label} icon={n.icon} active={pathname === n.href} collapsed={showCollapsed} />
@@ -245,8 +240,8 @@ export default function AppLayout({ children }) {
           {GROUPS.map(group => (
             <div key={group}>
               {!showCollapsed
-                ? <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#333', letterSpacing: 2, padding: '10px 8px 4px', fontWeight: 600 }}>{group}</div>
-                : <div className="h-2" />}
+                ? <div className="gx-section-label" style={{ padding: '12px 8px 4px' }}>{group}</div>
+                : <div className="mx-2 my-2 h-px" style={{ background: 'var(--gx-border)' }} />}
               {NAV_ITEMS.filter(n => n.group === group).map(n => (
                 <NavItem key={n.href} href={n.href} label={n.label} icon={n.icon} active={pathname === n.href} collapsed={showCollapsed} />
               ))}
@@ -255,30 +250,30 @@ export default function AppLayout({ children }) {
         </nav>
 
         {/* SCORE BAR + LOGOUT (bottom) */}
-        <div className={`flex-shrink-0 ${showCollapsed ? 'px-2 py-3' : 'px-3.5 py-3'}`} style={{ borderTop: '1px solid rgba(0,217,163,0.06)' }}>
+        <div className={`flex-shrink-0 ${showCollapsed ? 'px-2 py-3' : 'px-3.5 py-3'}`} style={{ borderTop: '1px solid var(--gx-border)' }}>
           {!showCollapsed ? (
             <>
-              <div className="mb-1.5 flex items-center">
-                <span className="inline-flex items-center gap-1" style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: G }}><Zap size={13} strokeWidth={2} color={G} /> {totalScore.toLocaleString()} pts</span>
+              <div className="mb-1.5 flex items-center justify-between">
+                <span className="gx-num inline-flex items-center gap-1" style={{ fontSize: 12, fontWeight: 600, color: 'var(--gx-text)' }}>
+                  <Zap size={13} strokeWidth={2} color="var(--gx-accent)" /> {totalScore.toLocaleString()}
+                </span>
+                <span style={{ fontSize: 11, color: 'var(--gx-text-subtle)' }}>pts</span>
               </div>
-              <div className="h-[3px] overflow-hidden rounded-sm" style={{ background: 'rgba(255,255,255,0.04)' }}>
-                <div style={{ height: '100%', width: `${Math.min(100, (weeklyPts / 500) * 100)}%`, background: `linear-gradient(90deg, ${G}, #2ee6b0)`, borderRadius: 2, transition: 'width 0.5s' }} />
-              </div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#333', marginTop: 4, marginBottom: 10 }}>weekly progress</div>
+              <Progress value={Math.min(weeklyPts, 500)} max={500} label="Weekly progress" style={{ height: 4 }} />
+              <div style={{ fontSize: 11, color: 'var(--gx-text-subtle)', marginTop: 5, marginBottom: 10 }}>Weekly progress</div>
             </>
           ) : (
             <div className="mb-2.5 flex flex-col items-center">
-              <Zap size={14} strokeWidth={2} color={G} />
+              <Zap size={14} strokeWidth={2} color="var(--gx-accent)" />
             </div>
           )}
           <button
             onClick={handleLogout}
             title="Logout"
-            style={{ fontFamily: 'var(--font-body)' }}
             className={[
-              'flex w-full items-center gap-2 rounded-lg text-[13px] text-[#6b7280]',
-              'transition-colors duration-150 hover:bg-[rgba(239,68,68,0.08)] hover:text-[#ef4444]',
-              showCollapsed ? 'justify-center px-0 py-2.5' : 'justify-start px-3.5 py-2.5',
+              'flex w-full items-center gap-2 rounded-md text-[13px] text-[var(--gx-text-muted)]',
+              'transition-colors duration-150 hover:bg-[var(--gx-danger-soft)] hover:text-[var(--gx-danger)]',
+              showCollapsed ? 'justify-center px-0 py-2.5' : 'justify-start px-3 py-2.5',
             ].join(' ')}
           >
             <LogOut size={16} strokeWidth={1.8} />
@@ -291,13 +286,13 @@ export default function AppLayout({ children }) {
       <div className="relative z-[1] flex min-w-0 flex-1 flex-col overflow-hidden">
         {/* Header */}
         <header
-          className="flex h-12 flex-shrink-0 items-center gap-2.5 px-4 backdrop-blur-xl"
-          style={{ background: 'rgba(13,13,20,0.95)', borderBottom: '1px solid rgba(0,217,163,0.07)' }}
+          className="flex h-12 flex-shrink-0 items-center gap-2.5 px-4"
+          style={{ background: 'var(--gx-bg)', borderBottom: '1px solid var(--gx-border)' }}
         >
           {/* Mobile: open drawer */}
           <button
             onClick={() => setMobileOpen(true)}
-            className="flex flex-shrink-0 items-center p-1 leading-none text-[#555] transition-colors hover:text-[#00d9a3] md:hidden"
+            className="flex flex-shrink-0 items-center p-1 leading-none text-[var(--gx-text-muted)] transition-colors hover:text-[var(--gx-text)] md:hidden"
             aria-label="Open menu"
           >
             <Menu size={20} strokeWidth={2} />
@@ -305,17 +300,17 @@ export default function AppLayout({ children }) {
           {/* Desktop: collapse toggle */}
           <button
             onClick={toggleCollapsed}
-            className="hidden flex-shrink-0 items-center p-1 leading-none text-[#555] transition-colors hover:text-[#00d9a3] md:flex"
+            className="hidden flex-shrink-0 items-center p-1 leading-none text-[var(--gx-text-muted)] transition-colors hover:text-[var(--gx-text)] md:flex"
             aria-label="Toggle sidebar"
           >
             <Menu size={20} strokeWidth={2} />
           </button>
-          <span className="overflow-hidden text-ellipsis whitespace-nowrap" style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#444', letterSpacing: 1 }}>
+          <span className="gx-section-label overflow-hidden text-ellipsis whitespace-nowrap">
             {pathname.replace(/^\//, '').toUpperCase() || 'DASHBOARD'}
           </span>
           <div className="ml-auto flex flex-shrink-0 items-center gap-1.5">
-            <span className="inline-flex items-center gap-1" style={{ fontFamily: 'var(--font-mono)', fontSize: 10, background: 'rgba(251,191,36,0.1)', color: AMBER, padding: '3px 8px', borderRadius: 20 }}><Flame size={12} strokeWidth={2} color={AMBER} /> {streak}</span>
-            <span className="inline-flex items-center gap-1" style={{ fontFamily: 'var(--font-mono)', fontSize: 10, background: 'rgba(0,217,163,0.08)', color: G, padding: '3px 8px', borderRadius: 20 }}><Zap size={12} strokeWidth={2} color={G} /> {totalScore.toLocaleString()}</span>
+            <span className="gx-badge gx-badge--warning gx-num"><Flame size={11} strokeWidth={2} /> {streak}</span>
+            <span className="gx-badge gx-badge--accent gx-num"><Zap size={11} strokeWidth={2} /> {totalScore.toLocaleString()}</span>
             <div className="relative z-[9999]">
               <NotificationBell token={navToken} />
             </div>
@@ -324,7 +319,7 @@ export default function AppLayout({ children }) {
 
         <main
           className="page-fade min-w-0 flex-1 overflow-y-auto p-4 md:p-6"
-          style={{ paddingBottom: isDesktop ? 'calc(40px + env(safe-area-inset-bottom))' : 'calc(96px + env(safe-area-inset-bottom))' }}
+          style={{ background: 'var(--gx-surface)', paddingBottom: isDesktop ? 'calc(40px + env(safe-area-inset-bottom))' : 'calc(96px + env(safe-area-inset-bottom))' }}
         >
           {children}
         </main>

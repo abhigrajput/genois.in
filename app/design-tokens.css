@@ -1,0 +1,563 @@
+/* ============================================================================
+   GENOIS — LIGHT design system
+   ----------------------------------------------------------------------------
+   Reference aesthetic: GeeksforGeeks / HackerRank / CodeChef.
+   Light surface, dark text, one green accent, dense and information-first.
+
+   Hard rules this file enforces:
+     · no gradients          · no neon / glow shadows
+     · no ambient animation  · monospace ONLY for code
+     · 4pt spacing grid      · small radius set (4 / 6 / 8 / pill)
+
+   CONTRAST — every value used as text is checked against #ffffff AND #f8f9fa.
+   Ratios are noted inline. Anything below 4.5:1 is marked non-text.
+
+   SCOPING — the tokens below are inert custom properties, so this file is safe
+   to load globally. The light *theme* (page background, text colour, form
+   colour-scheme) only activates inside `.gx-app`, so pages that have not been
+   migrated yet keep rendering exactly as they do today.
+   ========================================================================= */
+
+:root {
+  /* ── Surfaces ────────────────────────────────────────────────────────── */
+  --gx-bg:              #ffffff;
+  --gx-surface:         #f8f9fa;   /* sidebar, header, card insets           */
+  --gx-surface-2:       #f1f3f5;   /* progress tracks, code blocks, wells    */
+  --gx-surface-3:       #e9ecef;   /* pressed / hover on a grey surface      */
+
+  /* ── Borders ─────────────────────────────────────────────────────────── */
+  --gx-border:          #e0e0e0;
+  --gx-border-strong:   #c9ced4;
+  --gx-border-subtle:   #eceff1;
+
+  /* ── Text ────────────────────────────────────────────────────────────── */
+  --gx-text:            #1a1a1a;   /* 17.4:1 on #fff · 16.5:1 on #f8f9fa     */
+  --gx-text-muted:      #5c6470;   /*  5.98:1 on #fff ·  5.68:1 on #f8f9fa   */
+  --gx-text-subtle:     #68707a;   /*  5.01:1 on #fff ·  4.76:1 on #f8f9fa   */
+  --gx-text-inverse:    #ffffff;
+
+  /* ── Accent — GENOIS green ───────────────────────────────────────────── */
+  /* #00d9a3 is only 1.83:1 on white, so it cannot carry text or sit under
+     white text. --gx-accent is the same hue (164°) taken deep enough to pass
+     AA both AS text on white and AS a fill beneath white text.              */
+  --gx-accent:          #00805e;   /*  4.94:1 — links, active state, buttons */
+  --gx-accent-hover:    #006b4e;   /*  6.53:1                                */
+  --gx-accent-active:   #005940;
+  --gx-accent-soft:     #e6f5f0;   /* tint background for badges / active nav*/
+  --gx-accent-soft-2:   #d3ece3;   /* hover on a soft-tinted surface         */
+  --gx-accent-border:   #b8e0d2;
+
+  /* Bright brand green. NON-TEXT, NON-ICON-ONLY use. Decorative fills only. */
+  --gx-brand:           #00d9a3;
+
+  /* ── Semantic ────────────────────────────────────────────────────────── */
+  --gx-success:         #00805e;   /*  4.94:1 — green doubles as "passed"    */
+  --gx-success-soft:    #e6f5f0;
+  --gx-success-border:  #b8e0d2;
+
+  --gx-warning:         #a25f00;   /*  5.03:1 — streaks, "medium", at-risk   */
+  --gx-warning-soft:    #fdf3e3;
+  --gx-warning-border:  #f0d9ac;
+
+  --gx-danger:          #c02637;   /*  5.88:1 — errors, "hard"               */
+  --gx-danger-soft:     #fdeced;
+  --gx-danger-border:   #f3c2c7;
+
+  --gx-info:            #0b5fa5;   /*  6.57:1                                */
+  --gx-info-soft:       #eaf3fb;
+  --gx-info-border:     #bcd8ee;
+
+  /* Difficulty scale — same three values, named for how they read in the UI */
+  --gx-diff-easy:       var(--gx-success);
+  --gx-diff-medium:     var(--gx-warning);
+  --gx-diff-hard:       var(--gx-danger);
+
+  /* Activity heat scale — fills only, never text */
+  --gx-heat-0:          #eef1f4;
+  --gx-heat-1:          #a8ddca;
+  --gx-heat-2:          #52b795;
+  --gx-heat-3:          #00805e;
+
+  /* ── Type ────────────────────────────────────────────────────────────── */
+  --gx-font-sans:       var(--font-body), system-ui, -apple-system, sans-serif;
+  --gx-font-display:    var(--font-heading), var(--font-body), system-ui, sans-serif;
+  --gx-font-mono:       var(--font-mono), ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Dense scale — 14px base, the same register the reference platforms use.  */
+  --gx-text-2xs:        11px;
+  --gx-text-xs:         12px;
+  --gx-text-sm:         13px;
+  --gx-text-base:       14px;
+  --gx-text-md:         16px;
+  --gx-text-lg:         18px;
+  --gx-text-xl:         20px;
+  --gx-text-2xl:        24px;
+  --gx-text-3xl:        30px;
+
+  --gx-leading-tight:   1.25;
+  --gx-leading-snug:    1.4;
+  --gx-leading-normal:  1.6;
+
+  --gx-weight-normal:   400;
+  --gx-weight-medium:   500;
+  --gx-weight-semibold: 600;
+  --gx-weight-bold:     700;
+
+  /* ── Spacing — 4pt grid ──────────────────────────────────────────────── */
+  --gx-space-1:          4px;
+  --gx-space-2:          8px;
+  --gx-space-3:         12px;
+  --gx-space-4:         16px;
+  --gx-space-5:         20px;
+  --gx-space-6:         24px;
+  --gx-space-8:         32px;
+  --gx-space-10:        40px;
+  --gx-space-12:        48px;
+  --gx-space-16:        64px;
+
+  /* ── Radius — deliberately small ─────────────────────────────────────── */
+  --gx-radius-sm:        4px;
+  --gx-radius:           6px;
+  --gx-radius-md:        8px;
+  --gx-radius-full:      9999px;
+
+  /* ── Elevation — subtle, neutral, never coloured ─────────────────────── */
+  --gx-shadow-xs:       0 1px 2px rgba(16, 24, 40, 0.04);
+  --gx-shadow-sm:       0 1px 3px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(16, 24, 40, 0.04);
+  --gx-shadow-md:       0 2px 8px rgba(16, 24, 40, 0.08);
+
+  /* ── Motion — short and functional ───────────────────────────────────── */
+  --gx-duration:        150ms;
+  --gx-ease:            cubic-bezier(0.2, 0, 0.2, 1);
+  --gx-transition:      var(--gx-duration) var(--gx-ease);
+
+  /* ── Focus ───────────────────────────────────────────────────────────── */
+  --gx-focus-ring:      0 0 0 3px rgba(0, 128, 94, 0.25);
+}
+
+/* ============================================================================
+   THEME ACTIVATION — scoped to `.gx-app`
+   ========================================================================= */
+
+/* Repaint the document chrome only when a light shell is actually mounted, so
+   the un-migrated dark pages are left untouched. */
+html:has(.gx-app) {
+  color-scheme: light;
+}
+
+html:has(.gx-app) body {
+  background: var(--gx-bg);
+  color: var(--gx-text);
+}
+
+html:has(.gx-app) ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+html:has(.gx-app) ::-webkit-scrollbar-track {
+  background: var(--gx-surface);
+}
+html:has(.gx-app) ::-webkit-scrollbar-thumb {
+  background: #ccd2d8;
+  border: 2px solid var(--gx-surface);
+  border-radius: var(--gx-radius-full);
+}
+html:has(.gx-app) ::-webkit-scrollbar-thumb:hover {
+  background: var(--gx-border-strong);
+}
+
+/* globals.css paints native <option>s dark for the legacy theme. */
+html:has(.gx-app) select option {
+  background: var(--gx-bg);
+  color: var(--gx-text);
+}
+
+.gx-app {
+  background: var(--gx-bg);
+  color: var(--gx-text);
+  font-family: var(--gx-font-sans);
+  font-size: var(--gx-text-base);
+  line-height: var(--gx-leading-snug);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================================
+   PRIMITIVES
+   ========================================================================= */
+
+/* ── Focus ───────────────────────────────────────────────────────────────
+   One visible ring for every interactive primitive. Never removed. */
+.gx-app :focus-visible {
+  outline: 2px solid var(--gx-accent);
+  outline-offset: 2px;
+  border-radius: var(--gx-radius-sm);
+}
+
+/* ── Button ──────────────────────────────────────────────────────────────
+   Flat fills. No gradient, no glow, no lift on hover — only a colour step. */
+.gx-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gx-space-2);
+  padding: 9px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--gx-radius);
+  font-family: var(--gx-font-sans);
+  font-size: var(--gx-text-base);
+  font-weight: var(--gx-weight-semibold);
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--gx-transition), border-color var(--gx-transition),
+              color var(--gx-transition);
+}
+.gx-btn:disabled,
+.gx-btn[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.gx-btn--sm    { padding: 6px 12px;  font-size: var(--gx-text-sm); }
+.gx-btn--lg    { padding: 12px 22px; font-size: var(--gx-text-md); }
+.gx-btn--block { width: 100%; }
+
+/* white on #00805e = 4.94:1 */
+.gx-btn--primary {
+  background: var(--gx-accent);
+  color: var(--gx-text-inverse);
+}
+.gx-btn--primary:hover:not(:disabled)  { background: var(--gx-accent-hover); }
+.gx-btn--primary:active:not(:disabled) { background: var(--gx-accent-active); }
+
+.gx-btn--secondary {
+  background: var(--gx-bg);
+  border-color: var(--gx-border-strong);
+  color: var(--gx-text);
+}
+.gx-btn--secondary:hover:not(:disabled)  { background: var(--gx-surface); border-color: var(--gx-text-subtle); }
+.gx-btn--secondary:active:not(:disabled) { background: var(--gx-surface-2); }
+
+.gx-btn--outline {
+  background: var(--gx-bg);
+  border-color: var(--gx-accent-border);
+  color: var(--gx-accent);
+}
+.gx-btn--outline:hover:not(:disabled)  { background: var(--gx-accent-soft); border-color: var(--gx-accent); }
+.gx-btn--outline:active:not(:disabled) { background: var(--gx-accent-soft-2); }
+
+.gx-btn--ghost {
+  background: transparent;
+  color: var(--gx-text-muted);
+}
+.gx-btn--ghost:hover:not(:disabled)  { background: var(--gx-surface-2); color: var(--gx-text); }
+.gx-btn--ghost:active:not(:disabled) { background: var(--gx-surface-3); }
+
+.gx-btn--danger {
+  background: var(--gx-danger);
+  color: var(--gx-text-inverse);
+}
+.gx-btn--danger:hover:not(:disabled) { background: #a51f2e; }
+
+/* ── Link ────────────────────────────────────────────────────────────── */
+.gx-link {
+  color: var(--gx-accent);
+  font-weight: var(--gx-weight-medium);
+  text-decoration: none;
+  transition: color var(--gx-transition);
+}
+.gx-link:hover { color: var(--gx-accent-hover); text-decoration: underline; }
+
+/* Navigation link — reads as body text until hovered, so a row of them does
+   not turn into a wall of green. */
+.gx-nav-link {
+  color: var(--gx-text-muted);
+  font-family: var(--gx-font-sans);
+  font-size: var(--gx-text-base);
+  font-weight: var(--gx-weight-medium);
+  text-decoration: none;
+  transition: color var(--gx-transition);
+}
+.gx-nav-link:hover { color: var(--gx-text); }
+
+/* ── Card ────────────────────────────────────────────────────────────────
+   Border does the work; the shadow is barely there. */
+.gx-card {
+  background: var(--gx-bg);
+  border: 1px solid var(--gx-border);
+  border-radius: var(--gx-radius-md);
+  box-shadow: var(--gx-shadow-xs);
+}
+.gx-card--flat        { box-shadow: none; }
+.gx-card--muted       { background: var(--gx-surface); }
+.gx-card--accent      { border-color: var(--gx-accent-border); }
+
+.gx-card--interactive {
+  cursor: pointer;
+  transition: border-color var(--gx-transition), box-shadow var(--gx-transition);
+}
+.gx-card--interactive:hover {
+  border-color: var(--gx-border-strong);
+  box-shadow: var(--gx-shadow-sm);
+}
+
+.gx-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gx-space-3);
+  padding: var(--gx-space-3) var(--gx-space-4);
+  border-bottom: 1px solid var(--gx-border-subtle);
+}
+.gx-card__body   { padding: var(--gx-space-4); }
+.gx-card__footer {
+  padding: var(--gx-space-3) var(--gx-space-4);
+  border-top: 1px solid var(--gx-border-subtle);
+}
+
+.gx-card__title {
+  font-family: var(--gx-font-display);
+  font-size: var(--gx-text-base);
+  font-weight: var(--gx-weight-semibold);
+  color: var(--gx-text);
+  margin: 0;
+}
+
+/* Small uppercase section label. Sans, not mono — mono is reserved for code. */
+.gx-section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--gx-font-sans);
+  font-size: var(--gx-text-2xs);
+  font-weight: var(--gx-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gx-text-subtle);
+}
+
+/* ── Input ───────────────────────────────────────────────────────────── */
+.gx-input {
+  display: block;
+  width: 100%;
+  padding: 9px 12px;
+  background: var(--gx-bg);
+  border: 1px solid var(--gx-border-strong);
+  border-radius: var(--gx-radius);
+  font-family: var(--gx-font-sans);
+  font-size: var(--gx-text-base);
+  line-height: 1.4;
+  color: var(--gx-text);
+  outline: none;
+  transition: border-color var(--gx-transition), box-shadow var(--gx-transition);
+}
+.gx-input::placeholder { color: var(--gx-text-subtle); }
+.gx-input:hover:not(:disabled)  { border-color: var(--gx-text-subtle); }
+.gx-input:focus {
+  border-color: var(--gx-accent);
+  box-shadow: var(--gx-focus-ring);
+}
+.gx-input:disabled {
+  background: var(--gx-surface-2);
+  color: var(--gx-text-subtle);
+  cursor: not-allowed;
+}
+.gx-input--invalid          { border-color: var(--gx-danger); }
+.gx-input--invalid:focus    { box-shadow: 0 0 0 3px rgba(192, 38, 55, 0.2); }
+
+.gx-label {
+  display: block;
+  margin-bottom: 6px;
+  font-family: var(--gx-font-sans);
+  font-size: var(--gx-text-sm);
+  font-weight: var(--gx-weight-medium);
+  color: var(--gx-text);
+}
+.gx-hint  { margin-top: 4px; font-size: var(--gx-text-xs); color: var(--gx-text-subtle); }
+.gx-error { margin-top: 4px; font-size: var(--gx-text-xs); color: var(--gx-danger); }
+
+/* ── Badge ───────────────────────────────────────────────────────────── */
+.gx-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--gx-radius-sm);
+  font-family: var(--gx-font-sans);
+  font-size: var(--gx-text-2xs);
+  font-weight: var(--gx-weight-semibold);
+  line-height: 1.5;
+  white-space: nowrap;
+}
+.gx-badge--pill { border-radius: var(--gx-radius-full); padding-inline: 10px; }
+
+.gx-badge--neutral { background: var(--gx-surface-2);      border-color: var(--gx-border);          color: var(--gx-text-muted); }
+.gx-badge--accent  { background: var(--gx-accent-soft);    border-color: var(--gx-accent-border);   color: var(--gx-accent); }
+.gx-badge--success { background: var(--gx-success-soft);   border-color: var(--gx-success-border);  color: var(--gx-success); }
+.gx-badge--warning { background: var(--gx-warning-soft);   border-color: var(--gx-warning-border);  color: var(--gx-warning); }
+.gx-badge--danger  { background: var(--gx-danger-soft);    border-color: var(--gx-danger-border);   color: var(--gx-danger); }
+.gx-badge--info    { background: var(--gx-info-soft);      border-color: var(--gx-info-border);     color: var(--gx-info); }
+.gx-badge--solid   { background: var(--gx-accent);         border-color: var(--gx-accent);          color: var(--gx-text-inverse); }
+
+/* ── Stat ────────────────────────────────────────────────────────────────
+   Tabular figures so columns of numbers line up without reaching for mono. */
+.gx-stat__label {
+  display: block;
+  font-size: var(--gx-text-2xs);
+  font-weight: var(--gx-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gx-text-subtle);
+  margin-bottom: 4px;
+}
+.gx-stat__value {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--gx-font-display);
+  font-size: var(--gx-text-2xl);
+  font-weight: var(--gx-weight-bold);
+  line-height: 1.1;
+  color: var(--gx-text);
+  font-variant-numeric: tabular-nums;
+}
+.gx-stat__meta {
+  margin-top: 4px;
+  font-size: var(--gx-text-2xs);
+  color: var(--gx-text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+.gx-num { font-variant-numeric: tabular-nums; }
+
+/* ── Progress ────────────────────────────────────────────────────────── */
+.gx-progress {
+  height: 6px;
+  background: var(--gx-surface-2);
+  border-radius: var(--gx-radius-full);
+  overflow: hidden;
+}
+.gx-progress__fill {
+  height: 100%;
+  background: var(--gx-accent);
+  border-radius: inherit;
+  transition: width 400ms var(--gx-ease);
+}
+
+/* ── Segmented control (task switcher) ───────────────────────────────── */
+.gx-segment {
+  display: inline-flex;
+  padding: 3px;
+  background: var(--gx-surface-2);
+  border: 1px solid var(--gx-border);
+  border-radius: var(--gx-radius);
+  gap: 2px;
+}
+.gx-segment__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: var(--gx-radius-sm);
+  background: transparent;
+  font-family: var(--gx-font-sans);
+  font-size: var(--gx-text-sm);
+  font-weight: var(--gx-weight-medium);
+  color: var(--gx-text-muted);
+  cursor: pointer;
+  transition: background-color var(--gx-transition), color var(--gx-transition);
+}
+.gx-segment__item:hover { background: var(--gx-surface-3); color: var(--gx-text); }
+.gx-segment__item[aria-selected='true'] {
+  background: var(--gx-bg);
+  color: var(--gx-text);
+  font-weight: var(--gx-weight-semibold);
+  box-shadow: var(--gx-shadow-xs);
+}
+.gx-segment__item[data-done='true'] { color: var(--gx-success); }
+
+/* ── Code — the ONLY place monospace appears ─────────────────────────── */
+.gx-code {
+  font-family: var(--gx-font-mono);
+  font-size: var(--gx-text-xs);
+  background: var(--gx-surface-2);
+  border: 1px solid var(--gx-border);
+  border-radius: var(--gx-radius);
+  color: var(--gx-text);
+}
+pre.gx-code {
+  display: block;
+  padding: var(--gx-space-3);
+  overflow: auto;
+  line-height: var(--gx-leading-normal);
+  margin: 0;
+}
+code.gx-code { padding: 1px 5px; }
+
+/* ── Well — a recessed grey panel inside a card ──────────────────────── */
+.gx-well {
+  background: var(--gx-surface);
+  border: 1px solid var(--gx-border-subtle);
+  border-radius: var(--gx-radius);
+}
+
+/* ── Divider ─────────────────────────────────────────────────────────── */
+.gx-divider { height: 1px; background: var(--gx-border); border: 0; margin: 0; }
+
+/* ── Skeleton ────────────────────────────────────────────────────────────
+   A quiet opacity pulse, not a sweeping shimmer. */
+.gx-skeleton {
+  background: var(--gx-surface-2);
+  border-radius: var(--gx-radius-sm);
+  animation: gx-pulse 1.6s var(--gx-ease) infinite;
+}
+@keyframes gx-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+
+/* ── Activity heat cell ──────────────────────────────────────────────── */
+.gx-heat-cell {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px rgba(16, 24, 40, 0.05);
+}
+
+/* ── Alert strip ─────────────────────────────────────────────────────── */
+.gx-alert {
+  display: flex;
+  align-items: center;
+  gap: var(--gx-space-2);
+  padding: 10px var(--gx-space-4);
+  border: 1px solid transparent;
+  border-radius: var(--gx-radius);
+  font-size: var(--gx-text-sm);
+}
+.gx-alert--warning { background: var(--gx-warning-soft); border-color: var(--gx-warning-border); color: var(--gx-warning); }
+.gx-alert--danger  { background: var(--gx-danger-soft);  border-color: var(--gx-danger-border);  color: var(--gx-danger); }
+.gx-alert--info    { background: var(--gx-info-soft);    border-color: var(--gx-info-border);    color: var(--gx-info); }
+.gx-alert--success { background: var(--gx-success-soft); border-color: var(--gx-success-border); color: var(--gx-success); }
+
+/* ── Table ───────────────────────────────────────────────────────────── */
+.gx-table { width: 100%; border-collapse: collapse; font-size: var(--gx-text-sm); }
+.gx-table th {
+  padding: 8px 12px;
+  text-align: left;
+  font-size: var(--gx-text-2xs);
+  font-weight: var(--gx-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gx-text-subtle);
+  background: var(--gx-surface);
+  border-bottom: 1px solid var(--gx-border);
+}
+.gx-table td { padding: 8px 12px; border-bottom: 1px solid var(--gx-border-subtle); color: var(--gx-text); }
+.gx-table tr:last-child td { border-bottom: 0; }
+
+/* ── Reduced motion ──────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .gx-skeleton { animation: none; }
+  .gx-progress__fill { transition: none; }
+}

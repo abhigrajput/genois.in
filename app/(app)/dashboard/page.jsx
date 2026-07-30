@@ -9,6 +9,7 @@ import TrialBanner from '@/components/TrialBanner'
 import OnboardingTour from '@/components/OnboardingTour'
 import { isProfileComplete } from '@/lib/profile'
 import { toEmbedUrl } from '@/lib/youtubeEmbed'
+import { Card, CardBody, SectionLabel, Badge, DifficultyBadge, Button, Input, Progress, Skeleton } from '@/components/ui'
 import {
   Flame, Zap, Trophy, Play, BookOpen, Code2, ClipboardCheck, FileText, Target,
   Bot, Mic, Lightbulb, Rocket, Check, Sparkles, Mail, AlertTriangle, Settings, Brain,
@@ -17,15 +18,12 @@ import {
 function YouTubeEmbed({ url, title }) {
   const embedUrl = toEmbedUrl(url);
   if (!embedUrl) return (
-    <a href={url} target="_blank" rel="noopener noreferrer" style={{
-      display: 'inline-flex', alignItems: 'center', gap: 8,
-      padding: '12px 20px', borderRadius: 10, textDecoration: 'none',
-      background: 'rgba(0,217,163,0.1)', border: '1px solid rgba(0,217,163,0.3)',
-      color: '#00d9a3', fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 14,
-    }}>▶ Watch on YouTube →</a>
+    <Button href={url} variant="outline" size="sm">
+      <Play size={14} strokeWidth={2} /> Watch on YouTube
+    </Button>
   );
   return (
-    <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: 12, overflow: 'hidden', border: '1px solid rgba(0,217,163,0.15)' }}>
+    <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: 'var(--gx-radius)', overflow: 'hidden', border: '1px solid var(--gx-border)' }}>
       <iframe
         src={embedUrl}
         title={title || 'Video'}
@@ -38,13 +36,25 @@ function YouTubeEmbed({ url, title }) {
   );
 }
 
-const G = '#00d9a3'
-const G10 = 'rgba(0,217,163,0.1)'
-const G20 = 'rgba(0,217,163,0.2)'
-const AMBER = '#ffb020'
-const BG = '#0a0a0f'
-const BG2 = '#12121a'
-const BG3 = '#1a1a26'
+// Token references — resolved from app/design-tokens.css so the page never
+// hard-codes a palette value of its own.
+const ACCENT = 'var(--gx-accent)'
+const WARNING = 'var(--gx-warning)'
+const TEXT = 'var(--gx-text)'
+const TEXT_MUTED = 'var(--gx-text-muted)'
+const TEXT_SUBTLE = 'var(--gx-text-subtle)'
+
+// Light toast styling, scoped to this page. The global <Toaster> in app/layout.tsx
+// is still dark for the un-migrated pages, so every toast raised here overrides it.
+const TOAST_STYLE = {
+  background: 'var(--gx-bg)',
+  color: 'var(--gx-text)',
+  border: '1px solid var(--gx-border)',
+  boxShadow: 'var(--gx-shadow-md)',
+  borderRadius: 'var(--gx-radius)',
+  fontFamily: 'var(--gx-font-sans)',
+  fontSize: '14px',
+}
 
 const TASK_BITS = { video: 1, resource: 2, coding: 4, test: 8, notes: 16 }
 const TASK_META = [
@@ -55,8 +65,6 @@ const TASK_META = [
   { type: 'notes',    icon: FileText,       label: 'Notes',  bit: 16 },
 ]
 
-const DIFF_COLORS = { Easy: G, Medium: AMBER, Hard: '#ff4757' }
-
 function DayRing({ day, size = 72 }) {
   const r = (size - 10) / 2
   const circ = 2 * Math.PI * r
@@ -64,33 +72,33 @@ function DayRing({ day, size = 72 }) {
   return (
     <div style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
       <svg width={size} height={size} style={{ display: 'block' }}>
-        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="7" />
-        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={G} strokeWidth="7"
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--gx-surface-2)" strokeWidth="6" />
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={ACCENT} strokeWidth="6"
           strokeLinecap="round" strokeDasharray={circ}
           strokeDashoffset={circ * (1 - pct)}
           transform={`rotate(-90 ${size/2} ${size/2})`}
-          style={{ transition: 'stroke-dashoffset 0.8s ease' }} />
+          style={{ transition: 'stroke-dashoffset 0.4s ease' }} />
       </svg>
       <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: size > 60 ? 20 : 14, fontWeight: 700, color: G, lineHeight: 1 }}>{day}</span>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#444', marginTop: 1 }}>/ 365</span>
+        <span className="gx-num" style={{ fontFamily: 'var(--gx-font-display)', fontSize: size > 60 ? 20 : 15, fontWeight: 700, color: TEXT, lineHeight: 1 }}>{day}</span>
+        <span className="gx-num" style={{ fontSize: 9, color: TEXT_SUBTLE, marginTop: 1 }}>/ 365</span>
       </div>
     </div>
   )
 }
 
 function Skel({ h = 60, w = '100%' }) {
-  return <div className="skeleton" style={{ height: h, width: w }} />
+  return <Skeleton h={h} w={w} />
 }
 
 function Confetti({ show }) {
   if (!show) return null
-  const colors = [G, AMBER, '#2ee6b0', '#ff69b4', '#ffffff', '#ff6b4a']
-  const particles = Array.from({ length: 24 }, (_, i) => {
-    const angle = (i / 24) * 360
-    const dist = 80 + (i % 4) * 30
+  const colors = ['#00805e', '#00d9a3', '#a25f00', '#0b5fa5', '#52b795']
+  const particles = Array.from({ length: 18 }, (_, i) => {
+    const angle = (i / 18) * 360
+    const dist = 70 + (i % 4) * 26
     const tx = Math.cos((angle * Math.PI) / 180) * dist
-    const ty = Math.sin((angle * Math.PI) / 180) * dist - 60
+    const ty = Math.sin((angle * Math.PI) / 180) * dist - 50
     return { i, color: colors[i % colors.length], tx, ty }
   })
   return (
@@ -112,10 +120,10 @@ function FloatAnim({ items }) {
   return (
     <>
       {items.map(a => (
-        <div key={a.id} className="pts-float" style={{
+        <div key={a.id} className="pts-float gx-num" style={{
           position: 'fixed', bottom: '25%', left: '55%',
-          fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 800,
-          color: G, zIndex: 9999,
+          fontFamily: 'var(--gx-font-display)', fontSize: 20, fontWeight: 700,
+          color: ACCENT, zIndex: 9999,
           transform: 'translateX(-50%)',
         }}>{a.text}</div>
       ))}
@@ -266,22 +274,21 @@ export default function DashboardPage() {
   const checkAchievements = useCallback((newMask) => {
     const shown = JSON.parse(localStorage.getItem('genois_achievements') || '{}')
     const dk = new Date().toDateString()
-    const toStyle = { background: BG2, color: G, border: `1px solid ${G20}`, borderRadius: 10 }
 
     const prevCount = TASK_META.filter(tm => completedMask & tm.bit).length
     if (prevCount === 0 && newMask > 0 && !shown[`first_${dk}`]) {
-      toast.success('First task done! Keep going', { style: toStyle })
+      toast.success('First task done! Keep going', { style: TOAST_STYLE })
       shown[`first_${dk}`] = true
     }
     if (newMask === 31 && !shown[`all_${dk}`]) {
       const day = analytics?.progress?.currentDay || 1
-      toast.success(`Day ${day} complete! +100 bonus pts`, { style: toStyle, duration: 5000 })
+      toast.success(`Day ${day} complete! +100 bonus pts`, { style: TOAST_STYLE, duration: 5000 })
       shown[`all_${dk}`] = true
     }
     const total = analytics?.score?.total_score || 0
     for (const th of [1000, 5000, 10000]) {
       if (total < th && total + 20 >= th && !shown[`score_${th}`]) {
-        toast.success(`${th.toLocaleString()} pts milestone!`, { style: toStyle })
+        toast.success(`${th.toLocaleString()} pts milestone!`, { style: TOAST_STYLE })
         shown[`score_${th}`] = true
       }
     }
@@ -306,7 +313,7 @@ export default function DashboardPage() {
       if (newMask === 31) { setShowConfetti(true); setTimeout(() => setShowConfetti(false), 3000) }
     } catch {
       setCompletedMask(completedMask)
-      toast.error('Failed to save progress')
+      toast.error('Failed to save progress', { style: TOAST_STYLE })
     }
   }, [token, completedMask, addFloat, checkAchievements, analytics, storeProgress])
 
@@ -319,11 +326,11 @@ export default function DashboardPage() {
         headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
         body: JSON.stringify({ day: analytics?.progress?.currentDay || 1 }),
       })
-      toast.success('Notes generated!', { style: { background: BG2, color: G } })
+      toast.success('Notes generated!', { style: TOAST_STYLE })
       // Mark notes as done after generation
       completeTask('notes')
     } catch {
-      toast.error('Could not generate notes')
+      toast.error('Could not generate notes', { style: TOAST_STYLE })
     } finally {
       setGeneratingNotes(false)
     }
@@ -364,11 +371,11 @@ export default function DashboardPage() {
   async function submitDashboardProject() {
     if (!token || submittingProject) return
     if (!githubInput || !githubInput.includes('github.com')) {
-      toast.error('Enter a valid GitHub repository URL')
+      toast.error('Enter a valid GitHub repository URL', { style: TOAST_STYLE })
       return
     }
     if (!project?.id) {
-      toast.error('Project isn\'t ready yet — open the Roadmap to submit.')
+      toast.error('Project isn\'t ready yet — open the Roadmap to submit.', { style: TOAST_STYLE })
       return
     }
     setSubmittingProject(true)
@@ -387,13 +394,13 @@ export default function DashboardPage() {
       })
       const d = await res.json()
       if (d.success) {
-        toast.success(d.data?.message || 'Project submitted! AI review incoming.', { style: { background: BG2, color: G } })
+        toast.success(d.data?.message || 'Project submitted! AI review incoming.', { style: TOAST_STYLE })
         setProjectDone(true)
       } else {
-        toast.error(d.message || 'Submission failed')
+        toast.error(d.message || 'Submission failed', { style: TOAST_STYLE })
       }
     } catch {
-      toast.error('Project submission failed')
+      toast.error('Project submission failed', { style: TOAST_STYLE })
     } finally {
       setSubmittingProject(false)
     }
@@ -457,49 +464,37 @@ export default function DashboardPage() {
   // ── ACTIVE TASK CONTENT ──
   function TaskContent() {
     const done = !!(completedMask & TASK_BITS[activeTask])
-    const btnStyle = {
-      display: 'inline-flex', alignItems: 'center', gap: 8,
-      padding: '10px 20px', borderRadius: 8, border: 'none', cursor: done ? 'default' : 'pointer',
-      background: done ? 'rgba(0,217,163,0.1)' : G, color: done ? G : '#0a0a0f',
-      fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14, transition: 'all 0.2s',
-      opacity: done ? 0.7 : 1,
-    }
 
     if (activeTask === 'video') return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {video?.title && <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 600, color: '#e8e8ed' }}>{video.title}</div>}
-        {video?.description && <div style={{ fontSize: 12, color: '#6b7a8d', lineHeight: 1.6 }}>{video.description}</div>}
+        {video?.title && <div style={{ fontFamily: 'var(--gx-font-display)', fontSize: 15, fontWeight: 600, color: TEXT }}>{video.title}</div>}
+        {video?.description && <div style={{ fontSize: 13, color: TEXT_MUTED, lineHeight: 1.6 }}>{video.description}</div>}
         {video?.url
           ? <YouTubeEmbed url={video.url} title={video.title} />
-          : <div style={{ fontSize: 12, color: '#555' }}>No video available for today.</div>}
+          : <div style={{ fontSize: 13, color: TEXT_SUBTLE }}>No video available for today.</div>}
         {!done && (
-          <button
+          <Button
+            block
+            variant={videoEligible ? 'primary' : 'secondary'}
             onClick={() => videoEligible && completeTask('video')}
             disabled={!videoEligible}
-            style={{
-              padding: '11px 20px', borderRadius: 8, border: 'none',
-              cursor: videoEligible ? 'pointer' : 'not-allowed',
-              background: videoEligible ? G : 'rgba(255,255,255,0.06)',
-              color: videoEligible ? '#0a0a0f' : '#555',
-              fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14,
-              transition: 'all 0.4s ease', width: '100%',
-            }}>
-            {videoEligible ? 'Mark Video as Watched' : 'Watch 30 seconds to unlock...'}
-          </button>
+          >
+            {videoEligible ? 'Mark Video as Watched' : 'Watch 30 seconds to unlock…'}
+          </Button>
         )}
       </div>
     )
 
     if (activeTask === 'resource') return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {resource?.title && <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 600, color: '#e8e8ed' }}>{resource.title}</div>}
-        <div style={{ display: 'flex', gap: 10 }}>
+        {resource?.title && <div style={{ fontFamily: 'var(--gx-font-display)', fontSize: 15, fontWeight: 600, color: TEXT }}>{resource.title}</div>}
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           {resource?.url && (
-            <a href={resource.url} target="_blank" rel="noopener noreferrer" style={{ ...btnStyle, background: done ? 'rgba(0,217,163,0.1)' : G, color: done ? G : '#0a0a0f', textDecoration: 'none' }}>
-              <BookOpen size={16} strokeWidth={2} /> Open Resource
-            </a>
+            <Button href={resource.url} variant={done ? 'outline' : 'primary'}>
+              <BookOpen size={15} strokeWidth={2} /> Open Resource
+            </Button>
           )}
-          {!done && <button onClick={() => completeTask('resource')} style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${G20}`, background: 'transparent', color: G, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14 }}>Mark Complete</button>}
+          {!done && <Button variant="secondary" onClick={() => completeTask('resource')}>Mark Complete</Button>}
         </div>
       </div>
     )
@@ -508,63 +503,56 @@ export default function DashboardPage() {
       const diff = coding?.difficulty || 'Medium'
       return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            {coding?.title && <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: G }}>{coding.title}</div>}
-            <span style={{ padding: '2px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: `${DIFF_COLORS[diff]}20`, color: DIFF_COLORS[diff], border: `1px solid ${DIFF_COLORS[diff]}40` }}>{diff}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            {coding?.title && <div style={{ fontFamily: 'var(--gx-font-display)', fontSize: 15, fontWeight: 600, color: TEXT }}>{coding.title}</div>}
+            <DifficultyBadge level={diff} />
           </div>
-          {coding?.description && <div style={{ fontSize: 12, color: '#6b7a8d', lineHeight: 1.6 }}>{coding.description}</div>}
+          {coding?.description && <div style={{ fontSize: 13, color: TEXT_MUTED, lineHeight: 1.6 }}>{coding.description}</div>}
           {coding?.codeSnippet && (
-            <pre style={{ background: '#0a0a0f', border: `1px solid rgba(0,217,163,0.15)`, borderRadius: 8, padding: '12px 14px', fontSize: 11, color: G, fontFamily: 'var(--font-mono)', overflow: 'auto', maxHeight: 100, margin: 0 }}>
-              {coding.codeSnippet}
-            </pre>
+            <pre className="gx-code" style={{ maxHeight: 120 }}>{coding.codeSnippet}</pre>
           )}
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             {coding?.url && (
-              <a href={coding.url} target="_blank" rel="noopener noreferrer" style={{ ...btnStyle, background: done ? 'rgba(0,217,163,0.1)' : G, color: done ? G : '#0a0a0f', textDecoration: 'none' }}>
-                <Code2 size={16} strokeWidth={2} /> Solve Problem →
-              </a>
+              <Button href={coding.url} variant={done ? 'outline' : 'primary'}>
+                <Code2 size={15} strokeWidth={2} /> Solve Problem
+              </Button>
             )}
-            {!done && <button onClick={() => completeTask('coding')} style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${G20}`, background: 'transparent', color: G, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14 }}>Mark Complete</button>}
+            {!done && <Button variant="secondary" onClick={() => completeTask('coding')}>Mark Complete</Button>}
           </div>
         </div>
       )
     }
 
     if (activeTask === 'test') return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        <div style={{ fontSize: 13, color: '#6b7a8d' }}>Take today&apos;s test to earn bonus points and test your understanding.</div>
-        <Link href="/tests" style={{ ...btnStyle, background: done ? 'rgba(0,217,163,0.1)' : G, color: done ? G : '#0a0a0f', textDecoration: 'none', alignSelf: 'flex-start' }}>
-          <ClipboardCheck size={16} strokeWidth={2} /> Take Today&apos;s Test →
-        </Link>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-start' }}>
+        <div style={{ fontSize: 13, color: TEXT_MUTED }}>Take today&apos;s test to earn bonus points and check your understanding.</div>
+        <Button href="/tests" variant={done ? 'outline' : 'primary'}>
+          <ClipboardCheck size={15} strokeWidth={2} /> Take Today&apos;s Test
+        </Button>
       </div>
     )
 
     if (activeTask === 'notes') return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'flex-start' }}>
         {notes?.content ? (
-          <div style={{ background: '#0a0a0f', border: `1px solid rgba(0,217,163,0.12)`, borderRadius: 8, padding: '12px 14px', fontSize: 12, color: '#aab', lineHeight: 1.7, maxHeight: 140, overflow: 'auto', fontFamily: 'var(--font-body)' }}>
+          <div className="gx-well" style={{ padding: '12px 14px', fontSize: 13, color: TEXT_MUTED, lineHeight: 1.7, maxHeight: 140, overflow: 'auto', width: '100%' }}>
             {notes.content}
           </div>
         ) : (
-          <div style={{ fontSize: 13, color: '#6b7a8d' }}>AI-generated summary notes for today&apos;s topic. Click below to generate.</div>
+          <div style={{ fontSize: 13, color: TEXT_MUTED }}>AI-generated summary notes for today&apos;s topic.</div>
         )}
         {!notes?.content && (
-          <button onClick={generateNotes} disabled={generatingNotes} style={{ ...btnStyle, alignSelf: 'flex-start', opacity: generatingNotes ? 0.6 : 1, cursor: generatingNotes ? 'not-allowed' : 'pointer' }}>
-            {generatingNotes ? 'Generating...' : <><Sparkles size={16} strokeWidth={2} /> Generate Notes</>}
-          </button>
+          <Button onClick={generateNotes} disabled={generatingNotes}>
+            {generatingNotes ? 'Generating…' : <><Sparkles size={15} strokeWidth={2} /> Generate Notes</>}
+          </Button>
         )}
         {notes?.content && !done && (
-          <button onClick={() => completeTask('notes')} style={{ padding: '10px 20px', borderRadius: 8, border: `1px solid ${G20}`, background: 'transparent', color: G, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14, alignSelf: 'flex-start' }}>Mark Complete</button>
+          <Button variant="secondary" onClick={() => completeTask('notes')}>Mark Complete</Button>
         )}
       </div>
     )
 
     return null
-  }
-
-  const cardBase = {
-    background: BG2, border: `1px solid rgba(0,217,163,0.12)`, borderRadius: 14,
-    padding: 20, position: 'relative', overflow: 'hidden',
   }
 
   return (
@@ -576,101 +564,98 @@ export default function DashboardPage() {
 
       {/* Email verification */}
       {user?.email_verified === false && (
-        <div style={{ background: 'rgba(255,50,50,0.08)', border: '1px solid rgba(255,50,50,0.3)', borderRadius: 10, padding: '12px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <Mail size={16} strokeWidth={2} color="#ff6b6b" style={{ flexShrink: 0 }} />
-            <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#ff6b6b' }}>Please verify your email to unlock all features</span>
-          </div>
-          <button onClick={async () => {
-            try { await fetch('/api/auth/resend-verification', { method: 'POST', headers: { Authorization: 'Bearer ' + token } }); toast.success('Verification email sent!') }
-            catch { toast.error('Failed to send') }
-          }} style={{ padding: '6px 14px', borderRadius: 8, border: 'none', background: '#ff4545', color: '#fff', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 700, cursor: 'pointer', flexShrink: 0 }}>
-            Resend →
-          </button>
+        <div className="gx-alert gx-alert--danger" style={{ justifyContent: 'space-between', flexWrap: 'wrap' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+            <Mail size={15} strokeWidth={2} style={{ flexShrink: 0 }} />
+            Please verify your email to unlock all features
+          </span>
+          <Button size="sm" variant="danger" onClick={async () => {
+            try { await fetch('/api/auth/resend-verification', { method: 'POST', headers: { Authorization: 'Bearer ' + token } }); toast.success('Verification email sent!', { style: TOAST_STYLE }) }
+            catch { toast.error('Failed to send', { style: TOAST_STYLE }) }
+          }}>
+            Resend
+          </Button>
         </div>
       )}
 
       {/* Streak at risk */}
       {streakAtRisk && (
-        <div style={{ background: 'rgba(251,191,36,0.07)', border: `1px solid rgba(251,191,36,0.3)`, borderRadius: 10, padding: '10px 20px', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <AlertTriangle size={18} strokeWidth={2} color={AMBER} style={{ flexShrink: 0 }} />
-          <span style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: AMBER }}>Complete at least 1 task to keep your streak alive tonight!</span>
+        <div className="gx-alert gx-alert--warning">
+          <AlertTriangle size={16} strokeWidth={2} style={{ flexShrink: 0 }} />
+          Complete at least 1 task to keep your streak alive tonight.
         </div>
       )}
 
       {/* Admin link */}
       {isAdmin && (
-        <a href="/admin" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 8, background: 'rgba(0,217,163,0.08)', border: `1px solid ${G20}`, color: G, textDecoration: 'none', fontSize: 12, fontFamily: 'var(--font-mono)', fontWeight: 700, alignSelf: 'flex-start' }}><Settings size={14} strokeWidth={2} /> Admin Dashboard →</a>
+        <Button href="/admin" variant="outline" size="sm" style={{ alignSelf: 'flex-start' }}>
+          <Settings size={14} strokeWidth={2} /> Admin Dashboard
+        </Button>
       )}
 
       {/* DSA Diagnostic banner */}
       {user?.domain_slug === 'dsa' && analytics?.diagnosticStatus === false && (
-        <div onClick={() => router.push('/diagnostic')} style={{ ...cardBase, cursor: 'pointer', borderColor: `rgba(0,217,163,0.3)` }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+        <Card accent interactive padded onClick={() => router.push('/diagnostic')}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-mono)', fontSize: 10, color: G, letterSpacing: 2, marginBottom: 4 }}><Target size={12} strokeWidth={2} /> RECOMMENDED</div>
-              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: '#e8e8ed' }}>Take DSA Diagnostic to get your level →</div>
-              <div style={{ fontSize: 12, color: '#6b7a8d', marginTop: 2 }}>15 questions · 10 min · Sets your personalized track</div>
+              <SectionLabel icon={Target} style={{ color: ACCENT, marginBottom: 6 }}>Recommended</SectionLabel>
+              <div style={{ fontFamily: 'var(--gx-font-display)', fontSize: 16, fontWeight: 600, color: TEXT }}>Take the DSA Diagnostic to get your level</div>
+              <div style={{ fontSize: 13, color: TEXT_MUTED, marginTop: 3 }}>15 questions · 10 min · Sets your personalized track</div>
             </div>
-            <div style={{ padding: '8px 18px', borderRadius: 8, background: G, color: '#0a0a0f', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 13 }}>Start Now →</div>
+            <span className="gx-btn gx-btn--primary">Start Now</span>
           </div>
-        </div>
+        </Card>
       )}
 
       {/* ── HERO STATS BAR ── */}
-      <div className="stats-bar" style={{ background: BG2, borderRadius: 14, border: `1px solid rgba(0,217,163,0.12)`, padding: isMobile ? '12px 14px' : '16px 24px', display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: isMobile ? 10 : 16 }}>
-        {/* Day */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 14 }}>
-          <DayRing day={currentDay} size={isMobile ? 52 : 68} />
-          <div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 2 }}>CURRENT DAY</div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#888' }}>{Math.round((currentDay / 365) * 100)}% complete</div>
+      <Card>
+        <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: isMobile ? 16 : 0 }}>
+          {/* Day */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 10 : 14, padding: isMobile ? '14px 14px 0' : '18px 24px' }}>
+            <DayRing day={currentDay} size={isMobile ? 54 : 66} />
+            <div>
+              <span className="gx-stat__label">Current Day</span>
+              <span className="gx-num" style={{ fontSize: 13, color: TEXT_MUTED }}>{Math.round((currentDay / 365) * 100)}% complete</span>
+            </div>
           </div>
-        </div>
 
-        {/* Streak */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderLeft: `1px solid rgba(255,255,255,0.06)`, paddingLeft: 16 }}>
-          <div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 4 }}>STREAK</div>
-            <div className={streak >= 7 ? 'pulse-amber' : ''} style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 800, color: streak > 0 ? AMBER : '#444', lineHeight: 1 }}>
-              {streak > 0 && <Flame size={24} strokeWidth={2} color={AMBER} />}{streak > 0 ? `${streak}` : '0'}
-            </div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-mono)', fontSize: 10, color: streak > 0 ? AMBER : '#555', marginTop: 2 }}>
-              {streak === 0 ? 'Start today!' : streak >= 30 ? <><Flame size={11} strokeWidth={2} color={AMBER} /> ON FIRE</> : 'days'}
-            </div>
+          {/* Streak */}
+          <div style={{ padding: isMobile ? '14px 14px 0' : '18px 24px', borderLeft: isMobile ? 'none' : '1px solid var(--gx-border-subtle)' }}>
+            <span className="gx-stat__label">Streak</span>
+            <span className="gx-stat__value" style={{ color: streak > 0 ? WARNING : TEXT_SUBTLE, fontSize: isMobile ? 22 : 26 }}>
+              {streak > 0 && <Flame size={isMobile ? 19 : 22} strokeWidth={2} />}{streak}
+            </span>
+            <span className="gx-stat__meta" style={{ color: streak > 0 ? WARNING : TEXT_SUBTLE }}>
+              {streak === 0 ? 'Start today' : streak >= 30 ? 'On fire' : streak === 1 ? 'day' : 'days'}
+            </span>
             {streakAtRisk && streak > 0 && doneTasks === 0 && (
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-mono)', fontSize: 9, color: '#ff4545', marginTop: 2 }}><AlertTriangle size={10} strokeWidth={2} /> AT RISK</div>
+              <span className="gx-badge gx-badge--danger" style={{ marginTop: 6 }}>
+                <AlertTriangle size={10} strokeWidth={2.2} /> At risk
+              </span>
             )}
           </div>
-        </div>
 
-        {/* Score */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderLeft: isMobile ? 'none' : `1px solid rgba(255,255,255,0.06)`, paddingLeft: isMobile ? 0 : 16 }}>
-          <div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 4 }}>SCORE</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-mono)', fontSize: isMobile ? 20 : 26, fontWeight: 800, color: G, lineHeight: 1 }}>
-              <Zap size={isMobile ? 18 : 22} strokeWidth={2} color={G} /> {totalScore.toLocaleString()}
-            </div>
-            {doneTasks > 0 && (
-              <div style={{ display: 'inline-block', marginTop: 3, padding: '1px 8px', borderRadius: 20, background: 'rgba(0,217,163,0.12)', border: `1px solid ${G20}`, fontFamily: 'var(--font-mono)', fontSize: 9, color: G }}>
-                +{doneTasks * 20} today
-              </div>
-            )}
-            {doneTasks === 0 && <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#555', marginTop: 2 }}>0 today</div>}
+          {/* Score */}
+          <div style={{ padding: isMobile ? '0 14px 14px' : '18px 24px', borderLeft: isMobile ? 'none' : '1px solid var(--gx-border-subtle)' }}>
+            <span className="gx-stat__label">Score</span>
+            <span className="gx-stat__value" style={{ color: ACCENT, fontSize: isMobile ? 22 : 26 }}>
+              <Zap size={isMobile ? 19 : 22} strokeWidth={2} /> {totalScore.toLocaleString()}
+            </span>
+            {doneTasks > 0
+              ? <span className="gx-badge gx-badge--accent gx-num" style={{ marginTop: 6 }}>+{doneTasks * 20} today</span>
+              : <span className="gx-stat__meta">0 today</span>}
+          </div>
+
+          {/* Rank */}
+          <div style={{ padding: isMobile ? '0 14px 14px' : '18px 24px', borderLeft: isMobile ? 'none' : '1px solid var(--gx-border-subtle)' }}>
+            <span className="gx-stat__label">Rank</span>
+            <span className="gx-stat__value" style={{ fontSize: isMobile ? 22 : 26 }}>
+              <Trophy size={isMobile ? 19 : 22} strokeWidth={2} color={ACCENT} /> {myRank ? `#${myRank}` : '—'}
+            </span>
+            {percentile && <span className="gx-stat__meta">Top {100 - percentile}%</span>}
           </div>
         </div>
-
-        {/* Rank */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, borderLeft: `1px solid rgba(255,255,255,0.06)`, paddingLeft: 16 }}>
-          <div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#555', letterSpacing: 2, marginBottom: 4 }}>RANK</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-heading)', fontSize: isMobile ? 20 : 26, fontWeight: 800, color: '#e8e8ed', lineHeight: 1 }}>
-              <Trophy size={isMobile ? 18 : 22} strokeWidth={2} color={G} /> {myRank ? `#${myRank}` : '--'}
-            </div>
-            {percentile && <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: G, marginTop: 3 }}>Top {100 - percentile}%</div>}
-          </div>
-        </div>
-      </div>
+      </Card>
 
       {/* ── MAIN 60/40 ── */}
       <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 16, alignItems: 'flex-start' }}>
@@ -679,158 +664,165 @@ export default function DashboardPage() {
         <div style={{ flex: isMobile ? 'none' : '3 1 0', width: isMobile ? '100%' : undefined, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 14 }}>
 
           {/* TODAY'S MISSION CARD */}
-          <div style={{ ...cardBase, border: `1px solid rgba(0,217,163,0.25)`, boxShadow: '0 0 24px rgba(0,217,163,0.05)' }}>
-            {/* Coral accent stripe — marks the day's focus */}
-            <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: 3, background: '#ff6b4a' }} />
-            {/* Header */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: G, letterSpacing: 2, fontWeight: 700 }}>TODAY&apos;S MISSION</span>
-                <span style={{ padding: '2px 10px', borderRadius: 20, background: G10, border: `1px solid ${G20}`, fontFamily: 'var(--font-mono)', fontSize: 10, color: G }}>DAY {currentDay}</span>
+          <Card accent>
+            <CardBody>
+              {/* Header */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <SectionLabel style={{ color: ACCENT }}>Today&apos;s Mission</SectionLabel>
+                  <Badge tone="accent">Day {currentDay}</Badge>
+                </div>
+                <Link href="/roadmap" className="gx-link" style={{ fontSize: 13 }}>Full Roadmap →</Link>
               </div>
-              <Link href="/roadmap" style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: G, textDecoration: 'none', border: `1px solid ${G20}`, padding: '3px 10px', borderRadius: 20 }}>
-                Full Roadmap →
-              </Link>
-            </div>
 
-            {/* PROJECT DAY */}
-            {isProjectDay ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 800, color: '#e8e8ed' }}>{project?.title || 'Project Day'}</div>
-                {project?.description && <div style={{ fontSize: 13, color: '#6b7a8d', lineHeight: 1.7 }}>{project.description}</div>}
-                {project?.estimatedHours && (
-                  <span style={{ alignSelf: 'flex-start', padding: '3px 10px', borderRadius: 20, background: 'rgba(251,191,36,0.1)', border: `1px solid rgba(251,191,36,0.3)`, fontSize: 11, color: AMBER, fontFamily: 'var(--font-mono)' }}>
-                    ~{project.estimatedHours}h estimated
-                  </span>
-                )}
-                {project?.steps?.length > 0 && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                    {project.steps.map((s, i) => (
-                      <div key={i} style={{ display: 'flex', gap: 10, padding: '8px 12px', background: '#0a0a0f', borderRadius: 8, border: '1px solid rgba(255,255,255,0.04)' }}>
-                        <span style={{ color: G, fontSize: 12, fontWeight: 700, fontFamily: 'var(--font-mono)', flexShrink: 0 }}>{i + 1}.</span>
-                        <span style={{ fontSize: 13, color: '#aab' }}>{s}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {projectSubmitted ? (
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 16px', borderRadius: 8, background: 'rgba(0,217,163,0.08)', border: `1px solid ${G20}`, color: G, fontSize: 13, fontFamily: 'var(--font-body)' }}>
-                    <Check size={16} strokeWidth={2.5} />
-                    {projectProgress?.status === 'reviewed'
-                      ? 'Reviewed — see feedback on the Roadmap page.'
-                      : 'Submitted! AI review will be ready in 2-3 minutes.'}
-                  </div>
-                ) : (
-                  <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                    <input
-                      value={githubInput}
-                      onChange={e => setGithubInput(e.target.value)}
-                      onKeyDown={e => { if (e.key === 'Enter') submitDashboardProject() }}
-                      placeholder="https://github.com/you/your-project"
-                      style={{ flex: 1, minWidth: 200, padding: '10px 14px', borderRadius: 8, border: `1px solid rgba(0,217,163,0.2)`, background: '#0a0a0f', color: '#e8e8ed', fontSize: 13, fontFamily: 'var(--font-body)', outline: 'none' }}
-                    />
-                    <button
-                      onClick={submitDashboardProject}
-                      disabled={submittingProject}
-                      style={{ padding: '10px 20px', borderRadius: 8, border: 'none', background: G, color: '#0a0a0f', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14, cursor: submittingProject ? 'not-allowed' : 'pointer', opacity: submittingProject ? 0.6 : 1, flexShrink: 0 }}>
-                      {submittingProject ? 'Submitting…' : 'Submit on GitHub →'}
-                    </button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <>
-                {/* Topic header */}
-                <div style={{ marginBottom: 16 }}>
-                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>{topic}</div>
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <span style={{ padding: '3px 10px', borderRadius: 20, background: 'rgba(255,107,74,0.1)', border: '1px solid rgba(255,107,74,0.25)', fontSize: 11, color: '#ff6b4a', fontFamily: 'var(--font-mono)' }}>Week {week}</span>
-                    <span style={{ padding: '3px 10px', borderRadius: 20, background: G10, border: `1px solid ${G20}`, fontSize: 11, color: G, fontFamily: 'var(--font-mono)' }}>{level}</span>
-                  </div>
+              {/* PROJECT DAY */}
+              {isProjectDay ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <div style={{ fontFamily: 'var(--gx-font-display)', fontSize: 20, fontWeight: 700, color: TEXT }}>{project?.title || 'Project Day'}</div>
+                  {project?.description && <div style={{ fontSize: 14, color: TEXT_MUTED, lineHeight: 1.7 }}>{project.description}</div>}
+                  {project?.estimatedHours && (
+                    <Badge tone="warning" style={{ alignSelf: 'flex-start' }}>~{project.estimatedHours}h estimated</Badge>
+                  )}
+                  {project?.steps?.length > 0 && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      {project.steps.map((s, i) => (
+                        <div key={i} className="gx-well" style={{ display: 'flex', gap: 10, padding: '9px 12px' }}>
+                          <span className="gx-num" style={{ color: ACCENT, fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{i + 1}.</span>
+                          <span style={{ fontSize: 13, color: TEXT }}>{s}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {projectSubmitted ? (
+                    <div className="gx-alert gx-alert--success">
+                      <Check size={16} strokeWidth={2.5} style={{ flexShrink: 0 }} />
+                      {projectProgress?.status === 'reviewed'
+                        ? 'Reviewed — see feedback on the Roadmap page.'
+                        : 'Submitted! AI review will be ready in 2-3 minutes.'}
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                      <Input
+                        value={githubInput}
+                        onChange={e => setGithubInput(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') submitDashboardProject() }}
+                        placeholder="https://github.com/you/your-project"
+                        aria-label="GitHub repository URL"
+                        style={{ flex: 1, minWidth: 200, width: 'auto' }}
+                      />
+                      <Button onClick={submitDashboardProject} disabled={submittingProject}>
+                        {submittingProject ? 'Submitting…' : 'Submit on GitHub'}
+                      </Button>
+                    </div>
+                  )}
                 </div>
-
-                {/* Task pills */}
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
-                  {TASK_META.map(tm => {
-                    const isDone = !!(completedMask & tm.bit)
-                    const isActive = activeTask === tm.type
-                    return (
-                      <button key={tm.type} onClick={() => setActiveTask(tm.type)}
-                        className={isDone ? 'task-pill-done' : isActive ? 'task-pill-active' : 'task-pill-pending'}
-                        style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 20, fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600, border: 'none', transition: 'all 0.2s' }}>
-                        <tm.icon size={14} strokeWidth={2} />
-                        <span>{tm.label}</span>
-                        {isDone && <Check size={12} strokeWidth={2.5} />}
-                      </button>
-                    )
-                  })}
-                </div>
-
-                {/* Active task content */}
-                <div style={{ background: '#0a0a0f', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 10, padding: '16px', marginBottom: 16, minHeight: 80 }}>
-                  <TaskContent />
-                </div>
-
-                {/* Progress bar */}
-                <div style={{ marginBottom: 14 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#6b7a8d' }}>{doneTasks} / 5 tasks done</span>
-                    {allDone && <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: 'var(--font-mono)', fontSize: 10, color: G }}><Check size={12} strokeWidth={2.5} /> ALL DONE</span>}
+              ) : (
+                <>
+                  {/* Topic header */}
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontFamily: 'var(--gx-font-display)', fontSize: 20, fontWeight: 700, color: TEXT, marginBottom: 8, lineHeight: 1.25 }}>{topic}</div>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <Badge tone="neutral">Week {week}</Badge>
+                      <DifficultyBadge level={level} />
+                    </div>
                   </div>
-                  <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${(doneTasks / 5) * 100}%`, background: `linear-gradient(90deg, ${G}, #2ee6b0)`, borderRadius: 3, transition: 'width 0.5s ease' }} />
-                  </div>
-                </div>
 
-                {/* CTA button */}
-                <button
-                  onClick={() => { if (allDone) router.push('/roadmap'); else if (nextTask) { setActiveTask(nextTask.type); completeTask(nextTask.type) } }}
-                  className={allDone ? 'pulse-amber' : ''}
-                  style={{ width: '100%', padding: '14px', borderRadius: 10, border: 'none', cursor: 'pointer', background: allDone ? `linear-gradient(135deg, ${AMBER}, #ffb020)` : G, color: '#0a0a0f', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 800, letterSpacing: 0.5, transition: 'all 0.2s' }}>
-                  {allDone ? 'Day Complete! See Tomorrow →' : `Start ${nextTask?.label || 'Next'} →`}
-                </button>
-              </>
-            )}
-          </div>
+                  {/* Task switcher */}
+                  <div className="gx-segment" style={{ display: 'flex', flexWrap: 'wrap', marginBottom: 16 }}>
+                    {TASK_META.map(tm => {
+                      const isDone = !!(completedMask & tm.bit)
+                      const isActive = activeTask === tm.type
+                      return (
+                        <button
+                          key={tm.type}
+                          onClick={() => setActiveTask(tm.type)}
+                          className="gx-segment__item"
+                          aria-selected={isActive}
+                          data-done={isDone}
+                          role="tab"
+                        >
+                          <tm.icon size={14} strokeWidth={2} />
+                          <span>{tm.label}</span>
+                          {isDone && <Check size={12} strokeWidth={2.5} />}
+                        </button>
+                      )
+                    })}
+                  </div>
+
+                  {/* Active task content */}
+                  <div className="gx-well" style={{ padding: 16, marginBottom: 16, minHeight: 80 }}>
+                    <TaskContent />
+                  </div>
+
+                  {/* Progress bar */}
+                  <div style={{ marginBottom: 14 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                      <span className="gx-num" style={{ fontSize: 13, color: TEXT_MUTED }}>{doneTasks} / 5 tasks done</span>
+                      {allDone && (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 600, color: ACCENT }}>
+                          <Check size={13} strokeWidth={2.5} /> All done
+                        </span>
+                      )}
+                    </div>
+                    <Progress value={doneTasks} max={5} label="Tasks completed today" />
+                  </div>
+
+                  {/* CTA button */}
+                  <Button
+                    block
+                    size="lg"
+                    onClick={() => { if (allDone) router.push('/roadmap'); else if (nextTask) { setActiveTask(nextTask.type); completeTask(nextTask.type) } }}
+                  >
+                    {allDone ? 'Day Complete — See Tomorrow' : `Start ${nextTask?.label || 'Next'}`}
+                  </Button>
+                </>
+              )}
+            </CardBody>
+          </Card>
 
           {/* 3 MINI CARDS ROW */}
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: 12 }}>
 
             {/* Week Progress */}
-            <div style={cardBase}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 10 }}>WEEK PROGRESS</div>
+            <Card padded>
+              <SectionLabel style={{ marginBottom: 12 }}>Week Progress</SectionLabel>
               <div style={{ display: 'flex', gap: 6, justifyContent: 'space-between' }}>
                 {weekDays.map((d, i) => {
                   const dayNum = weekStart + i
                   const isToday = dayNum === currentDay
                   const isPast = dayNum < currentDay
-                  const bg = isToday ? G : isPast ? 'rgba(0,217,163,0.4)' : 'rgba(255,255,255,0.04)'
-                  const border = isToday ? `2px solid ${G}` : 'none'
                   return (
-                    <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                      <div style={{ width: 28, height: 28, borderRadius: '50%', background: bg, border, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: isToday ? '#0a0a0f' : isPast ? G : '#444', transition: 'all 0.2s' }}>
-                        {isToday ? '●' : isPast ? '✓' : ''}
+                    <div key={i} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}>
+                      <div style={{
+                        width: 26, height: 26, borderRadius: '50%',
+                        background: isToday ? 'var(--gx-accent)' : isPast ? 'var(--gx-accent-soft)' : 'var(--gx-surface-2)',
+                        border: isToday ? 'none' : isPast ? '1px solid var(--gx-accent-border)' : '1px solid var(--gx-border)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: 11, fontWeight: 700,
+                        color: isToday ? 'var(--gx-text-inverse)' : isPast ? ACCENT : TEXT_SUBTLE,
+                      }}>
+                        {isPast ? '✓' : ''}
                       </div>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: isToday ? G : '#444' }}>{d}</span>
+                      <span style={{ fontSize: 11, fontWeight: isToday ? 600 : 400, color: isToday ? ACCENT : TEXT_SUBTLE }}>{d}</span>
                     </div>
                   )
                 })}
               </div>
-              <div style={{ marginTop: 8, fontFamily: 'var(--font-mono)', fontSize: 9, color: '#555' }}>
+              <div className="gx-num" style={{ marginTop: 10, fontSize: 12, color: TEXT_SUBTLE }}>
                 Week {week} · Day {currentDay}
               </div>
-            </div>
+            </Card>
 
             {/* Streak Calendar */}
-            <div style={cardBase}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 10 }}>30-DAY STREAK</div>
+            <Card padded>
+              <SectionLabel style={{ marginBottom: 12 }}>30-Day Activity</SectionLabel>
               {cal30.length === 0 ? (
-                <div style={{ fontSize: 11.5, color: '#666', lineHeight: 1.6, padding: '6px 0' }}>
+                <div style={{ fontSize: 13, color: TEXT_MUTED, lineHeight: 1.6 }}>
                   Complete tasks to build your activity history.
                 </div>
               ) : (
                 <>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 3 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 4 }}>
                     {cal30.map((d, i) => {
                       const isToday = d.isToday ?? (i === cal30.length - 1)
                       const count = d.count ?? (d.done ? 1 : 0)
@@ -838,41 +830,58 @@ export default function DashboardPage() {
                       // ring, not by being painted green for free. A mentor-only
                       // day (no task completions) reads as the lightest level.
                       const level = count >= 3 ? 3 : count >= 2 ? 2 : count >= 1 || d.mentor ? 1 : 0
-                      const bg = level === 3 ? 'rgba(0,217,163,0.7)' : level === 2 ? 'rgba(0,217,163,0.45)' : level === 1 ? 'rgba(0,217,163,0.25)' : 'rgba(255,255,255,0.03)'
                       const did = [count > 0 && `${count} task${count === 1 ? '' : 's'}`, d.mentor && 'mentor session'].filter(Boolean)
                       return (
-                        <div key={d.date || i} className="streak-day" title={d.date ? `${d.date}: ${did.join(' + ') || 'no activity'}` : undefined} style={{ aspectRatio: '1', background: bg, borderRadius: 2, border: isToday ? `1px solid ${G}` : 'none', position: 'relative' }} />
+                        <div
+                          key={d.date || i}
+                          className="gx-heat-cell"
+                          title={d.date ? `${d.date}: ${did.join(' + ') || 'no activity'}` : undefined}
+                          style={{
+                            background: `var(--gx-heat-${level})`,
+                            boxShadow: isToday ? `inset 0 0 0 1.5px var(--gx-accent)` : undefined,
+                          }}
+                        />
                       )
                     })}
                   </div>
-                  <div style={{ marginTop: 6, display: 'flex', gap: 6, alignItems: 'center' }}>
-                    <div style={{ width: 8, height: 8, background: 'rgba(0,217,163,0.25)', borderRadius: 1 }} />
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#555' }}>less</span>
-                    <div style={{ width: 8, height: 8, background: G, borderRadius: 1 }} />
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#555' }}>more</span>
+                  <div style={{ marginTop: 10, display: 'flex', gap: 5, alignItems: 'center' }}>
+                    <span style={{ fontSize: 11, color: TEXT_SUBTLE }}>Less</span>
+                    {[0, 1, 2, 3].map(l => (
+                      <div key={l} className="gx-heat-cell" style={{ width: 10, height: 10, background: `var(--gx-heat-${l})` }} />
+                    ))}
+                    <span style={{ fontSize: 11, color: TEXT_SUBTLE }}>More</span>
                   </div>
                 </>
               )}
-            </div>
+            </Card>
 
             {/* Quick Access */}
-            <div style={cardBase}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 10 }}>QUICK ACCESS</div>
+            <Card padded>
+              <SectionLabel style={{ marginBottom: 12 }}>Quick Access</SectionLabel>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
                 {[
                   { href: '/chatbot', icon: Bot, label: 'AI Mentor' },
                   { href: '/dsa-visualizer', icon: Play, label: 'Visualizer' },
                   { href: '/voice-interview', icon: Mic, label: 'Voice Sim' },
                 ].map(q => (
-                  <Link key={q.href} href={q.href} style={{ position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '10px 6px', borderRadius: 8, background: '#0a0a0f', border: '1px solid rgba(255,255,255,0.04)', textDecoration: 'none', transition: 'all 0.2s' }}
-                    onMouseEnter={e => { e.currentTarget.style.background = G10; e.currentTarget.style.borderColor = G20 }}
-                    onMouseLeave={e => { e.currentTarget.style.background = '#0a0a0f'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.04)' }}>
-                    <q.icon size={20} strokeWidth={1.8} color="#888" />
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#888' }}>{q.label}</span>
+                  <Link
+                    key={q.href}
+                    href={q.href}
+                    className="gx-well"
+                    style={{
+                      display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
+                      padding: '12px 6px', textDecoration: 'none', color: TEXT_MUTED,
+                      transition: 'background-color var(--gx-transition), border-color var(--gx-transition), color var(--gx-transition)',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--gx-accent-soft)'; e.currentTarget.style.borderColor = 'var(--gx-accent-border)'; e.currentTarget.style.color = 'var(--gx-accent)' }}
+                    onMouseLeave={e => { e.currentTarget.style.background = ''; e.currentTarget.style.borderColor = ''; e.currentTarget.style.color = TEXT_MUTED }}
+                  >
+                    <q.icon size={19} strokeWidth={1.8} />
+                    <span style={{ fontSize: 11, fontWeight: 500, textAlign: 'center' }}>{q.label}</span>
                   </Link>
                 ))}
               </div>
-            </div>
+            </Card>
           </div>
         </div>
 
@@ -880,26 +889,21 @@ export default function DashboardPage() {
         <div style={{ flex: isMobile ? 'none' : '2 1 0', width: isMobile ? '100%' : undefined, minWidth: isMobile ? 0 : 280, display: 'flex', flexDirection: 'column', gap: 12 }}>
 
           {/* Card: AI Mentor Insight — one personalized nudge, refreshes daily */}
-          <div style={{
-            position: 'relative', borderRadius: 14, padding: 1,
-            background: `linear-gradient(135deg, ${G}, #ff6b4a, #2ee6b0)`,
-          }}>
-            <div style={{ background: BG2, borderRadius: 13, padding: 18 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 10 }}>
-                <div style={{ width: 24, height: 24, borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,107,74,0.15)', border: '1px solid rgba(255,107,74,0.3)' }}>
-                  <Brain size={14} strokeWidth={2} color="#ff8a6f" />
-                </div>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#ff8a6f', letterSpacing: 2, fontWeight: 700 }}>YOUR AI MENTOR</span>
-              </div>
-              {insight ? (
-                <div style={{ fontFamily: 'var(--font-body)', fontSize: 13.5, color: '#dfe6f0', lineHeight: 1.6 }}>{insight}</div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <Skel h={14} /><Skel h={14} w="75%" />
-                </div>
-              )}
+          <Card accent padded>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+              <span style={{ width: 24, height: 24, borderRadius: 'var(--gx-radius-sm)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'var(--gx-accent-soft)', color: ACCENT, flexShrink: 0 }}>
+                <Brain size={14} strokeWidth={2} />
+              </span>
+              <SectionLabel style={{ color: ACCENT }}>Your AI Mentor</SectionLabel>
             </div>
-          </div>
+            {insight ? (
+              <div style={{ fontSize: 14, color: TEXT, lineHeight: 1.6 }}>{insight}</div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <Skel h={14} /><Skel h={14} w="75%" />
+              </div>
+            )}
+          </Card>
 
           {/* Card 0: Placement Profile */}
           {(() => {
@@ -912,61 +916,63 @@ export default function DashboardPage() {
             const profileComplete = tc.length > 0 && hasCgpa;
 
             if (!profileComplete) return (
-              <div style={{ ...cardBase, border: '1px solid rgba(251,191,36,0.3)', background: 'rgba(251,191,36,0.04)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-mono)', fontSize: 9, color: AMBER, letterSpacing: 2, marginBottom: 8 }}><AlertTriangle size={11} strokeWidth={2} /> PLACEMENT PROFILE</div>
-                <div style={{ fontSize: 13, color: '#9ba8b5', lineHeight: 1.6, marginBottom: 12 }}>
+              <Card padded>
+                <SectionLabel icon={AlertTriangle} style={{ color: WARNING, marginBottom: 10 }}>Placement Profile</SectionLabel>
+                <div style={{ fontSize: 13, color: TEXT_MUTED, lineHeight: 1.6, marginBottom: 12 }}>
                   Complete your profile for personalized AI content — target companies, CGPA, and weak areas.
                 </div>
-                <a href="/profile" style={{ display: 'inline-block', padding: '8px 16px', borderRadius: 8, background: AMBER, color: '#000', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 12, textDecoration: 'none' }}>
-                  Update Profile →
-                </a>
-              </div>
+                <Button href="/profile" size="sm">Update Profile</Button>
+              </Card>
             );
 
             return (
-              <div style={cardBase}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-mono)', fontSize: 9, color: G, letterSpacing: 2 }}><Target size={11} strokeWidth={2} /> YOUR PLACEMENT PROFILE</div>
-                  <a href="/profile" style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: G, textDecoration: 'none' }}>Edit →</a>
+              <Card padded>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                  <SectionLabel icon={Target}>Your Placement Profile</SectionLabel>
+                  <Link href="/profile" className="gx-link" style={{ fontSize: 12 }}>Edit</Link>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#555' }}>TARGET:</span>
-                    {tc.slice(0, 4).map(c => (
-                      <span key={c} style={{ padding: '2px 8px', borderRadius: 20, background: G10, border: `1px solid ${G20}`, fontSize: 10, color: G, fontFamily: 'var(--font-mono)' }}>{c}</span>
-                    ))}
-                    {tc.length > 4 && <span style={{ fontSize: 10, color: '#555' }}>+{tc.length - 4}</span>}
+                    <span style={{ fontSize: 12, color: TEXT_SUBTLE }}>Target:</span>
+                    {tc.slice(0, 4).map(c => <Badge key={c} tone="accent">{c}</Badge>)}
+                    {tc.length > 4 && <span style={{ fontSize: 12, color: TEXT_SUBTLE }}>+{tc.length - 4}</span>}
                   </div>
-                  <div style={{ display: 'flex', gap: 12, fontSize: 11, color: '#9ba8b5', fontFamily: 'var(--font-mono)' }}>
-                    {hasCgpa && <span>CGPA: <span style={{ color: '#e8e8ed' }}>{user.cgpa}</span></span>}
-                    <span>Tier: <span style={{ color: '#e8e8ed' }}>{tier.toUpperCase()}</span></span>
-                    {urgencyLabel && months && <span>Timeline: <span style={{ color: urgencyLabel === 'CRITICAL' ? '#ff4545' : urgencyLabel === 'URGENT' ? AMBER : G }}>{urgencyLabel}</span></span>}
+                  <div className="gx-num" style={{ display: 'flex', gap: 14, flexWrap: 'wrap', fontSize: 12, color: TEXT_MUTED }}>
+                    {hasCgpa && <span>CGPA: <strong style={{ color: TEXT, fontWeight: 600 }}>{user.cgpa}</strong></span>}
+                    <span>Tier: <strong style={{ color: TEXT, fontWeight: 600 }}>{tier.toUpperCase()}</strong></span>
+                    {urgencyLabel && months && (
+                      <span>Timeline: <strong style={{ fontWeight: 600, color: urgencyLabel === 'CRITICAL' ? 'var(--gx-danger)' : urgencyLabel === 'URGENT' ? WARNING : ACCENT }}>{urgencyLabel}</strong></span>
+                    )}
                   </div>
                   {weak.length > 0 && (
-                    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#555', alignSelf: 'center' }}>WEAK:</span>
-                      {weak.slice(0, 3).map(w => (
-                        <span key={w} style={{ padding: '2px 7px', borderRadius: 20, background: 'rgba(251,191,36,0.1)', border: `1px solid rgba(251,191,36,0.25)`, fontSize: 9, color: AMBER, fontFamily: 'var(--font-mono)' }}>{w}</span>
-                      ))}
-                      {weak.length > 3 && <span style={{ fontSize: 9, color: '#555' }}>+{weak.length - 3}</span>}
+                    <div style={{ display: 'flex', gap: 5, flexWrap: 'wrap', alignItems: 'center' }}>
+                      <span style={{ fontSize: 12, color: TEXT_SUBTLE }}>Weak:</span>
+                      {weak.slice(0, 3).map(w => <Badge key={w} tone="warning">{w}</Badge>)}
+                      {weak.length > 3 && <span style={{ fontSize: 12, color: TEXT_SUBTLE }}>+{weak.length - 3}</span>}
                     </div>
                   )}
                 </div>
-              </div>
+              </Card>
             );
           })()}
 
           {/* Card 1: Daily Objectives */}
-          <div style={cardBase}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-mono)', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}><Target size={11} strokeWidth={2} /> DAILY OBJECTIVES</div>
+          <Card padded>
+            <SectionLabel icon={Target} style={{ marginBottom: 12 }}>Daily Objectives</SectionLabel>
             {objectives.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
                 {objectives.slice(0, 3).map((obj, i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                    <div style={{ width: 16, height: 16, borderRadius: 3, border: `1px solid ${G20}`, flexShrink: 0, marginTop: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: G }}>
-                      {allDone ? '✓' : ''}
-                    </div>
-                    <span style={{ fontSize: 12, color: '#9ba8b5', lineHeight: 1.5, fontFamily: 'var(--font-body)' }}>{obj}</span>
+                    <span style={{
+                      width: 16, height: 16, borderRadius: 'var(--gx-radius-sm)', flexShrink: 0, marginTop: 1,
+                      border: `1px solid ${allDone ? 'var(--gx-accent)' : 'var(--gx-border-strong)'}`,
+                      background: allDone ? 'var(--gx-accent)' : 'transparent',
+                      color: 'var(--gx-text-inverse)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      {allDone && <Check size={11} strokeWidth={3} />}
+                    </span>
+                    <span style={{ fontSize: 13, color: TEXT_MUTED, lineHeight: 1.5 }}>{obj}</span>
                   </div>
                 ))}
               </div>
@@ -975,38 +981,32 @@ export default function DashboardPage() {
                 {[1,2,3].map(i => <Skel key={i} h={16} />)}
               </div>
             )}
-          </div>
+          </Card>
 
           {/* Card 2: Key Concepts */}
-          <div style={cardBase}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-mono)', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}><Lightbulb size={11} strokeWidth={2} /> KEY CONCEPTS</div>
+          <Card padded>
+            <SectionLabel icon={Lightbulb} style={{ marginBottom: 12 }}>Key Concepts</SectionLabel>
             {concepts.length > 0 ? (
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                {concepts.map((c, i) => (
-                  <span key={i} style={{ padding: '4px 10px', borderRadius: 20, border: `1px solid ${G20}`, fontSize: 11, color: G, background: G10, fontFamily: 'var(--font-body)' }}>{c}</span>
-                ))}
+                {concepts.map((c, i) => <Badge key={i} tone="neutral">{c}</Badge>)}
               </div>
             ) : (
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                {[80, 100, 70, 90].map(w => <Skel key={w} h={24} w={w} />)}
+                {[80, 100, 70, 90].map(w => <Skel key={w} h={22} w={w} />)}
               </div>
             )}
-          </div>
+          </Card>
 
           {/* Card 3: Coding Problem */}
-          <div style={cardBase}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-mono)', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}><Rocket size={11} strokeWidth={2} /> CODING PROBLEM</div>
+          <Card padded>
+            <SectionLabel icon={Rocket} style={{ marginBottom: 12 }}>Coding Problem</SectionLabel>
             {coding?.title ? (
               <>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: G, marginBottom: 6 }}>{coding.title}</div>
-                {coding.difficulty && (
-                  <span style={{ padding: '2px 8px', borderRadius: 20, fontSize: 10, fontWeight: 700, background: `${DIFF_COLORS[coding.difficulty] || AMBER}18`, color: DIFF_COLORS[coding.difficulty] || AMBER, fontFamily: 'var(--font-mono)', marginBottom: 10, display: 'inline-block' }}>
-                    {coding.difficulty}
-                  </span>
-                )}
+                <div style={{ fontSize: 14, fontWeight: 600, color: TEXT, marginBottom: 8 }}>{coding.title}</div>
+                {coding.difficulty && <DifficultyBadge level={coding.difficulty} />}
                 {coding?.url && (
-                  <div style={{ marginTop: 8 }}>
-                    <a href={coding.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: G, fontFamily: 'var(--font-heading)', fontWeight: 600, textDecoration: 'none' }}>→ Open Problem</a>
+                  <div style={{ marginTop: 12 }}>
+                    <a href={coding.url} target="_blank" rel="noopener noreferrer" className="gx-link" style={{ fontSize: 13 }}>Open Problem →</a>
                   </div>
                 )}
               </>
@@ -1016,45 +1016,54 @@ export default function DashboardPage() {
                 <Skel h={14} w="40%" />
               </div>
             )}
-          </div>
+          </Card>
 
           {/* Card 4: Your Rank */}
-          <div style={cardBase}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-mono)', fontSize: 9, color: G, letterSpacing: 2, marginBottom: 12 }}><Trophy size={11} strokeWidth={2} /> YOUR RANK</div>
+          <Card padded>
+            <SectionLabel icon={Trophy} style={{ marginBottom: 12 }}>Your Rank</SectionLabel>
             {lbSlice.length > 0 ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 {lbSlice.map((entry, i) => {
                   const isMe = entry.rank === myRank || entry.isMe
                   return (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 10px', borderRadius: 8, background: isMe ? G10 : 'transparent', border: isMe ? `1px solid ${G20}` : '1px solid transparent', transition: 'all 0.15s' }}>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: isMe ? G : '#555', width: 24, textAlign: 'right', flexShrink: 0 }}>#{entry.rank}</span>
-                      <span style={{ flex: 1, fontFamily: 'var(--font-body)', fontSize: 12, color: isMe ? G : '#9ba8b5', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {(entry.name || 'Anonymous').slice(0, 12)}
+                    <div key={i} style={{
+                      display: 'flex', alignItems: 'center', gap: 10, padding: '7px 10px',
+                      borderRadius: 'var(--gx-radius-sm)',
+                      background: isMe ? 'var(--gx-accent-soft)' : 'transparent',
+                      border: `1px solid ${isMe ? 'var(--gx-accent-border)' : 'transparent'}`,
+                    }}>
+                      <span className="gx-num" style={{ fontSize: 12, fontWeight: 600, color: isMe ? ACCENT : TEXT_SUBTLE, width: 26, textAlign: 'right', flexShrink: 0 }}>#{entry.rank}</span>
+                      <span style={{ flex: 1, fontSize: 13, fontWeight: isMe ? 600 : 400, color: isMe ? ACCENT : TEXT, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {(entry.name || 'Anonymous').slice(0, 14)}
                       </span>
-                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: isMe ? G : '#6b7a8d', flexShrink: 0 }}>{entry.score?.toLocaleString()}</span>
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2, fontFamily: 'var(--font-mono)', fontSize: 10, color: AMBER, flexShrink: 0 }}><Flame size={11} strokeWidth={2} color={AMBER} />{entry.streak}</span>
+                      <span className="gx-num" style={{ fontSize: 12, color: isMe ? ACCENT : TEXT_MUTED, flexShrink: 0 }}>{entry.score?.toLocaleString()}</span>
+                      <span className="gx-num" style={{ display: 'inline-flex', alignItems: 'center', gap: 2, fontSize: 12, color: WARNING, flexShrink: 0 }}>
+                        <Flame size={11} strokeWidth={2} />{entry.streak}
+                      </span>
                     </div>
                   )
                 })}
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                {[1,2,3].map(i => <Skel key={i} h={32} />)}
+                {[1,2,3].map(i => <Skel key={i} h={30} />)}
               </div>
             )}
-            <Link href="/leaderboard" style={{ display: 'block', marginTop: 10, fontFamily: 'var(--font-mono)', fontSize: 10, color: G, textDecoration: 'none', textAlign: 'center' }}>
-              View Full Leaderboard →
-            </Link>
-          </div>
+            <div style={{ marginTop: 12, textAlign: 'center' }}>
+              <Link href="/leaderboard" className="gx-link" style={{ fontSize: 13 }}>View Full Leaderboard →</Link>
+            </div>
+          </Card>
         </div>
       </div>
 
       {/* ── MOTIVATION BAR ── */}
-      <div style={{ background: BG2, border: `1px solid rgba(0,217,163,0.1)`, borderLeft: `3px solid ${G}`, borderRadius: 10, padding: '14px 20px', overflow: 'hidden' }}>
-        <div key={motiveIdx} style={{ fontFamily: 'var(--font-body)', fontSize: 13, color: '#9ba8b5', animation: 'motive-fade 5s ease-out forwards' }}>
-          {currentMotive}
+      <Card muted flat style={{ borderLeft: '3px solid var(--gx-accent)', overflow: 'hidden' }}>
+        <div style={{ padding: '14px 20px' }}>
+          <div key={motiveIdx} style={{ fontSize: 14, color: TEXT_MUTED, animation: 'motive-fade 5s ease-out forwards' }}>
+            {currentMotive}
+          </div>
         </div>
-      </div>
+      </Card>
 
       <OnboardingTour />
     </div>

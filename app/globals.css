@@ -1,4 +1,8 @@
 @import "tailwindcss";
+/* Light design system. Tokens are inert custom properties and the `.gx-*`
+   component classes carry their own colours, so loading this globally does
+   not change any page that has not opted in via `.gx-app`. */
+@import "./design-tokens.css";
 
 /* ─── Theme tokens (Tailwind v4 CSS-first config) ─── */
 @theme {
