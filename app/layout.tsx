@@ -11,8 +11,10 @@ const instrumentSans = Instrument_Sans({ subsets: ['latin'], variable: '--font-b
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' });
 
 export const metadata = {
-  title: 'GENOIS — Career OS for Engineering Students',
-  description: 'Skill-first career platform for Indian engineering students',
+  // Matches the landing page's positioning. Every claim here maps to a live
+  // feature — see the NAV_ITEMS list in components/layout/AppLayout.jsx.
+  title: 'GENOIS — Placement prep that tells you what to do today',
+  description: 'Placement prep for engineering students — a diagnostic, a day-by-day roadmap, one task each morning, plus ATS resume analysis and voice mock interviews.',
   manifest: '/manifest.json',
   icons: {
     icon: '/icon-192.svg',
@@ -23,7 +25,10 @@ export const metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#00d9a3',
+  // Deep-green accent from the light design system (--gx-accent). The old
+  // #00d9a3 is the bright brand green, which design-tokens.css restricts to
+  // decorative fills. Keep in sync with theme_color in public/manifest.json.
+  themeColor: '#00805e',
   viewportFit: 'cover', // required so env(safe-area-inset-*) resolves on notched phones
 };
 
