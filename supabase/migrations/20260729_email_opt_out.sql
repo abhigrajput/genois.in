@@ -1,10 +1,41 @@
 -- ┌──────────────────────────────────────────────────────────────────────────┐
--- │ STATUS: NOT APPLIED — written 2026-07-29, never run. Do not assume it     │
--- │ ran. There is no DATABASE_URL, POSTGRES_URL or Supabase PAT available     │
--- │ locally, and /api/admin/migrate only executes its own hardcoded           │
--- │ MIGRATIONS array — it does not accept arbitrary SQL. Applying this needs  │
--- │ the Supabase SQL editor or a direct psql connection.                      │
+-- │ STATUS: DEFERRED — NOT APPLIED. Do not assume this ran.                   │
 -- └──────────────────────────────────────────────────────────────────────────┘
+--
+-- As of 2026-07-31 public.users.email_opted_out is STILL ABSENT in production
+-- (project fqfgacmnqppifpzncrip). Confirmed, not assumed: a service-role read
+-- of ?select=email_opted_out returned 400 / 42703, "column
+-- users.email_opted_out does not exist".
+--
+-- DEFERRED BY DECISION — not blocked by the schema. Email is currently inert:
+-- the Resend key is revoked and nothing actually sends, so this flag has no
+-- observable effect either way. It is to be applied by hand in the Supabase
+-- SQL editor if and when email is re-enabled. There is nothing to gain by
+-- applying it sooner — the fail-open path described below already matches
+-- current behaviour exactly.
+--
+-- Every programmatic route was re-checked on 2026-07-31 and all are dead. Do
+-- not spend time re-deriving this:
+--   * No DATABASE_URL, POSTGRES_URL, SUPABASE_ACCESS_TOKEN or SUPABASE_PAT in
+--     .env.local; no psql binary and no supabase CLI on the dev machine.
+--   * SUPABASE_SERVICE_ROLE_KEY does authenticate (200 over PostgREST), but it
+--     grants data-plane access only. PostgREST cannot execute DDL at all, so
+--     it can never run the ALTER below regardless of role or privilege.
+--   * rpc/exec_sql does NOT exist — 404 PGRST202. Neither do exec,
+--     execute_sql, run_sql or sql. Both paths in scripts/run-v3-migration.js
+--     and /api/v3-migrate therefore dead-end: the management-api path needs
+--     the absent PAT, and the exec_sql fallback 404s.
+--   * /api/admin/migrate only executes its own hardcoded MIGRATIONS array — it
+--     does not accept arbitrary SQL.
+--   * GOTCHA: SUPABASE_SERVICE_ROLE_KEY in .env.local carries a trailing
+--     literal \r\n inside its quotes. Strip it before use or the key reads as
+--     a malformed JWT and every request 401s.
+--
+-- Applying this needs the Supabase SQL editor or a direct psql connection.
+-- When it is run, do not skip section 3 — see the note there; without the
+-- NOTIFY the ALTER succeeds but the app stays in its degraded fail-open mode.
+--
+-- ───────────────────────────────────────────────────────────────────────────
 --
 -- Add the email opt-out flag that backs /api/email/unsubscribe.
 --
