@@ -93,6 +93,84 @@ function DayMetaStrip({ meta }) {
   );
 }
 
+/**
+ * Why today's day looks the way it does (Phase 3).
+ *
+ * Renders ONLY what the evidence supports. No evidence → this component
+ * returns null and the roadmap reads exactly as it did before, with no
+ * "personalized for you" claim standing in for a real one.
+ *
+ * `focus` is the gap the day was actually generated against (read from the
+ * stored row), not a freshly recomputed guess — so a day always explains
+ * itself truthfully even after the gap set moves on.
+ */
+function WhyThisDay({ focus, targeting }) {
+  const elsewhere = targeting?.elsewhere || [];
+  if (!focus && elsewhere.length === 0) return null;
+
+  const proven = focus?.kind === 'remediate';
+
+  return (
+    <div className="mt-4 space-y-2.5">
+      {focus && (
+        <div className="rounded-xl border border-[var(--gx-accent-border)] bg-[var(--gx-accent-soft)] p-3.5">
+          <div className="font-mono text-[10px] font-extrabold uppercase tracking-[1px] text-[var(--gx-accent)]">
+            {proven ? 'Targeting a measured gap' : 'Calibrating an unmeasured area'}
+          </div>
+          <div className="mt-1 text-[13px] font-semibold text-dark">{focus.label}</div>
+          <div className="mt-0.5 text-[12px] leading-relaxed text-muted">
+            {proven ? (
+              <>
+                You&apos;ve answered {focus.correct}/{focus.total} correctly here ({focus.accuracy}%)
+                {focus.companies?.length > 0 && <> — it&apos;s holding back {focus.companies.join(' and ')}</>}.
+                Today rebuilds it.
+              </>
+            ) : (
+              <>
+                No assessment evidence here yet, so this isn&apos;t a weakness — it&apos;s an unknown
+                {focus.companies?.length > 0 && <> that {focus.companies.join(' and ')} depend on</>}.
+                Today is built to measure it.
+              </>
+            )}
+          </div>
+          <a
+            href="/readiness"
+            className="mt-2 inline-block font-mono text-[11px] font-bold text-[var(--gx-accent)] no-underline hover:underline"
+          >
+            See the full breakdown →
+          </a>
+        </div>
+      )}
+
+      {elsewhere.length > 0 && (
+        <div className="rounded-xl border border-[var(--gx-border)] bg-[var(--gx-surface)] p-3.5">
+          <div className="font-mono text-[10px] font-extrabold uppercase tracking-[1px] text-muted">
+            Also blocking you — not fixable here
+          </div>
+          <div className="mt-1.5 flex flex-col gap-1.5">
+            {elsewhere.slice(0, 3).map((g) => (
+              <div key={`${g.kind}:${g.key}`} className="flex items-center justify-between gap-3">
+                <span className="text-[12px] text-dark">
+                  {g.label}{' '}
+                  <span className="font-mono text-[11px] text-muted">
+                    {g.kind === 'remediate' ? `${g.accuracy}% (${g.correct}/${g.total})` : 'unmeasured'}
+                  </span>
+                </span>
+                <a
+                  href={g.action?.href || '/readiness'}
+                  className="whitespace-nowrap font-mono text-[11px] font-bold text-[var(--gx-accent)] no-underline hover:underline"
+                >
+                  {g.action?.label || 'Open'} →
+                </a>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function DailyRoadmapPage() {
   const { updateProgress } = useAuthStore();
   const [daily, setDaily] = useState(null);
@@ -373,6 +451,8 @@ export default function DailyRoadmapPage() {
     isProjectDay,
     project,
     dayMeta,
+    targeting,
+    dayFocus,
   } = daily;
   const completedCount = tasks.filter((t) => t.status === 'completed').length;
 
@@ -414,6 +494,7 @@ export default function DailyRoadmapPage() {
             )}
           </p>
           <DayMetaStrip meta={dayMeta} />
+          <WhyThisDay focus={dayFocus || dayMeta?.focus} targeting={targeting} />
         </div>
         <div className="flex flex-wrap items-center gap-2.5">
           <button

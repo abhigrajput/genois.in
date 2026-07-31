@@ -5,6 +5,7 @@ import { successResponse, errorResponse } from '@/lib/response';
 import { generateDayContent, buildDayMeta } from '@/lib/curriculumGenerator';
 import { roadmapTotalDays } from '@/lib/roadmapCache';
 import { youtubeSearchUrl } from '@/lib/youtubeEmbed';
+import { getRoadmapTargeting, isFocusStale, targetingForClient } from '@/lib/roadmapTargeting';
 
 const TASK_TYPES = ['video', 'resource', 'coding', 'test', 'notes'];
 const TOTAL_TASKS = 5;
@@ -124,10 +125,29 @@ export async function GET(request) {
     // looks complete — regenerate rather than serve the wrong track.
     const domainMatches = !roadmapItem || roadmapItem.domain_slug === user.domain_slug;
 
+    // ── Evidence-driven targeting (Phase 3) ────────────────────────────────
+    // Which readiness gap today should work on. Computed once here and handed
+    // to the generator, so a cache-miss day doesn't pay for the readiness read
+    // a second time. Never throws — no evidence just means targeted: false and
+    // the day generates exactly as it did before.
+    let targeting;
+    try {
+      targeting = await getRoadmapTargeting(payload.userId, { dayNumber: displayDay });
+    } catch (e) {
+      console.warn('[roadmap/daily] targeting unavailable:', e.message);
+      targeting = null;
+    }
+
+    // A cached day planned against a gap set that has since changed is stale:
+    // the student may have closed the very gap it was built to fix. Keyed on
+    // the gap SET, not on scores, so ordinary practice doesn't churn the cache.
+    const cachedFocus = roadmapItem?.meta?.focus || null;
+    const focusStale = isFocusStale(cachedFocus, targeting);
+
     let dayContent;
     let cacheHit = false;
 
-    if (domainMatches && isComplete(roadmapItem)) {
+    if (domainMatches && !focusStale && isComplete(roadmapItem)) {
       // Hydrate dayContent shape from the cached row — no AI call.
       cacheHit = true;
       dayContent = {
@@ -149,7 +169,7 @@ export async function GET(request) {
       };
     } else {
       // ── 2. Cache miss — call AI then persist for next time ──────────────
-      dayContent = await generateDayContent(user.domain_slug, displayDay, level, user);
+      dayContent = await generateDayContent(user.domain_slug, displayDay, level, user, { targeting });
       dayContent.meta = buildDayMeta(dayContent);
 
       // The model is asked for a "best YouTube URL" but hallucinates video ids
@@ -316,6 +336,12 @@ export async function GET(request) {
       projectProgress,
       generatedBy: dayContent.generated_by,
       cacheHit,
+      // Why today looks like this. `targeted: false` (fresh account, no target
+      // company, or nothing left to close) means the UI shows no claims at all.
+      targeting: targetingForClient(targeting),
+      // The gap THIS day was actually generated against, which on a cache hit
+      // is the one stored at generation time — not today's recomputed pick.
+      dayFocus: (cacheHit ? roadmapItem?.meta?.focus : dayContent?.focus) || null,
       // Roadmap depth metadata. Old cached rows fall back to their stored
       // estimated_min (real, previously generated) — never invented fields.
       dayMeta: buildDayMeta(dayContent.meta) || buildDayMeta({ estimated_time: roadmapItem?.estimated_min }),

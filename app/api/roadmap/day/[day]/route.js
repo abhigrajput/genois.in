@@ -3,6 +3,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { successResponse, errorResponse } from '@/lib/response';
 import { generateDayContent, buildDayMeta } from '@/lib/curriculumGenerator';
+import { getRoadmapTargeting } from '@/lib/roadmapTargeting';
 import { youtubeSearchUrl } from '@/lib/youtubeEmbed';
 
 const TASK_TYPES = ['video', 'resource', 'coding', 'test', 'notes'];
@@ -113,7 +114,18 @@ export async function GET(request, { params }) {
         meta: roadmapItem.meta || null,
       };
     } else {
-      dayContent = await generateDayContent(user.domain_slug, dayNumber, level, user);
+      // Evidence-driven targeting on a miss, same as the daily route. What this
+      // route deliberately does NOT do is the gap-staleness invalidation: this
+      // endpoint serves arbitrary past and preview days, and rewriting a day the
+      // student already worked through would rewrite their history.
+      let targeting = null;
+      try {
+        targeting = await getRoadmapTargeting(payload.userId, { dayNumber });
+      } catch (e) {
+        console.warn('[roadmap/day] targeting unavailable:', e.message);
+      }
+
+      dayContent = await generateDayContent(user.domain_slug, dayNumber, level, user, { targeting });
       dayContent.meta = buildDayMeta(dayContent);
 
       const cachePayload = {
@@ -270,6 +282,9 @@ export async function GET(request, { params }) {
       // Roadmap depth metadata. Old cached rows fall back to their stored
       // estimated_min (real, previously generated) — never invented fields.
       dayMeta: buildDayMeta(dayContent.meta) || buildDayMeta({ estimated_time: roadmapItem?.estimated_min }),
+      // The gap this specific day was generated against, if any. Read from the
+      // stored row so a past day reports what it was actually built for.
+      dayFocus: (dayContent.meta?.focus || dayContent.focus) || null,
     });
   } catch (error) {
     console.error('Roadmap day view error:', error);
