@@ -10,7 +10,7 @@ import { Progress } from '@/components/ui';
 import {
   Home, Calendar, FileText, Map, Code2, Play, Bot, Mic, Zap, User, Rocket,
   Flame, LogOut, Menu, X, PanelLeftClose, PanelLeftOpen, FolderGit2, Brain,
-  ClipboardList, BarChart3, FileSearch,
+  ClipboardList, BarChart3, FileSearch, Target,
 } from 'lucide-react';
 
 // Nav items — grouped visually in the sidebar (MAIN / LEARN / PRACTICE / INSIGHTS / ACCOUNT).
@@ -28,6 +28,7 @@ const NAV_ITEMS = [
   { group: 'PRACTICE', href:'/voice-interview', label:'Voice Interview', icon:Mic },
   { group: 'PRACTICE', href:'/ai-vs-human',     label:'AI vs Human',     icon:Zap },
   { group: 'PRACTICE', href:'/review',          label:'Answer Review',   icon:ClipboardList },
+  { group: 'INSIGHTS', href:'/readiness',       label:'Readiness',       icon:Target },
   { group: 'INSIGHTS', href:'/analytics',       label:'Analytics',       icon:BarChart3 },
   { group: 'ACCOUNT',  href:'/profile',         label:'Profile',         icon:User },
   { group: 'ACCOUNT',  href:'/subscription',    label:'Beta Access',     icon:Rocket },
