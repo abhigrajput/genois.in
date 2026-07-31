@@ -3,6 +3,7 @@ import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { reviewCode } from '@/lib/claudeHelpers';
 import { parseKbOaId, kbContentHash, titleFromContent } from '@/lib/companyPractice';
+import { saveAttemptReview } from '@/lib/attemptReview';
 
 // Resolve an ephemeral company-practice id (kb-oa:<company>:<hash>) back to
 // the knowledge_base row it was minted from. The hash is re-derived from DB
@@ -92,7 +93,36 @@ export async function POST(request) {
     });
     logWriteError('coding/submit', 'score_events.insert', eventErr);
 
-    return successResponse({ submission, review, points, status });
+    // Evidence bus: a coding submission is one piece of evidence about one
+    // skill. `coding_submissions` kept the code and an AI score but no topic
+    // link, so a solved graph problem never counted as graph evidence.
+    // The skill resolves from the coding_tests topic, falling back to the
+    // problem title ("Detect Cycle in a Linked List" → dsa.cycle-detection).
+    // Company-practice topics are prefixed ("Company OA (Real): X") — the
+    // resolver's phrase search sees through that.
+    const attemptId = await saveAttemptReview({
+      userId: payload.userId,
+      attemptType: 'coding',
+      sourceId: codingTest.id,
+      topic: codingTest.topic || codingTest.title,
+      score: review.score,
+      skillDomains: ['dsa'],
+      questions: [{
+        question: codingTest.title || 'Coding problem',
+        // Trimmed: the full submission already lives in coding_submissions —
+        // this copy exists so /review can show what was written.
+        code: String(code).slice(0, 4000),
+        correct_answer: '',
+        user_answer: String(code).slice(0, 4000),
+        // Same threshold the points award uses above, so "correct" here means
+        // the same thing it means to the student on the results screen.
+        is_correct: review.score >= 70,
+        explanation: [review.correctnessNote, review.feedback].filter(Boolean).join(' — ').slice(0, 2000),
+        topic: codingTest.topic || codingTest.title || null,
+      }],
+    });
+
+    return successResponse({ submission, review, points, status, attemptId });
   } catch (error) {
     console.error('Submit coding error:', error);
     return errorResponse('Internal server error', 500);

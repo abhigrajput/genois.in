@@ -2,6 +2,20 @@ import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
+import { saveAttemptReview } from '@/lib/attemptReview';
+import { resolveSkill } from '@/lib/skillTaxonomy';
+
+// A mock-interview question carries a `type` (conceptual | technical |
+// problem solving | behavioral | situational). Behavioural answers are evidence
+// about communication; technical ones are evidence about what they know. The
+// hint steers the resolver toward the right vocabulary.
+const DOMAINS_BY_QUESTION_TYPE = {
+  behavioral: ['comm'],
+  situational: ['comm'],
+  technical: ['cs', 'dsa', 'comm'],
+  conceptual: ['cs', 'dsa', 'comm'],
+  'problem solving': ['dsa', 'cs'],
+};
 
 async function callClaude(prompt) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -133,6 +147,7 @@ Evaluate this answer. Return ONLY valid JSON with no markdown:
 
       const isLast = questionIndex >= interview.questions.length - 1;
       let updateData = { answers: newAnswers, evaluations: newEvals };
+      let attemptId = null;
 
       if (isLast) {
         const avgScore = Math.round(newEvals.reduce((a, e) => a + (e.score || 0), 0) / newEvals.length);
@@ -153,6 +168,42 @@ Return plain text only.`;
           feedback,
           completed_at: new Date().toISOString(),
         };
+
+        // Evidence bus: emit the whole interview at completion. `mock_interviews`
+        // already held the Q&A and per-answer evaluations, but nothing joined it
+        // to a skill, so ten answered questions produced zero evidence.
+        // Each question is tagged by its own `type` — a behavioural answer is
+        // evidence about communication, a technical one about the concept asked.
+        const evalByIndex = new Map(newEvals.map(e => [e.questionIndex, e]));
+        attemptId = await saveAttemptReview({
+          userId: payload.userId,
+          attemptType: 'mock_interview',
+          sourceId: interview.id,
+          topic: interview.domain_slug ? `${interview.domain_slug} mock interview` : 'Mock interview',
+          // Evaluations are 0-10; test_questions.score is 0-100.
+          score: avgScore * 10,
+          questions: interview.questions.map((q, i) => {
+            const ev = evalByIndex.get(i) || {};
+            const ans = newAnswers.find(a => a.questionIndex === i);
+            const type = String(q.type || 'technical').toLowerCase();
+            return {
+              question: q.question,
+              correct_answer: ev.better_answer || q.hint || '',
+              user_answer: ans?.answer || null,
+              // 6/10 is the "Good" band in the rubric above — below that the
+              // answer had real gaps, so it is not evidence of knowing this.
+              is_correct: Number(ev.score) >= 6,
+              explanation: [ev.what_was_good, ev.what_was_missing, ev.tip].filter(Boolean).join(' — '),
+              topic: q.type || null,
+              skill: resolveSkill(`${q.question} ${q.hint || ''}`, {
+                domains: DOMAINS_BY_QUESTION_TYPE[type] || ['cs', 'dsa', 'comm'],
+                fallback: null,
+              }) || (DOMAINS_BY_QUESTION_TYPE[type]?.[0] === 'comm'
+                ? 'comm.star-method'
+                : 'comm.technical-explanation'),
+            };
+          }),
+        });
       }
 
       await supabase.from('mock_interviews').update(updateData).eq('id', interviewId);
@@ -164,6 +215,7 @@ Return plain text only.`;
         nextQuestion,
         questionIndex,
         isLast,
+        attemptId,
         totalQuestions: interview.questions.length,
       });
     }

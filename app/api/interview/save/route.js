@@ -2,6 +2,28 @@ import { getAdminClient, logWriteError } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { saveAttemptReview } from '@/lib/attemptReview';
+import { resolveSkill } from '@/lib/skillTaxonomy';
+
+// Voice-interview turns carry a `type`, not a topic. Behavioural/HR turns are
+// evidence about communication; technical turns are evidence about whatever the
+// question was actually about, so those resolve from the question text first
+// and only fall back to a delivery skill.
+const TURN_DOMAINS = {
+  behavioral: ['comm'],
+  hr: ['comm'],
+  technical: ['cs', 'dsa', 'comm'],
+  mixed: ['cs', 'dsa', 'comm'],
+};
+
+function skillForTurn(turn) {
+  const type = String(turn?.type || 'technical').toLowerCase();
+  const fromQuestion = resolveSkill(turn?.question, {
+    domains: TURN_DOMAINS[type] || ['cs', 'dsa', 'comm'],
+    fallback: null,
+  });
+  if (fromQuestion) return fromQuestion;
+  return type === 'behavioral' || type === 'hr' ? 'comm.star-method' : 'comm.technical-explanation';
+}
 
 export const dynamic = 'force-dynamic';
 
@@ -53,6 +75,7 @@ export async function POST(request) {
           explanation: [t.evaluation?.verdict, ...(t.evaluation?.improvements || [])]
             .filter(Boolean).join(' — '),
           topic: t.type || 'technical',
+          skill: skillForTurn(t),
         })),
       });
     }

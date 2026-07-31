@@ -57,6 +57,9 @@ export async function POST(request) {
       sourceId: test.id,
       topic: test.topic,
       score,
+      // No domain hint: daily/weekly tests span DSA, CS fundamentals and web,
+      // so the resolver searches the whole vocabulary.
+      skillDomains: null,
       questions: (test.questions || []).map((q, i) => ({
         question: q.question,
         code: q.code || null,

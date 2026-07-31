@@ -181,6 +181,8 @@ export async function POST(request) {
       sourceId: session.id,
       topic: session.topic,
       score: percentage,
+      // Session topics are aptitudeConfig slugs, which the taxonomy mirrors 1:1.
+      skillDomains: ['apt'],
       questions: questions.map((q, i) => ({
         question: q.question,
         options: q.options ?? null,

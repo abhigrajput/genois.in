@@ -2,6 +2,7 @@ import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
+import { saveAttemptReview } from '@/lib/attemptReview';
 
 async function callClaude(prompt) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -244,6 +245,27 @@ export async function POST(request) {
     else if (percentage >= 40) skillLevel = 'beginner';
     else skillLevel = 'novice';
 
+    // Evidence bus: this route used to store only `answers` + a skill_level on
+    // diagnostic_tests, so which of the 15 questions were wrong was lost. Emit
+    // the normalized per-question rows. Fire-and-forget — a missing
+    // test_questions table never breaks the results screen.
+    const attemptId = await saveAttemptReview({
+      userId: payload.userId,
+      attemptType: 'diagnostic',
+      sourceId: diagnostic.id,
+      topic: diagnostic.domain_slug || 'Diagnostic',
+      score: percentage,
+      questions: questions.map((q, i) => ({
+        question: q.question,
+        options: q.options ?? null,
+        correct_answer: q.correct,
+        user_answer: answers[i],
+        is_correct: answers[i] === q.correct,
+        explanation: q.explanation || '',
+        topic: q.topic || null,
+      })),
+    });
+
     await supabase.from('diagnostic_tests').update({
       answers,
       score: percentage,
@@ -260,6 +282,7 @@ export async function POST(request) {
     return successResponse({
       score: percentage,
       skillLevel,
+      attemptId,
       totalQuestions: questions.length,
       correctAnswers: questions.filter((q, i) => answers[i] === q.correct).length,
       breakdown: {

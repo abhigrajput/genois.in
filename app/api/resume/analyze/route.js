@@ -3,8 +3,72 @@ import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { askClaudeJSON } from '@/lib/claude';
+import { saveAttemptReview } from '@/lib/attemptReview';
 
 export const dynamic = 'force-dynamic';
+
+// ── Evidence bus ────────────────────────────────────────────────────────────
+// A resume analysis has no questions, so it can't be normalized the way an MCQ
+// attempt is. What it does have is a fixed set of audits, each of which either
+// passed or didn't — that maps cleanly onto the same {correct, total} shape.
+//
+// Exactly ONE row per check, always five, pass or fail. The tempting
+// alternative — a row per weak bullet — would mean a bad resume contributes 8
+// failures while a good one contributes 1 success, which would drag the
+// communication domain average down for reasons that have nothing to do with
+// the student's actual level. A stable denominator keeps the aggregate honest.
+const ATS_PASS_THRESHOLD = 70;
+
+function buildResumeEvidence(analysis) {
+  const list = (arr) => (Array.isArray(arr) ? arr : []);
+  const missingKeywords = list(analysis.missing_keywords);
+  const weakBullets = list(analysis.weak_bullets);
+  const missingImpact = list(analysis.missing_impact);
+  const formattingFlags = list(analysis.formatting_flags);
+
+  return [
+    {
+      skill: 'comm.resume-ats',
+      question: 'Does the resume survive ATS parsing and a 30-second recruiter scan?',
+      is_correct: analysis.ats_score >= ATS_PASS_THRESHOLD,
+      user_answer: `ATS score: ${analysis.ats_score}/100`,
+      correct_answer: `${ATS_PASS_THRESHOLD}+ / 100`,
+      explanation: analysis.score_explanation || '',
+    },
+    {
+      skill: 'comm.resume-keywords',
+      question: 'Does the resume carry the keywords this role is filtered on?',
+      is_correct: missingKeywords.length === 0,
+      user_answer: missingKeywords.length ? `${missingKeywords.length} expected keywords absent` : 'All expected keywords present',
+      correct_answer: missingKeywords.join(', ').slice(0, 500),
+      explanation: missingKeywords.length ? `Missing: ${missingKeywords.join(', ')}` : '',
+    },
+    {
+      skill: 'comm.resume-action-verbs',
+      question: 'Are the bullets written as achievements rather than duties?',
+      is_correct: weakBullets.length === 0,
+      user_answer: weakBullets.length ? `${weakBullets.length} weak bullet(s)` : 'No weak bullets found',
+      correct_answer: weakBullets[0]?.rewritten || '',
+      explanation: weakBullets.map(b => `"${b.original}" → ${b.why}`).join(' | ').slice(0, 2000),
+    },
+    {
+      skill: 'comm.resume-impact',
+      question: 'Is the work quantified with measurable outcomes?',
+      is_correct: missingImpact.length === 0,
+      user_answer: missingImpact.length ? `${missingImpact.length} bullet(s) with no metric` : 'Impact is quantified',
+      correct_answer: missingImpact[0]?.suggestion || '',
+      explanation: missingImpact.map(m => m.suggestion).join(' | ').slice(0, 2000),
+    },
+    {
+      skill: 'comm.resume-formatting',
+      question: 'Is the formatting clean enough for an automated parser?',
+      is_correct: formattingFlags.length === 0,
+      user_answer: formattingFlags.length ? `${formattingFlags.length} formatting issue(s)` : 'No formatting issues detected',
+      correct_answer: formattingFlags.map(f => f.fix).join(' | ').slice(0, 500),
+      explanation: formattingFlags.map(f => `${f.issue} → ${f.fix}`).join(' | ').slice(0, 2000),
+    },
+  ].map(e => ({ ...e, topic: 'Resume', options: null, code: null }));
+}
 
 // Pasted resumes: below this it's a fragment, above it it's likely a JD dump
 // or multiple documents — both produce garbage analysis, so reject early.
@@ -169,7 +233,18 @@ export async function POST(request) {
     });
     if (saveError) console.warn('[resume/analyze] history save skipped:', saveError.message);
 
-    return successResponse({ analysis, saved: !saveError });
+    // Evidence bus — the resume audit as five pass/fail communication checks.
+    // Also fire-and-forget: never blocks the analysis the user is waiting for.
+    const attemptId = await saveAttemptReview({
+      userId: payload.userId,
+      attemptType: 'resume',
+      topic: targetRole ? `Resume — ${targetRole}` : 'Resume',
+      score: analysis.ats_score,
+      skillDomains: ['comm'],
+      questions: buildResumeEvidence(analysis),
+    });
+
+    return successResponse({ analysis, saved: !saveError, attemptId });
   } catch (error) {
     console.error('[resume/analyze] Error:', error);
     return errorResponse('Could not analyze the resume. Try again.', 500);

@@ -157,6 +157,7 @@ export async function POST(request) {
         attemptType: 'dsa_diagnostic',
         topic: 'DSA Diagnostic',
         score: result.score,
+        skillDomains: ['dsa'],
         questions: questions.slice(0, 25).map(q => {
           const a = answerById.get(q.id);
           const selected = a?.selected || null;

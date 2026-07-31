@@ -4,6 +4,22 @@ import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { COMPANY_TYPES, ROUND_CONFIG } from '@/lib/interviewConfig';
 import { getCached, setCached, buildCacheKey } from '@/lib/aiCache';
+import { saveAttemptReview } from '@/lib/attemptReview';
+
+// Which slice of the taxonomy each simulator round is evidence about. Keys
+// mirror ROUND_CONFIG exactly.
+const DOMAINS_BY_ROUND = {
+  aptitude: ['apt'],
+  coding_basic: ['dsa'],
+  coding_medium: ['dsa'],
+  coding_hard: ['dsa'],
+  technical_basic: ['cs', 'dsa'],
+  technical_practical: ['cs', 'dsa'],
+  technical_deep: ['cs', 'dsa'],
+  system_design: ['cs'],
+  project_deep_dive: ['comm', 'cs'],
+  hr: ['comm'],
+};
 
 async function callClaude(prompt, maxTokens = 3000) {
   const res = await fetch('https://api.anthropic.com/v1/messages', {
@@ -237,6 +253,37 @@ Return ONLY valid JSON:
       evaluation,
     };
 
+    // Evidence bus: write one attempt per completed ROUND, not per session.
+    // A session can be 5 rounds spanning aptitude, DSA, CS fundamentals and HR
+    // — collapsing them into one row would blur four different kinds of
+    // evidence together, and a student who abandons the session after round 3
+    // would leave none at all. `interview_sessions` keeps the session-level
+    // verdict as before; this is additive.
+    const perQ = Array.isArray(evaluation.perQuestionScores) ? evaluation.perQuestionScores : [];
+    const attemptId = await saveAttemptReview({
+      userId: payload.userId,
+      attemptType: 'interview_round',
+      sourceId: session.id,
+      topic: `${session.company_name || 'Interview'} — ${ROUND_CONFIG[currentRound.type].label}`,
+      score: Number(evaluation.roundScore) || 0,
+      skillDomains: DOMAINS_BY_ROUND[currentRound.type] || null,
+      questions: questions.map((q, i) => {
+        // Per-question scores are 0-100 and the evaluator sometimes returns
+        // fewer than it was asked for; fall back to the round score so a
+        // question is never silently counted as wrong.
+        const qScore = Number(perQ[i] != null ? perQ[i] : evaluation.roundScore) || 0;
+        return {
+          question: q.question,
+          code: q.code || null,
+          correct_answer: q.expectedAnswer || q.hint || '',
+          user_answer: answers[i] || null,
+          is_correct: qScore >= 60,
+          explanation: evaluation.detailedFeedback || '',
+          topic: q.topic || currentRound.type,
+        };
+      }),
+    });
+
     const isLastRound = roundIndex === rounds.length - 1;
     let overallScore = 0;
     let overallVerdict = null;
@@ -286,6 +333,7 @@ Return ONLY valid JSON:
       isLastRound,
       overallFeedback: feedback,
       nextRoundIndex: roundIndex + 1,
+      attemptId,
     });
   } catch (error) {
     return errorResponse('Internal server error', 500);
