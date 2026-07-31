@@ -299,13 +299,13 @@ export default function KMPVisualizer() {
       {/* Top stats */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Matches Found', value: current.matchesFound?.length ?? 0, color: '#1d9e75' },
-          { label: 'Current Phase', value: current.phase === 'lps' ? 'LPS Construction' : 'Pattern Search', color: '#00d9a3' },
-          { label: 'Text Length', value: txt.length, color: '#ff6b4a' },
-          { label: 'Pattern Length', value: pat.length, color: '#ef9f27' },
+          { label: 'Matches Found', value: current.matchesFound?.length ?? 0, color: 'var(--gx-success)' },
+          { label: 'Current Phase', value: current.phase === 'lps' ? 'LPS Construction' : 'Pattern Search', color: 'var(--gx-accent)' },
+          { label: 'Text Length', value: txt.length, color: 'var(--gx-warning)' },
+          { label: 'Pattern Length', value: pat.length, color: 'var(--gx-warning)' },
         ].map(s => (
-          <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 110 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+          <div key={s.label} style={{ background: 'var(--gx-surface)', border: `1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius: 8, padding: '8px 16px', minWidth: 110 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)', marginBottom: 2 }}>{s.label}</div>
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
@@ -314,23 +314,23 @@ export default function KMPVisualizer() {
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {/* Left Side: LPS Table Display */}
         <div style={{ minWidth: 240, flex: 0.8 }}>
-          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1 }}>LPS / PREFIX TABLE (pi[])</div>
+          <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 1 }}>LPS / PREFIX TABLE (pi[])</div>
             
             <div style={{ display: 'flex', gap: 4, justifyContent: 'center' }}>
               {pat.split('').map((char, index) => {
                 const isLpsActive = current.phase === 'lps' && current.currPatI === index;
-                const borderCol = isLpsActive ? '#00d9a3' : 'rgba(0,217,163,0.1)';
+                const borderCol = isLpsActive ? 'var(--gx-accent)' : 'var(--gx-border)';
                 return (
                   <div key={index} style={{
                     flex: 1, height: 48, borderRadius: 6,
                     border: `1.5px solid ${borderCol}`,
-                    background: isLpsActive ? 'rgba(0,217,163,0.08)' : 'rgba(10,15,30,0.6)',
+                    background: isLpsActive ? 'var(--gx-accent-soft)' : 'var(--gx-surface)',
                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                     transition: 'all 0.2s',
                   }}>
-                    <span style={{ fontSize: 11, fontWeight: 'bold', color: isLpsActive ? '#00d9a3' : '#e8e8ed' }}>{char}</span>
-                    <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: isLpsActive ? '#00d9a3' : '#1d9e75' }}>
+                    <span style={{ fontSize: 11, fontWeight: 'bold', color: isLpsActive ? 'var(--gx-accent)' : 'var(--gx-text)' }}>{char}</span>
+                    <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: isLpsActive ? 'var(--gx-accent)' : 'var(--gx-success)' }}>
                       {current.lps[index] !== undefined ? current.lps[index] : 0}
                     </span>
                   </div>
@@ -338,14 +338,14 @@ export default function KMPVisualizer() {
               })}
             </div>
             
-            <div style={{ borderTop: '1px solid rgba(0,217,163,0.05)', paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <span style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>INPUT STRINGS:</span>
+            <div style={{ borderTop: '1px solid var(--gx-border)', paddingTop: 12, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <span style={{ fontSize: 10, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>INPUT STRINGS:</span>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <span style={{ fontSize: 9, color: '#5a7a9a' }}>TXT (Text, Max 22 chars):</span>
+                <span style={{ fontSize: 9, color: 'var(--gx-text-muted)' }}>TXT (Text, Max 22 chars):</span>
                 <input type="text" value={txt} onChange={e => handleInputsChange(e.target.value, pat)} style={inpStyle} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <span style={{ fontSize: 9, color: '#5a7a9a' }}>PAT (Pattern, Max 10 chars):</span>
+                <span style={{ fontSize: 9, color: 'var(--gx-text-muted)' }}>PAT (Pattern, Max 10 chars):</span>
                 <input type="text" value={pat} onChange={e => handleInputsChange(txt, e.target.value)} style={inpStyle} />
               </div>
             </div>
@@ -353,29 +353,29 @@ export default function KMPVisualizer() {
         </div>
 
         {/* Right Side: Shift Canvas */}
-        <div style={{ flex: 1.5, minWidth: 320, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 24, overflowX: 'auto' }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1 }}>KMP STRING SHIFT VISUALIZATION</div>
+        <div style={{ flex: 1.5, minWidth: 320, background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 24, overflowX: 'auto' }}>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 1 }}>KMP STRING SHIFT VISUALIZATION</div>
 
           {/* Text Row */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#5a7a9a' }}>TEXT INDEXES (i)</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--gx-text-muted)' }}>TEXT INDEXES (i)</span>
             <div style={{ display: 'flex', gap: 2 }}>
               {txt.split('').map((char, index) => {
                 const isComparing = current.phase === 'search' && current.textIdx === index;
                 const isInsideMatch = current.matchesFound?.some(start => index >= start && index < start + pat.length);
                 
-                let border = '1px solid rgba(0,217,163,0.06)';
-                let bg = 'rgba(10,15,30,0.7)';
-                let col = '#e8e8ed';
+                let border = '1px solid var(--gx-border)';
+                let bg = 'var(--gx-surface)';
+                let col = 'var(--gx-text)';
 
                 if (isComparing) {
-                  border = `2.5px solid ${current.match ? '#1d9e75' : '#ff2d78'}`;
-                  bg = current.match ? 'rgba(29,158,117,0.12)' : 'rgba(255,45,120,0.1)';
-                  col = current.match ? '#1d9e75' : '#ff2d78';
+                  border = `2.5px solid ${current.match ? 'var(--gx-success)' : 'var(--gx-danger)'}`;
+                  bg = current.match ? 'var(--gx-success-soft)' : 'var(--gx-danger-soft)';
+                  col = current.match ? 'var(--gx-success)' : 'var(--gx-danger)';
                 } else if (isInsideMatch) {
-                  border = '1px solid #1d9e75';
-                  bg = 'rgba(29, 158, 117, 0.08)';
-                  col = '#1d9e75';
+                  border = '1px solid var(--gx-success)';
+                  bg = 'var(--gx-success-soft)';
+                  col = 'var(--gx-success)';
                 }
 
                 return (
@@ -395,7 +395,7 @@ export default function KMPVisualizer() {
           {/* Pattern Slide Row */}
           {current.phase === 'search' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#5a7a9a' }}>PATTERN ALIGNMENT (j)</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--gx-text-muted)' }}>PATTERN ALIGNMENT (j)</span>
               
               {/* We apply a margin-left offset representing pattern shift under text */}
               <div style={{
@@ -406,14 +406,14 @@ export default function KMPVisualizer() {
               }}>
                 {pat.split('').map((char, index) => {
                   const isComparing = current.patIdx === index;
-                  let border = '1px solid rgba(0,217,163,0.1)';
-                  let bg = 'rgba(10,15,30,0.7)';
-                  let col = '#5a7a9a';
+                  let border = '1px solid var(--gx-border)';
+                  let bg = 'var(--gx-surface)';
+                  let col = 'var(--gx-text-muted)';
 
                   if (isComparing) {
-                    border = `2.5px solid ${current.match ? '#1d9e75' : '#ff2d78'}`;
-                    bg = current.match ? 'rgba(29,158,117,0.12)' : 'rgba(255,45,120,0.1)';
-                    col = current.match ? '#1d9e75' : '#ff2d78';
+                    border = `2.5px solid ${current.match ? 'var(--gx-success)' : 'var(--gx-danger)'}`;
+                    bg = current.match ? 'var(--gx-success-soft)' : 'var(--gx-danger-soft)';
+                    col = current.match ? 'var(--gx-success)' : 'var(--gx-danger)';
                   }
 
                   return (
@@ -436,13 +436,13 @@ export default function KMPVisualizer() {
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {[
-          { color: '#1d9e75', label: 'Character match / fully matching substrings' },
-          { color: '#ff2d78', label: 'Mismatch (triggers slide jump)' },
-          { color: 'rgba(0,217,163,0.2)', label: 'Normal grid cells' },
+          { color: 'var(--gx-success)', label: 'Character match / fully matching substrings' },
+          { color: 'var(--gx-danger)', label: 'Mismatch (triggers slide jump)' },
+          { color: 'var(--gx-accent)', label: 'Normal grid cells' },
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ width: 12, height: 12, borderRadius: 2, background: l.color + '22', border: `1.5px solid ${l.color}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l.label}</span>
+            <div style={{ width: 12, height: 12, borderRadius: 2, background: `color-mix(in srgb, ${l.color} 13%, transparent)`, border: `1.5px solid ${l.color}` }} />
+            <span style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)' }}>{l.label}</span>
           </div>
         ))}
       </div>
@@ -474,11 +474,11 @@ export default function KMPVisualizer() {
 }
 
 const inpStyle = {
-  background: 'rgba(0,217,163,0.04)',
-  border: '1px solid rgba(0,217,163,0.2)',
+  background: 'var(--gx-accent-soft)',
+  border: '1px solid var(--gx-accent-border)',
   borderRadius: 8,
   padding: '6px 10px',
-  color: '#e8e8ed',
+  color: 'var(--gx-text)',
   fontFamily: 'var(--font-mono)',
   fontSize: 12,
   outline: 'none',

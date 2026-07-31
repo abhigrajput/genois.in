@@ -91,7 +91,7 @@ export default function AnxietyPage() {
         flexDirection: 'column',
         height: 'calc(100vh - 56px)',
         width: '100%',
-        background: '#020812',
+        background: 'var(--gx-surface)',
         margin: '-24px',
         padding: '0',
       }}
@@ -99,8 +99,8 @@ export default function AnxietyPage() {
       {/* ── Header ── */}
       <div style={{
         padding: '20px 24px 16px',
-        borderBottom: '1px solid rgba(0,217,163,0.1)',
-        background: 'rgba(2,8,18,0.95)',
+        borderBottom: '1px solid var(--gx-border)',
+        background: 'var(--gx-bg)',
         backdropFilter: 'blur(20px)',
         flexShrink: 0,
       }}>
@@ -109,15 +109,15 @@ export default function AnxietyPage() {
             <div className="flex items-center gap-3 mb-1">
               <div style={{
                 width: 10, height: 10, borderRadius: '50%',
-                background: isLateNight ? '#00d9a3' : '#1D9E75',
-                boxShadow: `0 0 8px ${isLateNight ? '#00d9a3' : '#1D9E75'}`,
+                background: isLateNight ? 'var(--gx-accent)' : 'var(--gx-success)',
+                boxShadow: `0 0 8px ${isLateNight ? 'var(--gx-accent)' : 'var(--gx-success)'}`,
                 animation: 'gentlePulse 2s infinite',
               }} />
               <span style={{
                 fontFamily: 'var(--font-heading)',
                 fontSize: 18,
                 fontWeight: 700,
-                color: '#e8e8ed',
+                color: 'var(--gx-text)',
                 letterSpacing: -0.5,
               }}>
                 2AM Chat
@@ -125,26 +125,26 @@ export default function AnxietyPage() {
               {isLateNight && (
                 <span style={{
                   fontSize: 10,
-                  fontFamily: 'var(--font-mono)',
-                  color: '#00d9a3',
-                  background: 'rgba(0,217,163,0.1)',
-                  border: '1px solid rgba(0,217,163,0.2)',
+                  fontFamily: 'var(--font-body)',
+                  color: 'var(--gx-accent)',
+                  background: 'var(--gx-accent-soft)',
+                  border: '1px solid var(--gx-accent-border)',
                   padding: '2px 8px',
                   borderRadius: 20,
                   letterSpacing: 1,
                 }}>LIVE</span>
               )}
             </div>
-            <div style={{ fontSize: 12, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>
+            <div style={{ fontSize: 12, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)' }}>
               A safe space. No judgment. Just a senior who gets it.
             </div>
           </div>
           {messages.length > 0 && (
             <button onClick={clearChat} style={{
               fontSize: 11,
-              color: '#5a7a9a',
+              color: 'var(--gx-text-muted)',
               background: 'transparent',
-              border: '1px solid rgba(90,122,154,0.3)',
+              border: '1px solid var(--gx-border)',
               padding: '5px 12px',
               borderRadius: 20,
               cursor: 'pointer',
@@ -157,8 +157,8 @@ export default function AnxietyPage() {
         {!moodSelected && (
           <div className="mt-3">
             <div style={{
-              fontSize: 11, color: '#5a7a9a', marginBottom: 8,
-              fontFamily: 'var(--font-mono)', letterSpacing: 1,
+              fontSize: 11, color: 'var(--gx-text-muted)', marginBottom: 8,
+              fontFamily: 'var(--font-body)', letterSpacing: 1,
             }}>
               HOW ARE YOU FEELING?
             </div>
@@ -167,9 +167,9 @@ export default function AnxietyPage() {
                 <button key={m.label} onClick={() => setMood(m)} style={{
                   padding: '5px 12px',
                   borderRadius: 20,
-                  border: `1px solid ${mood?.label === m.label ? 'rgba(0,217,163,0.5)' : 'rgba(255,255,255,0.08)'}`,
-                  background: mood?.label === m.label ? 'rgba(0,217,163,0.08)' : 'transparent',
-                  color: mood?.label === m.label ? '#00d9a3' : '#5a7a9a',
+                  border: `1px solid ${mood?.label === m.label ? 'var(--gx-accent-border)' : 'var(--gx-border)'}`,
+                  background: mood?.label === m.label ? 'var(--gx-accent-soft)' : 'transparent',
+                  color: mood?.label === m.label ? 'var(--gx-accent)' : 'var(--gx-text-muted)',
                   fontSize: 12,
                   cursor: 'pointer',
                   transition: 'all 0.2s',
@@ -193,14 +193,14 @@ export default function AnxietyPage() {
               fontFamily: 'var(--font-heading)',
               fontSize: 22,
               fontWeight: 700,
-              color: '#e8e8ed',
+              color: 'var(--gx-text)',
               marginBottom: 10,
             }}>
               Hey {firstName},
             </div>
             <div style={{
               fontSize: 14,
-              color: '#5a7a9a',
+              color: 'var(--gx-text-muted)',
               maxWidth: 360,
               margin: '0 auto 32px',
               lineHeight: 1.8,
@@ -221,9 +221,9 @@ export default function AnxietyPage() {
                 <button key={i} onClick={() => send(s)} style={{
                   padding: '12px 16px',
                   borderRadius: 12,
-                  border: '1px solid rgba(0,217,163,0.12)',
-                  background: 'rgba(0,217,163,0.03)',
-                  color: '#8ab4c8',
+                  border: '1px solid var(--gx-border)',
+                  background: 'var(--gx-accent-soft)',
+                  color: 'var(--gx-text-muted)',
                   fontSize: 13,
                   cursor: 'pointer',
                   textAlign: 'left',
@@ -249,8 +249,8 @@ export default function AnxietyPage() {
               {m.role === 'assistant' && (
                 <div style={{
                   width: 28, height: 28, borderRadius: '50%',
-                  background: 'rgba(0,217,163,0.1)',
-                  border: '1px solid rgba(0,217,163,0.2)',
+                  background: 'var(--gx-accent-soft)',
+                  border: '1px solid var(--gx-accent-border)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 14, flexShrink: 0,
                 }}>🌙</div>
@@ -262,12 +262,12 @@ export default function AnxietyPage() {
                   ? '18px 18px 4px 18px'
                   : '18px 18px 18px 4px',
                 background: m.role === 'user'
-                  ? 'linear-gradient(135deg, rgba(255,107,74,0.35), rgba(0,217,163,0.15))'
-                  : 'rgba(255,255,255,0.04)',
+                  ? 'var(--gx-warning)'
+                  : 'var(--gx-surface)',
                 border: m.role === 'user'
-                  ? '1px solid rgba(255,107,74,0.3)'
-                  : '1px solid rgba(255,255,255,0.06)',
-                color: m.loading ? '#3a5a6a' : '#d8ecff',
+                  ? '1px solid var(--gx-warning-border)'
+                  : '1px solid var(--gx-border)',
+                color: m.role === 'user' ? 'var(--gx-text-inverse)' : m.loading ? 'var(--gx-text-subtle)' : 'var(--gx-text)',
                 fontSize: 14,
                 lineHeight: 1.75,
                 fontFamily: 'var(--font-body)',
@@ -286,14 +286,14 @@ export default function AnxietyPage() {
       {/* ── Input ── */}
       <div style={{
         padding: '14px 24px 20px',
-        borderTop: '1px solid rgba(0,217,163,0.08)',
-        background: 'rgba(2,8,18,0.97)',
+        borderTop: '1px solid var(--gx-border)',
+        background: 'var(--gx-bg)',
         flexShrink: 0,
       }}>
         <div style={{
           fontSize: 10,
-          color: '#2a4a5a',
-          fontFamily: 'var(--font-mono)',
+          color: 'var(--gx-text-subtle)',
+          fontFamily: 'var(--font-body)',
           marginBottom: 10,
           letterSpacing: 0.5,
         }}>
@@ -317,9 +317,9 @@ export default function AnxietyPage() {
               width: '100%',
               padding: '12px 16px',
               borderRadius: 12,
-              border: '1px solid rgba(0,217,163,0.15)',
-              background: 'rgba(255,255,255,0.03)',
-              color: '#e8e8ed',
+              border: '1px solid var(--gx-border)',
+              background: 'var(--gx-surface)',
+              color: 'var(--gx-text)',
               fontSize: 14,
               fontFamily: 'var(--font-body)',
               resize: 'none',
@@ -327,8 +327,8 @@ export default function AnxietyPage() {
               lineHeight: 1.6,
               transition: 'border-color 0.2s',
             }}
-            onFocus={e => { e.target.style.borderColor = 'rgba(0,217,163,0.4)'; }}
-            onBlur={e => { e.target.style.borderColor = 'rgba(0,217,163,0.15)'; }}
+            onFocus={e => { e.target.style.borderColor = 'var(--gx-accent-border)'; }}
+            onBlur={e => { e.target.style.borderColor = 'var(--gx-border)'; }}
           />
           <button
             onClick={() => send()}
@@ -338,9 +338,9 @@ export default function AnxietyPage() {
               borderRadius: 12,
               border: 'none',
               background: !loading && input.trim()
-                ? 'linear-gradient(135deg, #00d9a3, #ff6b4a)'
-                : 'rgba(255,255,255,0.05)',
-              color: !loading && input.trim() ? '#020812' : '#2a4a5a',
+                ? 'var(--gx-accent)'
+                : 'var(--gx-surface)',
+              color: !loading && input.trim() ? 'var(--gx-text-inverse)' : 'var(--gx-text-subtle)',
               fontWeight: 700,
               fontSize: 14,
               cursor: !loading && input.trim() ? 'pointer' : 'not-allowed',

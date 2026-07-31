@@ -59,32 +59,32 @@ export default function PWAInstallPrompt() {
       right: 16,
       width: 'calc(100vw - 32px)',
       maxWidth: 320,
-      background: 'linear-gradient(135deg,rgba(7,15,31,0.98),rgba(0,217,163,0.05))',
-      border: '1px solid rgba(0,217,163,0.3)',
+      background: 'var(--gx-bg)',
+      border: '1px solid var(--gx-accent-border)',
       borderRadius: 14,
       padding: 18,
       paddingRight: 34,
       zIndex: 9999,
-      boxShadow: '0 10px 40px rgba(0,0,0,0.45)',
+      boxShadow: 'var(--gx-shadow-sm)',
     }}>
       <button
         onClick={handleDismiss}
         aria-label="Dismiss install prompt"
-        style={{ position: 'absolute', top: 8, right: 10, background: 'transparent', border: 'none', color: '#9ca3af', fontSize: 20, cursor: 'pointer', lineHeight: 1 }}
+        style={{ position: 'absolute', top: 8, right: 10, background: 'transparent', border: 'none', color: 'var(--gx-text-muted)', fontSize: 20, cursor: 'pointer', lineHeight: 1 }}
       >
         ×
       </button>
-      <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: '#e8e8ed', marginBottom: 6 }}>
+      <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: 'var(--gx-text)', marginBottom: 6 }}>
         📱 Install GENOIS
       </div>
-      <div style={{ fontSize: 12, color: '#8a9ab0', marginBottom: 14, lineHeight: 1.5 }}>
+      <div style={{ fontSize: 12, color: 'var(--gx-text-muted)', marginBottom: 14, lineHeight: 1.5 }}>
         Add to home screen for instant access. Works offline.
       </div>
       <div style={{ display: 'flex', gap: 8 }}>
-        <button onClick={handleInstall} style={{ flex: 1, padding: '10px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 700 }}>
+        <button onClick={handleInstall} style={{ flex: 1, padding: '10px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 700 }}>
           Install
         </button>
-        <button onClick={handleDismiss} style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', background: 'transparent', color: '#5a7a9a', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 600 }}>
+        <button onClick={handleDismiss} style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid var(--gx-border)', cursor: 'pointer', background: 'transparent', color: 'var(--gx-text-muted)', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 600 }}>
           Later
         </button>
       </div>

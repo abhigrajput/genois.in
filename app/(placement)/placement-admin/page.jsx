@@ -2,11 +2,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 
-const G = '#00ff41';
-const GD = '#00cc33';
-const BG = '#030a03';
-const CARD_BG = '#0a1a0a';
-const BORDER = 'rgba(0,255,65,0.15)';
+const G = 'var(--gx-accent)';
+const GD = 'var(--gx-accent-hover)';
+const BG = 'var(--gx-surface)';
+const CARD_BG = 'var(--gx-bg)';
+const BORDER = 'var(--gx-border)';
 
 const DOMAIN_LABELS = {
   dsa: 'DSA', fullstack: 'Full Stack', aiml: 'AI/ML',
@@ -15,16 +15,16 @@ const DOMAIN_LABELS = {
 
 const READINESS_ORDER = ['Ready 🟢', 'Almost Ready 🟡', 'In Progress 🟠', 'Not Ready 🔴'];
 const READINESS_COLORS = {
-  'Ready 🟢': '#00ff41',
-  'Almost Ready 🟡': '#facc15',
-  'In Progress 🟠': '#f97316',
-  'Not Ready 🔴': '#ef4444',
+  'Ready 🟢': 'var(--gx-accent)',
+  'Almost Ready 🟡': 'var(--gx-warning)',
+  'In Progress 🟠': 'var(--gx-warning)',
+  'Not Ready 🔴': 'var(--gx-danger)',
 };
 
 function Badge({ level }) {
-  const color = READINESS_COLORS[level] || '#9ca3af';
+  const color = READINESS_COLORS[level] || 'var(--gx-text-muted)';
   return (
-    <span style={{ padding: '3px 10px', borderRadius: 99, fontSize: 11, fontWeight: 700, background: `${color}18`, color, border: `1px solid ${color}30`, whiteSpace: 'nowrap' }}>
+    <span style={{ padding: '3px 10px', borderRadius: 99, fontSize: 11, fontWeight: 700, background: `color-mix(in srgb, ${color} 9%, transparent)`, color, border: `1px solid color-mix(in srgb, ${color} 19%, transparent)`, whiteSpace: 'nowrap' }}>
       {level}
     </span>
   );
@@ -33,9 +33,9 @@ function Badge({ level }) {
 function SummaryCard({ label, value, sub, accent }) {
   return (
     <div style={{ background: CARD_BG, border: `1px solid ${BORDER}`, borderRadius: 14, padding: '22px 24px', flex: 1, minWidth: 0 }}>
-      <div style={{ fontSize: 11, color: '#4b8a4b', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 8 }}>{label}</div>
+      <div style={{ fontSize: 11, color: 'var(--gx-success)', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 8 }}>{label}</div>
       <div style={{ fontSize: 36, fontWeight: 900, fontFamily: 'var(--font-mono)', color: accent || G, lineHeight: 1 }}>{value}</div>
-      {sub && <div style={{ fontSize: 12, color: '#4b8a4b', marginTop: 6 }}>{sub}</div>}
+      {sub && <div style={{ fontSize: 12, color: 'var(--gx-success)', marginTop: 6 }}>{sub}</div>}
     </div>
   );
 }
@@ -130,7 +130,7 @@ export default function PlacementDashboard() {
 
   if (error) {
     return (
-      <div style={{ minHeight: '100vh', background: BG, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ef4444', fontFamily: 'var(--font-mono)', fontSize: 16, textAlign: 'center', padding: 24 }}>
+      <div style={{ minHeight: '100vh', background: BG, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--gx-danger)', fontFamily: 'var(--font-mono)', fontSize: 16, textAlign: 'center', padding: 24 }}>
         {error}<br />
         <button onClick={logout} style={{ marginTop: 16, padding: '10px 20px', borderRadius: 8, border: `1px solid ${BORDER}`, background: 'transparent', color: G, cursor: 'pointer', fontSize: 13 }}>Re-login</button>
       </div>
@@ -141,35 +141,35 @@ export default function PlacementDashboard() {
   const inProgressCount = (summary.totalStudents - summary.readyCount - summary.almostReadyCount) - data.students.filter(s => s.readinessScore < 40).length;
   const notReadyCount = data.students.filter(s => s.readinessScore < 40).length;
   const segments = [
-    { key: 'Ready 🟢', label: 'Ready', count: summary.readyCount, color: '#00ff41' },
-    { key: 'Almost Ready 🟡', label: 'Almost Ready', count: summary.almostReadyCount, color: '#facc15' },
-    { key: 'In Progress 🟠', label: 'In Progress', count: inProgressCount, color: '#f97316' },
-    { key: 'Not Ready 🔴', label: 'Not Ready', count: notReadyCount, color: '#ef4444' },
+    { key: 'Ready 🟢', label: 'Ready', count: summary.readyCount, color: 'var(--gx-accent)' },
+    { key: 'Almost Ready 🟡', label: 'Almost Ready', count: summary.almostReadyCount, color: 'var(--gx-warning)' },
+    { key: 'In Progress 🟠', label: 'In Progress', count: inProgressCount, color: 'var(--gx-warning)' },
+    { key: 'Not Ready 🔴', label: 'Not Ready', count: notReadyCount, color: 'var(--gx-danger)' },
   ];
   const total = summary.totalStudents || 1;
 
   const inputStyle = {
     background: CARD_BG, border: `1px solid ${BORDER}`, borderRadius: 8,
-    color: '#e2ffe2', padding: '9px 13px', fontSize: 13, outline: 'none',
+    color: 'var(--gx-text)', padding: '9px 13px', fontSize: 13, outline: 'none',
     fontFamily: 'var(--font-mono)',
   };
   const selectStyle = { ...inputStyle, cursor: 'pointer' };
 
   return (
-    <div style={{ minHeight: '100vh', background: BG, color: '#e2ffe2', fontFamily: 'var(--font-mono)' }}>
+    <div style={{ minHeight: '100vh', background: BG, color: 'var(--gx-text)', fontFamily: 'var(--font-mono)' }}>
 
       {/* ── HEADER ── */}
       <header style={{ background: CARD_BG, borderBottom: `1px solid ${BORDER}`, padding: '14px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, position: 'sticky', top: 0, zIndex: 100 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 900, fontSize: 22, color: G, letterSpacing: 2 }}>GENOIS</span>
-          <span style={{ color: '#4b8a4b', fontSize: 13 }}>/ Placement Cell Dashboard</span>
+          <span style={{ color: 'var(--gx-success)', fontSize: 13 }}>/ Placement Cell Dashboard</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-          <span style={{ color: '#4b8a4b', fontSize: 12 }}>{new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-          <button onClick={exportCSV} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${BORDER}`, background: 'rgba(0,255,65,0.08)', color: G, cursor: 'pointer', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
+          <span style={{ color: 'var(--gx-success)', fontSize: 12 }}>{new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+          <button onClick={exportCSV} style={{ padding: '8px 16px', borderRadius: 8, border: `1px solid ${BORDER}`, background: 'var(--gx-accent-soft)', color: G, cursor: 'pointer', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
             Export CSV ↓
           </button>
-          <button onClick={logout} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid rgba(255,80,80,0.2)', background: 'rgba(255,80,80,0.06)', color: '#f87171', cursor: 'pointer', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
+          <button onClick={logout} style={{ padding: '8px 16px', borderRadius: 8, border: '1px solid var(--gx-danger-border)', background: 'var(--gx-danger-soft)', color: 'var(--gx-danger)', cursor: 'pointer', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
             Logout
           </button>
         </div>
@@ -181,13 +181,13 @@ export default function PlacementDashboard() {
         <div style={{ display: 'flex', gap: 16, marginBottom: 28, flexWrap: 'wrap' }}>
           <SummaryCard label="Total Students" value={summary.totalStudents} sub="enrolled on GENOIS" />
           <SummaryCard label="Placement Ready" value={summary.readyCount} sub={`${total ? Math.round(summary.readyCount / total * 100) : 0}% of batch`} accent={G} />
-          <SummaryCard label="Avg Readiness Score" value={`${summary.avgScore}/100`} sub="batch average" accent="#4ade80" />
-          <SummaryCard label="Avg Daily Streak" value={`${summary.avgStreak}d`} sub="days active" accent="#86efac" />
+          <SummaryCard label="Avg Readiness Score" value={`${summary.avgScore}/100`} sub="batch average" accent="var(--gx-success)" />
+          <SummaryCard label="Avg Daily Streak" value={`${summary.avgStreak}d`} sub="days active" accent="var(--gx-success)" />
         </div>
 
         {/* ── READINESS DISTRIBUTION ── */}
         <div style={{ background: CARD_BG, border: `1px solid ${BORDER}`, borderRadius: 14, padding: '20px 24px', marginBottom: 24 }}>
-          <div style={{ fontSize: 11, color: '#4b8a4b', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 14 }}>Readiness Distribution — click to filter</div>
+          <div style={{ fontSize: 11, color: 'var(--gx-success)', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 14 }}>Readiness Distribution — click to filter</div>
           <div style={{ display: 'flex', borderRadius: 8, overflow: 'hidden', height: 36, marginBottom: 14, cursor: 'pointer' }}>
             {segments.map(seg => {
               const pct = Math.max((seg.count / total) * 100, seg.count > 0 ? 4 : 0);
@@ -200,7 +200,7 @@ export default function PlacementDashboard() {
                     width: `${pct}%`, background: seg.color,
                     opacity: activeSegment && activeSegment !== seg.key ? 0.3 : 1,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 11, fontWeight: 700, color: '#030a03', transition: 'opacity 0.2s',
+                    fontSize: 11, fontWeight: 700, color: 'var(--gx-text-inverse)', transition: 'opacity 0.2s',
                     minWidth: seg.count > 0 ? 40 : 0, overflow: 'hidden',
                   }}
                 >
@@ -213,12 +213,12 @@ export default function PlacementDashboard() {
             {segments.map(seg => (
               <div key={seg.key} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
                 <div style={{ width: 10, height: 10, borderRadius: 2, background: seg.color }} />
-                <span style={{ color: '#9ca3af' }}>{seg.label}: <strong style={{ color: '#e2ffe2' }}>{seg.count}</strong></span>
+                <span style={{ color: 'var(--gx-text-muted)' }}>{seg.label}: <strong style={{ color: 'var(--gx-text)' }}>{seg.count}</strong></span>
               </div>
             ))}
           </div>
           {activeSegment && (
-            <button onClick={() => setActiveSegment('')} style={{ marginTop: 10, padding: '5px 12px', borderRadius: 6, border: `1px solid ${BORDER}`, background: 'transparent', color: '#4b8a4b', cursor: 'pointer', fontSize: 11 }}>
+            <button onClick={() => setActiveSegment('')} style={{ marginTop: 10, padding: '5px 12px', borderRadius: 6, border: `1px solid ${BORDER}`, background: 'transparent', color: 'var(--gx-success)', cursor: 'pointer', fontSize: 11 }}>
               Clear filter ×
             </button>
           )}
@@ -228,17 +228,17 @@ export default function PlacementDashboard() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20, marginBottom: 24 }}>
           {/* Domain distribution */}
           <div style={{ background: CARD_BG, border: `1px solid ${BORDER}`, borderRadius: 14, padding: '20px 24px' }}>
-            <div style={{ fontSize: 11, color: '#4b8a4b', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 16 }}>Domain Distribution</div>
-            {summary.topDomains.length === 0 && <div style={{ color: '#4b8a4b', fontSize: 13 }}>No data</div>}
+            <div style={{ fontSize: 11, color: 'var(--gx-success)', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 16 }}>Domain Distribution</div>
+            {summary.topDomains.length === 0 && <div style={{ color: 'var(--gx-success)', fontSize: 13 }}>No data</div>}
             {summary.topDomains.map(({ domain, count }) => {
               const pct = Math.round((count / total) * 100);
               return (
                 <div key={domain} style={{ marginBottom: 12 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
-                    <span style={{ color: '#e2ffe2' }}>{DOMAIN_LABELS[domain] || domain}</span>
-                    <span style={{ color: '#4b8a4b' }}>{count} ({pct}%)</span>
+                    <span style={{ color: 'var(--gx-text)' }}>{DOMAIN_LABELS[domain] || domain}</span>
+                    <span style={{ color: 'var(--gx-success)' }}>{count} ({pct}%)</span>
                   </div>
-                  <div style={{ background: 'rgba(0,255,65,0.08)', borderRadius: 4, height: 8, overflow: 'hidden' }}>
+                  <div style={{ background: 'var(--gx-accent-soft)', borderRadius: 4, height: 8, overflow: 'hidden' }}>
                     <div style={{ width: `${pct}%`, height: '100%', background: G, borderRadius: 4 }} />
                   </div>
                 </div>
@@ -248,19 +248,19 @@ export default function PlacementDashboard() {
 
           {/* Target company breakdown */}
           <div style={{ background: CARD_BG, border: `1px solid ${BORDER}`, borderRadius: 14, padding: '20px 24px' }}>
-            <div style={{ fontSize: 11, color: '#4b8a4b', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 16 }}>Target Company Breakdown</div>
-            {summary.targetCompanyBreakdown.length === 0 && <div style={{ color: '#4b8a4b', fontSize: 13 }}>Students haven't set target companies yet</div>}
+            <div style={{ fontSize: 11, color: 'var(--gx-success)', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 16 }}>Target Company Breakdown</div>
+            {summary.targetCompanyBreakdown.length === 0 && <div style={{ color: 'var(--gx-success)', fontSize: 13 }}>Students haven't set target companies yet</div>}
             {summary.targetCompanyBreakdown.slice(0, 10).map(({ company, count }) => {
               const maxCount = summary.targetCompanyBreakdown[0]?.count || 1;
               const pct = Math.round((count / maxCount) * 100);
               return (
                 <div key={company} style={{ marginBottom: 10 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 3 }}>
-                    <span style={{ color: '#e2ffe2' }}>{company}</span>
-                    <span style={{ color: '#4b8a4b' }}>{count}</span>
+                    <span style={{ color: 'var(--gx-text)' }}>{company}</span>
+                    <span style={{ color: 'var(--gx-success)' }}>{count}</span>
                   </div>
-                  <div style={{ background: 'rgba(0,255,65,0.08)', borderRadius: 4, height: 6, overflow: 'hidden' }}>
-                    <div style={{ width: `${pct}%`, height: '100%', background: '#4ade80', borderRadius: 4 }} />
+                  <div style={{ background: 'var(--gx-accent-soft)', borderRadius: 4, height: 6, overflow: 'hidden' }}>
+                    <div style={{ width: `${pct}%`, height: '100%', background: 'var(--gx-success)', borderRadius: 4 }} />
                   </div>
                 </div>
               );
@@ -302,7 +302,7 @@ export default function PlacementDashboard() {
               <option value="current_day">Sort: Day Progress</option>
               <option value="total_score">Sort: Score</option>
             </select>
-            <span style={{ color: '#4b8a4b', fontSize: 12, marginLeft: 'auto' }}>{filtered.length} student{filtered.length !== 1 ? 's' : ''}</span>
+            <span style={{ color: 'var(--gx-success)', fontSize: 12, marginLeft: 'auto' }}>{filtered.length} student{filtered.length !== 1 ? 's' : ''}</span>
           </div>
 
           {/* Table */}
@@ -311,7 +311,7 @@ export default function PlacementDashboard() {
               <thead>
                 <tr style={{ borderBottom: `1px solid ${BORDER}` }}>
                   {['#', 'Name', 'College', 'Domain', 'Day', 'Score', 'Streak', 'Readiness', 'Target Co.', ''].map(h => (
-                    <th key={h} style={{ padding: '12px 14px', textAlign: 'left', fontSize: 10, color: '#4b8a4b', letterSpacing: 1.2, textTransform: 'uppercase', whiteSpace: 'nowrap', fontWeight: 600 }}>{h}</th>
+                    <th key={h} style={{ padding: '12px 14px', textAlign: 'left', fontSize: 10, color: 'var(--gx-success)', letterSpacing: 1.2, textTransform: 'uppercase', whiteSpace: 'nowrap', fontWeight: 600 }}>{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -321,27 +321,27 @@ export default function PlacementDashboard() {
                     <tr
                       key={s.id}
                       onClick={() => setExpandedRow(expandedRow === s.id ? null : s.id)}
-                      style={{ borderBottom: `1px solid rgba(0,255,65,0.06)`, cursor: 'pointer', background: expandedRow === s.id ? 'rgba(0,255,65,0.04)' : 'transparent', transition: 'background 0.15s' }}
-                      onMouseEnter={e => { if (expandedRow !== s.id) e.currentTarget.style.background = 'rgba(0,255,65,0.025)'; }}
+                      style={{ borderBottom: `1px solid var(--gx-border)`, cursor: 'pointer', background: expandedRow === s.id ? 'var(--gx-accent-soft)' : 'transparent', transition: 'background 0.15s' }}
+                      onMouseEnter={e => { if (expandedRow !== s.id) e.currentTarget.style.background = 'var(--gx-accent-soft)'; }}
                       onMouseLeave={e => { if (expandedRow !== s.id) e.currentTarget.style.background = 'transparent'; }}
                     >
-                      <td style={{ padding: '13px 14px', color: '#4b8a4b' }}>{i + 1}</td>
-                      <td style={{ padding: '13px 14px', fontWeight: 600, color: '#e2ffe2', whiteSpace: 'nowrap' }}>{s.name}</td>
-                      <td style={{ padding: '13px 14px', color: '#9ca3af', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.college}</td>
-                      <td style={{ padding: '13px 14px', color: '#4ade80' }}>{DOMAIN_LABELS[s.domain_slug] || s.domain_slug}</td>
-                      <td style={{ padding: '13px 14px', color: '#e2ffe2', fontFamily: 'var(--font-mono)' }}>D{s.current_day}</td>
-                      <td style={{ padding: '13px 14px', color: '#e2ffe2', fontFamily: 'var(--font-mono)' }}>{s.total_score.toLocaleString()}</td>
-                      <td style={{ padding: '13px 14px', color: s.streak >= 7 ? G : '#9ca3af' }}>{s.streak}🔥</td>
+                      <td style={{ padding: '13px 14px', color: 'var(--gx-success)' }}>{i + 1}</td>
+                      <td style={{ padding: '13px 14px', fontWeight: 600, color: 'var(--gx-text)', whiteSpace: 'nowrap' }}>{s.name}</td>
+                      <td style={{ padding: '13px 14px', color: 'var(--gx-text-muted)', maxWidth: 160, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{s.college}</td>
+                      <td style={{ padding: '13px 14px', color: 'var(--gx-success)' }}>{DOMAIN_LABELS[s.domain_slug] || s.domain_slug}</td>
+                      <td style={{ padding: '13px 14px', color: 'var(--gx-text)', fontFamily: 'var(--font-mono)' }}>D{s.current_day}</td>
+                      <td style={{ padding: '13px 14px', color: 'var(--gx-text)', fontFamily: 'var(--font-mono)' }}>{s.total_score.toLocaleString()}</td>
+                      <td style={{ padding: '13px 14px', color: s.streak >= 7 ? G : 'var(--gx-text-muted)' }}>{s.streak}🔥</td>
                       <td style={{ padding: '13px 14px' }}><Badge level={s.readinessLevel} /></td>
-                      <td style={{ padding: '13px 14px', color: '#9ca3af', maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <td style={{ padding: '13px 14px', color: 'var(--gx-text-muted)', maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {(s.target_companies || []).slice(0, 2).join(', ') || '—'}
                       </td>
                       <td style={{ padding: '13px 14px' }}>
-                        <span style={{ color: '#4b8a4b', fontSize: 11 }}>{expandedRow === s.id ? '▲ Hide' : '▼ Details'}</span>
+                        <span style={{ color: 'var(--gx-success)', fontSize: 11 }}>{expandedRow === s.id ? '▲ Hide' : '▼ Details'}</span>
                       </td>
                     </tr>
                     {expandedRow === s.id && (
-                      <tr key={`${s.id}-exp`} style={{ background: 'rgba(0,255,65,0.03)', borderBottom: `1px solid rgba(0,255,65,0.06)` }}>
+                      <tr key={`${s.id}-exp`} style={{ background: 'var(--gx-accent-soft)', borderBottom: `1px solid var(--gx-border)` }}>
                         <td colSpan={10} style={{ padding: '16px 28px' }}>
                           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16 }}>
                             <Detail label="Email" value={s.email} />
@@ -365,7 +365,7 @@ export default function PlacementDashboard() {
                 ))}
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={10} style={{ padding: '40px', textAlign: 'center', color: '#4b8a4b' }}>
+                    <td colSpan={10} style={{ padding: '40px', textAlign: 'center', color: 'var(--gx-success)' }}>
                       No students match your filters
                     </td>
                   </tr>
@@ -377,8 +377,8 @@ export default function PlacementDashboard() {
 
         {/* ── FOOTER ── */}
         <div style={{ textAlign: 'center', marginTop: 32, paddingBottom: 24 }}>
-          <div style={{ color: '#2d5c2d', fontSize: 12 }}>Powered by <span style={{ color: G }}>GENOIS</span> · genois.in</div>
-          <div style={{ color: '#1e3a1e', fontSize: 11, marginTop: 4 }}>Data refreshes every 5 minutes</div>
+          <div style={{ color: 'var(--gx-success)', fontSize: 12 }}>Powered by <span style={{ color: G }}>GENOIS</span> · genois.in</div>
+          <div style={{ color: 'var(--gx-text-muted)', fontSize: 11, marginTop: 4 }}>Data refreshes every 5 minutes</div>
         </div>
       </div>
     </div>
@@ -388,8 +388,8 @@ export default function PlacementDashboard() {
 function Detail({ label, value }) {
   return (
     <div>
-      <div style={{ fontSize: 10, color: '#4b8a4b', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 }}>{label}</div>
-      <div style={{ fontSize: 13, color: '#e2ffe2', wordBreak: 'break-word' }}>{value}</div>
+      <div style={{ fontSize: 10, color: 'var(--gx-success)', letterSpacing: 1, textTransform: 'uppercase', marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 13, color: 'var(--gx-text)', wordBreak: 'break-word' }}>{value}</div>
     </div>
   );
 }

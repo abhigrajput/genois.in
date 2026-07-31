@@ -159,7 +159,7 @@ export default function UnionFindVisualizer() {
   };
 
   const SVG_W = 700, SVG_H = 240;
-  const COLORS = ['#00d9a3','#ff6b4a','#1d9e75','#ef9f27','#ff2d78','#378ADD','#e86af3','#f8d748'];
+  const COLORS = ['var(--gx-accent)','var(--gx-warning)','var(--gx-success)','var(--gx-warning)','var(--gx-danger)','var(--gx-info)','var(--gx-info)','var(--gx-warning)'];
 
   function rootOf(id) {
     let cur = id;
@@ -168,8 +168,8 @@ export default function UnionFindVisualizer() {
   }
 
   function nodeColor(id) {
-    if (findPath.includes(id)) return '#ef9f27';
-    if (highlightRoot === id) return '#1d9e75';
+    if (findPath.includes(id)) return 'var(--gx-warning)';
+    if (highlightRoot === id) return 'var(--gx-success)';
     return COLORS[rootOf(id)];
   }
 
@@ -183,19 +183,19 @@ export default function UnionFindVisualizer() {
       />
 
       {/* Parent array */}
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:10, padding:'12px 16px' }}>
-        <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', letterSpacing:1, marginBottom:8 }}>PARENT ARRAY</div>
+      <div style={{ background:'var(--gx-surface)', border:'1px solid var(--gx-border)', borderRadius:10, padding:'12px 16px' }}>
+        <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-text-muted)', letterSpacing:1, marginBottom:8 }}>PARENT ARRAY</div>
         <div style={{ display:'flex', gap:0 }}>
           {uf.parent.map((p, i) => {
             const isRoot = p === i;
             const color = COLORS[rootOf(i)];
             return (
               <div key={i} style={{ flex:1, textAlign:'center' }}>
-                <div style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'#2a3a4a', marginBottom:2 }}>idx[{i}]</div>
-                <div style={{ height:44, display:'flex', alignItems:'center', justifyContent:'center', background:isRoot?color+'22':'rgba(10,15,30,0.8)', border:`2px solid ${color}${isRoot?'':'44'}`, borderRadius:6, margin:'0 2px', transition:'all 0.3s ease' }}>
-                  <span style={{ fontFamily:'var(--font-mono)', fontSize:15, fontWeight:700, color:isRoot?color:color+'aa' }}>{p}</span>
+                <div style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'var(--gx-text-subtle)', marginBottom:2 }}>idx[{i}]</div>
+                <div style={{ height:44, display:'flex', alignItems:'center', justifyContent:'center', background:isRoot?`color-mix(in srgb, ${color} 13%, transparent)`:'var(--gx-surface)', border:`2px solid ${isRoot?color:`color-mix(in srgb, ${color} 27%, transparent)`}`, borderRadius:6, margin:'0 2px', transition:'all 0.3s ease' }}>
+                  <span style={{ fontFamily:'var(--font-mono)', fontSize:15, fontWeight:700, color:isRoot?color:`color-mix(in srgb, ${color} 67%, transparent)` }}>{p}</span>
                 </div>
-                <div style={{ fontFamily:'var(--font-mono)', fontSize:8, color:'#2a3a4a', marginTop:2 }}>r={uf.rank[i]}</div>
+                <div style={{ fontFamily:'var(--font-mono)', fontSize:8, color:'var(--gx-text-subtle)', marginTop:2 }}>r={uf.rank[i]}</div>
               </div>
             );
           })}
@@ -203,14 +203,14 @@ export default function UnionFindVisualizer() {
       </div>
 
       {/* Tree SVG */}
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, overflow:'hidden' }}>
-        <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', letterSpacing:1, padding:'10px 16px 0' }}>FOREST VIEW</div>
+      <div style={{ background:'var(--gx-surface)', border:'1px solid var(--gx-border)', borderRadius:12, overflow:'hidden' }}>
+        <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-text-muted)', letterSpacing:1, padding:'10px 16px 0' }}>FOREST VIEW</div>
         <svg width="100%" viewBox={`0 0 ${SVG_W} ${SVG_H}`} style={{ display:'block' }}>
           {uf.parent.map((p, i) => {
             if (p === i) return null;
             const from = layout[i], to = layout[p];
             if (!from || !to) return null;
-            return <line key={i} x1={from.x} y1={from.y} x2={to.x} y2={to.y} stroke="rgba(0,217,163,0.2)" strokeWidth={1.5} />;
+            return <line key={i} x1={from.x} y1={from.y} x2={to.x} y2={to.y} stroke="var(--gx-accent)" strokeWidth={1.5} />;
           })}
           {Array.from({length:N},(_,i)=>{
             const pos = layout[i];
@@ -222,7 +222,7 @@ export default function UnionFindVisualizer() {
               <g key={i}>
                 {isRoot && <circle cx={pos.x} cy={pos.y} r={26} fill="none" stroke={color} strokeWidth={1} opacity={0.3} />}
                 <circle cx={pos.x} cy={pos.y} r={20}
-                  fill={color+'22'} stroke={color} strokeWidth={isInPath?2.5:1.5}
+                  fill={`color-mix(in srgb, ${color} 13%, transparent)`} stroke={color} strokeWidth={isInPath?2.5:1.5}
                   style={{ transition:'all 0.4s ease' }} />
                 <text x={pos.x} y={pos.y+5} textAnchor="middle" style={{ fontFamily:'var(--font-mono)', fontSize:13, fontWeight:700, fill:color, transition:'fill 0.4s ease' }}>{i}</text>
                 {isRoot && <text x={pos.x} y={pos.y-28} textAnchor="middle" style={{ fontFamily:'var(--font-mono)', fontSize:8, fill:color, opacity:0.7 }}>root</text>}
@@ -240,25 +240,25 @@ export default function UnionFindVisualizer() {
       <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
         <input type="number" value={inputX} onChange={e=>setInputX(e.target.value)} placeholder="X" style={inputStyle} />
         <input type="number" value={inputY} onChange={e=>setInputY(e.target.value)} placeholder="Y" style={inputStyle} />
-        <button onClick={doUnion} style={btn('#ff6b4a')}>Union(X,Y)</button>
-        <button onClick={doFind} style={btn('#ef9f27')}>Find(X)</button>
-        <button onClick={reset} style={btn('#ff2d78')}>↺ Reset</button>
+        <button onClick={doUnion} style={btn('var(--gx-warning)')}>Union(X,Y)</button>
+        <button onClick={doFind} style={btn('var(--gx-warning)')}>Find(X)</button>
+        <button onClick={reset} style={btn('var(--gx-danger)')}>↺ Reset</button>
       </div>
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
-        {[['#ef9f27','Find path (compression)'],['#1d9e75','Root after Find']].map(([c,l])=>(
+        {[['var(--gx-warning)','Find path (compression)'],['var(--gx-success)','Root after Find']].map(([c,l])=>(
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
-            <div style={{ width:12, height:12, borderRadius:'50%', background:c+'44', border:`2px solid ${c}` }}/>
-            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>
+            <div style={{ width:12, height:12, borderRadius:'50%', background:`color-mix(in srgb, ${c} 27%, transparent)`, border:`2px solid ${c}` }}/>
+            <span style={{ fontSize:11, color:'var(--gx-text-muted)', fontFamily:'var(--font-body)' }}>{l}</span>
           </div>
         ))}
-        <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>Each color = one connected component</span>
+        <span style={{ fontSize:11, color:'var(--gx-text-muted)', fontFamily:'var(--font-body)' }}>Each color = one connected component</span>
       </div>
       <CodePanel code={CODE} activeLine={activeLine} />
     </div>
   );
 }
 function btn(color) {
-  return { padding:'8px 16px', borderRadius:8, border:`1px solid ${color}30`, background:`${color}10`, color, fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' };
+  return { padding:'8px 16px', borderRadius:8, border:`1px solid color-mix(in srgb, ${color} 19%, transparent)`, background:`color-mix(in srgb, ${color} 6%, transparent)`, color, fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' };
 }
-const inputStyle = { background:'rgba(0,217,163,0.04)', border:'1px solid rgba(0,217,163,0.2)', borderRadius:8, padding:'7px 12px', color:'#e8e8ed', fontFamily:'var(--font-mono)', fontSize:13, outline:'none', width:70 };
+const inputStyle = { background:'var(--gx-accent-soft)', border:'1px solid var(--gx-accent-border)', borderRadius:8, padding:'7px 12px', color:'var(--gx-text)', fontFamily:'var(--font-mono)', fontSize:13, outline:'none', width:70 };

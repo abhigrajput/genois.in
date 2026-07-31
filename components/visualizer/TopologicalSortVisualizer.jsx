@@ -121,13 +121,13 @@ function computeTopoSteps() {
 }
 
 function nodeColor(id, step) {
-  if (!step) return '#1a2a3a';
-  if (step.current === id && step.phase === 'push') return '#1d9e75';
-  if (step.current === id) return '#00d9a3';
-  if (step.checking === id) return '#ef9f27';
-  if (step.callStack?.includes(id)) return '#ff6b4a';
-  if (step.visited?.[id]) return '#1d9e75';
-  return '#1a2a3a';
+  if (!step) return 'var(--gx-surface-2)';
+  if (step.current === id && step.phase === 'push') return 'var(--gx-success)';
+  if (step.current === id) return 'var(--gx-accent)';
+  if (step.checking === id) return 'var(--gx-warning)';
+  if (step.callStack?.includes(id)) return 'var(--gx-warning)';
+  if (step.visited?.[id]) return 'var(--gx-success)';
+  return 'var(--gx-surface-2)';
 }
 
 export default function TopologicalSortVisualizer() {
@@ -170,31 +170,31 @@ export default function TopologicalSortVisualizer() {
 
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
-          { label:'Vertices', value:6, color:'#00d9a3' },
-          { label:'Edges', value:EDGES.length, color:'#ff6b4a' },
-          { label:'Visited', value:current?.visited?.filter(Boolean).length??0, color:'#1d9e75' },
-          { label:'Result Size', value:current?.result?.length??0, color:'#ef9f27' },
+          { label:'Vertices', value:6, color:'var(--gx-accent)' },
+          { label:'Edges', value:EDGES.length, color:'var(--gx-warning)' },
+          { label:'Visited', value:current?.visited?.filter(Boolean).length??0, color:'var(--gx-success)' },
+          { label:'Result Size', value:current?.result?.length??0, color:'var(--gx-warning)' },
         ].map(s=>(
-          <div key={s.label} style={{ background:'rgba(10,15,30,0.8)', border:`1px solid ${s.color}20`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
-            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
+          <div key={s.label} style={{ background:'var(--gx-surface)', border:`1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-text-muted)', marginBottom:2 }}>{s.label}</div>
             <div style={{ fontFamily:'var(--font-heading)', fontSize:20, fontWeight:700, color:s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
       {current?.label && (
-        <div style={{ background:current.phase==='push'?'rgba(29,158,117,0.08)':'rgba(0,217,163,0.05)', border:`1px solid ${current.phase==='push'?'rgba(29,158,117,0.3)':'rgba(0,217,163,0.15)'}`, borderRadius:8, padding:'8px 14px', fontFamily:'var(--font-mono)', fontSize:11, color:current.phase==='push'?'#1d9e75':'#00d9a3' }}>
+        <div style={{ background:current.phase==='push'?'var(--gx-success-soft)':'var(--gx-accent-soft)', border:`1px solid ${current.phase==='push'?'var(--gx-success-border)':'var(--gx-border)'}`, borderRadius:8, padding:'8px 14px', fontFamily:'var(--font-mono)', fontSize:11, color:current.phase==='push'?'var(--gx-success)':'var(--gx-accent)' }}>
           {current.phase==='push'?'✓ ':'▶ '}{current.label || `Processing node ${current.current}`}
         </div>
       )}
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
         {/* DAG SVG */}
-        <div style={{ flex:2, background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, overflow:'hidden', minWidth:280 }}>
+        <div style={{ flex:2, background:'var(--gx-surface)', border:'1px solid var(--gx-border)', borderRadius:12, overflow:'hidden', minWidth:280 }}>
           <svg width="100%" viewBox={`0 0 ${SVG_W} ${SVG_H}`} style={{ display:'block' }}>
             <defs>
               <marker id="topo-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-                <path d="M0,0 L0,6 L8,3 z" fill="rgba(0,217,163,0.4)" />
+                <path d="M0,0 L0,6 L8,3 z" fill="var(--gx-accent)" />
               </marker>
             </defs>
             {EDGES.map(([u,v],i)=>{
@@ -204,7 +204,7 @@ export default function TopologicalSortVisualizer() {
               const isActive = current?.current===u && current?.checking===v;
               return (
                 <line key={i} x1={nu.x} y1={nu.y+50} x2={ex} y2={ey+50}
-                  stroke={isActive?'#ef9f27':'rgba(0,217,163,0.2)'} strokeWidth={isActive?2.5:1.5}
+                  stroke={isActive?'var(--gx-warning)':'var(--gx-accent-border)'} strokeWidth={isActive?2.5:1.5}
                   markerEnd="url(#topo-arrow)" style={{transition:'all 0.3s'}} />
               );
             })}
@@ -214,7 +214,7 @@ export default function TopologicalSortVisualizer() {
               return (
                 <g key={n.id}>
                   {isActive&&<circle cx={n.x} cy={n.y+50} r={28} fill="none" stroke={color} strokeWidth={1} opacity={0.4}/>}
-                  <circle cx={n.x} cy={n.y+50} r={22} fill={color==='#1a2a3a'?'#0d1a2a':color+'22'} stroke={color} strokeWidth={isActive?2.5:1.5} style={{transition:'all 0.3s ease'}}/>
+                  <circle cx={n.x} cy={n.y+50} r={22} fill={color==='var(--gx-surface-2)'?'var(--gx-surface)':`color-mix(in srgb, ${color} 13%, transparent)`} stroke={color} strokeWidth={isActive?2.5:1.5} style={{transition:'all 0.3s ease'}}/>
                   <text x={n.x} y={n.y+55} textAnchor="middle" style={{ fontFamily:'var(--font-mono)', fontSize:14, fontWeight:700, fill:color, transition:'fill 0.3s ease' }}>{n.id}</text>
                 </g>
               );
@@ -224,25 +224,25 @@ export default function TopologicalSortVisualizer() {
 
         {/* Right: call stack + result */}
         <div style={{ flex:1, display:'flex', flexDirection:'column', gap:12, minWidth:180 }}>
-          <div style={{ background:'rgba(10,15,30,0.8)', border:'1px solid rgba(255,107,74,0.2)', borderRadius:10, padding:12 }}>
-            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#ff6b4a', letterSpacing:1, marginBottom:8 }}>CALL STACK</div>
+          <div style={{ background:'var(--gx-surface)', border:'1px solid var(--gx-warning-border)', borderRadius:10, padding:12 }}>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-warning)', letterSpacing:1, marginBottom:8 }}>CALL STACK</div>
             <div style={{ display:'flex', flexDirection:'column', gap:3, minHeight:60 }}>
               {[...(current?.callStack||[])].reverse().map((v,i)=>(
-                <div key={i} style={{ padding:'4px 10px', borderRadius:6, background:i===0?'rgba(0,217,163,0.12)':'rgba(255,107,74,0.08)', border:`1px solid ${i===0?'rgba(0,217,163,0.3)':'rgba(255,107,74,0.15)'}`, fontFamily:'var(--font-mono)', fontSize:12, fontWeight:700, color:i===0?'#00d9a3':'#ff6b4a', display:'flex', justifyContent:'space-between' }}>
+                <div key={i} style={{ padding:'4px 10px', borderRadius:6, background:i===0?'var(--gx-accent-soft)':'var(--gx-warning-soft)', border:`1px solid ${i===0?'var(--gx-accent-border)':'var(--gx-warning-border)'}`, fontFamily:'var(--font-mono)', fontSize:12, fontWeight:700, color:i===0?'var(--gx-accent)':'var(--gx-warning)', display:'flex', justifyContent:'space-between' }}>
                   dfs({v}){i===0&&<span style={{fontSize:9,opacity:0.6}}>← top</span>}
                 </div>
               ))}
-              {(!current?.callStack?.length)&&<span style={{ fontFamily:'var(--font-mono)', fontSize:11, color:'#2a3a4a' }}>empty</span>}
+              {(!current?.callStack?.length)&&<span style={{ fontFamily:'var(--font-mono)', fontSize:11, color:'var(--gx-text-subtle)' }}>empty</span>}
             </div>
           </div>
 
-          <div style={{ background:'rgba(10,15,30,0.8)', border:'1px solid rgba(29,158,117,0.2)', borderRadius:10, padding:12 }}>
-            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#1d9e75', letterSpacing:1, marginBottom:8 }}>TOPOLOGICAL ORDER</div>
+          <div style={{ background:'var(--gx-surface)', border:'1px solid var(--gx-success-border)', borderRadius:10, padding:12 }}>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-success)', letterSpacing:1, marginBottom:8 }}>TOPOLOGICAL ORDER</div>
             <div style={{ display:'flex', gap:4, flexWrap:'wrap', minHeight:36 }}>
               {(current?.result||[]).map((v,i)=>(
-                <span key={i} style={{ padding:'4px 12px', borderRadius:6, background:'rgba(29,158,117,0.15)', border:'1px solid rgba(29,158,117,0.3)', fontFamily:'var(--font-mono)', fontSize:14, fontWeight:700, color:'#1d9e75', animation:'nodeAppear 0.3s ease' }}>{v}</span>
+                <span key={i} style={{ padding:'4px 12px', borderRadius:6, background:'var(--gx-success-soft)', border:'1px solid var(--gx-success-border)', fontFamily:'var(--font-mono)', fontSize:14, fontWeight:700, color:'var(--gx-success)', animation:'nodeAppear 0.3s ease' }}>{v}</span>
               ))}
-              {(!current?.result?.length)&&<span style={{ fontFamily:'var(--font-mono)', fontSize:11, color:'#2a3a4a' }}>—</span>}
+              {(!current?.result?.length)&&<span style={{ fontFamily:'var(--font-mono)', fontSize:11, color:'var(--gx-text-subtle)' }}>—</span>}
             </div>
           </div>
         </div>
@@ -256,22 +256,22 @@ export default function TopologicalSortVisualizer() {
       />
 
       <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
-        <button onClick={start} style={btn('#00d9a3')}>▶ Run Topo Sort</button>
-        <button onClick={()=>setIsPlaying(p=>!p)} style={btn('#ff6b4a')}>{isPlaying?'⏸ Pause':'▶ Resume'}</button>
-        <button onClick={()=>setStepIdx(p=>Math.min(p+1,steps.length-1))} style={btn('#ef9f27')}>⏭ Step</button>
+        <button onClick={start} style={btn('var(--gx-accent)')}>▶ Run Topo Sort</button>
+        <button onClick={()=>setIsPlaying(p=>!p)} style={btn('var(--gx-warning)')}>{isPlaying?'⏸ Pause':'▶ Resume'}</button>
+        <button onClick={()=>setStepIdx(p=>Math.min(p+1,steps.length-1))} style={btn('var(--gx-warning)')}>⏭ Step</button>
         <div style={{ display:'flex', gap:4 }}>
           {[1,2,3,4].map(s=>(
-            <button key={s} onClick={()=>setSpeed(s)} style={{ padding:'3px 10px', borderRadius:6, border:speed===s?'1px solid #00d9a3':'1px solid rgba(0,217,163,0.15)', background:speed===s?'rgba(0,217,163,0.12)':'transparent', color:speed===s?'#00d9a3':'#5a7a9a', fontSize:11, fontFamily:'var(--font-mono)', cursor:'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
+            <button key={s} onClick={()=>setSpeed(s)} style={{ padding:'3px 10px', borderRadius:6, border:speed===s?'1px solid var(--gx-accent)':'1px solid var(--gx-border)', background:speed===s?'var(--gx-accent-soft)':'transparent', color:speed===s?'var(--gx-accent)':'var(--gx-text-muted)', fontSize:11, fontFamily:'var(--font-mono)', cursor:'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
           ))}
         </div>
-        <button onClick={reset} style={btn('#ff2d78')}>↺ Reset</button>
+        <button onClick={reset} style={btn('var(--gx-danger)')}>↺ Reset</button>
       </div>
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
-        {[['#00d9a3','Current'],['#ff6b4a','In Call Stack'],['#ef9f27','Checking'],['#1d9e75','Finished']].map(([c,l])=>(
+        {[['var(--gx-accent)','Current'],['var(--gx-warning)','In Call Stack'],['var(--gx-warning)','Checking'],['var(--gx-success)','Finished']].map(([c,l])=>(
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
-            <div style={{ width:12, height:12, borderRadius:'50%', background:c+'44', border:`2px solid ${c}` }}/>
-            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>
+            <div style={{ width:12, height:12, borderRadius:'50%', background:`color-mix(in srgb, ${c} 27%, transparent)`, border:`2px solid ${c}` }}/>
+            <span style={{ fontSize:11, color:'var(--gx-text-muted)', fontFamily:'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>
@@ -281,5 +281,5 @@ export default function TopologicalSortVisualizer() {
   );
 }
 function btn(color) {
-  return { padding:'8px 16px', borderRadius:8, border:`1px solid ${color}30`, background:`${color}10`, color, fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' };
+  return { padding:'8px 16px', borderRadius:8, border:`1px solid color-mix(in srgb, ${color} 19%, transparent)`, background:`color-mix(in srgb, ${color} 6%, transparent)`, color, fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' };
 }

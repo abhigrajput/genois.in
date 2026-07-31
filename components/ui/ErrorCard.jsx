@@ -9,16 +9,16 @@
 export default function ErrorCard({ icon = '⚠️', title, message, primaryLabel, onPrimary, secondaryLabel, onSecondary }) {
   return (
     <div style={{ maxWidth: 560, margin: '40px auto 0', fontFamily: 'var(--font-body)' }}>
-      <div style={{ background: '#070f1f', border: '1px solid rgba(239,159,39,0.28)', borderRadius: 16, padding: 28, textAlign: 'center' }}>
+      <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-warning-border)', borderRadius: 16, padding: 28, textAlign: 'center' }}>
         <div style={{ fontSize: 34, marginBottom: 12 }}>{icon}</div>
-        <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>{title}</div>
-        <div style={{ fontSize: 14, color: '#c8d8e8', lineHeight: 1.6, marginBottom: 20 }}>{message}</div>
+        <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 8 }}>{title}</div>
+        <div style={{ fontSize: 14, color: 'var(--gx-text)', lineHeight: 1.6, marginBottom: 20 }}>{message}</div>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
           {primaryLabel && (
-            <button onClick={onPrimary} style={{ flex: 1, minWidth: 160, padding: 13, borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>{primaryLabel}</button>
+            <button onClick={onPrimary} style={{ flex: 1, minWidth: 160, padding: 13, borderRadius: 12, border: 'none', cursor: 'pointer', background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>{primaryLabel}</button>
           )}
           {secondaryLabel && (
-            <button onClick={onSecondary} style={{ flex: 1, minWidth: 160, padding: 13, borderRadius: 12, border: '1px solid rgba(255,255,255,0.14)', cursor: 'pointer', background: 'transparent', color: '#c8d8e8', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14 }}>{secondaryLabel}</button>
+            <button onClick={onSecondary} style={{ flex: 1, minWidth: 160, padding: 13, borderRadius: 12, border: '1px solid var(--gx-border)', cursor: 'pointer', background: 'transparent', color: 'var(--gx-text)', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14 }}>{secondaryLabel}</button>
           )}
         </div>
       </div>

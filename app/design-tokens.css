@@ -12,10 +12,10 @@
    CONTRAST — every value used as text is checked against #ffffff AND #f8f9fa.
    Ratios are noted inline. Anything below 4.5:1 is marked non-text.
 
-   SCOPING — the tokens below are inert custom properties, so this file is safe
-   to load globally. The light *theme* (page background, text colour, form
-   colour-scheme) only activates inside `.gx-app`, so pages that have not been
-   migrated yet keep rendering exactly as they do today.
+   SCOPING — none. This file is loaded globally by globals.css and the light
+   theme is now the only theme: `html`, `body`, the scrollbar and native form
+   controls are painted light for every route. `.gx-app` is the app shell's
+   surface + type baseline, not a theme switch.
    ========================================================================= */
 
 :root {
@@ -136,41 +136,14 @@
 }
 
 /* ============================================================================
-   THEME ACTIVATION — scoped to `.gx-app`
+   THEME ACTIVATION
+   ----------------------------------------------------------------------------
+   The theme used to be gated behind `html:has(.gx-app)` so that un-migrated
+   dark pages kept rendering as they were. Every page is on the light system
+   now, so the gate is gone: globals.css paints `html`/`body`, the scrollbar
+   and native <option>s light for the whole document, and `.gx-app` below is
+   just the shell's own surface + type baseline.
    ========================================================================= */
-
-/* Repaint the document chrome only when a light shell is actually mounted, so
-   the un-migrated dark pages are left untouched. */
-html:has(.gx-app) {
-  color-scheme: light;
-}
-
-html:has(.gx-app) body {
-  background: var(--gx-bg);
-  color: var(--gx-text);
-}
-
-html:has(.gx-app) ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-html:has(.gx-app) ::-webkit-scrollbar-track {
-  background: var(--gx-surface);
-}
-html:has(.gx-app) ::-webkit-scrollbar-thumb {
-  background: #ccd2d8;
-  border: 2px solid var(--gx-surface);
-  border-radius: var(--gx-radius-full);
-}
-html:has(.gx-app) ::-webkit-scrollbar-thumb:hover {
-  background: var(--gx-border-strong);
-}
-
-/* globals.css paints native <option>s dark for the legacy theme. */
-html:has(.gx-app) select option {
-  background: var(--gx-bg);
-  color: var(--gx-text);
-}
 
 .gx-app {
   background: var(--gx-bg);

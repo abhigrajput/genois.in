@@ -119,9 +119,9 @@ export default function MentorPage() {
           <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div className={`max-w-2xl px-4 py-3 rounded-2xl text-sm leading-relaxed whitespace-pre-wrap ${m.role === 'user' ? 'rounded-br-sm' : 'rounded-bl-sm'}`}
               style={{
-                background: m.role === 'user' ? 'linear-gradient(135deg,rgba(29,158,117,0.35),rgba(29,158,117,0.15))' : 'rgba(255,255,255,0.05)',
-                border: m.role === 'user' ? '1px solid rgba(29,158,117,0.35)' : '1px solid rgba(255,255,255,0.08)',
-                color: '#e8e8ed'
+                background: m.role === 'user' ? 'var(--gx-success)' : 'var(--gx-surface)',
+                border: m.role === 'user' ? '1px solid var(--gx-success-border)' : '1px solid var(--gx-border)',
+                color: m.role === 'user' ? 'var(--gx-text-inverse)' : 'var(--gx-text)'
               }}>
               {m.loading ? <span className="animate-pulse">Thinking...</span> : m.content}
             </div>

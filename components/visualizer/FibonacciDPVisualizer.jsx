@@ -176,13 +176,13 @@ export default function FibonacciDPVisualizer() {
 
   // Color functions
   function getCellColor(idx) {
-    if (current.mode === 'done') return '#1d9e75';
+    if (current.mode === 'done') return 'var(--gx-success)';
     if (idx === current.currentIdx) {
-      return current.mode === 'computed' ? '#1d9e75' : '#00d9a3';
+      return current.mode === 'computed' ? 'var(--gx-success)' : 'var(--gx-accent)';
     }
-    if (current.dependencies.includes(idx)) return '#ef9f27';
-    if (current.dp[idx] !== null) return '#1d9e7540';
-    return '#1a2a3a';
+    if (current.dependencies.includes(idx)) return 'var(--gx-warning)';
+    if (current.dp[idx] !== null) return 'var(--gx-success)';
+    return 'var(--gx-surface-2)';
   }
 
   // Flatten the tree nodes to render edges and nodes easily
@@ -198,11 +198,11 @@ export default function FibonacciDPVisualizer() {
   // Match recursive nodes with bottom-up calculation status
   function getTreeNodeColor(label) {
     const match = label.match(/\((\d+)\)/);
-    if (!match) return '#1a2a3a';
+    if (!match) return 'var(--gx-surface-2)';
     const val = parseInt(match[1]);
-    if (current.dp[val] !== null) return '#1d9e75';
-    if (val === current.currentIdx) return '#00d9a3';
-    return '#2a3a4a';
+    if (current.dp[val] !== null) return 'var(--gx-success)';
+    if (val === current.currentIdx) return 'var(--gx-accent)';
+    return 'var(--gx-surface-3)';
   }
 
   return (
@@ -217,13 +217,13 @@ export default function FibonacciDPVisualizer() {
       {/* Stats row */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Bottom-up Result', value: current.dp[n] ?? '—', color: '#00d9a3' },
-          { label: 'DP States', value: n + 1, color: '#ff6b4a' },
-          { label: 'Time Complexity', value: 'O(n)', color: '#1d9e75' },
-          { label: 'Space Complexity', value: 'O(n)', color: '#ef9f27' },
+          { label: 'Bottom-up Result', value: current.dp[n] ?? '—', color: 'var(--gx-accent)' },
+          { label: 'DP States', value: n + 1, color: 'var(--gx-warning)' },
+          { label: 'Time Complexity', value: 'O(n)', color: 'var(--gx-success)' },
+          { label: 'Space Complexity', value: 'O(n)', color: 'var(--gx-warning)' },
         ].map(s => (
-          <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+          <div key={s.label} style={{ background: 'var(--gx-surface)', border: `1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)', marginBottom: 2 }}>{s.label}</div>
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
@@ -232,8 +232,8 @@ export default function FibonacciDPVisualizer() {
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {/* Left Side: Bottom-Up DP Grid */}
         <div style={{ flex: 1.2, minWidth: 280, display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: '24px 16px', position: 'relative' }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 16 }}>BOTTOM-UP DP TABLE (dp[])</div>
+          <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: '24px 16px', position: 'relative' }}>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 1, marginBottom: 16 }}>BOTTOM-UP DP TABLE (dp[])</div>
             
             <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', minHeight: 70, alignItems: 'center' }}>
               {current.dp.map((val, idx) => {
@@ -244,14 +244,14 @@ export default function FibonacciDPVisualizer() {
                 return (
                   <div key={idx} style={{
                     width: 52, height: 52, borderRadius: 8,
-                    background: isCurrent ? 'rgba(0,217,163,0.05)' : isDep ? 'rgba(239,159,39,0.05)' : 'rgba(10,15,30,0.8)',
+                    background: isCurrent ? 'var(--gx-accent-soft)' : isDep ? 'var(--gx-warning-soft)' : 'var(--gx-surface)',
                     border: `2px solid ${color}`,
                     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                     position: 'relative', transition: 'all 0.3s ease',
-                    boxShadow: isCurrent ? '0 0 12px rgba(0,217,163,0.2)' : 'none',
+                    boxShadow: isCurrent ? 'var(--gx-shadow-sm)' : 'none',
                   }}>
-                    <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: '#5a7a9a', position: 'absolute', top: 4 }}>i={idx}</span>
-                    <span style={{ fontSize: 14, fontFamily: 'var(--font-mono)', fontWeight: 700, color: val === null ? '#2a3a4a' : color, marginTop: 10 }}>
+                    <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: 'var(--gx-text-muted)', position: 'absolute', top: 4 }}>i={idx}</span>
+                    <span style={{ fontSize: 14, fontFamily: 'var(--font-mono)', fontWeight: 700, color: val === null ? 'var(--gx-text-subtle)' : color, marginTop: 10 }}>
                       {val === null ? '—' : val}
                     </span>
                   </div>
@@ -262,12 +262,12 @@ export default function FibonacciDPVisualizer() {
             {/* Dependency arrows SVG overlay */}
             <div style={{ marginTop: 24, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               {current.dependencies.length > 0 && (
-                <div style={{ display: 'flex', gap: 24, fontFamily: 'var(--font-mono)', fontSize: 11, color: '#ef9f27' }}>
+                <div style={{ display: 'flex', gap: 24, fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--gx-warning)' }}>
                   <span>dp[{current.currentIdx - 2}] ({current.dp[current.currentIdx - 2]})</span>
                   <span>+</span>
                   <span>dp[{current.currentIdx - 1}] ({current.dp[current.currentIdx - 1]})</span>
                   <span>=</span>
-                  <span style={{ color: '#00d9a3', fontWeight: 'bold' }}>dp[{current.currentIdx}] ({current.dp[current.currentIdx]})</span>
+                  <span style={{ color: 'var(--gx-accent)', fontWeight: 'bold' }}>dp[{current.currentIdx}] ({current.dp[current.currentIdx]})</span>
                 </div>
               )}
             </div>
@@ -276,19 +276,19 @@ export default function FibonacciDPVisualizer() {
 
         {/* Right Side: Recursive call tree representation */}
         <div style={{ flex: 1, minWidth: 280, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 16 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>RECURSIVE CALL TREE (Top-Down Memoized)</div>
+          <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: 16 }}>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 1, marginBottom: 8 }}>RECURSIVE CALL TREE (Top-Down Memoized)</div>
             <div style={{ overflow: 'auto', display: 'flex', justifyContent: 'center' }}>
               <svg width="500" height="260" style={{ display: 'block' }}>
                 {links.map((link, i) => {
                   const fromCol = getTreeNodeColor(link.from.label);
                   const toCol = getTreeNodeColor(link.to.label);
-                  const isActive = fromCol === '#1d9e75' && toCol === '#1d9e75';
+                  const isActive = fromCol === 'var(--gx-success)' && toCol === 'var(--gx-success)';
                   return (
                     <line key={i}
                       x1={link.from.x} y1={link.from.y}
                       x2={link.to.x} y2={link.to.y}
-                      stroke={isActive ? '#1d9e75' : 'rgba(0,217,163,0.12)'}
+                      stroke={isActive ? 'var(--gx-success)' : 'var(--gx-border)'}
                       strokeWidth={isActive ? 2 : 1.5}
                       style={{ transition: 'all 0.3s' }}
                     />
@@ -296,11 +296,11 @@ export default function FibonacciDPVisualizer() {
                 })}
                 {nodes.map(node => {
                   const color = getTreeNodeColor(node.label);
-                  const isHl = color === '#00d9a3';
+                  const isHl = color === 'var(--gx-accent)';
                   return (
                     <g key={node.id}>
                       <circle cx={node.x} cy={node.y} r={16}
-                        fill="#0d1424"
+                        fill="var(--gx-text-inverse)"
                         stroke={color}
                         strokeWidth={isHl ? 2.5 : 1.5}
                         style={{ transition: 'all 0.3s' }}
@@ -314,7 +314,7 @@ export default function FibonacciDPVisualizer() {
                 })}
               </svg>
             </div>
-            <div style={{ fontSize: 9, fontFamily: 'var(--font-body)', color: '#5a7a9a', marginTop: 4, textAlign: 'center' }}>
+            <div style={{ fontSize: 9, fontFamily: 'var(--font-body)', color: 'var(--gx-text-muted)', marginTop: 4, textAlign: 'center' }}>
               Node shows required state. Green nodes = solved / retrieved from memo table.
             </div>
           </div>
@@ -331,14 +331,14 @@ export default function FibonacciDPVisualizer() {
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {[
-          { color: '#1a2a3a', label: 'Uncomputed' },
-          { color: '#00d9a3', label: 'Current computation' },
-          { color: '#ef9f27', label: 'Dependencies (i-1, i-2)' },
-          { color: '#1d9e75', label: 'Computed / Base Case' },
+          { color: 'var(--gx-text-muted)', label: 'Uncomputed' },
+          { color: 'var(--gx-accent)', label: 'Current computation' },
+          { color: 'var(--gx-warning)', label: 'Dependencies (i-1, i-2)' },
+          { color: 'var(--gx-success)', label: 'Computed / Base Case' },
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ width: 12, height: 12, borderRadius: 3, background: l.color === '#1a2a3a' ? '#0d1a2a' : l.color + '44', border: `1.5px solid ${l.color}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l.label}</span>
+            <div style={{ width: 12, height: 12, borderRadius: 3, background: l.color === 'var(--gx-surface-2)' ? 'var(--gx-surface)' : `color-mix(in srgb, ${l.color} 27%, transparent)`, border: `1.5px solid ${l.color}` }} />
+            <span style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)' }}>{l.label}</span>
           </div>
         ))}
       </div>

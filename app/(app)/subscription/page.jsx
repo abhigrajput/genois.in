@@ -1,15 +1,15 @@
 'use client';
 import { useRouter } from 'next/navigation';
 
-// ─── GENOIS Green System — dark slate architecture ───────────────────────────
-const BG900 = '#0f172a'; // slate-900 — master page background
-const BG800 = '#1e293b'; // slate-800 — internal cards
-const BORDER = 'rgba(148,163,184,0.18)'; // slate-400 @ low alpha — clean borders
-const GREEN = '#00d9a3'; // GENOIS green — primary action / accent
-const ON_GREEN = '#0f172a'; // high-contrast dark text on green (WCAG AA ~10:1)
-const TEXT = '#e2e8f0'; // slate-200 — primary copy
-const TEXT_STRONG = '#f8fafc'; // slate-50 — headings
-const MUTED = '#94a3b8'; // slate-400 — secondary copy
+// ─── GENOIS light system ─────────────────────────────────────────────────────
+const BG900 = 'var(--gx-surface)'; // master page canvas
+const BG800 = 'var(--gx-bg)';      // cards sitting on that canvas
+const BORDER = 'var(--gx-border)';  // neutral hairline
+const GREEN = 'var(--gx-accent)';  // the one accent — primary action
+const ON_GREEN = 'var(--gx-text-inverse)'; // white on the accent fill (4.94:1)
+const TEXT = 'var(--gx-text)';        // primary copy
+const TEXT_STRONG = 'var(--gx-text)'; // headings
+const MUTED = 'var(--gx-text-muted)'; // secondary copy
 
 // 4px-based spacing scale.
 const SP = { 1: 4, 2: 8, 3: 12, 4: 16, 6: 24, 8: 32 };
@@ -59,7 +59,7 @@ export default function SubscriptionPage() {
     >
       {/* ─── Header ─────────────────────────────────────────────────────────── */}
       <div style={{ marginBottom: SP[6] }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: GREEN, letterSpacing: 1.5, marginBottom: SP[2] }}>
+        <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: GREEN, letterSpacing: 1.5, marginBottom: SP[2] }}>
           GENOIS PLACEMENT BETA
         </div>
         <h1
@@ -85,8 +85,8 @@ export default function SubscriptionPage() {
       {/* ─── The gate ───────────────────────────────────────────────────────── */}
       <div
         style={{
-          background: `linear-gradient(160deg, rgba(0,217,163,0.07), ${BG800})`,
-          border: '1px solid rgba(0,217,163,0.4)',
+          background: `var(--gx-accent-soft)`,
+          border: '1px solid var(--gx-accent-border)',
           borderRadius: 18,
           padding: 'clamp(20px, 4vw, 32px)',
           marginBottom: SP[6],
@@ -118,7 +118,7 @@ export default function SubscriptionPage() {
             fontFamily: 'var(--font-heading)',
             fontSize: 15,
             fontWeight: 800,
-            boxShadow: '0 12px 34px rgba(0,217,163,0.28)',
+            boxShadow: 'var(--gx-shadow-sm)',
           }}
         >
           Apply for Free Beta Access →
@@ -144,7 +144,7 @@ export default function SubscriptionPage() {
           boxSizing: 'border-box',
         }}
       >
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: 1.5, textTransform: 'uppercase', color: GREEN, marginBottom: SP[4] }}>
+        <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, letterSpacing: 1.5, textTransform: 'uppercase', color: GREEN, marginBottom: SP[4] }}>
           Not a ChatGPT wrapper — what your seat includes
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))', gap: SP[4] }}>

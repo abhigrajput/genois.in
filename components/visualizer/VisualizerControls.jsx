@@ -11,8 +11,8 @@ export default function VisualizerControls({
 }) {
   return (
     <div style={{
-      background: 'rgba(10,15,30,0.9)',
-      border: '1px solid rgba(0,217,163,0.12)',
+      background: 'var(--gx-surface)',
+      border: '1px solid var(--gx-border)',
       borderRadius: 12,
       padding: '14px 18px',
       display: 'flex',
@@ -23,16 +23,16 @@ export default function VisualizerControls({
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
         {/* Step back */}
         <button onClick={onStepBackward} title="Step Backward"
-          style={btnStyle('#5a7a9a')}>
+          style={btnStyle('var(--gx-text-muted)')}>
           ⏮
         </button>
         {/* Play/Pause */}
         <button onClick={onPlayPause}
           style={{
-            ...btnStyle('#00d9a3'),
-            background: 'rgba(0,217,163,0.12)',
-            border: '1px solid rgba(0,217,163,0.35)',
-            color: '#00d9a3',
+            ...btnStyle('var(--gx-accent)'),
+            background: 'var(--gx-accent-soft)',
+            border: '1px solid var(--gx-accent-border)',
+            color: 'var(--gx-accent)',
             minWidth: 80,
             fontFamily: 'var(--font-body)',
             fontWeight: 600,
@@ -41,16 +41,16 @@ export default function VisualizerControls({
         </button>
         {/* Step fwd */}
         <button onClick={onStepForward} title="Step Forward"
-          style={btnStyle('#5a7a9a')}>
+          style={btnStyle('var(--gx-text-muted)')}>
           ⏭
         </button>
         {/* Reset */}
         <button onClick={onReset}
           style={{
-            ...btnStyle('#ff2d78'),
-            background: 'rgba(255,45,120,0.08)',
-            border: '1px solid rgba(255,45,120,0.25)',
-            color: '#ff2d78',
+            ...btnStyle('var(--gx-danger)'),
+            background: 'var(--gx-danger-soft)',
+            border: '1px solid var(--gx-danger-border)',
+            color: 'var(--gx-danger)',
             fontFamily: 'var(--font-body)',
           }}>
           ↺ Reset
@@ -61,10 +61,10 @@ export default function VisualizerControls({
           <span style={{
             fontFamily: 'var(--font-mono)',
             fontSize: 11,
-            color: '#5a7a9a',
+            color: 'var(--gx-text-muted)',
             marginLeft: 'auto',
           }}>
-            Step <span style={{ color: '#00d9a3' }}>{currentStep}</span> / {totalSteps}
+            Step <span style={{ color: 'var(--gx-accent)' }}>{currentStep}</span> / {totalSteps}
           </span>
         )}
       </div>
@@ -79,9 +79,9 @@ export default function VisualizerControls({
               style={{
                 padding: '3px 10px',
                 borderRadius: 6,
-                border: speed === s ? '1px solid #00d9a3' : '1px solid rgba(0,217,163,0.15)',
-                background: speed === s ? 'rgba(0,217,163,0.12)' : 'transparent',
-                color: speed === s ? '#00d9a3' : '#5a7a9a',
+                border: speed === s ? '1px solid var(--gx-accent)' : '1px solid var(--gx-border)',
+                background: speed === s ? 'var(--gx-accent-soft)' : 'transparent',
+                color: speed === s ? 'var(--gx-accent)' : 'var(--gx-text-muted)',
                 fontSize: 11,
                 fontFamily: 'var(--font-mono)',
                 cursor: 'pointer',
@@ -99,15 +99,15 @@ export default function VisualizerControls({
               <span style={labelStyle}>Size</span>
               <input type="range" min={5} max={12} value={arraySize}
                 onChange={e => onArraySizeChange(Number(e.target.value))}
-                style={{ width: 80, accentColor: '#00d9a3', cursor: 'pointer' }} />
-              <span style={{ ...labelStyle, color: '#00d9a3', minWidth: 14 }}>{arraySize}</span>
+                style={{ width: 80, accentColor: 'var(--gx-accent)', cursor: 'pointer' }} />
+              <span style={{ ...labelStyle, color: 'var(--gx-accent)', minWidth: 14 }}>{arraySize}</span>
             </div>
             <button onClick={onRandomize}
               style={{
-                ...btnStyle('#1D9E75'),
-                background: 'rgba(29,158,117,0.1)',
-                border: '1px solid rgba(29,158,117,0.25)',
-                color: '#1D9E75',
+                ...btnStyle('var(--gx-success)'),
+                background: 'var(--gx-success-soft)',
+                border: '1px solid var(--gx-success-border)',
+                color: 'var(--gx-success)',
                 fontFamily: 'var(--font-body)',
                 fontSize: 12,
               }}>
@@ -123,7 +123,7 @@ export default function VisualizerControls({
 const btnStyle = (color) => ({
   padding: '6px 14px',
   borderRadius: 8,
-  border: `1px solid ${color}30`,
+  border: `1px solid color-mix(in srgb, ${color} 19%, transparent)`,
   background: 'transparent',
   color: color,
   fontSize: 13,
@@ -135,9 +135,9 @@ const btnStyle = (color) => ({
 });
 
 const labelStyle = {
-  fontFamily: 'var(--font-mono)',
+  fontFamily: 'var(--font-body)',
   fontSize: 10,
-  color: '#5a7a9a',
+  color: 'var(--gx-text-muted)',
   letterSpacing: 1,
   textTransform: 'uppercase',
 };

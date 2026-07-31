@@ -1,9 +1,9 @@
 'use client';
 import Link from 'next/link';
 
-const PURPLE = '#00d9a3';
-const PURPLE_LIGHT = '#2ee6b0';
-const MUTED = '#8b93a1';
+const PURPLE = 'var(--gx-accent)';
+const PURPLE_LIGHT = 'var(--gx-accent)';
+const MUTED = 'var(--gx-text-muted)';
 
 const LOSE_CARDS = [
   {
@@ -44,7 +44,7 @@ export default function AIvsHumanPage() {
 
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: 36 }}>
-        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 34, fontWeight: 800, color: '#f8fafc', margin: '0 0 10px' }}>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 34, fontWeight: 800, color: 'var(--gx-text)', margin: '0 0 10px' }}>
           AI vs Human 🤖
         </h1>
         <p style={{ color: MUTED, fontSize: 16, lineHeight: 1.6, maxWidth: 640, margin: '0 auto' }}>
@@ -56,26 +56,26 @@ export default function AIvsHumanPage() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 18, marginBottom: 44 }}>
         {LOSE_CARDS.map((c) => (
           <div key={c.title} style={{
-            background: '#12121a', border: '1px solid rgba(0,217,163,0.16)', borderRadius: 18,
+            background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 18,
             padding: '24px 22px', display: 'flex', flexDirection: 'column',
           }}>
             <div style={{ fontSize: 40, marginBottom: 14 }}>{c.icon}</div>
-            <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 19, fontWeight: 800, color: '#f8fafc', margin: '0 0 12px', lineHeight: 1.3 }}>
+            <h3 style={{ fontFamily: 'var(--font-heading)', fontSize: 19, fontWeight: 800, color: 'var(--gx-text)', margin: '0 0 12px', lineHeight: 1.3 }}>
               {c.title}
             </h3>
-            <p style={{ color: '#cbd5e1', fontSize: 14, lineHeight: 1.65, margin: '0 0 16px', fontStyle: 'italic' }}>
+            <p style={{ color: 'var(--gx-text-muted)', fontSize: 14, lineHeight: 1.65, margin: '0 0 16px', fontStyle: 'italic' }}>
               &ldquo;{c.says}&rdquo;
             </p>
             <div style={{
-              background: 'rgba(0,217,163,0.08)', border: '1px solid rgba(0,217,163,0.2)', borderRadius: 12,
+              background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-accent-border)', borderRadius: 12,
               padding: '12px 14px', marginBottom: 18, marginTop: 'auto',
             }}>
-              <div style={{ fontSize: 10, color: PURPLE_LIGHT, fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 5 }}>CHALLENGE</div>
-              <div style={{ color: '#e2e8f0', fontSize: 13.5, lineHeight: 1.55 }}>{c.challenge}</div>
+              <div style={{ fontSize: 10, color: PURPLE_LIGHT, fontFamily: 'var(--font-body)', letterSpacing: 1, marginBottom: 5 }}>CHALLENGE</div>
+              <div style={{ color: 'var(--gx-text)', fontSize: 13.5, lineHeight: 1.55 }}>{c.challenge}</div>
             </div>
             <Link href={c.href} style={{
               display: 'block', textAlign: 'center', padding: '12px', borderRadius: 10, textDecoration: 'none',
-              background: `linear-gradient(135deg, ${PURPLE}, #00b389)`, color: '#fff',
+              background: PURPLE, color: 'var(--gx-text-inverse)',
               fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700,
             }}>
               {c.btn}
@@ -86,14 +86,14 @@ export default function AIvsHumanPage() {
 
       {/* Where AI wins */}
       <div style={{ marginBottom: 44 }}>
-        <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 800, color: '#f8fafc', textAlign: 'center', margin: '0 0 20px' }}>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 800, color: 'var(--gx-text)', textAlign: 'center', margin: '0 0 20px' }}>
           But here's where I'm better than you 👇
         </h2>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 14 }}>
           {AI_WINS.map((w, i) => (
             <div key={i} style={{
-              background: 'rgba(0,217,163,0.06)', border: '1px solid rgba(0,217,163,0.14)', borderRadius: 14,
-              padding: '18px 18px', color: '#cbd5e1', fontSize: 14, lineHeight: 1.55, textAlign: 'center',
+              background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-border)', borderRadius: 14,
+              padding: '18px 18px', color: 'var(--gx-text-muted)', fontSize: 14, lineHeight: 1.55, textAlign: 'center',
             }}>
               {w}
             </div>
@@ -104,17 +104,17 @@ export default function AIvsHumanPage() {
       {/* Final CTA */}
       <div style={{
         textAlign: 'center', padding: '40px 24px', borderRadius: 20,
-        background: 'linear-gradient(160deg, rgba(0,217,163,0.14), rgba(0,179,137,0.04))',
-        border: '1px solid rgba(0,217,163,0.22)',
+        background: 'var(--gx-accent-soft)',
+        border: '1px solid var(--gx-accent-border)',
       }}>
-        <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, color: '#f8fafc', margin: '0 0 20px', lineHeight: 1.3 }}>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, color: 'var(--gx-text)', margin: '0 0 20px', lineHeight: 1.3 }}>
           You + Me = Unstoppable.<br />Shall we begin?
         </h2>
         <Link href="/dashboard" style={{
           display: 'inline-block', padding: '14px 32px', borderRadius: 12, textDecoration: 'none',
-          background: `linear-gradient(135deg, ${PURPLE}, #00b389)`, color: '#fff',
+          background: PURPLE, color: 'var(--gx-text-inverse)',
           fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700,
-          boxShadow: '0 10px 30px rgba(0,217,163,0.34)',
+          boxShadow: 'var(--gx-shadow-sm)',
         }}>
           Go to Dashboard →
         </Link>

@@ -113,12 +113,12 @@ function computeSteps(src) {
 }
 
 function nodeColor(id, step, src) {
-  if (!step) return src === id ? '#00d9a3' : '#1a2a3a';
-  if (step.updated === id) return '#1d9e75';
-  if (step.edge && step.edge.u === id) return '#00d9a3';
-  if (step.edge && step.edge.v === id) return '#ef9f27';
-  if (id === src) return '#00d9a3';
-  return step.dist?.[id] !== INF ? '#1d5a45' : '#1a2a3a';
+  if (!step) return src === id ? 'var(--gx-accent)' : 'var(--gx-surface-2)';
+  if (step.updated === id) return 'var(--gx-success)';
+  if (step.edge && step.edge.u === id) return 'var(--gx-accent)';
+  if (step.edge && step.edge.v === id) return 'var(--gx-warning)';
+  if (id === src) return 'var(--gx-accent)';
+  return step.dist?.[id] !== INF ? 'var(--gx-success-soft)' : 'var(--gx-surface-2)';
 }
 
 export default function BellmanFordVisualizer() {
@@ -159,26 +159,26 @@ export default function BellmanFordVisualizer() {
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Source', value: src, color: '#00d9a3' },
-          { label: 'Round', value: current?.round ?? '-', color: '#ef9f27' },
-          { label: 'Reached', value: current?.dist?.filter((d) => d !== INF).length ?? (current ? 1 : 0), color: '#1d9e75' },
+          { label: 'Source', value: src, color: 'var(--gx-accent)' },
+          { label: 'Round', value: current?.round ?? '-', color: 'var(--gx-warning)' },
+          { label: 'Reached', value: current?.dist?.filter((d) => d !== INF).length ?? (current ? 1 : 0), color: 'var(--gx-success)' },
         ].map((s) => (
-          <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+          <div key={s.label} style={{ background: 'var(--gx-surface)', border: `1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)', marginBottom: 2 }}>{s.label}</div>
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        <div style={{ flex: 2, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, overflow: 'hidden', minWidth: 300 }}>
+        <div style={{ flex: 2, background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, overflow: 'hidden', minWidth: 300 }}>
           <svg width="100%" viewBox={`0 0 ${SVG_W} ${SVG_H}`} style={{ display: 'block' }}>
             <defs>
               <marker id="bf-arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
-                <path d="M0,0 L7,3 L0,6 Z" fill="#3d5a6a" />
+                <path d="M0,0 L7,3 L0,6 Z" fill="var(--gx-text-subtle)" />
               </marker>
               <marker id="bf-arrow-hot" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto">
-                <path d="M0,0 L7,3 L0,6 Z" fill="#ef9f27" />
+                <path d="M0,0 L7,3 L0,6 Z" fill="var(--gx-warning)" />
               </marker>
             </defs>
             {EDGES.map((e, i) => {
@@ -193,9 +193,9 @@ export default function BellmanFordVisualizer() {
               const mx = (nu.x + nv.x) / 2, my = (nu.y + nv.y) / 2;
               return (
                 <g key={i}>
-                  <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={active ? '#ef9f27' : e.w < 0 ? 'rgba(255,45,120,0.4)' : 'rgba(0,217,163,0.2)'} strokeWidth={active ? 2.5 : 1.5} markerEnd={active ? 'url(#bf-arrow-hot)' : 'url(#bf-arrow)'} style={{ transition: 'all 0.3s' }} />
-                  <rect x={mx - 13} y={my - 10} width={26} height={18} rx={4} fill={active ? 'rgba(239,159,39,0.2)' : 'rgba(6,15,30,0.9)'} stroke={active ? '#ef9f27' : e.w < 0 ? 'rgba(255,45,120,0.4)' : 'rgba(0,217,163,0.15)'} strokeWidth={1} />
-                  <text x={mx} y={my + 4} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, fill: active ? '#ef9f27' : e.w < 0 ? '#ff2d78' : '#5a7a9a' }}>{e.w}</text>
+                  <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={active ? 'var(--gx-warning)' : e.w < 0 ? 'var(--gx-danger-border)' : 'var(--gx-accent-border)'} strokeWidth={active ? 2.5 : 1.5} markerEnd={active ? 'url(#bf-arrow-hot)' : 'url(#bf-arrow)'} style={{ transition: 'all 0.3s' }} />
+                  <rect x={mx - 13} y={my - 10} width={26} height={18} rx={4} fill={active ? 'var(--gx-warning-soft)' : 'var(--gx-surface)'} stroke={active ? 'var(--gx-warning)' : e.w < 0 ? 'var(--gx-danger-border)' : 'var(--gx-border)'} strokeWidth={1} />
+                  <text x={mx} y={my + 4} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, fill: active ? 'var(--gx-warning)' : e.w < 0 ? 'var(--gx-danger)' : 'var(--gx-text-muted)' }}>{e.w}</text>
                 </g>
               );
             })}
@@ -204,9 +204,9 @@ export default function BellmanFordVisualizer() {
               const d = current?.dist?.[n.id];
               return (
                 <g key={n.id}>
-                  <circle cx={n.x} cy={n.y} r={22} fill={color === '#1a2a3a' ? '#0d1a2a' : color + '22'} stroke={color} strokeWidth={1.8} style={{ transition: 'all 0.3s ease' }} />
+                  <circle cx={n.x} cy={n.y} r={22} fill={color === 'var(--gx-surface-2)' ? 'var(--gx-surface)' : `color-mix(in srgb, ${color} 13%, transparent)`} stroke={color} strokeWidth={1.8} style={{ transition: 'all 0.3s ease' }} />
                   <text x={n.x} y={n.y + 1} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, fill: color }}>{n.id}</text>
-                  <text x={n.x} y={n.y + 13} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: 8, fill: '#8aa2b9' }}>{d === undefined || d === INF ? '∞' : d}</text>
+                  <text x={n.x} y={n.y + 13} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: 8, fill: 'var(--gx-text-muted)' }}>{d === undefined || d === INF ? '∞' : d}</text>
                 </g>
               );
             })}
@@ -214,15 +214,15 @@ export default function BellmanFordVisualizer() {
         </div>
 
         <div style={{ flex: 1, minWidth: 180 }}>
-          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 10, padding: 12 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 10 }}>DIST[] FROM SOURCE</div>
+          <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 10, padding: 12 }}>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 1, marginBottom: 10 }}>DIST[] FROM SOURCE</div>
             {NODES.map((n) => {
               const d = current?.dist?.[n.id] ?? INF;
               const hot = current?.updated === n.id;
               return (
-                <div key={n.id} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6, padding: '4px 8px', borderRadius: 6, background: hot ? 'rgba(29,158,117,0.1)' : 'transparent', border: `1px solid ${hot ? 'rgba(29,158,117,0.25)' : 'transparent'}`, transition: 'all 0.3s' }}>
+                <div key={n.id} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6, padding: '4px 8px', borderRadius: 6, background: hot ? 'var(--gx-success-soft)' : 'transparent', border: `1px solid ${hot ? 'var(--gx-success-border)' : 'transparent'}`, transition: 'all 0.3s' }}>
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: nodeColor(n.id, current, src), fontWeight: 700, minWidth: 16 }}>{n.id}</span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: d === INF ? '#2a3a4a' : hot ? '#1d9e75' : '#e8e8ed', marginLeft: 'auto' }}>{d === INF ? '∞' : d}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: d === INF ? 'var(--gx-text-subtle)' : hot ? 'var(--gx-success)' : 'var(--gx-text)', marginLeft: 'auto' }}>{d === INF ? '∞' : d}</span>
                 </div>
               );
             })}
@@ -238,26 +238,26 @@ export default function BellmanFordVisualizer() {
       />
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a' }}>SRC</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)' }}>SRC</span>
         {NODES.map((n) => (
-          <button key={n.id} onClick={() => { setSrc(n.id); reset(); }} style={{ padding: '4px 12px', borderRadius: 6, border: `1px solid ${src === n.id ? '#00d9a3' : 'rgba(0,217,163,0.15)'}`, background: src === n.id ? 'rgba(0,217,163,0.12)' : 'transparent', color: src === n.id ? '#00d9a3' : '#5a7a9a', fontSize: 12, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{n.id}</button>
+          <button key={n.id} onClick={() => { setSrc(n.id); reset(); }} style={{ padding: '4px 12px', borderRadius: 6, border: `1px solid ${src === n.id ? 'var(--gx-accent)' : 'var(--gx-border)'}`, background: src === n.id ? 'var(--gx-accent-soft)' : 'transparent', color: src === n.id ? 'var(--gx-accent)' : 'var(--gx-text-muted)', fontSize: 12, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{n.id}</button>
         ))}
-        <button onClick={start} style={btn('#00d9a3')}>▶ Run</button>
-        <button onClick={() => setIsPlaying((p) => !p)} style={btn('#ff6b4a')}>{isPlaying ? '⏸ Pause' : '▶ Resume'}</button>
-        <button onClick={() => setStepIdx((p) => Math.min(p + 1, steps.length - 1))} style={btn('#ef9f27')}>⏭ Step</button>
+        <button onClick={start} style={btn('var(--gx-accent)')}>▶ Run</button>
+        <button onClick={() => setIsPlaying((p) => !p)} style={btn('var(--gx-warning)')}>{isPlaying ? '⏸ Pause' : '▶ Resume'}</button>
+        <button onClick={() => setStepIdx((p) => Math.min(p + 1, steps.length - 1))} style={btn('var(--gx-warning)')}>⏭ Step</button>
         <div style={{ display: 'flex', gap: 4 }}>
           {[1, 2, 3, 4].map((s) => (
-            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid #00d9a3' : '1px solid rgba(0,217,163,0.15)', background: speed === s ? 'rgba(0,217,163,0.12)' : 'transparent', color: speed === s ? '#00d9a3' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×', '1×', '2×', '3×'][s - 1]}</button>
+            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid var(--gx-accent)' : '1px solid var(--gx-border)', background: speed === s ? 'var(--gx-accent-soft)' : 'transparent', color: speed === s ? 'var(--gx-accent)' : 'var(--gx-text-muted)', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×', '1×', '2×', '3×'][s - 1]}</button>
           ))}
         </div>
-        <button onClick={reset} style={btn('#ff2d78')}>↺ Reset</button>
+        <button onClick={reset} style={btn('var(--gx-danger)')}>↺ Reset</button>
       </div>
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        {[['#00d9a3', 'Edge source'], ['#ef9f27', 'Edge target'], ['#1d9e75', 'Relaxed (updated)'], ['#ff2d78', 'Negative weight']].map(([c, l]) => (
+        {[['var(--gx-accent)', 'Edge source'], ['var(--gx-warning)', 'Edge target'], ['var(--gx-success)', 'Relaxed (updated)'], ['var(--gx-danger)', 'Negative weight']].map(([c, l]) => (
           <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ width: 12, height: 12, borderRadius: '50%', background: c + '44', border: `2px solid ${c}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l}</span>
+            <div style={{ width: 12, height: 12, borderRadius: '50%', background: `color-mix(in srgb, ${c} 27%, transparent)`, border: `2px solid ${c}` }} />
+            <span style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>
@@ -268,5 +268,5 @@ export default function BellmanFordVisualizer() {
 }
 
 function btn(color) {
-  return { padding: '8px 16px', borderRadius: 8, border: `1px solid ${color}30`, background: `${color}10`, color, fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' };
+  return { padding: '8px 16px', borderRadius: 8, border: `1px solid color-mix(in srgb, ${color} 19%, transparent)`, background: `color-mix(in srgb, ${color} 6%, transparent)`, color, fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' };
 }

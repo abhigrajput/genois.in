@@ -46,19 +46,22 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
           <Toaster
           position="top-right"
+          // Light system values, set once here so no page needs its own
+          // per-toast override. Mirrors a `.gx-card`: white surface, neutral
+          // border, barely-there shadow.
           toastOptions={{
             duration: 3500,
             style: {
               fontFamily: 'var(--font-body)',
               fontSize: '14px',
-              borderRadius: '10px',
-              background: '#12121a',
-              color: '#e8e8ed',
-              border: '1px solid rgba(0,217,163,0.18)',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+              borderRadius: 'var(--gx-radius-md)',
+              background: 'var(--gx-bg)',
+              color: 'var(--gx-text)',
+              border: '1px solid var(--gx-border)',
+              boxShadow: 'var(--gx-shadow-md)',
             },
-            success: { iconTheme: { primary: '#00d9a3', secondary: '#0a0a0f' } },
-            error:   { iconTheme: { primary: '#ff4d5e', secondary: '#0a0a0f' } },
+            success: { iconTheme: { primary: 'var(--gx-success)', secondary: 'var(--gx-text-inverse)' } },
+            error:   { iconTheme: { primary: 'var(--gx-danger)',  secondary: 'var(--gx-text-inverse)' } },
           }}
         />
         <PWAInstallPrompt />

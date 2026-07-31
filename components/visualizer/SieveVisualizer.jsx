@@ -117,12 +117,12 @@ export default function SieveVisualizer() {
     const prime = isPrime[num];
     const isP = current?.p === num;
     const isMark = current?.marking === num;
-    let bg = 'rgba(10,15,30,0.8)', bd = 'rgba(0,217,163,0.1)', fg = '#5a7a9a';
-    if (num < 2) { bg = 'rgba(255,255,255,0.02)'; bd = 'rgba(255,255,255,0.05)'; fg = '#2a3a4a'; }
-    else if (prime) { bg = 'rgba(29,158,117,0.14)'; bd = 'rgba(29,158,117,0.4)'; fg = '#1d9e75'; }
-    else { bg = 'rgba(255,45,120,0.06)'; bd = 'rgba(255,45,120,0.15)'; fg = '#4a3a4a'; }
-    if (isMark) { bg = 'rgba(255,45,120,0.3)'; bd = '#ff2d78'; fg = '#ff2d78'; }
-    if (isP) { bg = 'rgba(0,217,163,0.25)'; bd = '#00d9a3'; fg = '#00d9a3'; }
+    let bg = 'var(--gx-surface)', bd = 'var(--gx-border)', fg = 'var(--gx-text-muted)';
+    if (num < 2) { bg = 'var(--gx-surface)'; bd = 'var(--gx-border)'; fg = 'var(--gx-surface-3)'; }
+    else if (prime) { bg = 'var(--gx-success-soft)'; bd = 'var(--gx-success-border)'; fg = 'var(--gx-success)'; }
+    else { bg = 'var(--gx-danger-soft)'; bd = 'var(--gx-danger-border)'; fg = 'var(--gx-text-subtle)'; }
+    if (isMark) { bg = 'var(--gx-danger-soft)'; bd = 'var(--gx-danger)'; fg = 'var(--gx-danger)'; }
+    if (isP) { bg = 'var(--gx-accent-soft)'; bd = 'var(--gx-accent)'; fg = 'var(--gx-accent)'; }
     return { bg, bd, fg, prime, isP, isMark };
   };
 
@@ -139,26 +139,26 @@ export default function SieveVisualizer() {
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Current prime p', value: current?.p ?? '-', color: '#00d9a3' },
-          { label: 'Primes found', value: primeCount, color: '#1d9e75' },
-          { label: 'Sieve up to', value: `√${N} ≈ ${Math.floor(Math.sqrt(N))}`, color: '#ff6b4a' },
+          { label: 'Current prime p', value: current?.p ?? '-', color: 'var(--gx-accent)' },
+          { label: 'Primes found', value: primeCount, color: 'var(--gx-success)' },
+          { label: 'Sieve up to', value: `√${N} ≈ ${Math.floor(Math.sqrt(N))}`, color: 'var(--gx-warning)' },
         ].map((s) => (
-          <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 110 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+          <div key={s.label} style={{ background: 'var(--gx-surface)', border: `1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius: 8, padding: '8px 16px', minWidth: 110 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)', marginBottom: 2 }}>{s.label}</div>
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
       {/* Number grid */}
-      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 16 }}>
+      <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: 16 }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(10, 1fr)', gap: 5 }}>
           {Array.from({ length: N + 1 }, (_, num) => {
             const s = cellStyle(num);
             return (
               <div key={num} style={{ position: 'relative', aspectRatio: '1', display: 'flex', alignItems: 'center', justifyContent: 'center', background: s.bg, border: `2px solid ${s.bd}`, borderRadius: 6, fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, color: s.fg, transition: 'all 0.2s' }}>
                 {num}
-                {!s.prime && num >= 2 && <span style={{ position: 'absolute', fontSize: 18, color: 'rgba(255,45,120,0.4)', pointerEvents: 'none' }}>╱</span>}
+                {!s.prime && num >= 2 && <span style={{ position: 'absolute', fontSize: 18, color: 'var(--gx-danger)', pointerEvents: 'none' }}>╱</span>}
               </div>
             );
           })}
@@ -173,26 +173,26 @@ export default function SieveVisualizer() {
       />
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        {[['#00d9a3', 'Current prime'], ['#ff2d78', 'Crossing out'], ['#1d9e75', 'Prime'], ['#4a3a4a', 'Composite']].map(([c, l]) => (
+        {[['var(--gx-accent)', 'Current prime'], ['var(--gx-danger)', 'Crossing out'], ['var(--gx-success)', 'Prime'], ['var(--gx-text-subtle)', 'Composite']].map(([c, l]) => (
           <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ width: 12, height: 12, borderRadius: 2, background: `${c}22`, border: `2px solid ${c}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l}</span>
+            <div style={{ width: 12, height: 12, borderRadius: 2, background: `color-mix(in srgb, ${c} 13%, transparent)`, border: `2px solid ${c}` }} />
+            <span style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>
 
-      <div style={{ background: 'rgba(10,15,30,0.9)', border: '1px solid rgba(0,217,163,0.12)', borderRadius: 12, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-        <button onClick={() => setStepIdx((p) => Math.max(p - 1, 0))} style={ctrlBtn('#5a7a9a')}>⏮</button>
-        <button onClick={() => setIsPlaying((p) => !p)} style={{ ...ctrlBtn('#00d9a3'), background: 'rgba(0,217,163,0.12)', border: '1px solid rgba(0,217,163,0.35)', minWidth: 80, fontFamily: 'var(--font-body)', fontWeight: 600 }}>{isPlaying ? '⏸ Pause' : '▶ Play'}</button>
-        <button onClick={() => setStepIdx((p) => Math.min(p + 1, steps.length - 1))} style={ctrlBtn('#5a7a9a')}>⏭</button>
-        <button onClick={() => { setStepIdx(-1); setIsPlaying(false); }} style={{ ...ctrlBtn('#ff2d78'), background: 'rgba(255,45,120,0.08)', border: '1px solid rgba(255,45,120,0.25)', fontFamily: 'var(--font-body)' }}>↺ Reset</button>
+      <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        <button onClick={() => setStepIdx((p) => Math.max(p - 1, 0))} style={ctrlBtn('var(--gx-text-muted)')}>⏮</button>
+        <button onClick={() => setIsPlaying((p) => !p)} style={{ ...ctrlBtn('var(--gx-accent)'), background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-accent-border)', minWidth: 80, fontFamily: 'var(--font-body)', fontWeight: 600 }}>{isPlaying ? '⏸ Pause' : '▶ Play'}</button>
+        <button onClick={() => setStepIdx((p) => Math.min(p + 1, steps.length - 1))} style={ctrlBtn('var(--gx-text-muted)')}>⏭</button>
+        <button onClick={() => { setStepIdx(-1); setIsPlaying(false); }} style={{ ...ctrlBtn('var(--gx-danger)'), background: 'var(--gx-danger-soft)', border: '1px solid var(--gx-danger-border)', fontFamily: 'var(--font-body)' }}>↺ Reset</button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 8 }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1 }}>SPEED</span>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 1 }}>SPEED</span>
           {[1, 2, 3, 4].map((s) => (
-            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid #00d9a3' : '1px solid rgba(0,217,163,0.15)', background: speed === s ? 'rgba(0,217,163,0.12)' : 'transparent', color: speed === s ? '#00d9a3' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×', '1×', '2×', '3×'][s - 1]}</button>
+            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid var(--gx-accent)' : '1px solid var(--gx-border)', background: speed === s ? 'var(--gx-accent-soft)' : 'transparent', color: speed === s ? 'var(--gx-accent)' : 'var(--gx-text-muted)', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×', '1×', '2×', '3×'][s - 1]}</button>
           ))}
         </div>
-        {steps.length > 0 && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#5a7a9a', marginLeft: 'auto' }}>Step <span style={{ color: '#00d9a3' }}>{Math.max(0, stepIdx + 1)}</span> / {steps.length}</span>}
+        {steps.length > 0 && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--gx-text-muted)', marginLeft: 'auto' }}>Step <span style={{ color: 'var(--gx-accent)' }}>{Math.max(0, stepIdx + 1)}</span> / {steps.length}</span>}
       </div>
 
       <CodePanel code={CODE} snippets={SNIPPETS} activeLine={current?.activeLine ?? -1} />
@@ -200,4 +200,4 @@ export default function SieveVisualizer() {
   );
 }
 
-const ctrlBtn = (color) => ({ padding: '6px 14px', borderRadius: 8, border: `1px solid ${color}30`, background: 'transparent', color, fontSize: 13, cursor: 'pointer', transition: 'all 0.15s' });
+const ctrlBtn = (color) => ({ padding: '6px 14px', borderRadius: 8, border: `1px solid color-mix(in srgb, ${color} 19%, transparent)`, background: 'transparent', color, fontSize: 13, cursor: 'pointer', transition: 'all 0.15s' });

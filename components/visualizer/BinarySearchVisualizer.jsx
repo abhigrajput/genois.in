@@ -124,13 +124,13 @@ function computeSteps(arr, target) {
 }
 
 function barColor(idx, step, eliminatedSet) {
-  if (!step) return '#1a2a3a';
-  if (step.found && step.mid === idx) return '#1d9e75';
-  if (eliminatedSet?.has(idx)) return '#2a2a2a';
-  if (step.mid === idx) return '#00d9a3';
-  if (step.left === idx) return '#ef9f2770';
-  if (step.right === idx) return '#ef9f2770';
-  return '#1a2a3a';
+  if (!step) return 'var(--gx-surface-2)';
+  if (step.found && step.mid === idx) return 'var(--gx-success)';
+  if (eliminatedSet?.has(idx)) return 'var(--gx-text-muted)';
+  if (step.mid === idx) return 'var(--gx-accent)';
+  if (step.left === idx) return 'var(--gx-warning)';
+  if (step.right === idx) return 'var(--gx-warning)';
+  return 'var(--gx-surface-2)';
 }
 
 export default function BinarySearchVisualizer() {
@@ -196,51 +196,51 @@ export default function BinarySearchVisualizer() {
       />
 
       <div style={{ display:'flex', gap:10, alignItems:'center', flexWrap:'wrap' }}>
-        <span style={{ fontFamily:'var(--font-mono)', fontSize:11, color:'#5a7a9a', letterSpacing:1 }}>TARGET</span>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:11, color:'var(--gx-text-muted)', letterSpacing:1 }}>TARGET</span>
         <input type="number" value={target} onChange={e => setTarget(e.target.value)}
-          placeholder="Enter target..." style={{ background:'rgba(0,217,163,0.04)', border:'1px solid rgba(0,217,163,0.2)', borderRadius:8, padding:'6px 12px', color:'#e8e8ed', fontFamily:'var(--font-mono)', fontSize:13, outline:'none', width:160 }}
+          placeholder="Enter target..." style={{ background:'var(--gx-accent-soft)', border:'1px solid var(--gx-accent-border)', borderRadius:8, padding:'6px 12px', color:'var(--gx-text)', fontFamily:'var(--font-mono)', fontSize:13, outline:'none', width:160 }}
         />
-        <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a' }}>Array is sorted ✓</span>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-text-muted)' }}>Array is sorted ✓</span>
         {result && (
-          <span style={{ fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600, color: result.includes('Found') ? '#1d9e75' : '#ff2d78', background: result.includes('Found') ? 'rgba(29,158,117,0.1)' : 'rgba(255,45,120,0.1)', border:`1px solid ${result.includes('Found') ? 'rgba(29,158,117,0.25)' : 'rgba(255,45,120,0.25)'}`, borderRadius:8, padding:'4px 12px' }}>{result}</span>
+          <span style={{ fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600, color: result.includes('Found') ? 'var(--gx-success)' : 'var(--gx-danger)', background: result.includes('Found') ? 'var(--gx-success-soft)' : 'var(--gx-danger-soft)', border:`1px solid ${result.includes('Found') ? 'var(--gx-success-border)' : 'var(--gx-danger-border)'}`, borderRadius:8, padding:'4px 12px' }}>{result}</span>
         )}
       </div>
 
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
-          { label:'Left', value: current?.left ?? 0, color:'#ef9f27' },
-          { label:'Mid', value: current?.mid ?? '-', color:'#00d9a3' },
-          { label:'Right', value: current?.right ?? arr.length - 1, color:'#ef9f27' },
-          { label:'Time', value:'O(log n)', color:'#ff6b4a' },
+          { label:'Left', value: current?.left ?? 0, color:'var(--gx-warning)' },
+          { label:'Mid', value: current?.mid ?? '-', color:'var(--gx-accent)' },
+          { label:'Right', value: current?.right ?? arr.length - 1, color:'var(--gx-warning)' },
+          { label:'Time', value:'O(log n)', color:'var(--gx-warning)' },
         ].map(s => (
-          <div key={s.label} style={{ background:'rgba(10,15,30,0.8)', border:`1px solid ${s.color}20`, borderRadius:8, padding:'8px 16px', minWidth:90 }}>
-            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
+          <div key={s.label} style={{ background:'var(--gx-surface)', border:`1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius:8, padding:'8px 16px', minWidth:90 }}>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-text-muted)', marginBottom:2 }}>{s.label}</div>
             <div style={{ fontFamily:'var(--font-heading)', fontSize:20, fontWeight:700, color:s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
+      <div style={{ background:'var(--gx-surface)', border:'1px solid var(--gx-border)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
         {arr.map((v, i) => (
           <div key={i} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:2, flex:1, maxWidth:60 }}>
-            {current?.left === i && <span style={{ fontSize:9, color:'#ef9f27', fontFamily:'var(--font-mono)' }}>L</span>}
+            {current?.left === i && <span style={{ fontSize:9, color:'var(--gx-warning)', fontFamily:'var(--font-mono)' }}>L</span>}
             {current?.mid === i && !current?.left && <span style={{ fontSize:9, color:'transparent' }}>.</span>}
             <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:barColor(i, current, eliminated) }}>{v}</span>
             <div style={{ width:'100%', borderRadius:'4px 4px 0 0', height:`${(v / maxVal) * 160}px`, background:barColor(i, current, eliminated), transition:'all 0.3s ease', minHeight:4,
-              boxShadow: current?.mid === i ? `0 0 14px #00d9a380` : 'none',
+              boxShadow: current?.mid === i ? `var(--gx-shadow-sm)` : 'none',
             }} />
-            <span style={{ fontFamily:'var(--font-mono)', fontSize:8, color:'#2a3a4a' }}>[{i}]</span>
-            {current?.mid === i && <span style={{ fontSize:8, color:'#00d9a3', fontFamily:'var(--font-mono)' }}>MID</span>}
-            {current?.right === i && current.right !== current.mid && <span style={{ fontSize:8, color:'#ef9f27', fontFamily:'var(--font-mono)' }}>R</span>}
+            <span style={{ fontFamily:'var(--font-mono)', fontSize:8, color:'var(--gx-text-subtle)' }}>[{i}]</span>
+            {current?.mid === i && <span style={{ fontSize:8, color:'var(--gx-accent)', fontFamily:'var(--font-mono)' }}>MID</span>}
+            {current?.right === i && current.right !== current.mid && <span style={{ fontSize:8, color:'var(--gx-warning)', fontFamily:'var(--font-mono)' }}>R</span>}
           </div>
         ))}
       </div>
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
-        {[['#00d9a3','Mid'],['#ef9f2770','L / R Pointers'],['#2a2a2a','Eliminated'],['#1d9e75','Found']].map(([c,l]) => (
+        {[['var(--gx-accent)','Mid'],['var(--gx-warning)','L / R Pointers'],['var(--gx-text-muted)','Eliminated'],['var(--gx-success)','Found']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
-            <div style={{ width:12, height:12, borderRadius:2, background:c, border:`1px solid ${c}60` }}/>
-            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>
+            <div style={{ width:12, height:12, borderRadius:2, background:c, border:`1px solid color-mix(in srgb, ${c} 38%, transparent)` }}/>
+            <span style={{ fontSize:11, color:'var(--gx-text-muted)', fontFamily:'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>

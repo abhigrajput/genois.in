@@ -109,16 +109,16 @@ export default function FloydWarshallVisualizer() {
   const reset = () => { setSteps([]); setStepIdx(-1); setIsPlaying(false); setAnimCell(null); clearInterval(intervalRef.current); };
 
   function cellStyle(i, j) {
-    if (!current) return { bg: '#0d1a2a', border: 'rgba(0,217,163,0.08)', color: '#5a7a9a' };
+    if (!current) return { bg: 'var(--gx-surface)', border: 'var(--gx-border)', color: 'var(--gx-text-muted)' };
     const isCurrent = current.i === i && current.j === j;
     const isK_row = current.k === i || current.k === j;
     const isUpdated = isCurrent && current.updated;
     const isDiag = i === j;
-    if (isDiag) return { bg: 'rgba(239,159,39,0.08)', border: 'rgba(239,159,39,0.2)', color: '#ef9f27' };
-    if (isUpdated) return { bg: 'rgba(29,158,117,0.2)', border: 'rgba(29,158,117,0.5)', color: '#1d9e75' };
-    if (isCurrent) return { bg: 'rgba(0,217,163,0.12)', border: 'rgba(0,217,163,0.4)', color: '#00d9a3' };
-    if (isK_row) return { bg: 'rgba(255,107,74,0.06)', border: 'rgba(255,107,74,0.15)', color: '#ff6b4a' };
-    return { bg: '#0d1a2a', border: 'rgba(0,217,163,0.08)', color: '#e8e8ed' };
+    if (isDiag) return { bg: 'var(--gx-warning-soft)', border: 'var(--gx-warning-border)', color: 'var(--gx-warning)' };
+    if (isUpdated) return { bg: 'var(--gx-success-soft)', border: 'var(--gx-success-border)', color: 'var(--gx-success)' };
+    if (isCurrent) return { bg: 'var(--gx-accent-soft)', border: 'var(--gx-accent-border)', color: 'var(--gx-accent)' };
+    if (isK_row) return { bg: 'var(--gx-warning-soft)', border: 'var(--gx-warning-border)', color: 'var(--gx-warning)' };
+    return { bg: 'var(--gx-surface)', border: 'var(--gx-border)', color: 'var(--gx-text)' };
   }
 
   return (
@@ -132,32 +132,32 @@ export default function FloydWarshallVisualizer() {
 
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
-          { label:'Vertices', value:4, color:'#00d9a3' },
-          { label:'k (via)', value:current?.k>=0?current.k:'-', color:'#ff6b4a' },
-          { label:'i (from)', value:current?.i>=0?current.i:'-', color:'#ef9f27' },
-          { label:'j (to)', value:current?.j>=0?current.j:'-', color:'#1d9e75' },
+          { label:'Vertices', value:4, color:'var(--gx-accent)' },
+          { label:'k (via)', value:current?.k>=0?current.k:'-', color:'var(--gx-warning)' },
+          { label:'i (from)', value:current?.i>=0?current.i:'-', color:'var(--gx-warning)' },
+          { label:'j (to)', value:current?.j>=0?current.j:'-', color:'var(--gx-success)' },
         ].map(s=>(
-          <div key={s.label} style={{ background:'rgba(10,15,30,0.8)', border:`1px solid ${s.color}20`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
-            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
+          <div key={s.label} style={{ background:'var(--gx-surface)', border:`1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-text-muted)', marginBottom:2 }}>{s.label}</div>
             <div style={{ fontFamily:'var(--font-heading)', fontSize:22, fontWeight:700, color:s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
       {/* Distance matrix */}
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, padding:24, display:'flex', flexDirection:'column', alignItems:'center' }}>
-        <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', letterSpacing:1, marginBottom:16 }}>DISTANCE MATRIX dist[i][j]</div>
+      <div style={{ background:'var(--gx-surface)', border:'1px solid var(--gx-border)', borderRadius:12, padding:24, display:'flex', flexDirection:'column', alignItems:'center' }}>
+        <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-text-muted)', letterSpacing:1, marginBottom:16 }}>DISTANCE MATRIX dist[i][j]</div>
 
         {/* Column headers */}
         <div style={{ display:'flex', marginBottom:4, marginLeft:48 }}>
           {[0,1,2,3].map(j=>(
-            <div key={j} style={{ width:64, textAlign:'center', fontFamily:'var(--font-mono)', fontSize:11, color: current?.k===j?'#ff6b4a':current?.j===j?'#1d9e75':'#2a3a4a', fontWeight:600 }}>j={j}</div>
+            <div key={j} style={{ width:64, textAlign:'center', fontFamily:'var(--font-mono)', fontSize:11, color: current?.k===j?'var(--gx-warning)':current?.j===j?'var(--gx-success)':'var(--gx-text-subtle)', fontWeight:600 }}>j={j}</div>
           ))}
         </div>
 
         {displayMatrix.map((row, i) => (
           <div key={i} style={{ display:'flex', alignItems:'center', marginBottom:4 }}>
-            <span style={{ fontFamily:'var(--font-mono)', fontSize:11, color: current?.k===i?'#ff6b4a':current?.i===i?'#ef9f27':'#2a3a4a', width:44, textAlign:'right', paddingRight:8, fontWeight:600 }}>i={i}</span>
+            <span style={{ fontFamily:'var(--font-mono)', fontSize:11, color: current?.k===i?'var(--gx-warning)':current?.i===i?'var(--gx-warning)':'var(--gx-text-subtle)', width:44, textAlign:'right', paddingRight:8, fontWeight:600 }}>i={i}</span>
             {row.map((v, j) => {
               const cs = cellStyle(i, j);
               const key = `${i}-${j}`;
@@ -167,7 +167,7 @@ export default function FloydWarshallVisualizer() {
                   background:cs.bg, border:`2px solid ${cs.border}`, borderRadius:8, margin:2,
                   transition:'all 0.35s ease',
                   animation: animCell===key ? 'flash 0.4s ease' : 'none',
-                  boxShadow: cs.color==='#1d9e75' ? '0 0 12px rgba(29,158,117,0.3)' : cs.color==='#00d9a3' ? '0 0 8px rgba(0,217,163,0.2)' : 'none',
+                  boxShadow: cs.color==='var(--gx-shadow-sm)' ? 'var(--gx-shadow-sm)' : cs.color==='var(--gx-shadow-sm)' ? 'var(--gx-shadow-sm)' : 'none',
                 }}>
                   <span style={{ fontFamily:'var(--font-mono)', fontSize:16, fontWeight:700, color:cs.color }}>
                     {v >= INF ? '∞' : v}
@@ -181,14 +181,14 @@ export default function FloydWarshallVisualizer() {
 
       {/* Loop state indicator */}
       {current && current.k >= 0 && (
-        <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(255,107,74,0.15)', borderRadius:10, padding:'10px 16px', fontFamily:'var(--font-mono)', fontSize:12, color:'#ff6b4a' }}>
-          <span style={{ color:'#5a7a9a' }}>for(</span>
-          <span style={{ color:'#ff6b4a', fontWeight:700 }}>k={current.k}</span>
-          <span style={{ color:'#5a7a9a' }}>)  for(</span>
-          <span style={{ color:'#ef9f27', fontWeight:700 }}>i={current.i}</span>
-          <span style={{ color:'#5a7a9a' }}>)  for(</span>
-          <span style={{ color:'#1d9e75', fontWeight:700 }}>j={current.j}</span>
-          <span style={{ color:'#5a7a9a' }}>)</span>
+        <div style={{ background:'var(--gx-surface)', border:'1px solid var(--gx-warning-border)', borderRadius:10, padding:'10px 16px', fontFamily:'var(--font-mono)', fontSize:12, color:'var(--gx-warning)' }}>
+          <span style={{ color:'var(--gx-text-muted)' }}>for(</span>
+          <span style={{ color:'var(--gx-warning)', fontWeight:700 }}>k={current.k}</span>
+          <span style={{ color:'var(--gx-text-muted)' }}>)  for(</span>
+          <span style={{ color:'var(--gx-warning)', fontWeight:700 }}>i={current.i}</span>
+          <span style={{ color:'var(--gx-text-muted)' }}>)  for(</span>
+          <span style={{ color:'var(--gx-success)', fontWeight:700 }}>j={current.j}</span>
+          <span style={{ color:'var(--gx-text-muted)' }}>)</span>
         </div>
       )}
 
@@ -200,23 +200,23 @@ export default function FloydWarshallVisualizer() {
       />
 
       <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
-        <button onClick={start} style={btn('#00d9a3')}>▶ Run Floyd-Warshall</button>
-        <button onClick={()=>setIsPlaying(p=>!p)} style={btn('#ff6b4a')}>{isPlaying?'⏸ Pause':'▶ Resume'}</button>
-        <button onClick={()=>setStepIdx(p=>Math.min(p+1,steps.length-1))} style={btn('#ef9f27')}>⏭ Step</button>
-        <button onClick={()=>setStepIdx(p=>Math.max(p-1,0))} style={btn('#5a7a9a')}>⏮ Back</button>
+        <button onClick={start} style={btn('var(--gx-accent)')}>▶ Run Floyd-Warshall</button>
+        <button onClick={()=>setIsPlaying(p=>!p)} style={btn('var(--gx-warning)')}>{isPlaying?'⏸ Pause':'▶ Resume'}</button>
+        <button onClick={()=>setStepIdx(p=>Math.min(p+1,steps.length-1))} style={btn('var(--gx-warning)')}>⏭ Step</button>
+        <button onClick={()=>setStepIdx(p=>Math.max(p-1,0))} style={btn('var(--gx-text-muted)')}>⏮ Back</button>
         <div style={{ display:'flex', gap:4 }}>
           {[1,2,3,4].map(s=>(
-            <button key={s} onClick={()=>setSpeed(s)} style={{ padding:'3px 10px', borderRadius:6, border:speed===s?'1px solid #00d9a3':'1px solid rgba(0,217,163,0.15)', background:speed===s?'rgba(0,217,163,0.12)':'transparent', color:speed===s?'#00d9a3':'#5a7a9a', fontSize:11, fontFamily:'var(--font-mono)', cursor:'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
+            <button key={s} onClick={()=>setSpeed(s)} style={{ padding:'3px 10px', borderRadius:6, border:speed===s?'1px solid var(--gx-accent)':'1px solid var(--gx-border)', background:speed===s?'var(--gx-accent-soft)':'transparent', color:speed===s?'var(--gx-accent)':'var(--gx-text-muted)', fontSize:11, fontFamily:'var(--font-mono)', cursor:'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
           ))}
         </div>
-        <button onClick={reset} style={btn('#ff2d78')}>↺ Reset</button>
+        <button onClick={reset} style={btn('var(--gx-danger)')}>↺ Reset</button>
       </div>
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
-        {[['#ff6b4a','via k (intermediate)'],['#00d9a3','d[i][j] checking'],['#1d9e75','Updated (shorter path)'],['#ef9f27','Diagonal (self)']].map(([c,l])=>(
+        {[['var(--gx-warning)','via k (intermediate)'],['var(--gx-accent)','d[i][j] checking'],['var(--gx-success)','Updated (shorter path)'],['var(--gx-warning)','Diagonal (self)']].map(([c,l])=>(
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
-            <div style={{ width:12, height:12, borderRadius:2, background:c+'44', border:`2px solid ${c}` }}/>
-            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>
+            <div style={{ width:12, height:12, borderRadius:2, background:`color-mix(in srgb, ${c} 27%, transparent)`, border:`2px solid ${c}` }}/>
+            <span style={{ fontSize:11, color:'var(--gx-text-muted)', fontFamily:'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>
@@ -226,5 +226,5 @@ export default function FloydWarshallVisualizer() {
   );
 }
 function btn(color) {
-  return { padding:'8px 16px', borderRadius:8, border:`1px solid ${color}30`, background:`${color}10`, color, fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' };
+  return { padding:'8px 16px', borderRadius:8, border:`1px solid color-mix(in srgb, ${color} 19%, transparent)`, background:`color-mix(in srgb, ${color} 6%, transparent)`, color, fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' };
 }

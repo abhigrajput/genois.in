@@ -44,8 +44,8 @@ const TRICKS = [
 
 const TOPICS = ['All', 'Ratio & Proportion', 'Percentage', 'Profit & Loss', 'Speed & Distance', 'Trains', 'Boats', 'Time & Work', 'Interest', 'Numbers', 'HCF & LCM', 'Ages', 'Calendar', 'Clocks', 'P & C', 'Probability', 'Averages', 'Mixtures', 'Partnership', 'Progressions'];
 
-const DIFF_BG = { easy: 'rgba(16,185,129,0.12)', hard: 'rgba(239,68,68,0.12)', medium: 'rgba(245,158,11,0.12)' };
-const DIFF_FG = { easy: '#10b981', hard: '#ef4444', medium: '#ffb020' };
+const DIFF_BG = { easy: 'var(--gx-success-soft)', hard: 'var(--gx-danger-soft)', medium: 'var(--gx-warning-soft)' };
+const DIFF_FG = { easy: 'var(--gx-success)', hard: 'var(--gx-danger)', medium: 'var(--gx-warning)' };
 
 function ModeTabs({ mode, setMode }) {
   const tabs = [
@@ -53,7 +53,7 @@ function ModeTabs({ mode, setMode }) {
     { key: 'shortcuts', label: 'Shortcuts', icon: BookOpen },
   ];
   return (
-    <div style={{ display: 'inline-flex', gap: 4, padding: 4, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(0,217,163,0.12)', borderRadius: 12, marginBottom: 20 }}>
+    <div style={{ display: 'inline-flex', gap: 4, padding: 4, background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, marginBottom: 20 }}>
       {tabs.map(t => {
         const active = mode === t.key;
         const Icon = t.icon;
@@ -61,7 +61,7 @@ function ModeTabs({ mode, setMode }) {
           <button key={t.key} onClick={() => setMode(t.key)} style={{
             display: 'flex', alignItems: 'center', gap: 7, padding: '8px 16px', borderRadius: 9,
             border: 'none', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700,
-            background: active ? '#00d9a3' : 'transparent', color: active ? '#fff' : '#9ca3af',
+            background: active ? 'var(--gx-accent)' : 'transparent', color: active ? 'var(--gx-text-inverse)' : 'var(--gx-text-muted)',
           }}>
             <Icon size={15} />{t.label}
           </button>
@@ -95,20 +95,20 @@ function ShortcutsView({ mode, setMode }) {
       <ModeTabs mode={mode} setMode={setMode} />
 
       <div style={{ marginBottom: 20 }}>
-        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, color: '#e2e8f0', marginBottom: 4 }}>Aptitude Shortcuts</h1>
-        <p style={{ color: '#9ca3af', fontSize: 14 }}>Quick tricks for TCS NQT, Infosys SP, Wipro NLTH</p>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 4 }}>Aptitude Shortcuts</h1>
+        <p style={{ color: 'var(--gx-text-muted)', fontSize: 14 }}>Quick tricks for TCS NQT, Infosys SP, Wipro NLTH</p>
       </div>
 
       <div style={{ position: 'relative', marginBottom: 16 }}>
-        <Search size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#6b7280' }} />
+        <Search size={16} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--gx-text-muted)' }} />
         <input
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search shortcuts, topics, formulas..."
           style={{
             width: '100%', padding: '12px 14px 12px 40px', borderRadius: 12,
-            background: '#12121a', border: '1px solid rgba(0,217,163,0.12)',
-            color: '#e2e8f0', fontSize: 14, fontFamily: 'var(--font-body)', outline: 'none',
+            background: 'var(--gx-bg)', border: '1px solid var(--gx-border)',
+            color: 'var(--gx-text)', fontSize: 14, fontFamily: 'var(--font-body)', outline: 'none',
           }}
         />
       </div>
@@ -120,42 +120,42 @@ function ShortcutsView({ mode, setMode }) {
             <button key={tp} onClick={() => setTopic(tp)} style={{
               flexShrink: 0, padding: '7px 14px', borderRadius: 20, cursor: 'pointer',
               fontSize: 12, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap',
-              background: active ? '#00d9a3' : 'transparent',
-              color: active ? '#fff' : '#9ca3af',
-              border: active ? '1px solid #00d9a3' : '1px solid rgba(0,217,163,0.18)',
+              background: active ? 'var(--gx-accent)' : 'transparent',
+              color: active ? 'var(--gx-text-inverse)' : 'var(--gx-text-muted)',
+              border: active ? '1px solid var(--gx-accent)' : '1px solid var(--gx-border)',
             }}>{tp}</button>
           );
         })}
       </div>
 
-      <div style={{ fontSize: 12, color: '#6b7280', fontFamily: 'var(--font-mono)', marginBottom: 14 }}>
+      <div style={{ fontSize: 12, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 14 }}>
         Showing {filtered.length} of {TRICKS.length} shortcuts
       </div>
 
       {filtered.length === 0 ? (
-        <div style={{ padding: 40, textAlign: 'center', color: '#6b7280', fontFamily: 'var(--font-mono)', fontSize: 13 }}>
+        <div style={{ padding: 40, textAlign: 'center', color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)', fontSize: 13 }}>
           No shortcuts match your search.
         </div>
       ) : filtered.map((trick, i) => (
         <div key={i} style={{
-          background: '#12121a',
-          border: '1px solid rgba(0,217,163,0.12)',
+          background: 'var(--gx-bg)',
+          border: '1px solid var(--gx-border)',
           borderRadius: 14, padding: '20px 22px',
           marginBottom: 14,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: 'rgba(0,217,163,0.12)', color: '#2ee6b0', fontFamily: 'var(--font-mono)' }}>{trick.topic}</span>
+            <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: 'var(--gx-accent-soft)', color: 'var(--gx-accent)', fontFamily: 'var(--font-mono)' }}>{trick.topic}</span>
             <span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 20, background: DIFF_BG[trick.difficulty], color: DIFF_FG[trick.difficulty] }}>{trick.difficulty}</span>
           </div>
-          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 17, fontWeight: 700, color: '#e2e8f0', marginBottom: 8 }}>{trick.title}</div>
-          <div style={{ fontSize: 14, color: '#9ca3af', lineHeight: 1.7, marginBottom: 12 }}>{trick.content}</div>
-          <div style={{ background: 'rgba(0,217,163,0.06)', borderRadius: 10, padding: '10px 14px', marginBottom: 10 }}>
-            <span style={{ fontSize: 11, color: '#2ee6b0', fontFamily: 'var(--font-mono)' }}>EXAMPLE</span>
-            <div style={{ fontSize: 13, color: '#d1d5db', marginTop: 4 }}>{trick.example}</div>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 17, fontWeight: 700, color: 'var(--gx-text)', marginBottom: 8 }}>{trick.title}</div>
+          <div style={{ fontSize: 14, color: 'var(--gx-text-muted)', lineHeight: 1.7, marginBottom: 12 }}>{trick.content}</div>
+          <div style={{ background: 'var(--gx-accent-soft)', borderRadius: 10, padding: '10px 14px', marginBottom: 10 }}>
+            <span style={{ fontSize: 11, color: 'var(--gx-accent)', fontFamily: 'var(--font-mono)' }}>EXAMPLE</span>
+            <div style={{ fontSize: 13, color: 'var(--gx-text-muted)', marginTop: 4 }}>{trick.example}</div>
           </div>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {trick.companies.map(c => (
-              <span key={c} style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'rgba(255,255,255,0.04)', color: '#6b7280', fontFamily: 'var(--font-mono)' }}>{c}</span>
+              <span key={c} style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'var(--gx-surface)', color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>{c}</span>
             ))}
           </div>
         </div>
@@ -301,39 +301,39 @@ export default function AptitudePage() {
   if (phase === 'result' && result) {
     return (
       <div style={{ maxWidth: 760, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
-        <div style={{ background: '#070f1f', border: `1px solid ${result.score >= 70 ? 'rgba(29,158,117,0.3)' : 'rgba(239,159,39,0.3)'}`, borderRadius: 14, padding: 28, marginBottom: 20, textAlign: 'center' }}>
+        <div style={{ background: 'var(--gx-bg)', border: `1px solid ${result.score >= 70 ? 'var(--gx-success-border)' : 'var(--gx-warning-border)'}`, borderRadius: 14, padding: 28, marginBottom: 20, textAlign: 'center' }}>
           <div style={{ fontSize: 56, marginBottom: 12 }}>{result.score >= 85 ? '🏆' : result.score >= 70 ? '✅' : '💪'}</div>
-          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 48, fontWeight: 800, color: result.score >= 70 ? '#1D9E75' : '#EF9F27', lineHeight: 1, marginBottom: 6 }}>{result.score}%</div>
-          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, color: '#e8e8ed', marginBottom: 8 }}>{result.correct}/{result.total} correct</div>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 48, fontWeight: 800, color: result.score >= 70 ? 'var(--gx-success)' : 'var(--gx-warning)', lineHeight: 1, marginBottom: 6 }}>{result.score}%</div>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, color: 'var(--gx-text)', marginBottom: 8 }}>{result.correct}/{result.total} correct</div>
           {result.pointsEarned > 0 && (
-            <div style={{ display: 'inline-block', padding: '6px 14px', borderRadius: 20, background: 'rgba(29,158,117,0.1)', color: '#1D9E75', fontSize: 12, fontFamily: 'var(--font-mono)' }}>+{result.pointsEarned} pts earned</div>
+            <div style={{ display: 'inline-block', padding: '6px 14px', borderRadius: 20, background: 'var(--gx-success-soft)', color: 'var(--gx-success)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>+{result.pointsEarned} pts earned</div>
           )}
         </div>
 
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 14 }}>ANSWER REVIEW</div>
+        <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 2, marginBottom: 14 }}>ANSWER REVIEW</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {result.results.map((r, i) => (
-            <div key={i} style={{ background: '#070f1f', border: `1px solid ${r.isCorrect ? 'rgba(29,158,117,0.15)' : 'rgba(255,45,120,0.15)'}`, borderRadius: 10, padding: 14 }}>
+            <div key={i} style={{ background: 'var(--gx-bg)', border: `1px solid ${r.isCorrect ? 'var(--gx-success-border)' : 'var(--gx-danger-border)'}`, borderRadius: 10, padding: 14 }}>
               <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', marginBottom: 6 }}>
                 <span style={{ fontSize: 14 }}>{r.isCorrect ? '✅' : '❌'}</span>
-                <div style={{ fontSize: 13, color: '#c8d8e8', fontWeight: 500 }}>Q{i + 1}: {r.question}</div>
+                <div style={{ fontSize: 13, color: 'var(--gx-text)', fontWeight: 500 }}>Q{i + 1}: {r.question}</div>
               </div>
               {!r.isCorrect && (
                 <>
-                  <div style={{ fontSize: 12, color: '#ff2d78', marginLeft: 22 }}>Your: {r.yourAnswer}</div>
-                  <div style={{ fontSize: 12, color: '#1D9E75', marginLeft: 22, marginBottom: 6 }}>Correct: {r.correct}</div>
-                  <div style={{ fontSize: 12, color: '#8a9ab0', marginLeft: 22, padding: 8, background: 'rgba(0,0,0,0.2)', borderRadius: 6, lineHeight: 1.6 }}>💡 {r.explanation}</div>
+                  <div style={{ fontSize: 12, color: 'var(--gx-danger)', marginLeft: 22 }}>Your: {r.yourAnswer}</div>
+                  <div style={{ fontSize: 12, color: 'var(--gx-success)', marginLeft: 22, marginBottom: 6 }}>Correct: {r.correct}</div>
+                  <div style={{ fontSize: 12, color: 'var(--gx-text-muted)', marginLeft: 22, padding: 8, background: 'var(--gx-surface-2)', borderRadius: 6, lineHeight: 1.6 }}>💡 {r.explanation}</div>
                 </>
               )}
             </div>
           ))}
         </div>
 
-        <button onClick={() => { setPhase('list'); setActiveTopic(null); setResult(null); }} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, marginTop: 20 }}>
+        <button onClick={() => { setPhase('list'); setActiveTopic(null); setResult(null); }} style={{ width: '100%', padding: 14, borderRadius: 12, border: 'none', cursor: 'pointer', background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, marginTop: 20 }}>
           Back to Topics →
         </button>
         {result.attemptId && (
-          <a href={`/review/${result.attemptId}`} style={{ display: 'block', textAlign: 'center', marginTop: 12, color: '#00d9a3', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600, textDecoration: 'none' }}>
+          <a href={`/review/${result.attemptId}`} style={{ display: 'block', textAlign: 'center', marginTop: 12, color: 'var(--gx-accent)', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600, textDecoration: 'none' }}>
             📋 Open full review (saved to your history) →
           </a>
         )}
@@ -350,39 +350,39 @@ export default function AptitudePage() {
       <div style={{ maxWidth: 740, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16, flexWrap: 'wrap', gap: 8 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <button onClick={() => { if (confirm('Exit? Progress lost.')) setPhase('list'); }} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#5a7a9a', fontSize: 18 }}>←</button>
+            <button onClick={() => { if (confirm('Exit? Progress lost.')) setPhase('list'); }} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--gx-text-muted)', fontSize: 18 }}>←</button>
             <div>
-              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: '#e8e8ed' }}>{activeTopic?.name}</div>
-              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>Q{currentQ + 1}/{questions.length} · {answeredCount} answered</div>
+              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: 'var(--gx-text)' }}>{activeTopic?.name}</div>
+              <div style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>Q{currentQ + 1}/{questions.length} · {answeredCount} answered</div>
             </div>
           </div>
         </div>
 
-        <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3, marginBottom: 20, overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${((currentQ + 1) / questions.length) * 100}%`, background: 'linear-gradient(90deg,#00d9a3,#ff6b4a)', borderRadius: 3, transition: 'width 0.3s' }} />
+        <div style={{ height: 5, background: 'var(--gx-surface)', borderRadius: 3, marginBottom: 20, overflow: 'hidden' }}>
+          <div style={{ height: '100%', width: `${((currentQ + 1) / questions.length) * 100}%`, background: 'var(--gx-accent)', borderRadius: 3, transition: 'width 0.3s' }} />
         </div>
 
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 24, marginBottom: 18 }}>
-          <div style={{ fontSize: 16, color: '#e8e8ed', lineHeight: 1.75, fontWeight: 500, whiteSpace: 'pre-wrap' }}>{q.question}</div>
+        <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 14, padding: 24, marginBottom: 18 }}>
+          <div style={{ fontSize: 16, color: 'var(--gx-text)', lineHeight: 1.75, fontWeight: 500, whiteSpace: 'pre-wrap' }}>{q.question}</div>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
           {(q.options || []).map((opt, oi) => {
             const isSelected = answers[currentQ] === opt;
             return (
-              <button key={oi} onClick={() => setAnswers(p => ({ ...p, [currentQ]: opt }))} style={{ padding: '13px 16px', borderRadius: 10, cursor: 'pointer', textAlign: 'left', border: `1px solid ${isSelected ? 'rgba(0,217,163,0.5)' : 'rgba(255,255,255,0.06)'}`, background: isSelected ? 'rgba(0,217,163,0.08)' : 'rgba(255,255,255,0.01)', color: isSelected ? '#00d9a3' : '#c8d8e8', fontSize: 14, lineHeight: 1.5 }}>
-                <span style={{ color: isSelected ? '#00d9a3' : '#5a7a9a', marginRight: 10, fontFamily: 'var(--font-mono)', fontWeight: 700 }}>{letters[oi]}.</span>{opt}
+              <button key={oi} onClick={() => setAnswers(p => ({ ...p, [currentQ]: opt }))} style={{ padding: '13px 16px', borderRadius: 10, cursor: 'pointer', textAlign: 'left', border: `1px solid ${isSelected ? 'var(--gx-accent-border)' : 'var(--gx-border)'}`, background: isSelected ? 'var(--gx-accent-soft)' : 'var(--gx-surface)', color: isSelected ? 'var(--gx-accent)' : 'var(--gx-text)', fontSize: 14, lineHeight: 1.5 }}>
+                <span style={{ color: isSelected ? 'var(--gx-accent)' : 'var(--gx-text-muted)', marginRight: 10, fontFamily: 'var(--font-mono)', fontWeight: 700 }}>{letters[oi]}.</span>{opt}
               </button>
             );
           })}
         </div>
 
         <div style={{ display: 'flex', gap: 10 }}>
-          {currentQ > 0 && <button onClick={() => setCurrentQ(c => c - 1)} style={{ flex: 1, padding: '13px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 14 }}>← Prev</button>}
+          {currentQ > 0 && <button onClick={() => setCurrentQ(c => c - 1)} style={{ flex: 1, padding: '13px', borderRadius: 12, border: '1px solid var(--gx-border)', background: 'transparent', color: 'var(--gx-text-muted)', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 14 }}>← Prev</button>}
           {currentQ < questions.length - 1 ? (
-            <button onClick={() => setCurrentQ(c => c + 1)} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>Next →</button>
+            <button onClick={() => setCurrentQ(c => c + 1)} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>Next →</button>
           ) : (
-            <button onClick={submitSession} disabled={submitting} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: submitting ? 'not-allowed' : 'pointer', background: submitting ? 'rgba(0,217,163,0.2)' : 'linear-gradient(135deg,#1D9E75,#00d9a3)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+            <button onClick={submitSession} disabled={submitting} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: submitting ? 'not-allowed' : 'pointer', background: submitting ? 'var(--gx-accent-soft)' : 'var(--gx-success)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
               {submitting ? 'Scoring...' : `Submit ${answeredCount}/${questions.length} →`}
             </button>
           )}
@@ -407,54 +407,54 @@ export default function AptitudePage() {
   <div style={{ fontFamily: 'var(--font-body)', width: '100%' }}>
     <ModeTabs mode={mode} setMode={setMode} />
     <div style={{ marginBottom: 24 }}>
-      <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: '#e8e8ed', marginBottom: 4 }}>🧠 Aptitude Training</h1>
-      <p style={{ color: '#5a7a9a', fontSize: 13 }}>Quant, Logical, Verbal. Crack TCS, Infosys, Wipro placement tests.</p>
+      <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 4 }}>🧠 Aptitude Training</h1>
+      <p style={{ color: 'var(--gx-text-muted)', fontSize: 13 }}>Quant, Logical, Verbal. Crack TCS, Infosys, Wipro placement tests.</p>
     </div>
 
     {!level ? (
-      <div style={{ background: 'linear-gradient(135deg,rgba(0,217,163,0.06),rgba(255,107,74,0.03))', border: '2px solid rgba(0,217,163,0.15)', borderRadius: 14, padding: 24, textAlign: 'center' }}>
+      <div style={{ background: 'var(--gx-accent-soft)', border: '2px solid var(--gx-border)', borderRadius: 14, padding: 24, textAlign: 'center' }}>
         <div style={{ fontSize: 40, marginBottom: 12 }}>🎯</div>
-        <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>
+        <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 8 }}>
           Pick your aptitude level
         </div>
-        <div style={{ color: '#5a7a9a', fontSize: 13, marginBottom: 20 }}>
+        <div style={{ color: 'var(--gx-text-muted)', fontSize: 13, marginBottom: 20 }}>
           Questions will match your level.
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: 10 }}>
           {[
-            { key: 'easy', label: '🌱 Basics', desc: 'Starting from zero', color: '#1D9E75' },
-            { key: 'medium', label: '⚡ Intermediate', desc: 'Know basics well', color: '#EF9F27' },
-            { key: 'hard', label: '🔥 Advanced', desc: 'Company-level', color: '#ff2d78' },
+            { key: 'easy', label: '🌱 Basics', desc: 'Starting from zero', color: 'var(--gx-success)' },
+            { key: 'medium', label: '⚡ Intermediate', desc: 'Know basics well', color: 'var(--gx-warning)' },
+            { key: 'hard', label: '🔥 Advanced', desc: 'Company-level', color: 'var(--gx-danger)' },
           ].map(l => (
-            <button key={l.key} onClick={() => setLevel(l.key)} style={{ padding: '18px', borderRadius: 10, border: `1px solid ${l.color}30`, background: 'rgba(255,255,255,0.02)', cursor: 'pointer', textAlign: 'center' }}>
+            <button key={l.key} onClick={() => setLevel(l.key)} style={{ padding: '18px', borderRadius: 10, border: `1px solid color-mix(in srgb, ${l.color} 19%, transparent)`, background: 'var(--gx-surface)', cursor: 'pointer', textAlign: 'center' }}>
               <div style={{ fontSize: 16, marginBottom: 6, color: l.color, fontFamily: 'var(--font-heading)', fontWeight: 700 }}>{l.label}</div>
-              <div style={{ fontSize: 12, color: '#5a7a9a' }}>{l.desc}</div>
+              <div style={{ fontSize: 12, color: 'var(--gx-text-muted)' }}>{l.desc}</div>
             </button>
           ))}
         </div>
       </div>
     ) : (
       <>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, padding: '10px 16px', background: 'rgba(255,255,255,0.02)', borderRadius: 10 }}>
-          <div style={{ fontSize: 12, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>
-            LEVEL: <span style={{ color: level === 'easy' ? '#1D9E75' : level === 'medium' ? '#EF9F27' : '#ff2d78', fontWeight: 700 }}>{level.toUpperCase()}</span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, padding: '10px 16px', background: 'var(--gx-surface)', borderRadius: 10 }}>
+          <div style={{ fontSize: 12, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>
+            LEVEL: <span style={{ color: level === 'easy' ? 'var(--gx-success)' : level === 'medium' ? 'var(--gx-warning)' : 'var(--gx-danger)', fontWeight: 700 }}>{level.toUpperCase()}</span>
           </div>
-          <button onClick={() => setLevel(null)} style={{ background: 'transparent', border: 'none', color: '#00d9a3', cursor: 'pointer', fontSize: 12, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
+          <button onClick={() => setLevel(null)} style={{ background: 'transparent', border: 'none', color: 'var(--gx-accent)', cursor: 'pointer', fontSize: 12, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
             Change →
           </button>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(140px,1fr))', gap: 12, marginBottom: 24 }}>
           {[
-            { label: 'Sessions', value: progress?.total_sessions ?? 0, color: '#00d9a3' },
-            { label: 'Streak', value: '🔥' + (progress?.current_streak ?? 0), color: '#EF9F27' },
-            { label: 'Best Quant', value: (progress?.quant_score ?? 0) + '%', color: '#1D9E75' },
-            { label: 'Best Logical', value: (progress?.logical_score ?? 0) + '%', color: '#ff6b4a' },
-            { label: 'Best Verbal', value: (progress?.verbal_score ?? 0) + '%', color: '#EF9F27' },
+            { label: 'Sessions', value: progress?.total_sessions ?? 0, color: 'var(--gx-accent)' },
+            { label: 'Streak', value: '🔥' + (progress?.current_streak ?? 0), color: 'var(--gx-warning)' },
+            { label: 'Best Quant', value: (progress?.quant_score ?? 0) + '%', color: 'var(--gx-success)' },
+            { label: 'Best Logical', value: (progress?.logical_score ?? 0) + '%', color: 'var(--gx-warning)' },
+            { label: 'Best Verbal', value: (progress?.verbal_score ?? 0) + '%', color: 'var(--gx-warning)' },
           ].map(s => (
-            <div key={s.label} style={{ background: '#070f1f', border: `1px solid ${s.color}15`, borderRadius: 12, padding: '14px', textAlign: 'center' }}>
+            <div key={s.label} style={{ background: 'var(--gx-bg)', border: `1px solid color-mix(in srgb, ${s.color} 8%, transparent)`, borderRadius: 12, padding: '14px', textAlign: 'center' }}>
               <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 800, color: s.color }}>{s.value}</div>
-              <div style={{ fontSize: 10, color: '#5a7a9a', marginTop: 4, fontFamily: 'var(--font-mono)' }}>{s.label}</div>
+              <div style={{ fontSize: 10, color: 'var(--gx-text-muted)', marginTop: 4, fontFamily: 'var(--font-mono)' }}>{s.label}</div>
             </div>
           ))}
         </div>
@@ -465,16 +465,16 @@ export default function AptitudePage() {
               <span style={{ fontSize: 22 }}>{cat.icon}</span>
               <div>
                 <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: cat.color }}>{cat.label}</div>
-                <div style={{ fontSize: 11, color: '#5a7a9a' }}>{cat.description}</div>
+                <div style={{ fontSize: 11, color: 'var(--gx-text-muted)' }}>{cat.description}</div>
               </div>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))', gap: 10 }}>
               {cat.topics.map(topic => (
-                <div key={topic.slug} onClick={() => startTopic(slug, topic)} style={{ background: '#070f1f', border: `1px solid ${cat.color}15`, borderRadius: 10, padding: '14px', cursor: 'pointer' }}>
+                <div key={topic.slug} onClick={() => startTopic(slug, topic)} style={{ background: 'var(--gx-bg)', border: `1px solid color-mix(in srgb, ${cat.color} 8%, transparent)`, borderRadius: 10, padding: '14px', cursor: 'pointer' }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600, color: '#e8e8ed' }}>{topic.name}</div>
+                    <div style={{ fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600, color: 'var(--gx-text)' }}>{topic.name}</div>
                   </div>
-                  <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>10 Q · Start →</div>
+                  <div style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>10 Q · Start →</div>
                 </div>
               ))}
             </div>

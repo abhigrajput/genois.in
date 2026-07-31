@@ -116,38 +116,38 @@ export default function QueueVisualizer() {
 
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
-          { label:'Size', value:queue.length, color:'#00d9a3' },
-          { label:'Front', value:queue.length > 0 ? queue[0] : 'null', color:'#1d9e75' },
-          { label:'Rear', value:queue.length > 0 ? queue[queue.length-1] : 'null', color:'#ff6b4a' },
-          { label:'Capacity', value:MAX_SIZE, color:'#ef9f27' },
+          { label:'Size', value:queue.length, color:'var(--gx-accent)' },
+          { label:'Front', value:queue.length > 0 ? queue[0] : 'null', color:'var(--gx-success)' },
+          { label:'Rear', value:queue.length > 0 ? queue[queue.length-1] : 'null', color:'var(--gx-warning)' },
+          { label:'Capacity', value:MAX_SIZE, color:'var(--gx-warning)' },
         ].map(s => (
-          <div key={s.label} style={{ background:'rgba(10,15,30,0.8)', border:`1px solid ${s.color}20`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
-            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
+          <div key={s.label} style={{ background:'var(--gx-surface)', border:`1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-text-muted)', marginBottom:2 }}>{s.label}</div>
             <div style={{ fontFamily:'var(--font-heading)', fontSize:20, fontWeight:700, color:s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
       {message && (
-        <div style={{ background:'rgba(0,217,163,0.05)', border:'1px solid rgba(0,217,163,0.15)', borderRadius:8, padding:'8px 14px', fontFamily:'var(--font-mono)', fontSize:12, color:'#00d9a3' }}>
+        <div style={{ background:'var(--gx-accent-soft)', border:'1px solid var(--gx-border)', borderRadius:8, padding:'8px 14px', fontFamily:'var(--font-mono)', fontSize:12, color:'var(--gx-accent)' }}>
           ▶ {message}
         </div>
       )}
 
       {/* Queue visualization */}
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, padding:'24px', minHeight:180 }}>
+      <div style={{ background:'var(--gx-surface)', border:'1px solid var(--gx-border)', borderRadius:12, padding:'24px', minHeight:180 }}>
         {/* Direction labels */}
         <div style={{ display:'flex', justifyContent:'space-between', marginBottom:8 }}>
-          <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'#1d9e75', letterSpacing:1 }}>← DEQUEUE (FRONT)</span>
-          <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'#ff6b4a', letterSpacing:1 }}>ENQUEUE (REAR) →</span>
+          <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'var(--gx-success)', letterSpacing:1 }}>← DEQUEUE (FRONT)</span>
+          <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'var(--gx-warning)', letterSpacing:1 }}>ENQUEUE (REAR) →</span>
         </div>
 
         {/* Queue row */}
         <div style={{ display:'flex', alignItems:'stretch', gap:0, minHeight:80, overflowX:'auto' }}>
           {/* Empty slots left */}
           {Array.from({ length: MAX_SIZE - queue.length }, (_, i) => (
-            <div key={`el-${i}`} style={{ minWidth:70, height:70, border:'1px dashed rgba(0,217,163,0.1)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
-              <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'rgba(0,217,163,0.1)' }}>—</span>
+            <div key={`el-${i}`} style={{ minWidth:70, height:70, border:'1px dashed var(--gx-border)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+              <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-accent)' }}>—</span>
             </div>
           ))}
 
@@ -157,36 +157,36 @@ export default function QueueVisualizer() {
             return (
               <div key={`${val}-${i}`} style={{
                 minWidth: 70, height: 70,
-                background: isFront ? 'rgba(29,158,117,0.12)' : isRear ? 'rgba(255,107,74,0.12)' : 'rgba(26,42,58,0.8)',
-                border: isFront ? '1px solid rgba(29,158,117,0.5)' : isRear ? '1px solid rgba(255,107,74,0.5)' : '1px solid rgba(0,217,163,0.15)',
+                background: isFront ? 'var(--gx-success-soft)' : isRear ? 'var(--gx-warning-soft)' : 'var(--gx-surface-2)',
+                border: isFront ? '1px solid var(--gx-success-border)' : isRear ? '1px solid var(--gx-warning-border)' : '1px solid var(--gx-border)',
                 display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
                 transition:'all 0.3s ease', flexShrink:0,
                 animation: isFront && animOut ? 'queueOut 0.3s ease forwards' : isRear && animIn ? 'queueIn 0.3s ease' : 'none',
-                boxShadow: isFront ? '0 0 12px rgba(29,158,117,0.2)' : isRear ? '0 0 12px rgba(255,107,74,0.2)' : 'none',
+                boxShadow: isFront ? 'var(--gx-shadow-sm)' : isRear ? 'var(--gx-shadow-sm)' : 'none',
               }}>
-                <span style={{ fontFamily:'var(--font-mono)', fontSize:16, fontWeight:600, color: isFront ? '#1d9e75' : isRear ? '#ff6b4a' : '#e8e8ed' }}>{val}</span>
-                {isFront && <span style={{ fontFamily:'var(--font-mono)', fontSize:8, color:'#1d9e75', marginTop:2 }}>FRONT</span>}
-                {isRear && <span style={{ fontFamily:'var(--font-mono)', fontSize:8, color:'#ff6b4a', marginTop:2 }}>REAR</span>}
+                <span style={{ fontFamily:'var(--font-mono)', fontSize:16, fontWeight:600, color: isFront ? 'var(--gx-success)' : isRear ? 'var(--gx-warning)' : 'var(--gx-text)' }}>{val}</span>
+                {isFront && <span style={{ fontFamily:'var(--font-mono)', fontSize:8, color:'var(--gx-success)', marginTop:2 }}>FRONT</span>}
+                {isRear && <span style={{ fontFamily:'var(--font-mono)', fontSize:8, color:'var(--gx-warning)', marginTop:2 }}>REAR</span>}
               </div>
             );
           })}
 
           {queue.length === 0 && (
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'center', width:'100%', fontFamily:'var(--font-mono)', fontSize:12, color:'#2a3a4a' }}>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'center', width:'100%', fontFamily:'var(--font-mono)', fontSize:12, color:'var(--gx-text-subtle)' }}>
               Queue is empty
             </div>
           )}
         </div>
 
         {/* Bottom border */}
-        <div style={{ height:3, background:'linear-gradient(90deg,rgba(29,158,117,0.4),rgba(255,107,74,0.4))', borderRadius:2, marginTop:4 }}/>
+        <div style={{ height:3, background:'var(--gx-success)', borderRadius:2, marginTop:4 }}/>
       </div>
 
       <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
         {[
-          { label:'Enqueue', action:enqueue, color:'#ff6b4a', bg:'rgba(255,107,74,0.08)', border:'rgba(255,107,74,0.25)' },
-          { label:'Dequeue', action:dequeue, color:'#1d9e75', bg:'rgba(29,158,117,0.08)', border:'rgba(29,158,117,0.25)' },
-          { label:'Clear', action:clear, color:'#5a7a9a', bg:'transparent', border:'rgba(90,122,154,0.25)' },
+          { label:'Enqueue', action:enqueue, color:'var(--gx-warning)', bg:'var(--gx-warning-soft)', border:'var(--gx-warning-border)' },
+          { label:'Dequeue', action:dequeue, color:'var(--gx-success)', bg:'var(--gx-success-soft)', border:'var(--gx-success-border)' },
+          { label:'Clear', action:clear, color:'var(--gx-text-muted)', bg:'transparent', border:'var(--gx-border)' },
         ].map(b => (
           <button key={b.label} onClick={b.action} style={{ padding:'10px 24px', borderRadius:9, border:`1px solid ${b.border}`, background:b.bg, color:b.color, fontFamily:'var(--font-heading)', fontSize:14, fontWeight:600, cursor:'pointer', transition:'all 0.15s' }}>{b.label}</button>
         ))}

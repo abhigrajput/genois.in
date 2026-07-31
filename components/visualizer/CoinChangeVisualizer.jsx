@@ -117,10 +117,10 @@ export default function CoinChangeVisualizer() {
   }, [isPlaying, speed, steps.length]);
 
   const cellColor = (i) => {
-    if (!current) return '#1a2a3a';
-    if (i === current.a && !current.done) return '#00d9a3';
-    if (i === current.from) return '#ef9f27';
-    return dp[i] === INF ? '#2a3a4a' : '#1d9e75';
+    if (!current) return 'var(--gx-surface-2)';
+    if (i === current.a && !current.done) return 'var(--gx-accent)';
+    if (i === current.from) return 'var(--gx-warning)';
+    return dp[i] === INF ? 'var(--gx-surface-3)' : 'var(--gx-success)';
   };
 
   return (
@@ -134,26 +134,26 @@ export default function CoinChangeVisualizer() {
 
       {/* Preset selector + coins */}
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1 }}>COINS</span>
+        <span style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 1 }}>COINS</span>
         {coins.map((c) => (
-          <div key={c} style={{ width: 34, height: 34, borderRadius: '50%', background: current?.coin === c ? '#ef9f2722' : 'rgba(239,159,39,0.08)', border: `2px solid ${current?.coin === c ? '#ef9f27' : 'rgba(239,159,39,0.3)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: '#ef9f27', transition: 'all 0.2s' }}>{c}</div>
+          <div key={c} style={{ width: 34, height: 34, borderRadius: '50%', background: current?.coin === c ? 'var(--gx-warning-soft)' : 'var(--gx-warning-soft)', border: `2px solid ${current?.coin === c ? 'var(--gx-warning)' : 'var(--gx-warning-border)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, color: 'var(--gx-warning)', transition: 'all 0.2s' }}>{c}</div>
         ))}
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#5a7a9a', marginLeft: 8 }}>target = {amount}</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--gx-text-muted)', marginLeft: 8 }}>target = {amount}</span>
         <div style={{ display: 'flex', gap: 4, marginLeft: 'auto' }}>
           {PRESETS.map((p, i) => (
-            <button key={i} onClick={() => setPreset(i)} style={{ padding: '4px 10px', borderRadius: 6, border: preset === i ? '1px solid #00d9a3' : '1px solid rgba(0,217,163,0.15)', background: preset === i ? 'rgba(0,217,163,0.12)' : 'transparent', color: preset === i ? '#00d9a3' : '#5a7a9a', fontSize: 10, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>[{p.coins.join(',')}]→{p.amount}</button>
+            <button key={i} onClick={() => setPreset(i)} style={{ padding: '4px 10px', borderRadius: 6, border: preset === i ? '1px solid var(--gx-accent)' : '1px solid var(--gx-border)', background: preset === i ? 'var(--gx-accent-soft)' : 'transparent', color: preset === i ? 'var(--gx-accent)' : 'var(--gx-text-muted)', fontSize: 10, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>[{p.coins.join(',')}]→{p.amount}</button>
           ))}
         </div>
       </div>
 
       {/* DP table */}
-      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: '16px', overflowX: 'auto' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 10 }}>DP TABLE — dp[a] = fewest coins to make amount a</div>
+      <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: '16px', overflowX: 'auto' }}>
+        <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 1, marginBottom: 10 }}>DP TABLE — dp[a] = fewest coins to make amount a</div>
         <div style={{ display: 'flex', gap: 5 }}>
           {dp.map((v, i) => (
             <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
               <div style={{ minWidth: 34, height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center', background: `${cellColor(i)}22`, border: `2px solid ${cellColor(i)}`, borderRadius: 7, fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: cellColor(i), transition: 'all 0.25s' }}>{v === INF ? '∞' : v}</div>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#5a7a9a' }}>{i}</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--gx-text-muted)' }}>{i}</span>
             </div>
           ))}
         </div>
@@ -167,27 +167,27 @@ export default function CoinChangeVisualizer() {
       />
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        {[['#00d9a3', 'Amount being solved'], ['#ef9f27', 'dp[a − coin] source'], ['#1d9e75', 'Solved'], ['#2a3a4a', '∞ (unreachable)']].map(([c, l]) => (
+        {[['var(--gx-accent)', 'Amount being solved'], ['var(--gx-warning)', 'dp[a − coin] source'], ['var(--gx-success)', 'Solved'], ['var(--gx-surface-3)', '∞ (unreachable)']].map(([c, l]) => (
           <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ width: 12, height: 12, borderRadius: 2, background: `${c}22`, border: `2px solid ${c}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l}</span>
+            <div style={{ width: 12, height: 12, borderRadius: 2, background: `color-mix(in srgb, ${c} 13%, transparent)`, border: `2px solid ${c}` }} />
+            <span style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>
 
       {/* Controls (playback only — presets replace array randomize) */}
-      <div style={{ background: 'rgba(10,15,30,0.9)', border: '1px solid rgba(0,217,163,0.12)', borderRadius: 12, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-        <button onClick={() => setStepIdx((p) => Math.max(p - 1, 0))} style={ctrlBtn('#5a7a9a')}>⏮</button>
-        <button onClick={() => setIsPlaying((p) => !p)} style={{ ...ctrlBtn('#00d9a3'), background: 'rgba(0,217,163,0.12)', border: '1px solid rgba(0,217,163,0.35)', minWidth: 80, fontFamily: 'var(--font-body)', fontWeight: 600 }}>{isPlaying ? '⏸ Pause' : '▶ Play'}</button>
-        <button onClick={() => setStepIdx((p) => Math.min(p + 1, steps.length - 1))} style={ctrlBtn('#5a7a9a')}>⏭</button>
-        <button onClick={() => { setStepIdx(-1); setIsPlaying(false); }} style={{ ...ctrlBtn('#ff2d78'), background: 'rgba(255,45,120,0.08)', border: '1px solid rgba(255,45,120,0.25)', fontFamily: 'var(--font-body)' }}>↺ Reset</button>
+      <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        <button onClick={() => setStepIdx((p) => Math.max(p - 1, 0))} style={ctrlBtn('var(--gx-text-muted)')}>⏮</button>
+        <button onClick={() => setIsPlaying((p) => !p)} style={{ ...ctrlBtn('var(--gx-accent)'), background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-accent-border)', minWidth: 80, fontFamily: 'var(--font-body)', fontWeight: 600 }}>{isPlaying ? '⏸ Pause' : '▶ Play'}</button>
+        <button onClick={() => setStepIdx((p) => Math.min(p + 1, steps.length - 1))} style={ctrlBtn('var(--gx-text-muted)')}>⏭</button>
+        <button onClick={() => { setStepIdx(-1); setIsPlaying(false); }} style={{ ...ctrlBtn('var(--gx-danger)'), background: 'var(--gx-danger-soft)', border: '1px solid var(--gx-danger-border)', fontFamily: 'var(--font-body)' }}>↺ Reset</button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 12 }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1 }}>SPEED</span>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 1 }}>SPEED</span>
           {[1, 2, 3, 4].map((s) => (
-            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid #00d9a3' : '1px solid rgba(0,217,163,0.15)', background: speed === s ? 'rgba(0,217,163,0.12)' : 'transparent', color: speed === s ? '#00d9a3' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×', '1×', '2×', '3×'][s - 1]}</button>
+            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid var(--gx-accent)' : '1px solid var(--gx-border)', background: speed === s ? 'var(--gx-accent-soft)' : 'transparent', color: speed === s ? 'var(--gx-accent)' : 'var(--gx-text-muted)', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×', '1×', '2×', '3×'][s - 1]}</button>
           ))}
         </div>
-        {steps.length > 0 && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#5a7a9a', marginLeft: 'auto' }}>Step <span style={{ color: '#00d9a3' }}>{Math.max(0, stepIdx + 1)}</span> / {steps.length}</span>}
+        {steps.length > 0 && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--gx-text-muted)', marginLeft: 'auto' }}>Step <span style={{ color: 'var(--gx-accent)' }}>{Math.max(0, stepIdx + 1)}</span> / {steps.length}</span>}
       </div>
 
       <CodePanel code={CODE} snippets={SNIPPETS} activeLine={current?.activeLine ?? -1} />
@@ -195,4 +195,4 @@ export default function CoinChangeVisualizer() {
   );
 }
 
-const ctrlBtn = (color) => ({ padding: '6px 14px', borderRadius: 8, border: `1px solid ${color}30`, background: 'transparent', color, fontSize: 13, cursor: 'pointer', transition: 'all 0.15s' });
+const ctrlBtn = (color) => ({ padding: '6px 14px', borderRadius: 8, border: `1px solid color-mix(in srgb, ${color} 19%, transparent)`, background: 'transparent', color, fontSize: 13, cursor: 'pointer', transition: 'all 0.15s' });

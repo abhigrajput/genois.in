@@ -204,28 +204,28 @@ export default function NQueensVisualizer() {
     const isCurrentTry = current.curr && current.curr.r === r && current.curr.c === c;
     const isThreat = current.threats.some(t => t.r === r && t.c === c);
 
-    let background = isDark ? '#09101d' : 'rgba(0, 217, 163, 0.03)';
-    let border = '1px solid rgba(0, 217, 163, 0.05)';
-    let color = '#5a7a9a';
+    let background = isDark ? 'var(--gx-surface-2)' : 'var(--gx-bg)';
+    let border = '1px solid var(--gx-border)';
+    let color = 'var(--gx-text-muted)';
     let shadow = 'none';
 
     if (isCurrentTry) {
       if (current.status === 'conflict') {
-        background = 'rgba(255, 45, 120, 0.15)';
-        border = '2px solid #ff2d78';
-        shadow = '0 0 10px rgba(255, 45, 120, 0.3)';
+        background = 'var(--gx-danger-soft)';
+        border = '2px solid var(--gx-danger)';
+        shadow = 'none';
       } else {
-        background = 'rgba(0, 217, 163, 0.15)';
-        border = '2px solid #00d9a3';
-        shadow = '0 0 10px rgba(0, 217, 163, 0.3)';
+        background = 'var(--gx-accent-soft)';
+        border = '2px solid var(--gx-accent)';
+        shadow = 'none';
       }
     } else if (hasQueen) {
       if (isThreat) {
-        background = 'rgba(255, 45, 120, 0.12)';
-        border = '1.5px solid #ff2d78';
+        background = 'var(--gx-danger-soft)';
+        border = '1.5px solid var(--gx-danger)';
       } else {
-        background = 'rgba(29, 158, 117, 0.12)';
-        border = '1.5px solid #1d9e75';
+        background = 'var(--gx-success-soft)';
+        border = '1.5px solid var(--gx-success)';
       }
     }
 
@@ -244,35 +244,35 @@ export default function NQueensVisualizer() {
       {/* Top statistics */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Board Size (N)', value: `${N}x${N}`, color: '#00d9a3' },
-          { label: 'Solutions Found', value: solutions.length, color: '#1d9e75' },
-          { label: 'Step Phase', value: current.status.toUpperCase(), color: '#ff6b4a' },
-          { label: 'Library View', value: selectedSolutionIdx >= 0 ? `#${selectedSolutionIdx + 1}` : 'Live Search', color: '#ef9f27' },
+          { label: 'Board Size (N)', value: `${N}x${N}`, color: 'var(--gx-accent)' },
+          { label: 'Solutions Found', value: solutions.length, color: 'var(--gx-success)' },
+          { label: 'Step Phase', value: current.status.toUpperCase(), color: 'var(--gx-warning)' },
+          { label: 'Library View', value: selectedSolutionIdx >= 0 ? `#${selectedSolutionIdx + 1}` : 'Live Search', color: 'var(--gx-warning)' },
         ].map(s => (
-          <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+          <div key={s.label} style={{ background: 'var(--gx-surface)', border: `1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)', marginBottom: 2 }}>{s.label}</div>
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
       {/* Description board */}
-      <div style={{ background: 'rgba(0,217,163,0.05)', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00d9a3' }}>
+      <div style={{ background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-border)', borderRadius: 8, padding: '8px 14px', fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--gx-accent)' }}>
         ▶ {current.description}
       </div>
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {/* Left Chessboard Canvas */}
-        <div style={{ flex: 1.5, minWidth: 280, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 24, display: 'flex', justifyContent: 'center', position: 'relative' }}>
+        <div style={{ flex: 1.5, minWidth: 280, background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: 24, display: 'flex', justifyContent: 'center', position: 'relative' }}>
           <div style={{
             display: 'grid',
             gridTemplateColumns: `repeat(${N}, 40px)`,
             gridTemplateRows: `repeat(${N}, 40px)`,
             gap: 2,
-            border: '3px solid rgba(0, 217, 163, 0.15)',
+            border: '3px solid var(--gx-border)',
             borderRadius: 8,
             padding: 4,
-            background: 'rgba(5, 10, 20, 0.8)',
+            background: 'var(--gx-surface)',
             position: 'relative',
           }}>
             {Array.from({ length: N }).map((_, r) =>
@@ -289,13 +289,13 @@ export default function NQueensVisualizer() {
                   }}>
                     {hasQueen && (
                       <span style={{
-                        color: current.threats.some(t => t.r === r) ? '#ff2d78' : '#1d9e75',
+                        color: current.threats.some(t => t.r === r) ? 'var(--gx-danger)' : 'var(--gx-success)',
                         filter: 'drop-shadow(0 0 4px currentColor)',
                       }}>👑</span>
                     )}
                     {isCurrentTry && !hasQueen && (
                       <span style={{
-                        color: current.status === 'conflict' ? '#ff2d78' : '#00d9a3',
+                        color: current.status === 'conflict' ? 'var(--gx-danger)' : 'var(--gx-accent)',
                         filter: 'drop-shadow(0 0 4px currentColor)',
                         opacity: 0.6,
                       }}>👑</span>
@@ -322,7 +322,7 @@ export default function NQueensVisualizer() {
                     <line key={idx}
                       x1={startX} y1={startY}
                       x2={endX} y2={endY}
-                      stroke="#ff2d78"
+                      stroke="var(--gx-danger)"
                       strokeWidth="2"
                       strokeDasharray="4,4"
                       style={{ animation: 'dash 0.6s linear infinite' }}
@@ -336,12 +336,12 @@ export default function NQueensVisualizer() {
 
         {/* Right Side: Solutions repository library */}
         <div style={{ flex: 0.8, minWidth: 200 }}>
-          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 12 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>COMPLETED SOLUTIONS LIBRARY</div>
+          <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: 12 }}>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 1, marginBottom: 8 }}>COMPLETED SOLUTIONS LIBRARY</div>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 220, overflowY: 'auto' }}>
               {solutions.length === 0 ? (
-                <div style={{ fontSize: 11, color: '#2a3a4a', fontFamily: 'var(--font-body)', padding: 8 }}>
+                <div style={{ fontSize: 11, color: 'var(--gx-text-subtle)', fontFamily: 'var(--font-body)', padding: 8 }}>
                   Search has not completed yet. Run matching solver.
                 </div>
               ) : (
@@ -350,10 +350,10 @@ export default function NQueensVisualizer() {
                   return (
                     <button key={index} onClick={() => selectSolution(index)} style={{
                       display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                      background: active ? 'rgba(29, 158, 117, 0.12)' : 'rgba(0,217,163,0.02)',
-                      border: active ? '1px solid #1d9e75' : '1px solid rgba(0,217,163,0.08)',
+                      background: active ? 'var(--gx-success-soft)' : 'var(--gx-accent-soft)',
+                      border: active ? '1px solid var(--gx-success)' : '1px solid var(--gx-border)',
                       borderRadius: 6, padding: '6px 10px', width: '100%',
-                      fontFamily: 'var(--font-mono)', fontSize: 11, color: active ? '#1d9e75' : '#5a7a9a',
+                      fontFamily: 'var(--font-mono)', fontSize: 11, color: active ? 'var(--gx-success)' : 'var(--gx-text-muted)',
                       cursor: 'pointer', transition: 'all 0.15s',
                     }}>
                       <span>Solution #{index + 1}</span>
@@ -383,24 +383,24 @@ export default function NQueensVisualizer() {
       />
 
       {/* Board configuration panel */}
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center', background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 12 }}>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a' }}>BOARD SIZE (N):</span>
-        <input type="range" min={4} max={8} value={N} onChange={e => setN(Number(e.target.value))} style={{ width: 100, accentColor: '#00d9a3', cursor: 'pointer' }} />
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: '#00d9a3', fontWeight: 'bold', minWidth: 20 }}>{N}</span>
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center', background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: 12 }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)' }}>BOARD SIZE (N):</span>
+        <input type="range" min={4} max={8} value={N} onChange={e => setN(Number(e.target.value))} style={{ width: 100, accentColor: 'var(--gx-accent)', cursor: 'pointer' }} />
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--gx-accent)', fontWeight: 'bold', minWidth: 20 }}>{N}</span>
 
-        <button onClick={rebuild} style={{ ...btnStyle('#ff2d78'), marginLeft: 'auto' }}>↺ Reset Search</button>
+        <button onClick={rebuild} style={{ ...btnStyle('var(--gx-danger)'), marginLeft: 'auto' }}>↺ Reset Search</button>
       </div>
 
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {[
-          { color: '#00d9a3', label: 'Checking cell / safe placement' },
-          { color: '#ff2d78', label: 'Conflict cell (threatened / illegal placement)' },
-          { color: '#1d9e75', label: 'Safe placed Queen' },
+          { color: 'var(--gx-accent)', label: 'Checking cell / safe placement' },
+          { color: 'var(--gx-danger)', label: 'Conflict cell (threatened / illegal placement)' },
+          { color: 'var(--gx-success)', label: 'Safe placed Queen' },
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ width: 12, height: 12, borderRadius: 2, background: l.color + '22', border: `1.5px solid ${l.color}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l.label}</span>
+            <div style={{ width: 12, height: 12, borderRadius: 2, background: `color-mix(in srgb, ${l.color} 13%, transparent)`, border: `1.5px solid ${l.color}` }} />
+            <span style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)' }}>{l.label}</span>
           </div>
         ))}
       </div>
@@ -435,8 +435,8 @@ export default function NQueensVisualizer() {
 const btnStyle = (c) => ({
   padding: '6px 12px',
   borderRadius: 8,
-  border: `1px solid ${c}30`,
-  background: `${c}10`,
+  border: `1px solid color-mix(in srgb, ${c} 19%, transparent)`,
+  background: `color-mix(in srgb, ${c} 6%, transparent)`,
   color: c,
   fontFamily: 'var(--font-heading)',
   fontSize: 11,

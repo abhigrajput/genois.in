@@ -4,10 +4,10 @@ import { useToken, apiFetch } from '@/lib/useApi';
 import toast from 'react-hot-toast';
 
 const VERDICT_COLORS = {
-  Strong: '#1D9E75',
-  Good: '#00d9a3',
-  Weak: '#EF9F27',
-  Poor: '#ff2d78',
+  Strong: 'var(--gx-success)',
+  Good: 'var(--gx-accent)',
+  Weak: 'var(--gx-warning)',
+  Poor: 'var(--gx-danger)',
 };
 
 export default function MockInterviewPage() {
@@ -80,7 +80,7 @@ export default function MockInterviewPage() {
   }
 
   if (!ready) return (
-    <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center', fontFamily: 'var(--font-mono)' }}>Loading...</div>
+    <div style={{ color: 'var(--gx-text-muted)', padding: 60, textAlign: 'center', fontFamily: 'var(--font-mono)' }}>Loading...</div>
   );
 
   // RESULTS PAGE
@@ -95,38 +95,38 @@ export default function MockInterviewPage() {
           <div style={{ fontSize: 56, marginBottom: 12 }}>
             {readiness >= 70 ? '🏆' : readiness >= 50 ? '💪' : '📚'}
           </div>
-          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>
+          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 8 }}>
             Interview Complete
           </h1>
-          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 48, fontWeight: 800, color: readiness >= 70 ? '#1D9E75' : readiness >= 50 ? '#00d9a3' : '#ff2d78', marginBottom: 4 }}>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 48, fontWeight: 800, color: readiness >= 70 ? 'var(--gx-success)' : readiness >= 50 ? 'var(--gx-accent)' : 'var(--gx-danger)', marginBottom: 4 }}>
             {readiness}%
           </div>
-          <div style={{ color: '#5a7a9a', fontSize: 14 }}>Interview Readiness Score</div>
+          <div style={{ color: 'var(--gx-text-muted)', fontSize: 14 }}>Interview Readiness Score</div>
         </div>
 
         {interview.feedback && (
-          <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 24, marginBottom: 20 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 2, marginBottom: 12 }}>OVERALL FEEDBACK</div>
-            <p style={{ color: '#c8d8e8', fontSize: 14, lineHeight: 1.8, margin: 0 }}>{interview.feedback}</p>
+          <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 14, padding: 24, marginBottom: 20 }}>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-accent)', letterSpacing: 2, marginBottom: 12 }}>OVERALL FEEDBACK</div>
+            <p style={{ color: 'var(--gx-text)', fontSize: 14, lineHeight: 1.8, margin: 0 }}>{interview.feedback}</p>
           </div>
         )}
 
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 14, padding: 20, marginBottom: 20 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 16 }}>QUESTION BREAKDOWN</div>
+        <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 14, padding: 20, marginBottom: 20 }}>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 2, marginBottom: 16 }}>QUESTION BREAKDOWN</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {evals.map((e, i) => {
               const q = interview.questions[i];
-              const color = VERDICT_COLORS[e.verdict] || '#5a7a9a';
+              const color = VERDICT_COLORS[e.verdict] || 'var(--gx-text-muted)';
               return (
-                <div key={i} style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: `1px solid ${color}15` }}>
+                <div key={i} style={{ padding: '12px 16px', borderRadius: 10, background: 'var(--gx-surface)', border: `1px solid color-mix(in srgb, ${color} 8%, transparent)` }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <span style={{ fontSize: 13, color: '#8a9ab0', flex: 1, marginRight: 12 }}>Q{i + 1}: {q?.question?.substring(0, 60)}...</span>
+                    <span style={{ fontSize: 13, color: 'var(--gx-text-muted)', flex: 1, marginRight: 12 }}>Q{i + 1}: {q?.question?.substring(0, 60)}...</span>
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
-                      <span style={{ fontSize: 12, padding: '2px 8px', borderRadius: 20, background: `${color}15`, color, fontFamily: 'var(--font-mono)', fontWeight: 700 }}>{e.verdict}</span>
+                      <span style={{ fontSize: 12, padding: '2px 8px', borderRadius: 20, background: `color-mix(in srgb, ${color} 8%, transparent)`, color, fontFamily: 'var(--font-mono)', fontWeight: 700 }}>{e.verdict}</span>
                       <span style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 800, color }}>{e.score}/10</span>
                     </div>
                   </div>
-                  {e.tip && <div style={{ fontSize: 12, color: '#5a7a9a', fontStyle: 'italic' }}>💡 {e.tip}</div>}
+                  {e.tip && <div style={{ fontSize: 12, color: 'var(--gx-text-muted)', fontStyle: 'italic' }}>💡 {e.tip}</div>}
                 </div>
               );
             })}
@@ -134,7 +134,7 @@ export default function MockInterviewPage() {
         </div>
 
         <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <button onClick={() => { setPhase('home'); setInterview(null); setAnswer(''); setEvaluation(null); setCurrentQIndex(0); }} style={{ padding: '12px 24px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+          <button onClick={() => { setPhase('home'); setInterview(null); setAnswer(''); setEvaluation(null); setCurrentQIndex(0); }} style={{ padding: '12px 24px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
             Practice Again
           </button>
           <button onClick={() => {
@@ -150,50 +150,50 @@ export default function MockInterviewPage() {
 
   // EVALUATION PAGE
   if (phase === 'evaluation' && evaluation) {
-    const color = VERDICT_COLORS[evaluation.verdict] || '#5a7a9a';
+    const color = VERDICT_COLORS[evaluation.verdict] || 'var(--gx-text-muted)';
     const isLast = currentQIndex >= totalQuestions - 1;
 
     return (
       <div style={{ width: '100%', maxWidth: 1600, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
         <div style={{ textAlign: 'center', marginBottom: 28 }}>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 48, fontWeight: 800, color, marginBottom: 4 }}>{evaluation.score}/10</div>
-          <div style={{ display: 'inline-block', padding: '4px 16px', borderRadius: 20, background: `${color}15`, color, fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700 }}>
+          <div style={{ display: 'inline-block', padding: '4px 16px', borderRadius: 20, background: `color-mix(in srgb, ${color} 8%, transparent)`, color, fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700 }}>
             {evaluation.verdict}
           </div>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24 }}>
           {evaluation.what_was_good && (
-            <div style={{ background: '#070f1f', border: '1px solid rgba(29,158,117,0.2)', borderRadius: 12, padding: 16 }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#1D9E75', letterSpacing: 1, marginBottom: 8 }}>✓ WHAT WAS GOOD</div>
-              <p style={{ color: '#c8d8e8', fontSize: 14, lineHeight: 1.7, margin: 0 }}>{evaluation.what_was_good}</p>
+            <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-success-border)', borderRadius: 12, padding: 16 }}>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-success)', letterSpacing: 1, marginBottom: 8 }}>✓ WHAT WAS GOOD</div>
+              <p style={{ color: 'var(--gx-text)', fontSize: 14, lineHeight: 1.7, margin: 0 }}>{evaluation.what_was_good}</p>
             </div>
           )}
           {evaluation.what_was_missing && (
-            <div style={{ background: '#070f1f', border: '1px solid rgba(255,45,120,0.2)', borderRadius: 12, padding: 16 }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#ff2d78', letterSpacing: 1, marginBottom: 8 }}>✗ WHAT WAS MISSING</div>
-              <p style={{ color: '#c8d8e8', fontSize: 14, lineHeight: 1.7, margin: 0 }}>{evaluation.what_was_missing}</p>
+            <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-danger-border)', borderRadius: 12, padding: 16 }}>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-danger)', letterSpacing: 1, marginBottom: 8 }}>✗ WHAT WAS MISSING</div>
+              <p style={{ color: 'var(--gx-text)', fontSize: 14, lineHeight: 1.7, margin: 0 }}>{evaluation.what_was_missing}</p>
             </div>
           )}
           {evaluation.better_answer && (
-            <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 12, padding: 16 }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 1, marginBottom: 8 }}>💡 BETTER ANSWER</div>
-              <p style={{ color: '#c8d8e8', fontSize: 14, lineHeight: 1.7, margin: 0 }}>{evaluation.better_answer}</p>
+            <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: 16 }}>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-accent)', letterSpacing: 1, marginBottom: 8 }}>💡 BETTER ANSWER</div>
+              <p style={{ color: 'var(--gx-text)', fontSize: 14, lineHeight: 1.7, margin: 0 }}>{evaluation.better_answer}</p>
             </div>
           )}
           {evaluation.tip && (
-            <div style={{ background: '#070f1f', border: '1px solid rgba(255,107,74,0.15)', borderRadius: 12, padding: 16 }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#ff6b4a', letterSpacing: 1, marginBottom: 8 }}>⚡ TIP FOR NEXT TIME</div>
-              <p style={{ color: '#c8d8e8', fontSize: 14, lineHeight: 1.7, margin: 0 }}>{evaluation.tip}</p>
+            <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-warning-border)', borderRadius: 12, padding: 16 }}>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-warning)', letterSpacing: 1, marginBottom: 8 }}>⚡ TIP FOR NEXT TIME</div>
+              <p style={{ color: 'var(--gx-text)', fontSize: 14, lineHeight: 1.7, margin: 0 }}>{evaluation.tip}</p>
             </div>
           )}
         </div>
 
         <div style={{ textAlign: 'center' }}>
-          <div style={{ color: '#5a7a9a', fontSize: 12, fontFamily: 'var(--font-mono)', marginBottom: 16 }}>
+          <div style={{ color: 'var(--gx-text-muted)', fontSize: 12, fontFamily: 'var(--font-mono)', marginBottom: 16 }}>
             Question {currentQIndex} of {totalQuestions} complete
           </div>
-          <button onClick={nextQuestion} style={{ padding: '14px 40px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 }}>
+          <button onClick={nextQuestion} style={{ padding: '14px 40px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 }}>
             {isLast ? 'See Final Results →' : 'Next Question →'}
           </button>
         </div>
@@ -203,52 +203,52 @@ export default function MockInterviewPage() {
 
   // INTERVIEW PAGE
   if (phase === 'interview' && currentQ) {
-    const typeColors = { technical: '#00d9a3', conceptual: '#ff6b4a', behavioral: '#1D9E75', situational: '#EF9F27', 'problem solving': '#D85A30' };
-    const typeColor = typeColors[currentQ.type?.toLowerCase()] || '#5a7a9a';
+    const typeColors = { technical: 'var(--gx-accent)', conceptual: 'var(--gx-warning)', behavioral: 'var(--gx-success)', situational: 'var(--gx-warning)', 'problem solving': 'var(--gx-warning)' };
+    const typeColor = typeColors[currentQ.type?.toLowerCase()] || 'var(--gx-text-muted)';
 
     return (
       <div style={{ width: '100%', maxWidth: 1600, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: '#5a7a9a' }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--gx-text-muted)' }}>
             Question {currentQIndex + 1} of {totalQuestions}
           </div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: `${typeColor}15`, color: typeColor, fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: `color-mix(in srgb, ${typeColor} 8%, transparent)`, color: typeColor, fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
               {currentQ.type}
             </span>
-            <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'rgba(255,255,255,0.05)', color: '#5a7a9a', fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'var(--gx-surface)', color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>
               {currentQ.difficulty}
             </span>
           </div>
         </div>
 
-        <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, marginBottom: 24 }}>
-          <div style={{ height: '100%', width: `${(currentQIndex / totalQuestions) * 100}%`, background: 'linear-gradient(90deg,#00d9a3,#ff6b4a)', borderRadius: 2 }} />
+        <div style={{ height: 4, background: 'var(--gx-surface)', borderRadius: 2, marginBottom: 24 }}>
+          <div style={{ height: '100%', width: `${(currentQIndex / totalQuestions) * 100}%`, background: 'var(--gx-accent)', borderRadius: 2 }} />
         </div>
 
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.12)', borderRadius: 14, padding: 24, marginBottom: 20 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 12 }}>INTERVIEWER</div>
-          <p style={{ fontSize: 17, color: '#e8e8ed', lineHeight: 1.7, margin: 0, fontWeight: 500 }}>
+        <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 14, padding: 24, marginBottom: 20 }}>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 2, marginBottom: 12 }}>INTERVIEWER</div>
+          <p style={{ fontSize: 17, color: 'var(--gx-text)', lineHeight: 1.7, margin: 0, fontWeight: 500 }}>
             {currentQ.question}
           </p>
         </div>
 
         <div style={{ marginBottom: 16 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 10 }}>YOUR ANSWER</div>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 2, marginBottom: 10 }}>YOUR ANSWER</div>
           <textarea
             value={answer}
             onChange={e => setAnswer(e.target.value)}
             placeholder="Type your answer here. Speak as if you are in a real interview. Be specific, give examples, explain your thought process..."
             rows={6}
-            style={{ width: '100%', padding: '14px 16px', borderRadius: 12, border: '1px solid rgba(0,217,163,0.15)', background: 'rgba(255,255,255,0.02)', color: '#e8e8ed', fontSize: 14, fontFamily: 'var(--font-body)', outline: 'none', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.7 }}
+            style={{ width: '100%', padding: '14px 16px', borderRadius: 12, border: '1px solid var(--gx-border)', background: 'var(--gx-surface)', color: 'var(--gx-text)', fontSize: 14, fontFamily: 'var(--font-body)', outline: 'none', resize: 'vertical', boxSizing: 'border-box', lineHeight: 1.7 }}
           />
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6 }}>
-            <span style={{ fontSize: 11, color: '#3a4a5a', fontFamily: 'var(--font-mono)' }}>{answer.length} chars</span>
-            <span style={{ fontSize: 11, color: '#3a4a5a', fontFamily: 'var(--font-mono)' }}>Tip: {currentQ.hint}</span>
+            <span style={{ fontSize: 11, color: 'var(--gx-text-subtle)', fontFamily: 'var(--font-mono)' }}>{answer.length} chars</span>
+            <span style={{ fontSize: 11, color: 'var(--gx-text-subtle)', fontFamily: 'var(--font-mono)' }}>Tip: {currentQ.hint}</span>
           </div>
         </div>
 
-        <button onClick={submitAnswer} disabled={loading || answer.trim().length < 20} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: answer.trim().length >= 20 ? 'pointer' : 'not-allowed', background: answer.trim().length >= 20 ? 'linear-gradient(135deg,#00d9a3,#ff6b4a)' : 'rgba(255,255,255,0.05)', color: answer.trim().length >= 20 ? '#020812' : '#3a4a5a', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 }}>
+        <button onClick={submitAnswer} disabled={loading || answer.trim().length < 20} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: answer.trim().length >= 20 ? 'pointer' : 'not-allowed', background: answer.trim().length >= 20 ? 'var(--gx-accent)' : 'var(--gx-surface)', color: answer.trim().length >= 20 ? 'var(--gx-text-inverse)' : 'var(--gx-text-subtle)', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 }}>
           {loading ? 'Evaluating your answer...' : 'Submit Answer →'}
         </button>
       </div>
@@ -259,16 +259,16 @@ export default function MockInterviewPage() {
   return (
     <div style={{ width: '100%', maxWidth: 1600, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
       <div style={{ marginBottom: 32 }}>
-        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 4 }}>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 4 }}>
           🎤 Mock Interview Coach
         </h1>
-        <p style={{ color: '#5a7a9a', fontSize: 13 }}>
+        <p style={{ color: 'var(--gx-text-muted)', fontSize: 13 }}>
           AI interviewer. Real questions. Honest feedback. No sugar coating.
         </p>
       </div>
 
-      <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.12)', borderRadius: 16, padding: 28, marginBottom: 24 }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 2, marginBottom: 16 }}>HOW IT WORKS</div>
+      <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 16, padding: 28, marginBottom: 24 }}>
+        <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-accent)', letterSpacing: 2, marginBottom: 16 }}>HOW IT WORKS</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginBottom: 28 }}>
           {[
             { step: '1', icon: '🎯', title: '10 real interview questions', desc: 'Generated specifically for your domain. Mix of technical, conceptual and behavioral questions.' },
@@ -277,38 +277,38 @@ export default function MockInterviewPage() {
             { step: '4', icon: '📊', title: 'Get your Interview Readiness Score', desc: 'Final score out of 100% showing how ready you are for placement interviews right now.' },
           ].map(s => (
             <div key={s.step} style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-              <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(0,217,163,0.08)', border: '1px solid rgba(0,217,163,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>{s.icon}</div>
+              <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-accent-border)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>{s.icon}</div>
               <div>
-                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: '#e8e8ed', marginBottom: 3 }}>{s.title}</div>
-                <div style={{ fontSize: 13, color: '#5a7a9a', lineHeight: 1.6 }}>{s.desc}</div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: 'var(--gx-text)', marginBottom: 3 }}>{s.title}</div>
+                <div style={{ fontSize: 13, color: 'var(--gx-text-muted)', lineHeight: 1.6 }}>{s.desc}</div>
               </div>
             </div>
           ))}
         </div>
 
-        <button onClick={startInterview} disabled={loading} style={{ width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: loading ? 'rgba(0,217,163,0.2)' : 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 800, boxShadow: '0 0 30px rgba(0,217,163,0.2)' }}>
+        <button onClick={startInterview} disabled={loading} style={{ width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: loading ? 'var(--gx-accent-soft)' : 'var(--gx-accent)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 800, boxShadow: 'var(--gx-shadow-sm)' }}>
           {loading ? 'Preparing your interview...' : 'Start Mock Interview →'}
         </button>
-        <p style={{ textAlign: 'center', color: '#3a4a5a', fontSize: 11, fontFamily: 'var(--font-mono)', marginTop: 10 }}>
+        <p style={{ textAlign: 'center', color: 'var(--gx-text-subtle)', fontSize: 11, fontFamily: 'var(--font-mono)', marginTop: 10 }}>
           Takes 15-20 minutes · 10 questions · Honest AI feedback
         </p>
       </div>
 
       {history.length > 0 && (
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 14, padding: 20 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 16 }}>PAST INTERVIEWS</div>
+        <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 14, padding: 20 }}>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 2, marginBottom: 16 }}>PAST INTERVIEWS</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {history.filter(i => i.status === 'completed').slice(0, 5).map((i, idx) => (
-              <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)' }}>
+              <div key={idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: 10, background: 'var(--gx-surface)', border: '1px solid var(--gx-border)' }}>
                 <div>
-                  <div style={{ fontSize: 13, color: '#e8e8ed', fontWeight: 600, marginBottom: 2 }}>{i.domain_slug?.toUpperCase()} Interview</div>
-                  <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>{new Date(i.created_at).toLocaleDateString('en-IN')}</div>
+                  <div style={{ fontSize: 13, color: 'var(--gx-text)', fontWeight: 600, marginBottom: 2 }}>{i.domain_slug?.toUpperCase()} Interview</div>
+                  <div style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>{new Date(i.created_at).toLocaleDateString('en-IN')}</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800, color: i.interview_readiness >= 70 ? '#1D9E75' : i.interview_readiness >= 50 ? '#00d9a3' : '#ff2d78' }}>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800, color: i.interview_readiness >= 70 ? 'var(--gx-success)' : i.interview_readiness >= 50 ? 'var(--gx-accent)' : 'var(--gx-danger)' }}>
                     {i.interview_readiness}%
                   </div>
-                  <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>readiness</div>
+                  <div style={{ fontSize: 10, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>readiness</div>
                 </div>
               </div>
             ))}

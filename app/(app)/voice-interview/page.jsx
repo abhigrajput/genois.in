@@ -4,31 +4,33 @@ import { useToken, apiFetch, apiFetchWithTimeout } from '@/lib/useApi';
 import toast from 'react-hot-toast';
 
 // ── theme (app-interior palette) ───────────────────────────────────────────
-const CARD = '#070f1f';
-const INPUT = '#050d1a';
-const CYAN = '#00d9a3';   // GENOIS green — kept under its legacy name for the result/summary screens
-const PURPLE = '#ff6b4a';
-const GREEN = '#1D9E75';
-const RED = '#ff2d78';
-const AMBER = '#EF9F27';
-const MUTED = '#5a7a9a';
-const LIGHT = '#e8e8ed';
-const SOFT = '#c8d8e8';
+const CARD = 'var(--gx-bg)';
+const INPUT = 'var(--gx-surface)';
+const CYAN = 'var(--gx-accent)';   // GENOIS green — kept under its legacy name for the result/summary screens
+const PURPLE = 'var(--gx-warning)';
+const GREEN = 'var(--gx-success)';
+const RED = 'var(--gx-danger)';
+const AMBER = 'var(--gx-warning)';
+const MUTED = 'var(--gx-text-muted)';
+const LIGHT = 'var(--gx-text)';
+const SOFT = 'var(--gx-text-muted)';
 
-// ── GENOIS green token + Slate context system ──────────────────────────────
-// The waveform, mic pad and live chat matrix run on ONE brand green (#00d9a3)
-// over a Slate-900 master surface with Slate-800 message containers, so the
-// live-interview view reads as a single, high-contrast product surface.
-const GENOIS = '#00d9a3';
-const GENOIS_SOFT = '#8affdf';
-const SLATE_900 = '#0f172a'; // master layout background for the chat matrix
-const SLATE_850 = '#131d33'; // candidate (user) message container
-const SLATE_800 = '#1e293b'; // interviewer (AI mentor) message container
-const SLATE_700 = '#334155'; // container / matrix borders
-const SLATE_600 = '#475569'; // muted accents
-const TXT_WHITE = '#f1f5f9'; // slate-100 — primary text on slate
-const TXT_SLATE = '#cbd5e1'; // slate-300 — secondary text on slate
-const TXT_MUTE = '#94a3b8';  // slate-400 — captions / meta
+// ── GENOIS accent + surface context system ─────────────────────────────────
+// The waveform, mic pad and live chat matrix run on the one accent green
+// (--gx-accent) over the light canvas, with the two speakers separated by
+// surface rather than by hue: the candidate's turn takes the accent tint, the
+// interviewer's a neutral grey. The SLATE_* names are kept so the ~33 call
+// sites below stay untouched — only what they resolve to has changed.
+const GENOIS = 'var(--gx-accent)';
+const GENOIS_SOFT = 'var(--gx-accent-hover)';
+const SLATE_900 = 'var(--gx-surface)';      // master layout background for the chat matrix
+const SLATE_850 = 'var(--gx-accent-soft)';  // candidate (user) message container
+const SLATE_800 = 'var(--gx-surface-2)';    // interviewer (AI mentor) message container
+const SLATE_700 = 'var(--gx-border)';       // container / matrix borders
+const SLATE_600 = 'var(--gx-text-subtle)';  // muted accents
+const TXT_WHITE = 'var(--gx-text)';         // primary text
+const TXT_SLATE = 'var(--gx-text-muted)';   // secondary text
+const TXT_MUTE = 'var(--gx-text-subtle)';   // captions / meta
 
 // 4px-based spacing scale — used exclusively by the mic control pad + chat
 // matrix so vertical rhythm stays consistent from 360px up to desktop.
@@ -214,18 +216,18 @@ function AudioWaveform({ state, analyserRef, debug = false }) {
     } else if (state === 'speaking') {
       style = {
         height: '100%', transformOrigin: 'center', opacity: 1,
-        background: `linear-gradient(180deg, ${GENOIS_SOFT}, ${GENOIS})`,
+        background: GENOIS_SOFT,
         animation: `vi-wave ${0.62 + (i % 4) * 0.09}s ${i * 0.035}s ease-in-out infinite`,
       };
     } else if (state === 'processing') {
       style = {
         height: '100%', transformOrigin: 'center', opacity: 0.85,
-        background: `linear-gradient(180deg, ${GENOIS}, ${SLATE_600})`,
+        background: GENOIS,
         animation: `vi-wave 1.15s ${i * 0.06}s ease-in-out infinite`,
       };
     } else {
       // idle → a thin, flat baseline line
-      style = { height: '8%', background: `${GENOIS}66`, transition: 'height .3s ease' };
+      style = { height: '8%', background: `color-mix(in srgb, ${GENOIS} 40%, transparent)`, transition: 'height .3s ease' };
     }
     bars.push(<span key={i} style={{ flex: 1, minWidth: 2, maxWidth: 6, borderRadius: 4, alignSelf: 'center', ...style }} />);
   }
@@ -261,7 +263,7 @@ function Bar({ label, value }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
       <div style={{ width: 130, fontSize: 12, color: SOFT, fontFamily: 'var(--font-mono)' }}>{label}</div>
-      <div style={{ flex: 1, height: 8, background: 'rgba(255,255,255,0.06)', borderRadius: 4, overflow: 'hidden' }}>
+      <div style={{ flex: 1, height: 8, background: 'var(--gx-surface)', borderRadius: 4, overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${value}%`, background: c, borderRadius: 4, transition: 'width .5s' }} />
       </div>
       <div style={{ width: 54, textAlign: 'right', fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 15, color: c }}>{value}<span style={{ fontSize: 10, color: MUTED }}>/100</span></div>
@@ -275,7 +277,7 @@ function Shimmer({ w = '100%', h = 12, r = 6, style }) {
   return (
     <div style={{
       width: w, height: h, borderRadius: r,
-      background: 'linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.11) 37%, rgba(255,255,255,0.04) 63%)',
+      background: 'var(--gx-surface)',
       backgroundSize: '900px 100%', animation: 'vi-shimmer 1.4s linear infinite',
       ...style,
     }} />
@@ -858,7 +860,9 @@ export default function VoiceInterviewPage() {
     setSharing(true);
     try {
       const html2canvas = (await import('html2canvas')).default;
-      const canvas = await html2canvas(shareRef.current, { backgroundColor: '#020812', scale: 3, logging: false });
+      // html2canvas parses this itself and cannot resolve a CSS custom
+      // property, so the literal value of --gx-surface is passed instead.
+      const canvas = await html2canvas(shareRef.current, { backgroundColor: '#f8f9fa', scale: 3, logging: false });
       const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
       const file = new File([blob], 'genois-interview.png', { type: 'image/png' });
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -877,7 +881,9 @@ export default function VoiceInterviewPage() {
   }
 
   const keyframes = `
-    @keyframes vi-pulse-green { 0%{box-shadow:0 0 0 0 rgba(0,217,163,.5)} 70%{box-shadow:0 0 0 22px rgba(0,217,163,0)} 100%{box-shadow:0 0 0 0 rgba(0,217,163,0)} }
+    /* Recording indicator. It is state feedback, not ambient decoration, so it
+       stays — but as an expanding accent ring rather than a neon halo. */
+    @keyframes vi-pulse-green { 0%{box-shadow:0 0 0 0 rgba(0,128,94,.35)} 70%{box-shadow:0 0 0 22px rgba(0,128,94,0)} 100%{box-shadow:0 0 0 0 rgba(0,128,94,0)} }
     @keyframes vi-spin { to { transform: rotate(360deg) } }
     @keyframes vi-blink { 0%,100%{opacity:1} 50%{opacity:.25} }
     @keyframes vi-shimmer { 0%{background-position:-450px 0} 100%{background-position:450px 0} }
@@ -890,9 +896,9 @@ export default function VoiceInterviewPage() {
 
   const micBlockedBanner = micBlocked ? (
     <div style={{
-      background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.4)',
+      background: 'var(--gx-warning-soft)', border: '1px solid var(--gx-warning-border)',
       borderRadius: 12, padding: `${SP[3]}px ${SP[4]}px`, marginBottom: SP[4],
-      color: '#ffb020', fontSize: 13, fontFamily: 'var(--font-body)', lineHeight: 1.6,
+      color: 'var(--gx-warning)', fontSize: 13, fontFamily: 'var(--font-body)', lineHeight: 1.6,
     }}>
       🎤 <strong>Microphone blocked.</strong> To fix: Click the <strong>🔒 lock icon</strong> in Chrome’s address bar → Find “Microphone” → Set to <strong>“Allow”</strong> → Refresh this page.
     </div>
@@ -954,7 +960,7 @@ export default function VoiceInterviewPage() {
   if (status === 'evalFailed' && evalError) {
     return (
       <div style={{ maxWidth: 640, margin: '0 auto', width: '100%', boxSizing: 'border-box', fontFamily: 'var(--font-body)', animation: 'vi-fade .3s ease' }}>
-        <div style={{ background: SLATE_900, border: `1px solid ${AMBER}44`, borderRadius: 16, padding: SP[7], minHeight: 300, display: 'flex', flexDirection: 'column', justifyContent: 'center', boxSizing: 'border-box' }}>
+        <div style={{ background: SLATE_900, border: `1px solid color-mix(in srgb, ${AMBER} 27%, transparent)`, borderRadius: 16, padding: SP[7], minHeight: 300, display: 'flex', flexDirection: 'column', justifyContent: 'center', boxSizing: 'border-box' }}>
           <div style={{ fontSize: 34, marginBottom: SP[3] }}>{evalError.timedOut ? '⏳' : '⚠️'}</div>
           <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 18, color: TXT_WHITE, marginBottom: SP[2] }}>
             {evalError.timedOut ? 'Still scoring…' : 'Scoring hiccuped'}
@@ -962,7 +968,7 @@ export default function VoiceInterviewPage() {
           <div style={{ fontSize: 14, color: TXT_SLATE, lineHeight: 1.6, marginBottom: SP[2] }}>{evalError.message}</div>
           <div style={{ fontSize: 12.5, color: TXT_MUTE, lineHeight: 1.6, marginBottom: SP[6] }}>Your answer is safe — nothing was lost. We never guess a score, so retry the evaluation, or end here and keep only the answers that were really scored.</div>
           <div style={{ display: 'flex', gap: SP[3], flexWrap: 'wrap' }}>
-            <button onClick={() => pendingAnswer && runEvaluation(pendingAnswer)} style={{ flex: 1, minWidth: 160, padding: SP[4], borderRadius: 12, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${GENOIS},${GENOIS_SOFT})`, color: '#04120d', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>↻ Retry evaluation</button>
+            <button onClick={() => pendingAnswer && runEvaluation(pendingAnswer)} style={{ flex: 1, minWidth: 160, padding: SP[4], borderRadius: 12, border: 'none', cursor: 'pointer', background: GENOIS, color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>↻ Retry evaluation</button>
             <button onClick={endWithScoredOnly} style={{ flex: 1, minWidth: 160, padding: SP[4], borderRadius: 12, border: `1px solid ${SLATE_600}`, cursor: 'pointer', background: 'transparent', color: TXT_SLATE, fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14 }}>End interview</button>
           </div>
         </div>
@@ -993,7 +999,7 @@ export default function VoiceInterviewPage() {
         {/* interviewer header bar (Slate-800 over the page) */}
         <div style={{ background: SLATE_800, border: `1px solid ${SLATE_700}`, borderRadius: 14, padding: `${SP[3]}px ${SP[4]}px`, marginBottom: SP[4], display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: SP[3], flexWrap: 'wrap', boxSizing: 'border-box' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: SP[3] }}>
-            <div style={{ width: 40, height: 40, borderRadius: '50%', background: `linear-gradient(135deg,${GENOIS},${GENOIS_SOFT})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🤖</div>
+            <div style={{ width: 40, height: 40, borderRadius: '50%', background: GENOIS, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🤖</div>
             <div>
               <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 15, color: TXT_WHITE }}>AI Interviewer · {company}</div>
               <div style={{ fontSize: 11, color: TXT_MUTE, fontFamily: 'var(--font-mono)' }}>{MODES.find(m => m.key === mode)?.label} mode</div>
@@ -1009,7 +1015,7 @@ export default function VoiceInterviewPage() {
 
         {/* progress */}
         <div style={{ height: 5, background: SLATE_800, borderRadius: 3, marginBottom: SP[5], overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${(mainNumber / TOTAL_QUESTIONS) * 100}%`, background: `linear-gradient(90deg,${GENOIS},${GENOIS_SOFT})`, borderRadius: 3, transition: 'width .4s' }} />
+          <div style={{ height: '100%', width: `${(mainNumber / TOTAL_QUESTIONS) * 100}%`, background: GENOIS, borderRadius: 3, transition: 'width .4s' }} />
         </div>
 
         {/* ── chat matrix: Slate-800 message containers on a Slate-900 master ── */}
@@ -1018,18 +1024,18 @@ export default function VoiceInterviewPage() {
           {/* interviewer (AI mentor) message — green left-accent, green label */}
           <div style={{ position: 'relative', background: SLATE_800, border: `1px solid ${SLATE_700}`, borderLeft: `3px solid ${GENOIS}`, borderRadius: 12, padding: SP[5], marginBottom: SP[4], boxSizing: 'border-box' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: SP[2], marginBottom: SP[3], flexWrap: 'wrap' }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: GENOIS, letterSpacing: 1.5, textTransform: 'uppercase' }}>{currentQ.isFollowUp ? '🤖 Interviewer probes deeper' : '🤖 Interviewer asks'}</div>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: GENOIS, letterSpacing: 1.5, textTransform: 'uppercase' }}>{currentQ.isFollowUp ? '🤖 Interviewer probes deeper' : '🤖 Interviewer asks'}</div>
               <div style={{ display: 'flex', gap: SP[2] }}>
-                {currentQ.isFollowUp && <span style={{ fontSize: 9, padding: '3px 9px', borderRadius: 10, background: `${AMBER}1a`, color: AMBER, fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>↳ follow-up</span>}
-                <span style={{ fontSize: 9, padding: '3px 9px', borderRadius: 10, background: `${GENOIS}1a`, color: GENOIS, fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>{currentQ.type}</span>
-                <span style={{ fontSize: 9, padding: '3px 9px', borderRadius: 10, background: `${AMBER}1a`, color: AMBER, fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>{currentQ.difficulty}</span>
+                {currentQ.isFollowUp && <span style={{ fontSize: 9, padding: '3px 9px', borderRadius: 10, background: `color-mix(in srgb, ${AMBER} 10%, transparent)`, color: AMBER, fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>↳ follow-up</span>}
+                <span style={{ fontSize: 9, padding: '3px 9px', borderRadius: 10, background: `color-mix(in srgb, ${GENOIS} 10%, transparent)`, color: GENOIS, fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>{currentQ.type}</span>
+                <span style={{ fontSize: 9, padding: '3px 9px', borderRadius: 10, background: `color-mix(in srgb, ${AMBER} 10%, transparent)`, color: AMBER, fontFamily: 'var(--font-body)', textTransform: 'uppercase' }}>{currentQ.difficulty}</span>
               </div>
             </div>
             <div style={{ fontSize: 'clamp(17px,3.6vw,23px)', color: TXT_WHITE, lineHeight: 1.55, fontWeight: 500, fontFamily: 'var(--font-heading)' }}>{currentQ.question}</div>
             <button
               onClick={() => speakQuestion(currentQ?.question)}
               style={{
-                background: 'transparent', border: `1px solid ${GENOIS}4d`,
+                background: 'transparent', border: `1px solid color-mix(in srgb, ${GENOIS} 30%, transparent)`,
                 borderRadius: 8, padding: `${SP[2]}px ${SP[4]}px`, color: GENOIS_SOFT,
                 fontFamily: 'var(--font-body)', fontSize: 12, cursor: 'pointer',
                 marginTop: SP[3], display: 'flex', alignItems: 'center', gap: SP[2],
@@ -1045,7 +1051,7 @@ export default function VoiceInterviewPage() {
               the page, and interim stays visibly separate from committed. */}
           <div style={{ background: SLATE_850, border: `1px solid ${SLATE_600}`, borderRight: `3px solid ${TXT_SLATE}`, borderRadius: 12, padding: SP[4], marginBottom: SP[4], minHeight: 96, maxHeight: 240, overflowY: 'auto', boxSizing: 'border-box' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: SP[2] }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: TXT_SLATE, letterSpacing: 1.5, textTransform: 'uppercase' }}>🗣 You — {userName || 'candidate'}</span>
+              <span style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: TXT_SLATE, letterSpacing: 1.5, textTransform: 'uppercase' }}>🗣 You — {userName || 'candidate'}</span>
               {isListening && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: GENOIS }}><span style={{ animation: 'vi-blink 1s infinite' }}>●</span> live</span>}
             </div>
             {liveText ? (
@@ -1071,7 +1077,7 @@ export default function VoiceInterviewPage() {
               {/* interrupt micro-animation — pops in only while interrupting */}
               <div style={{ minHeight: 22, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 {interrupting ? (
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: SP[2], padding: `${SP[1]}px ${SP[3]}px`, borderRadius: 20, background: `${AMBER}1f`, border: `1px solid ${AMBER}66`, color: AMBER, fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: 0.5, animation: 'vi-pop .3s ease' }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: SP[2], padding: `${SP[1]}px ${SP[3]}px`, borderRadius: 20, background: `color-mix(in srgb, ${AMBER} 12%, transparent)`, border: `1px solid color-mix(in srgb, ${AMBER} 40%, transparent)`, color: AMBER, fontFamily: 'var(--font-body)', fontSize: 11, letterSpacing: 0.5, animation: 'vi-pop .3s ease' }}>
                     <span style={{ animation: 'vi-blink .7s infinite' }}>⚡</span> Interrupting AI…
                   </span>
                 ) : (
@@ -1089,12 +1095,12 @@ export default function VoiceInterviewPage() {
                 style={{
                   width: 128, height: 128, borderRadius: '50%', cursor: 'pointer', border: 'none',
                   background: isListening
-                    ? `radial-gradient(circle at 50% 40%, ${GENOIS}, #05271e)`
-                    : `linear-gradient(135deg,${SLATE_800},${SLATE_900})`,
-                  boxShadow: isListening ? `0 0 0 2px ${GENOIS}` : `inset 0 0 0 2px ${GENOIS}55`,
+                    ? `transparent`
+                    : SLATE_800,
+                  boxShadow: isListening ? `0 0 0 2px ${GENOIS}` : `inset 0 0 0 2px color-mix(in srgb, ${GENOIS} 33%, transparent)`,
                   animation: isListening ? 'vi-pulse-green 1.4s infinite' : 'none',
                   display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: SP[1],
-                  color: isListening ? '#04120d' : GENOIS,
+                  color: isListening ? 'var(--gx-text-inverse)' : GENOIS,
                 }}>
                 <span style={{ fontSize: 40 }}>🎤</span>
               </button>
@@ -1115,7 +1121,7 @@ export default function VoiceInterviewPage() {
             </div>
             <div style={{ display: 'flex', gap: SP[3] }}>
               {(transcript || interim) && <button onClick={() => { finalTranscriptRef.current = ''; setTranscript(''); setInterim(''); }} style={{ padding: `${SP[3]}px ${SP[4]}px`, borderRadius: 10, border: `1px solid ${SLATE_600}`, background: 'transparent', color: TXT_MUTE, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13 }}>Clear</button>}
-              <button onClick={submitAnswer} disabled={!enough} style={{ padding: `${SP[3]}px ${SP[5]}px`, borderRadius: 10, border: 'none', cursor: enough ? 'pointer' : 'not-allowed', background: enough ? `linear-gradient(135deg,${GENOIS},${GENOIS_SOFT})` : SLATE_800, color: enough ? '#04120d' : TXT_MUTE, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>Submit Answer →</button>
+              <button onClick={submitAnswer} disabled={!enough} style={{ padding: `${SP[3]}px ${SP[5]}px`, borderRadius: 10, border: 'none', cursor: enough ? 'pointer' : 'not-allowed', background: enough ? GENOIS : SLATE_800, color: enough ? 'var(--gx-text-inverse)' : TXT_MUTE, fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>Submit Answer →</button>
             </div>
           </div>
         </div>
@@ -1135,7 +1141,7 @@ export default function VoiceInterviewPage() {
         <style dangerouslySetInnerHTML={{ __html: keyframes }} />
         <div style={{ background: CARD, border: `1px solid ${gradeColor(ev.grade)}33`, borderRadius: 16, padding: 24, marginBottom: 16, minHeight: 300 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, flexWrap: 'wrap', gap: 10 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: MUTED, letterSpacing: 1.5 }}>{currentQ?.isFollowUp ? `FOLLOW-UP · Q${mainNumber}` : `QUESTION ${mainNumber} / ${TOTAL_QUESTIONS}`} · {currentQ?.type?.toUpperCase()}</div>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: MUTED, letterSpacing: 1.5 }}>{currentQ?.isFollowUp ? `FOLLOW-UP · Q${mainNumber}` : `QUESTION ${mainNumber} / ${TOTAL_QUESTIONS}`} · {currentQ?.type?.toUpperCase()}</div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
               <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 30, color: gradeColor(ev.grade) }}>{ev.grade}</span>
               <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 22, color: LIGHT }}>{ev.overallScore}<span style={{ fontSize: 12, color: MUTED }}>/100</span></span>
@@ -1146,31 +1152,31 @@ export default function VoiceInterviewPage() {
           <Bar label="Confidence" value={ev.confidenceScore} />
         </div>
 
-        {ev.verdict && <div style={{ background: `${CYAN}0a`, border: `1px solid ${CYAN}22`, borderRadius: 12, padding: 16, marginBottom: 14, fontSize: 14, color: SOFT, lineHeight: 1.6 }}>“{ev.verdict}”</div>}
+        {ev.verdict && <div style={{ background: `color-mix(in srgb, ${CYAN} 4%, transparent)`, border: `1px solid color-mix(in srgb, ${CYAN} 13%, transparent)`, borderRadius: 12, padding: 16, marginBottom: 14, fontSize: 14, color: SOFT, lineHeight: 1.6 }}>“{ev.verdict}”</div>}
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: 12, marginBottom: 14 }}>
           {ev.strengths?.length > 0 && (
-            <div style={{ background: CARD, border: `1px solid ${GREEN}26`, borderRadius: 12, padding: 16 }}>
-              <div style={{ fontSize: 10, color: GREEN, marginBottom: 8, fontFamily: 'var(--font-mono)', letterSpacing: 1 }}>✓ WHAT WORKED</div>
+            <div style={{ background: CARD, border: `1px solid color-mix(in srgb, ${GREEN} 15%, transparent)`, borderRadius: 12, padding: 16 }}>
+              <div style={{ fontSize: 10, color: GREEN, marginBottom: 8, fontFamily: 'var(--font-body)', letterSpacing: 1 }}>✓ WHAT WORKED</div>
               {ev.strengths.map((s, i) => <div key={i} style={{ fontSize: 13, color: SOFT, padding: '3px 0' }}>• {s}</div>)}
             </div>
           )}
           {ev.improvements?.length > 0 && (
-            <div style={{ background: CARD, border: `1px solid ${RED}26`, borderRadius: 12, padding: 16 }}>
-              <div style={{ fontSize: 10, color: RED, marginBottom: 8, fontFamily: 'var(--font-mono)', letterSpacing: 1 }}>⚠ IMPROVE</div>
+            <div style={{ background: CARD, border: `1px solid color-mix(in srgb, ${RED} 15%, transparent)`, borderRadius: 12, padding: 16 }}>
+              <div style={{ fontSize: 10, color: RED, marginBottom: 8, fontFamily: 'var(--font-body)', letterSpacing: 1 }}>⚠ IMPROVE</div>
               {ev.improvements.map((s, i) => <div key={i} style={{ fontSize: 13, color: SOFT, padding: '3px 0' }}>• {s}</div>)}
             </div>
           )}
         </div>
 
         {ev.idealAnswer && (
-          <div style={{ background: CARD, border: '1px solid rgba(255,255,255,0.06)', borderRadius: 12, padding: 16, marginBottom: 18 }}>
-            <div style={{ fontSize: 10, color: PURPLE, marginBottom: 8, fontFamily: 'var(--font-mono)', letterSpacing: 1 }}>💡 WHAT A STRONG ANSWER COVERS</div>
+          <div style={{ background: CARD, border: '1px solid var(--gx-border)', borderRadius: 12, padding: 16, marginBottom: 18 }}>
+            <div style={{ fontSize: 10, color: PURPLE, marginBottom: 8, fontFamily: 'var(--font-body)', letterSpacing: 1 }}>💡 WHAT A STRONG ANSWER COVERS</div>
             <div style={{ fontSize: 13, color: SOFT, lineHeight: 1.7 }}>{ev.idealAnswer}</div>
           </div>
         )}
 
-        <button onClick={continueNext} style={{ width: '100%', padding: 15, borderRadius: 12, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${GENOIS},${GENOIS_SOFT})`, color: '#04120d', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15 }}>
+        <button onClick={continueNext} style={{ width: '100%', padding: 15, borderRadius: 12, border: 'none', cursor: 'pointer', background: GENOIS, color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15 }}>
           {fuNext ? 'Answer Follow-up ↳' : isLast ? 'See Final Results 🎉' : `Continue to Q${mainAsked + 1} →`}
         </button>
       </div>
@@ -1182,8 +1188,8 @@ export default function VoiceInterviewPage() {
     return (
       <div style={{ maxWidth: 760, margin: '0 auto', width: '100%', boxSizing: 'border-box', fontFamily: 'var(--font-body)' }}>
         {/* shareable card */}
-        <div ref={shareRef} style={{ background: 'linear-gradient(160deg,#0a1428,#020812)', border: `1px solid ${CYAN}26`, borderRadius: 18, padding: 28, marginBottom: 18, position: 'relative', overflow: 'hidden' }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg,${CYAN},${PURPLE},${RED})` }} />
+        <div ref={shareRef} style={{ background: 'var(--gx-surface)', border: `1px solid color-mix(in srgb, ${CYAN} 15%, transparent)`, borderRadius: 18, padding: 28, marginBottom: 18, position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 3, background: CYAN }} />
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
             <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 18, color: LIGHT, letterSpacing: 1 }}>GEN<span style={{ color: CYAN }}>OIS</span></div>
             <div style={{ fontSize: 10, color: MUTED, fontFamily: 'var(--font-mono)' }}>VOICE MOCK INTERVIEW</div>
@@ -1209,17 +1215,17 @@ export default function VoiceInterviewPage() {
         </div>
 
         {/* breakdown */}
-        <div style={{ background: CARD, border: `1px solid ${CYAN}14`, borderRadius: 14, padding: 20, marginBottom: 14 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: MUTED, letterSpacing: 2, marginBottom: 14 }}>CATEGORY BREAKDOWN</div>
+        <div style={{ background: CARD, border: `1px solid color-mix(in srgb, ${CYAN} 8%, transparent)`, borderRadius: 14, padding: 20, marginBottom: 14 }}>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: MUTED, letterSpacing: 2, marginBottom: 14 }}>CATEGORY BREAKDOWN</div>
           <Bar label="Technical Accuracy" value={summary.ta} />
           <Bar label="Communication" value={summary.cc} />
           <Bar label="Confidence" value={summary.cs} />
           <div style={{ display: 'flex', gap: 12, marginTop: 14, flexWrap: 'wrap' }}>
-            <div style={{ flex: 1, minWidth: 180, background: `${GREEN}0d`, border: `1px solid ${GREEN}26`, borderRadius: 10, padding: 12 }}>
+            <div style={{ flex: 1, minWidth: 180, background: `color-mix(in srgb, ${GREEN} 5%, transparent)`, border: `1px solid color-mix(in srgb, ${GREEN} 15%, transparent)`, borderRadius: 10, padding: 12 }}>
               <div style={{ fontSize: 10, color: GREEN, fontFamily: 'var(--font-mono)' }}>TOP STRENGTH</div>
               <div style={{ fontSize: 14, color: LIGHT, fontWeight: 600, marginTop: 4 }}>{summary.top}</div>
             </div>
-            <div style={{ flex: 1, minWidth: 180, background: `${RED}0d`, border: `1px solid ${RED}26`, borderRadius: 10, padding: 12 }}>
+            <div style={{ flex: 1, minWidth: 180, background: `color-mix(in srgb, ${RED} 5%, transparent)`, border: `1px solid color-mix(in srgb, ${RED} 15%, transparent)`, borderRadius: 10, padding: 12 }}>
               <div style={{ fontSize: 10, color: RED, fontFamily: 'var(--font-mono)' }}>MAIN GAP</div>
               <div style={{ fontSize: 14, color: LIGHT, fontWeight: 600, marginTop: 4 }}>{summary.gap}</div>
             </div>
@@ -1228,9 +1234,9 @@ export default function VoiceInterviewPage() {
 
         {/* actions */}
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 14 }}>
-          <button onClick={() => setShowDetails(d => !d)} style={{ flex: 1, minWidth: 150, padding: 13, borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: SOFT, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14 }}>{showDetails ? 'Hide Feedback' : 'View Detailed Feedback'}</button>
-          <button onClick={shareScore} disabled={sharing} style={{ flex: 1, minWidth: 150, padding: 13, borderRadius: 12, border: 'none', background: `linear-gradient(135deg,${PURPLE},${CYAN})`, color: '#020812', cursor: sharing ? 'wait' : 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>{sharing ? 'Generating…' : 'Share Score 📤'}</button>
-          <button onClick={retake} style={{ flex: 1, minWidth: 150, padding: 13, borderRadius: 12, border: 'none', background: `linear-gradient(135deg,${GREEN},${CYAN})`, color: '#020812', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>Retake Interview</button>
+          <button onClick={() => setShowDetails(d => !d)} style={{ flex: 1, minWidth: 150, padding: 13, borderRadius: 12, border: '1px solid var(--gx-border)', background: 'transparent', color: SOFT, cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 14 }}>{showDetails ? 'Hide Feedback' : 'View Detailed Feedback'}</button>
+          <button onClick={shareScore} disabled={sharing} style={{ flex: 1, minWidth: 150, padding: 13, borderRadius: 12, border: 'none', background: PURPLE, color: 'var(--gx-text-inverse)', cursor: sharing ? 'wait' : 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>{sharing ? 'Generating…' : 'Share Score 📤'}</button>
+          <button onClick={retake} style={{ flex: 1, minWidth: 150, padding: 13, borderRadius: 12, border: 'none', background: GREEN, color: 'var(--gx-text-inverse)', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14 }}>Retake Interview</button>
         </div>
         {reviewAttemptId && (
           <a href={`/review/${reviewAttemptId}`} style={{ display: 'block', textAlign: 'center', marginBottom: 14, color: GENOIS, fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600, textDecoration: 'none' }}>
@@ -1276,17 +1282,17 @@ export default function VoiceInterviewPage() {
       {micBlockedBanner}
 
       {!isChromium && (
-        <div style={{ background: `${AMBER}12`, border: `1px solid ${AMBER}33`, borderRadius: 10, padding: '10px 14px', marginBottom: 18, fontSize: 12.5, color: AMBER }}>
+        <div style={{ background: `color-mix(in srgb, ${AMBER} 7%, transparent)`, border: `1px solid color-mix(in srgb, ${AMBER} 20%, transparent)`, borderRadius: 10, padding: '10px 14px', marginBottom: 18, fontSize: 12.5, color: AMBER }}>
           ⚠️ Voice interview works best in Chrome or Edge. Firefox/Safari may have limited speech support — you can still type your answers.
         </div>
       )}
 
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: CYAN, letterSpacing: 2, marginBottom: 12 }}>1 · PICK A MODE</div>
+      <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: CYAN, letterSpacing: 2, marginBottom: 12 }}>1 · PICK A MODE</div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(210px,1fr))', gap: 12, marginBottom: 24 }}>
         {MODES.map(m => {
           const sel = mode === m.key;
           return (
-            <div key={m.key} onClick={() => setMode(m.key)} style={{ background: CARD, border: `2px solid ${sel ? CYAN + '55' : 'rgba(255,255,255,0.06)'}`, borderRadius: 14, padding: 18, cursor: 'pointer', transition: 'border-color .2s' }}>
+            <div key={m.key} onClick={() => setMode(m.key)} style={{ background: CARD, border: `2px solid ${sel ? `color-mix(in srgb, ${CYAN} 33%, transparent)` : 'var(--gx-border)'}`, borderRadius: 14, padding: 18, cursor: 'pointer', transition: 'border-color .2s' }}>
               <div style={{ fontSize: 24, marginBottom: 8 }}>{m.icon}</div>
               <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 15, color: sel ? CYAN : LIGHT, marginBottom: 4 }}>{m.label}</div>
               <div style={{ fontSize: 12, color: MUTED, lineHeight: 1.5 }}>{m.desc}</div>
@@ -1295,25 +1301,25 @@ export default function VoiceInterviewPage() {
         })}
       </div>
 
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: CYAN, letterSpacing: 2, marginBottom: 12 }}>2 · TARGET COMPANY</div>
+      <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: CYAN, letterSpacing: 2, marginBottom: 12 }}>2 · TARGET COMPANY</div>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
         {COMPANIES.map(c => (
-          <button key={c} onClick={() => setCompany(c)} style={{ padding: '8px 16px', borderRadius: 20, border: 'none', cursor: 'pointer', background: company === c ? CYAN : 'rgba(255,255,255,0.05)', color: company === c ? '#020812' : MUTED, fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 13 }}>{c}</button>
+          <button key={c} onClick={() => setCompany(c)} style={{ padding: '8px 16px', borderRadius: 20, border: 'none', cursor: 'pointer', background: company === c ? CYAN : 'var(--gx-surface)', color: company === c ? 'var(--gx-text-inverse)' : MUTED, fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 13 }}>{c}</button>
         ))}
       </div>
-      <input value={COMPANIES.includes(company) ? '' : company} onChange={e => setCompany(e.target.value)} placeholder="…or type any company" style={{ width: '100%', maxWidth: 280, padding: '9px 14px', borderRadius: 10, border: `1px solid ${CYAN}1f`, background: INPUT, color: LIGHT, fontSize: 13, fontFamily: 'var(--font-body)', boxSizing: 'border-box', marginBottom: 24 }} />
+      <input value={COMPANIES.includes(company) ? '' : company} onChange={e => setCompany(e.target.value)} placeholder="…or type any company" style={{ width: '100%', maxWidth: 280, padding: '9px 14px', borderRadius: 10, border: `1px solid color-mix(in srgb, ${CYAN} 12%, transparent)`, background: INPUT, color: LIGHT, fontSize: 13, fontFamily: 'var(--font-body)', boxSizing: 'border-box', marginBottom: 24 }} />
 
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: CYAN, letterSpacing: 2, marginBottom: 12 }}>3 · YOU</div>
+      <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: CYAN, letterSpacing: 2, marginBottom: 12 }}>3 · YOU</div>
       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 28, alignItems: 'center' }}>
-        <input value={domain} onChange={e => setDomain(e.target.value)} placeholder="Your domain" style={{ flex: 1, minWidth: 200, padding: '9px 14px', borderRadius: 10, border: `1px solid ${CYAN}1f`, background: INPUT, color: LIGHT, fontSize: 13, fontFamily: 'var(--font-body)', boxSizing: 'border-box' }} />
+        <input value={domain} onChange={e => setDomain(e.target.value)} placeholder="Your domain" style={{ flex: 1, minWidth: 200, padding: '9px 14px', borderRadius: 10, border: `1px solid color-mix(in srgb, ${CYAN} 12%, transparent)`, background: INPUT, color: LIGHT, fontSize: 13, fontFamily: 'var(--font-body)', boxSizing: 'border-box' }} />
         <div style={{ display: 'flex', gap: 6 }}>
           {['Fresher', 'Mid', 'Senior'].map(l => (
-            <button key={l} onClick={() => setLevel(l)} style={{ padding: '9px 14px', borderRadius: 10, border: 'none', cursor: 'pointer', background: level === l ? PURPLE : 'rgba(255,255,255,0.05)', color: level === l ? '#fff' : MUTED, fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 13 }}>{l}</button>
+            <button key={l} onClick={() => setLevel(l)} style={{ padding: '9px 14px', borderRadius: 10, border: 'none', cursor: 'pointer', background: level === l ? PURPLE : 'var(--gx-surface)', color: level === l ? 'var(--gx-text-inverse)' : MUTED, fontFamily: 'var(--font-heading)', fontWeight: 600, fontSize: 13 }}>{l}</button>
           ))}
         </div>
       </div>
 
-      <button onClick={startInterview} style={{ width: '100%', padding: 16, borderRadius: 12, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${GENOIS},${GENOIS_SOFT})`, color: '#04120d', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16 }}>
+      <button onClick={startInterview} style={{ width: '100%', padding: 16, borderRadius: 12, border: 'none', cursor: 'pointer', background: GENOIS, color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 16 }}>
         Start {company || ''} Voice Interview 🎤
       </button>
     </div>

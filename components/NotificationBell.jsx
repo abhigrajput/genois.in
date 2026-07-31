@@ -64,7 +64,7 @@ export default function NotificationBell({ token }) {
           cursor: 'pointer',
           padding: 8,
           position: 'relative',
-          color: '#e8e8ed',
+          color: 'var(--gx-text)',
           fontSize: 20,
           lineHeight: 1,
           display: 'flex',
@@ -81,8 +81,8 @@ export default function NotificationBell({ token }) {
             height: 16,
             padding: '0 4px',
             borderRadius: 10,
-            background: '#ff2d78',
-            color: '#fff',
+            background: 'var(--gx-danger)',
+            color: 'var(--gx-text-inverse)',
             fontSize: 10,
             fontWeight: 700,
             display: 'flex',
@@ -102,46 +102,46 @@ export default function NotificationBell({ token }) {
           right: 8,
           width: 320,
           maxHeight: 500,
-          background: '#070f1f',
-          border: '1px solid rgba(0,217,163,0.25)',
+          background: 'var(--gx-bg)',
+          border: '1px solid var(--gx-accent-border)',
           borderRadius: 12,
-          boxShadow: '0 16px 48px rgba(0,0,0,0.9)',
+          boxShadow: 'var(--gx-shadow-sm)',
           zIndex: 999999,
           overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
           opacity: 1,
         }}>
-          <div style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: '#e8e8ed' }}>Notifications</div>
+          <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--gx-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: 'var(--gx-text)' }}>Notifications</div>
             {unread > 0 && (
-              <button onClick={markAllRead} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#00d9a3', fontSize: 11, fontFamily: 'var(--font-mono)' }}>
+              <button onClick={markAllRead} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--gx-accent)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>
                 Mark all read
               </button>
             )}
           </div>
           <div style={{ flex: 1, overflowY: 'auto', maxHeight: 360 }}>
             {notifs.length === 0 ? (
-              <div style={{ padding: 40, textAlign: 'center', color: '#5a7a9a', fontSize: 13 }}>
+              <div style={{ padding: 40, textAlign: 'center', color: 'var(--gx-text-muted)', fontSize: 13 }}>
                 <div style={{ fontSize: 36, marginBottom: 8 }}>🔕</div>
                 No notifications yet
               </div>
             ) : (
               notifs.map(n => (
-                <div key={n.id} style={{ padding: '12px 16px', borderBottom: '1px solid rgba(255,255,255,0.03)', background: n.read ? 'transparent' : 'rgba(0,217,163,0.03)', display: 'flex', gap: 12, cursor: 'pointer' }}>
+                <div key={n.id} style={{ padding: '12px 16px', borderBottom: '1px solid var(--gx-border)', background: n.read ? 'transparent' : 'var(--gx-accent-soft)', display: 'flex', gap: 12, cursor: 'pointer' }}>
                   <div style={{ fontSize: 22, flexShrink: 0 }}>{n.icon || '🔔'}</div>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#e8e8ed', marginBottom: 3 }}>{n.title}</div>
-                    <div style={{ fontSize: 12, color: '#8a9ab0', lineHeight: 1.5, marginBottom: 4 }}>{n.message}</div>
-                    <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>{timeAgo(n.sent_at)}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--gx-text)', marginBottom: 3 }}>{n.title}</div>
+                    <div style={{ fontSize: 12, color: 'var(--gx-text-muted)', lineHeight: 1.5, marginBottom: 4 }}>{n.message}</div>
+                    <div style={{ fontSize: 10, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>{timeAgo(n.sent_at)}</div>
                   </div>
-                  {!n.read && <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#00d9a3', flexShrink: 0, marginTop: 6 }} />}
+                  {!n.read && <div style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--gx-accent)', flexShrink: 0, marginTop: 6 }} />}
                 </div>
               ))
             )}
           </div>
-          <div style={{ padding: '10px 16px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-            <button onClick={() => { setOpen(false); router.push('/notifications'); }} style={{ width: '100%', background: 'transparent', border: 'none', cursor: 'pointer', color: '#00d9a3', fontSize: 12, fontFamily: 'var(--font-heading)', fontWeight: 600, padding: '6px' }}>
+          <div style={{ padding: '10px 16px', borderTop: '1px solid var(--gx-border)' }}>
+            <button onClick={() => { setOpen(false); router.push('/notifications'); }} style={{ width: '100%', background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--gx-accent)', fontSize: 12, fontFamily: 'var(--font-heading)', fontWeight: 600, padding: '6px' }}>
               View all & Settings →
             </button>
           </div>

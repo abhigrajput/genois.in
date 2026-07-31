@@ -196,36 +196,36 @@ export default function LinkedListVisualizer() {
 
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
-          { label:'Size', value:nodes.length, color:'#00d9a3' },
-          { label:'Head', value:nodes.length > 0 ? nodes[0].val : 'null', color:'#1d9e75' },
-          { label:'Tail', value:nodes.length > 0 ? nodes[nodes.length-1].val : 'null', color:'#ff6b4a' },
-          { label:'Time (search)', value:'O(n)', color:'#ef9f27' },
+          { label:'Size', value:nodes.length, color:'var(--gx-accent)' },
+          { label:'Head', value:nodes.length > 0 ? nodes[0].val : 'null', color:'var(--gx-success)' },
+          { label:'Tail', value:nodes.length > 0 ? nodes[nodes.length-1].val : 'null', color:'var(--gx-warning)' },
+          { label:'Time (search)', value:'O(n)', color:'var(--gx-warning)' },
         ].map(s => (
-          <div key={s.label} style={{ background:'rgba(10,15,30,0.8)', border:`1px solid ${s.color}20`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
-            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
+          <div key={s.label} style={{ background:'var(--gx-surface)', border:`1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-text-muted)', marginBottom:2 }}>{s.label}</div>
             <div style={{ fontFamily:'var(--font-heading)', fontSize:20, fontWeight:700, color:s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
       {message && (
-        <div style={{ background:'rgba(0,217,163,0.05)', border:'1px solid rgba(0,217,163,0.15)', borderRadius:8, padding:'8px 14px', fontFamily:'var(--font-mono)', fontSize:12, color:'#00d9a3' }}>
+        <div style={{ background:'var(--gx-accent-soft)', border:'1px solid var(--gx-border)', borderRadius:8, padding:'8px 14px', fontFamily:'var(--font-mono)', fontSize:12, color:'var(--gx-accent)' }}>
           ▶ {message}
         </div>
       )}
 
       {/* Visual linked list */}
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, padding:'32px 20px', minHeight:160, overflowX:'auto' }}>
+      <div style={{ background:'var(--gx-surface)', border:'1px solid var(--gx-border)', borderRadius:12, padding:'32px 20px', minHeight:160, overflowX:'auto' }}>
         {nodes.length === 0 ? (
-          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:80, fontFamily:'var(--font-mono)', fontSize:12, color:'#2a3a4a' }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:80, fontFamily:'var(--font-mono)', fontSize:12, color:'var(--gx-text-subtle)' }}>
             head → null
           </div>
         ) : (
           <div style={{ display:'flex', alignItems:'center', gap:0, width:'max-content' }}>
             {/* Head label */}
             <div style={{ display:'flex', flexDirection:'column', alignItems:'center', marginRight:12 }}>
-              <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'#1d9e75' }}>head</span>
-              <span style={{ color:'#1d9e75', fontSize:16 }}>↓</span>
+              <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'var(--gx-success)' }}>head</span>
+              <span style={{ color:'var(--gx-success)', fontSize:16 }}>↓</span>
             </div>
 
             {nodes.map((node, i) => {
@@ -239,32 +239,32 @@ export default function LinkedListVisualizer() {
                   {/* Node box */}
                   <div style={{
                     display:'flex', flexDirection:'column',
-                    border: isActive ? '2px solid #00d9a3' : isHead ? '2px solid #1d9e75' : isTail ? '2px solid #ff6b4a' : '1px solid rgba(0,217,163,0.25)',
+                    border: isActive ? '2px solid var(--gx-accent)' : isHead ? '2px solid var(--gx-success)' : isTail ? '2px solid var(--gx-warning)' : '1px solid var(--gx-accent-border)',
                     borderRadius: 10, overflow:'hidden',
-                    boxShadow: isActive ? '0 0 20px rgba(0,217,163,0.4)' : 'none',
+                    boxShadow: isActive ? 'var(--gx-shadow-sm)' : 'none',
                     transition:'all 0.3s ease',
                     minWidth: 72,
                   }}>
                     {/* Labels */}
-                    <div style={{ display:'flex', fontSize:7, fontFamily:'var(--font-mono)', borderBottom:'1px solid rgba(0,217,163,0.1)', background:'rgba(0,217,163,0.03)' }}>
-                      <span style={{ flex:1, textAlign:'center', padding:'2px 0', color:'#5a7a9a', borderRight:'1px solid rgba(0,217,163,0.1)' }}>data</span>
-                      <span style={{ flex:1, textAlign:'center', padding:'2px 0', color:'#5a7a9a' }}>next</span>
+                    <div style={{ display:'flex', fontSize:7, fontFamily:'var(--font-mono)', borderBottom:'1px solid var(--gx-border)', background:'var(--gx-accent-soft)' }}>
+                      <span style={{ flex:1, textAlign:'center', padding:'2px 0', color:'var(--gx-text-muted)', borderRight:'1px solid var(--gx-border)' }}>data</span>
+                      <span style={{ flex:1, textAlign:'center', padding:'2px 0', color:'var(--gx-text-muted)' }}>next</span>
                     </div>
                     {/* Values */}
-                    <div style={{ display:'flex', background:'rgba(10,20,40,0.8)' }}>
-                      <div style={{ flex:1, padding:'10px 8px', textAlign:'center', borderRight:'1px solid rgba(0,217,163,0.1)' }}>
-                        <span style={{ fontFamily:'var(--font-mono)', fontSize:16, fontWeight:700, color: isActive ? '#00d9a3' : isHead ? '#1d9e75' : '#e8e8ed' }}>{node.val}</span>
+                    <div style={{ display:'flex', background:'var(--gx-surface)' }}>
+                      <div style={{ flex:1, padding:'10px 8px', textAlign:'center', borderRight:'1px solid var(--gx-border)' }}>
+                        <span style={{ fontFamily:'var(--font-mono)', fontSize:16, fontWeight:700, color: isActive ? 'var(--gx-accent)' : isHead ? 'var(--gx-success)' : 'var(--gx-text)' }}>{node.val}</span>
                       </div>
                       <div style={{ flex:1, padding:'10px 4px', textAlign:'center' }}>
-                        <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color: isTail ? '#ff2d78' : '#5a7a9a' }}>
+                        <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color: isTail ? 'var(--gx-danger)' : 'var(--gx-text-muted)' }}>
                           {isTail ? 'null' : '→'}
                         </span>
                       </div>
                     </div>
                     {/* Index label */}
                     {(isHead || isTail) && (
-                      <div style={{ padding:'2px 0', textAlign:'center', background:'rgba(0,0,0,0.2)' }}>
-                        <span style={{ fontFamily:'var(--font-mono)', fontSize:7, color: isHead ? '#1d9e75' : '#ff6b4a' }}>
+                      <div style={{ padding:'2px 0', textAlign:'center', background:'var(--gx-surface-2)' }}>
+                        <span style={{ fontFamily:'var(--font-mono)', fontSize:7, color: isHead ? 'var(--gx-success)' : 'var(--gx-warning)' }}>
                           {isHead && isTail ? 'head/tail' : isHead ? 'head' : 'tail'}
                         </span>
                       </div>
@@ -274,8 +274,8 @@ export default function LinkedListVisualizer() {
                   {/* Arrow */}
                   {i < nodes.length - 1 && (
                     <div style={{ display:'flex', alignItems:'center', padding:'0 4px' }}>
-                      <div style={{ width:24, height:2, background:'rgba(0,217,163,0.3)', position:'relative' }}>
-                        <div style={{ position:'absolute', right:-5, top:-4, color:'rgba(0,217,163,0.5)', fontSize:12 }}>▶</div>
+                      <div style={{ width:24, height:2, background:'var(--gx-accent-soft)', position:'relative' }}>
+                        <div style={{ position:'absolute', right:-5, top:-4, color:'var(--gx-accent)', fontSize:12 }}>▶</div>
                       </div>
                     </div>
                   )}
@@ -285,8 +285,8 @@ export default function LinkedListVisualizer() {
 
             {/* null terminator */}
             <div style={{ display:'flex', alignItems:'center', marginLeft:8 }}>
-              <div style={{ width:20, height:2, background:'rgba(255,45,120,0.3)' }}/>
-              <span style={{ fontFamily:'var(--font-mono)', fontSize:12, color:'#ff2d78', marginLeft:4 }}>null</span>
+              <div style={{ width:20, height:2, background:'var(--gx-danger-soft)' }}/>
+              <span style={{ fontFamily:'var(--font-mono)', fontSize:12, color:'var(--gx-danger)', marginLeft:4 }}>null</span>
             </div>
           </div>
         )}
@@ -294,11 +294,11 @@ export default function LinkedListVisualizer() {
 
       <div style={{ display:'flex', gap:8, flexWrap:'wrap' }}>
         {[
-          { label:'Insert Head', action:insertHead, color:'#1d9e75', bg:'rgba(29,158,117,0.08)', border:'rgba(29,158,117,0.25)' },
-          { label:'Insert Tail', action:insertTail, color:'#ff6b4a', bg:'rgba(255,107,74,0.08)', border:'rgba(255,107,74,0.25)' },
-          { label:'Delete Head', action:deleteHead, color:'#ff2d78', bg:'rgba(255,45,120,0.08)', border:'rgba(255,45,120,0.25)' },
-          { label:'Delete Tail', action:deleteTail, color:'#ef9f27', bg:'rgba(239,159,39,0.08)', border:'rgba(239,159,39,0.25)' },
-          { label:'Traverse', action:traverse, color:'#00d9a3', bg:'rgba(0,217,163,0.08)', border:'rgba(0,217,163,0.25)' },
+          { label:'Insert Head', action:insertHead, color:'var(--gx-success)', bg:'var(--gx-success-soft)', border:'var(--gx-success-border)' },
+          { label:'Insert Tail', action:insertTail, color:'var(--gx-warning)', bg:'var(--gx-warning-soft)', border:'var(--gx-warning-border)' },
+          { label:'Delete Head', action:deleteHead, color:'var(--gx-danger)', bg:'var(--gx-danger-soft)', border:'var(--gx-danger-border)' },
+          { label:'Delete Tail', action:deleteTail, color:'var(--gx-warning)', bg:'var(--gx-warning-soft)', border:'var(--gx-warning-border)' },
+          { label:'Traverse', action:traverse, color:'var(--gx-accent)', bg:'var(--gx-accent-soft)', border:'var(--gx-accent-border)' },
         ].map(b => (
           <button key={b.label} onClick={b.action} style={{ padding:'8px 16px', borderRadius:8, border:`1px solid ${b.border}`, background:b.bg, color:b.color, fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' }}>{b.label}</button>
         ))}

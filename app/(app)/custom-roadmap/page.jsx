@@ -48,48 +48,48 @@ export default function CustomRoadmapPage() {
   return (
     <div style={{ fontFamily: 'var(--font-body)', width: '100%' }}>
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 4 }}>
+        <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 4 }}>
           🗺️ Custom Roadmap
         </h1>
-        <p style={{ color: '#5a7a9a', fontSize: 13 }}>
+        <p style={{ color: 'var(--gx-text-muted)', fontSize: 13 }}>
           Already know HTML? Skip it. Learn only what you need. AI generates a personalized roadmap for any topic.
         </p>
       </div>
 
       {!showForm ? (
         <>
-          <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.12)', borderRadius: 14, padding: 24, marginBottom: 24 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 2, marginBottom: 16 }}>QUICK SUGGESTIONS</div>
+          <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 14, padding: 24, marginBottom: 24 }}>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-accent)', letterSpacing: 2, marginBottom: 16 }}>QUICK SUGGESTIONS</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: 10, marginBottom: 20 }}>
               {SUGGESTIONS.map((s, i) => (
-                <div key={i} onClick={() => useSuggestion(s)} style={{ padding: '14px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(0,217,163,0.08)', cursor: 'pointer', transition: 'border-color 0.2s' }}>
-                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: '#e8e8ed', marginBottom: 4 }}>{s.topic}</div>
-                  <div style={{ fontSize: 12, color: '#5a7a9a' }}>Already know: {s.know}</div>
+                <div key={i} onClick={() => useSuggestion(s)} style={{ padding: '14px 16px', borderRadius: 10, background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', cursor: 'pointer', transition: 'border-color 0.2s' }}>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: 'var(--gx-text)', marginBottom: 4 }}>{s.topic}</div>
+                  <div style={{ fontSize: 12, color: 'var(--gx-text-muted)' }}>Already know: {s.know}</div>
                 </div>
               ))}
             </div>
-            <button onClick={() => setShowForm(true)} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 }}>
+            <button onClick={() => setShowForm(true)} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 }}>
               + Create Custom Roadmap →
             </button>
           </div>
 
           {roadmaps.length > 0 && (
             <div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 14 }}>YOUR CUSTOM ROADMAPS</div>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 2, marginBottom: 14 }}>YOUR CUSTOM ROADMAPS</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {roadmaps.map((r, i) => (
-                  <div key={i} onClick={() => router.push('/custom-roadmap/' + r.id)} style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 12, padding: '16px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                  <div key={i} onClick={() => router.push('/custom-roadmap/' + r.id)} style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: '16px 20px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
                     <div>
-                      <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: '#e8e8ed', marginBottom: 4 }}>{r.topic}</div>
-                      <div style={{ fontSize: 12, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>
+                      <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: 'var(--gx-text)', marginBottom: 4 }}>{r.topic}</div>
+                      <div style={{ fontSize: 12, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>
                         Day {r.current_day} of {r.total_days} · {r.status}
                       </div>
                     </div>
                     <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                      <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800, color: r.status === 'completed' ? '#1D9E75' : '#00d9a3' }}>
+                      <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800, color: r.status === 'completed' ? 'var(--gx-success)' : 'var(--gx-accent)' }}>
                         {Math.round((r.current_day / r.total_days) * 100)}%
                       </div>
-                      <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>complete</div>
+                      <div style={{ fontSize: 10, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>complete</div>
                     </div>
                   </div>
                 ))}
@@ -98,30 +98,30 @@ export default function CustomRoadmapPage() {
           )}
         </>
       ) : (
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 14, padding: 28 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 2, marginBottom: 20 }}>CREATE YOUR ROADMAP</div>
+        <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 14, padding: 28 }}>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-accent)', letterSpacing: 2, marginBottom: 20 }}>CREATE YOUR ROADMAP</div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginBottom: 24 }}>
             <div>
-              <div style={{ fontSize: 12, color: '#5a7a9a', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>WHAT DO YOU WANT TO LEARN? *</div>
-              <input value={form.topic} onChange={e => setForm(p => ({ ...p, topic: e.target.value }))} placeholder="e.g. CSS Flexbox, React Hooks, SQL Joins, Docker..." style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,217,163,0.15)', background: 'rgba(255,255,255,0.02)', color: '#e8e8ed', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+              <div style={{ fontSize: 12, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>WHAT DO YOU WANT TO LEARN? *</div>
+              <input value={form.topic} onChange={e => setForm(p => ({ ...p, topic: e.target.value }))} placeholder="e.g. CSS Flexbox, React Hooks, SQL Joins, Docker..." style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid var(--gx-border)', background: 'var(--gx-surface)', color: 'var(--gx-text)', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
             </div>
 
             <div>
-              <div style={{ fontSize: 12, color: '#5a7a9a', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>WHAT DO YOU ALREADY KNOW ABOUT THIS?</div>
-              <input value={form.alreadyKnow} onChange={e => setForm(p => ({ ...p, alreadyKnow: e.target.value }))} placeholder="e.g. I know basic CSS properties but not layouts..." style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,217,163,0.15)', background: 'rgba(255,255,255,0.02)', color: '#e8e8ed', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+              <div style={{ fontSize: 12, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>WHAT DO YOU ALREADY KNOW ABOUT THIS?</div>
+              <input value={form.alreadyKnow} onChange={e => setForm(p => ({ ...p, alreadyKnow: e.target.value }))} placeholder="e.g. I know basic CSS properties but not layouts..." style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid var(--gx-border)', background: 'var(--gx-surface)', color: 'var(--gx-text)', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
             </div>
 
             <div>
-              <div style={{ fontSize: 12, color: '#5a7a9a', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>WHAT IS YOUR GOAL?</div>
-              <input value={form.goal} onChange={e => setForm(p => ({ ...p, goal: e.target.value }))} placeholder="e.g. Build responsive layouts for my projects..." style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,217,163,0.15)', background: 'rgba(255,255,255,0.02)', color: '#e8e8ed', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+              <div style={{ fontSize: 12, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>WHAT IS YOUR GOAL?</div>
+              <input value={form.goal} onChange={e => setForm(p => ({ ...p, goal: e.target.value }))} placeholder="e.g. Build responsive layouts for my projects..." style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid var(--gx-border)', background: 'var(--gx-surface)', color: 'var(--gx-text)', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
             </div>
 
             <div>
-              <div style={{ fontSize: 12, color: '#5a7a9a', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>HOW MANY DAYS? (3-30)</div>
+              <div style={{ fontSize: 12, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>HOW MANY DAYS? (3-30)</div>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {['3', '5', '7', '10', '14', '30'].map(d => (
-                  <button key={d} onClick={() => setForm(p => ({ ...p, days: d }))} style={{ padding: '8px 18px', borderRadius: 20, border: `1px solid ${form.days === d ? 'rgba(0,217,163,0.5)' : 'rgba(255,255,255,0.08)'}`, background: form.days === d ? 'rgba(0,217,163,0.1)' : 'transparent', color: form.days === d ? '#00d9a3' : '#5a7a9a', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600 }}>
+                  <button key={d} onClick={() => setForm(p => ({ ...p, days: d }))} style={{ padding: '8px 18px', borderRadius: 20, border: `1px solid ${form.days === d ? 'var(--gx-accent-border)' : 'var(--gx-border)'}`, background: form.days === d ? 'var(--gx-accent-soft)' : 'transparent', color: form.days === d ? 'var(--gx-accent)' : 'var(--gx-text-muted)', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600 }}>
                     {d} days
                   </button>
                 ))}
@@ -130,14 +130,14 @@ export default function CustomRoadmapPage() {
           </div>
 
           <div style={{ display: 'flex', gap: 10 }}>
-            <button onClick={() => { setShowForm(false); setForm({ topic: '', alreadyKnow: '', goal: '', days: '7' }); }} style={{ flex: 1, padding: '13px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 14 }}>
+            <button onClick={() => { setShowForm(false); setForm({ topic: '', alreadyKnow: '', goal: '', days: '7' }); }} style={{ flex: 1, padding: '13px', borderRadius: 12, border: '1px solid var(--gx-border)', background: 'transparent', color: 'var(--gx-text-muted)', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 14 }}>
               Cancel
             </button>
-            <button onClick={create} disabled={creating} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: 'pointer', background: creating ? 'rgba(0,217,163,0.2)' : 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+            <button onClick={create} disabled={creating} style={{ flex: 2, padding: '13px', borderRadius: 12, border: 'none', cursor: 'pointer', background: creating ? 'var(--gx-accent-soft)' : 'var(--gx-accent)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
               {creating ? 'Generating your roadmap... (30 seconds)' : 'Generate My Roadmap →'}
             </button>
           </div>
-          <p style={{ textAlign: 'center', color: '#3a4a5a', fontSize: 11, fontFamily: 'var(--font-mono)', marginTop: 10 }}>
+          <p style={{ textAlign: 'center', color: 'var(--gx-text-subtle)', fontSize: 11, fontFamily: 'var(--font-mono)', marginTop: 10 }}>
             AI generates a personalized day-by-day plan skipping what you already know
           </p>
         </div>

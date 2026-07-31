@@ -1,15 +1,15 @@
 'use client';
 import Link from 'next/link';
 
-// ─── GENOIS Green System — dark slate architecture ───────────────────────────
-const BG900 = '#0f172a'; // slate-900 — master page background
-const BG800 = '#1e293b'; // slate-800 — internal cards
-const BORDER = 'rgba(148,163,184,0.18)'; // slate border
-const GREEN = '#00d9a3'; // GENOIS green — primary action / accent
-const ON_GREEN = '#0f172a'; // high-contrast dark text on green (WCAG AA ~10:1)
-const TEXT = '#e2e8f0'; // slate-200
-const TEXT_STRONG = '#f8fafc'; // slate-50
-const MUTED = '#94a3b8'; // slate-400
+// ─── GENOIS light system ─────────────────────────────────────────────────────
+const BG900 = 'var(--gx-surface)'; // master page canvas
+const BG800 = 'var(--gx-bg)';      // cards sitting on that canvas
+const BORDER = 'var(--gx-border)';  // neutral hairline
+const GREEN = 'var(--gx-accent)';  // the one accent — primary action
+const ON_GREEN = 'var(--gx-text-inverse)'; // white on the accent fill (4.94:1)
+const TEXT = 'var(--gx-text)';
+const TEXT_STRONG = 'var(--gx-text)';
+const MUTED = 'var(--gx-text-muted)';
 
 // 4px spacing scale.
 const SP = { 1: 4, 2: 8, 3: 12, 4: 16, 6: 24, 8: 32 };
@@ -65,7 +65,7 @@ export default function PricingPage() {
           zIndex: 0,
           pointerEvents: 'none',
           backgroundImage:
-            'linear-gradient(rgba(0,217,163,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,217,163,0.02) 1px,transparent 1px)',
+            'var(--gx-accent-soft) 1px,var(--gx-accent-soft) 1px',
           backgroundSize: '60px 60px',
         }}
       />
@@ -76,7 +76,7 @@ export default function PricingPage() {
           position: 'sticky',
           top: 0,
           zIndex: 100,
-          background: 'rgba(15,23,42,0.95)',
+          background: 'var(--gx-bg)',
           borderBottom: `1px solid ${BORDER}`,
           backdropFilter: 'blur(20px)',
           padding: `0 ${SP[4]}px`,
@@ -117,12 +117,12 @@ export default function PricingPage() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: SP[2],
-              fontFamily: 'var(--font-mono)',
+              fontFamily: 'var(--font-body)',
               fontSize: 11,
               color: GREEN,
               letterSpacing: 1.5,
-              background: 'rgba(0,217,163,0.08)',
-              border: '1px solid rgba(0,217,163,0.25)',
+              background: 'var(--gx-accent-soft)',
+              border: '1px solid var(--gx-accent-border)',
               borderRadius: 999,
               padding: '6px 14px',
               marginBottom: SP[4],
@@ -144,13 +144,13 @@ export default function PricingPage() {
         {/* ─── The gate ───────────────────────────────────────────────────────── */}
         <div
           style={{
-            background: `linear-gradient(160deg, rgba(0,217,163,0.07), ${BG800})`,
-            border: '1px solid rgba(0,217,163,0.4)',
+            background: `var(--gx-accent-soft)`,
+            border: '1px solid var(--gx-accent-border)',
             borderRadius: 20,
             padding: 'clamp(24px, 4vw, 40px)',
             textAlign: 'center',
             marginBottom: SP[8],
-            boxShadow: '0 0 60px rgba(0,217,163,0.08)',
+            boxShadow: 'var(--gx-shadow-sm)',
           }}
         >
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(20px,3vw,26px)', fontWeight: 800, color: TEXT_STRONG, marginBottom: SP[2], letterSpacing: -0.5 }}>
@@ -175,7 +175,7 @@ export default function PricingPage() {
               fontFamily: 'var(--font-heading)',
               fontSize: 'clamp(15px,2vw,17px)',
               fontWeight: 800,
-              boxShadow: '0 12px 34px rgba(0,217,163,0.32)',
+              boxShadow: 'var(--gx-shadow-sm)',
             }}
           >
             Apply for Free Beta Access →
@@ -193,7 +193,7 @@ export default function PricingPage() {
         {/* ─── What you get — the shipped moat, honestly ──────────────────────── */}
         <div style={{ marginBottom: SP[8] }}>
           <div style={{ textAlign: 'center', marginBottom: SP[6] }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: GREEN, letterSpacing: 2, marginBottom: SP[2] }}>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: GREEN, letterSpacing: 2, marginBottom: SP[2] }}>
               WHAT&apos;S IN THE BETA
             </div>
             <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 'clamp(22px,3.5vw,32px)', fontWeight: 800, color: TEXT_STRONG, margin: 0, letterSpacing: -1 }}>
@@ -232,8 +232,8 @@ export default function PricingPage() {
             display: 'flex',
             alignItems: 'flex-start',
             gap: SP[3],
-            background: 'rgba(0,217,163,0.05)',
-            border: '1px solid rgba(0,217,163,0.2)',
+            background: 'var(--gx-accent-soft)',
+            border: '1px solid var(--gx-accent-border)',
             borderRadius: 14,
             padding: SP[6],
             maxWidth: 720,

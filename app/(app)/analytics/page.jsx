@@ -12,13 +12,13 @@ import { Flame, Zap, CheckCircle2, ClipboardList } from 'lucide-react';
 
 // GENOIS design system — green on slate. Blue is the one non-green series hue
 // (test scores), always in its OWN chart, never on a second axis.
-const G = '#00d9a3';
-const BLUE = '#378ADD';
-const AMBER = '#ffb020';
-const MUTED = '#5a7a9a';
-const GRID = 'rgba(255,255,255,0.05)';
+const G = 'var(--gx-accent)';
+const BLUE = 'var(--gx-info)';
+const AMBER = 'var(--gx-warning)';
+const MUTED = 'var(--gx-text-muted)';
+const GRID = 'var(--gx-border)';
 
-const CARD = 'relative overflow-hidden rounded-2xl border border-primary/10 bg-[#070f1a] p-5';
+const CARD = 'relative overflow-hidden rounded-2xl border border-primary/10 bg-[var(--gx-surface)] p-5';
 
 const TYPE_META = {
   dsa_diagnostic:  { icon: '🎯', label: 'DSA Diagnostic' },
@@ -33,21 +33,21 @@ const TYPE_META = {
 
 const tooltipStyle = {
   contentStyle: {
-    background: '#0a1628',
-    border: '1px solid rgba(0,217,163,0.2)',
+    background: 'var(--gx-surface)',
+    border: '1px solid var(--gx-accent-border)',
     borderRadius: 10,
     fontSize: 12,
     fontFamily: 'var(--font-mono)',
-    color: '#e8e8ed',
+    color: 'var(--gx-text)',
   },
   labelStyle: { color: MUTED, marginBottom: 4 },
-  itemStyle: { color: '#e8e8ed' },
+  itemStyle: { color: 'var(--gx-text)' },
 };
 
 function scoreColor(score) {
-  if (score >= 70) return '#1D9E75';
-  if (score >= 40) return '#EF9F27';
-  return '#ff2d78';
+  if (score >= 70) return 'var(--gx-success)';
+  if (score >= 40) return 'var(--gx-warning)';
+  return 'var(--gx-danger)';
 }
 
 // Mandatory per-widget empty state — a widget with no data explains how to
@@ -74,7 +74,7 @@ function StatTile({ icon, value, label, accent }) {
   return (
     <div className={`${CARD} flex items-center gap-3 !p-4`}>
       <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg"
-        style={{ background: `${accent}14`, color: accent }}>
+        style={{ background: `color-mix(in srgb, ${accent} 8%, transparent)`, color: accent }}>
         {icon}
       </span>
       <div className="min-w-0">
@@ -127,7 +127,7 @@ export default function AnalyticsPage() {
       <div style={{ maxWidth: 780, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
         <h1 className="font-display text-[26px] font-extrabold text-dark">📊 Analytics</h1>
         <p className="mb-6 mt-1 text-[13px] text-muted">Your real learning data — no estimates, no filler.</p>
-        <div className="rounded-2xl border border-primary/15 bg-[#070f1a] px-8 py-14 text-center">
+        <div className="rounded-2xl border border-primary/15 bg-[var(--gx-surface)] px-8 py-14 text-center">
           <div className="mb-3 text-5xl">🔓</div>
           <div className="mb-2 font-display text-lg font-extrabold text-dark">
             Complete tasks and assessments to unlock your analytics
@@ -137,7 +137,7 @@ export default function AnalyticsPage() {
             skill growth, and topic mastery will start building here — from your real activity.
           </p>
           <div className="flex flex-wrap justify-center gap-2.5">
-            <Link href="/roadmap" className="rounded-[10px] border-none bg-[linear-gradient(135deg,#00d9a3,#2ee6b0)] px-6 py-3 font-display text-[13px] font-bold text-[#020812] no-underline transition-all hover:brightness-110">
+            <Link href="/roadmap" className="rounded-[10px] border-none bg-[var(--gx-accent)] px-6 py-3 font-display text-[13px] font-bold text-[var(--gx-text-inverse)] no-underline transition-all hover:brightness-110">
               Start today&apos;s roadmap →
             </Link>
             <Link href="/aptitude" className="rounded-[10px] border border-primary/25 bg-primary/10 px-6 py-3 font-display text-[13px] font-bold text-primary no-underline transition-all hover:bg-primary/20">
@@ -185,7 +185,7 @@ export default function AnalyticsPage() {
                 <CartesianGrid stroke={GRID} vertical={false} />
                 <XAxis dataKey="week" tick={{ fontSize: 10, fill: MUTED }} axisLine={false} tickLine={false} />
                 <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: MUTED }} axisLine={false} tickLine={false} />
-                <Tooltip {...tooltipStyle} cursor={{ fill: 'rgba(0,217,163,0.06)' }} />
+                <Tooltip {...tooltipStyle} cursor={{ fill: 'var(--gx-accent)' }} />
                 <Bar dataKey="tasks" name="Tasks" fill={G} radius={[4, 4, 0, 0]} maxBarSize={22} />
               </BarChart>
             </ResponsiveContainer>
@@ -202,7 +202,7 @@ export default function AnalyticsPage() {
                 <CartesianGrid stroke={GRID} vertical={false} />
                 <XAxis dataKey="date" tick={{ fontSize: 9, fill: MUTED }} axisLine={false} tickLine={false} interval={6} />
                 <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: MUTED }} axisLine={false} tickLine={false} />
-                <Tooltip {...tooltipStyle} cursor={{ fill: 'rgba(0,217,163,0.06)' }} />
+                <Tooltip {...tooltipStyle} cursor={{ fill: 'var(--gx-accent)' }} />
                 <Bar dataKey="completions" name="Completions" fill={G} radius={[4, 4, 0, 0]} maxBarSize={14} />
               </BarChart>
             </ResponsiveContainer>
@@ -264,12 +264,12 @@ export default function AnalyticsPage() {
               {topicMastery.map(t => (
                 <div key={t.topic}>
                   <div className="mb-1 flex items-baseline justify-between gap-2">
-                    <span className="truncate text-[13px] text-[#c8d8e8]">{t.topic}</span>
+                    <span className="truncate text-[13px] text-[var(--gx-text)]">{t.topic}</span>
                     <span className="flex-shrink-0 font-mono text-[11px]" style={{ color: scoreColor(t.pct) }}>
                       {t.correct}/{t.total} · {t.pct}%
                     </span>
                   </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-white/[0.05]">
+                  <div className="h-2 overflow-hidden rounded-full bg-[var(--gx-surface-2)]">
                     <div className="h-full rounded-full transition-all" style={{ width: `${t.pct}%`, background: G }} />
                   </div>
                 </div>
@@ -299,7 +299,7 @@ export default function AnalyticsPage() {
                 const meta = TYPE_META[a.attempt_type] || { icon: '📄', label: a.attempt_type };
                 return (
                   <Link key={a.id} href={`/review/${a.id}`} className="no-underline">
-                    <div className="flex cursor-pointer items-center gap-3 rounded-xl border border-primary/10 bg-white/[0.02] px-3.5 py-2.5 transition-all hover:border-primary/30 hover:bg-primary/5">
+                    <div className="flex cursor-pointer items-center gap-3 rounded-xl border border-primary/10 bg-[var(--gx-surface)] px-3.5 py-2.5 transition-all hover:border-primary/30 hover:bg-primary/5">
                       <span className="text-lg">{meta.icon}</span>
                       <div className="min-w-0 flex-1">
                         <div className="truncate text-[13px] font-semibold text-dark">

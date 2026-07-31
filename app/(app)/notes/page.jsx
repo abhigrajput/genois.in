@@ -97,40 +97,40 @@ export default function NotesPage() {
   }
 
   if (loading) return (
-    <div style={{ padding: 60, textAlign: 'center', color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>
+    <div style={{ padding: 60, textAlign: 'center', color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>
       Loading notes...
     </div>
   );
 
   return (
-    <div style={{ fontFamily: 'var(--font-body)', width: '100%', height: 'calc(100vh - 80px)', display: 'flex', gap: 0, borderRadius: 14, overflow: 'hidden', border: '1px solid rgba(0,217,163,0.08)' }}>
+    <div style={{ fontFamily: 'var(--font-body)', width: '100%', height: 'calc(100vh - 80px)', display: 'flex', gap: 0, borderRadius: 14, overflow: 'hidden', border: '1px solid var(--gx-border)' }}>
 
       {/* SIDEBAR */}
-      <div style={{ width: 260, flexShrink: 0, background: '#070f1f', borderRight: '1px solid rgba(0,217,163,0.08)', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ padding: '16px 14px', borderBottom: '1px solid rgba(0,217,163,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: '#e8e8ed' }}>📒 My Notes</div>
-          <button onClick={createNote} disabled={creating} style={{ padding: '6px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 700 }}>
+      <div style={{ width: 260, flexShrink: 0, background: 'var(--gx-bg)', borderRight: '1px solid var(--gx-border)', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: '16px 14px', borderBottom: '1px solid var(--gx-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: 'var(--gx-text)' }}>📒 My Notes</div>
+          <button onClick={createNote} disabled={creating} style={{ padding: '6px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 700 }}>
             {creating ? '...' : '+ New'}
           </button>
         </div>
 
         <div style={{ flex: 1, overflowY: 'auto' }}>
           {notes.length === 0 ? (
-            <div style={{ padding: 20, textAlign: 'center', color: '#3a4a5a', fontSize: 13 }}>
+            <div style={{ padding: 20, textAlign: 'center', color: 'var(--gx-text-subtle)', fontSize: 13 }}>
               No notes yet. Click + New to start.
             </div>
           ) : (
             notes.map(note => (
-              <div key={note.id} onClick={() => selectNote(note)} style={{ padding: '12px 14px', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.03)', background: selected?.id === note.id ? 'rgba(0,217,163,0.06)' : 'transparent', borderLeft: selected?.id === note.id ? '2px solid #00d9a3' : '2px solid transparent', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+              <div key={note.id} onClick={() => selectNote(note)} style={{ padding: '12px 14px', cursor: 'pointer', borderBottom: '1px solid var(--gx-border)', background: selected?.id === note.id ? 'var(--gx-accent-soft)' : 'transparent', borderLeft: selected?.id === note.id ? '2px solid var(--gx-accent)' : '2px solid transparent', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600, color: selected?.id === note.id ? '#00d9a3' : '#e8e8ed', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600, color: selected?.id === note.id ? 'var(--gx-accent)' : 'var(--gx-text)', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                     {note.title || 'Untitled'}
                   </div>
-                  <div style={{ fontSize: 11, color: '#3a4a5a', fontFamily: 'var(--font-mono)' }}>
+                  <div style={{ fontSize: 11, color: 'var(--gx-text-subtle)', fontFamily: 'var(--font-mono)' }}>
                     {new Date(note.updated_at).toLocaleDateString()}
                   </div>
                 </div>
-                <button onClick={e => { e.stopPropagation(); deleteNote(note.id); }} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#3a4a5a', fontSize: 14, padding: '2px 4px', flexShrink: 0, opacity: 0.5 }}>
+                <button onClick={e => { e.stopPropagation(); deleteNote(note.id); }} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--gx-text-subtle)', fontSize: 14, padding: '2px 4px', flexShrink: 0, opacity: 0.5 }}>
                   🗑
                 </button>
               </div>
@@ -140,39 +140,39 @@ export default function NotesPage() {
       </div>
 
       {/* EDITOR */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#020812' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--gx-surface)' }}>
         {selected ? (
           <>
-            <div style={{ padding: '14px 20px', borderBottom: '1px solid rgba(0,217,163,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-              <input value={title} onChange={e => handleTitleChange(e.target.value)} placeholder="Note title..." style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: '#e8e8ed' }} />
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--gx-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+              <input value={title} onChange={e => handleTitleChange(e.target.value)} placeholder="Note title..." style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--gx-text)' }} />
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: saving ? '#EF9F27' : '#3a4a5a' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: saving ? 'var(--gx-warning)' : 'var(--gx-text-subtle)' }}>
                   {saving ? 'Saving...' : 'Auto-saved'}
                 </span>
-                <button onClick={saveNote} style={{ padding: '6px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'rgba(0,217,163,0.1)', color: '#00d9a3', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 600 }}>
+                <button onClick={saveNote} style={{ padding: '6px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'var(--gx-accent-soft)', color: 'var(--gx-accent)', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 600 }}>
                   Save
                 </button>
               </div>
             </div>
-            <textarea value={content} onChange={e => handleContentChange(e.target.value)} placeholder="Start typing your notes here...&#10;&#10;Tips:&#10;• Use this to save key concepts&#10;• Write down important formulas&#10;• Note your daily learnings" style={{ flex: 1, padding: '20px', background: 'transparent', border: 'none', outline: 'none', resize: 'none', color: '#e8e8ed', fontFamily: 'var(--font-body)', fontSize: 14, lineHeight: 1.8 }} />
-            <div style={{ padding: '8px 20px', borderTop: '1px solid rgba(255,255,255,0.04)', display: 'flex', gap: 16 }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#3a4a5a' }}>
+            <textarea value={content} onChange={e => handleContentChange(e.target.value)} placeholder="Start typing your notes here...&#10;&#10;Tips:&#10;• Use this to save key concepts&#10;• Write down important formulas&#10;• Note your daily learnings" style={{ flex: 1, padding: '20px', background: 'transparent', border: 'none', outline: 'none', resize: 'none', color: 'var(--gx-text)', fontFamily: 'var(--font-body)', fontSize: 14, lineHeight: 1.8 }} />
+            <div style={{ padding: '8px 20px', borderTop: '1px solid var(--gx-border)', display: 'flex', gap: 16 }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-subtle)' }}>
                 {content.length} characters
               </span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#3a4a5a' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-subtle)' }}>
                 {content.split('\n').length} lines
               </span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#3a4a5a' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-subtle)' }}>
                 {content.split(' ').filter(w => w).length} words
               </span>
             </div>
           </>
         ) : (
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, color: '#3a4a5a' }}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, color: 'var(--gx-text-subtle)' }}>
             <div style={{ fontSize: 48 }}>📒</div>
-            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: '#5a7a9a' }}>No note selected</div>
-            <div style={{ fontSize: 13, color: '#3a4a5a' }}>Create a new note or select one from the list</div>
-            <button onClick={createNote} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--gx-text-muted)' }}>No note selected</div>
+            <div style={{ fontSize: 13, color: 'var(--gx-text-subtle)' }}>Create a new note or select one from the list</div>
+            <button onClick={createNote} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
               + Create First Note
             </button>
           </div>

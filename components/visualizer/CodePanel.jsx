@@ -51,35 +51,35 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
 
   return (
     <div style={{
-      background: '#0d1117',
-      border: '1px solid rgba(0,217,163,0.12)',
-      borderLeft: '3px solid #00d9a3',
+      background: 'var(--gx-surface-2)',
+      border: '1px solid var(--gx-border)',
+      borderLeft: '3px solid var(--gx-accent)',
       borderRadius: '0 10px 10px 0',
       overflow: 'hidden',
     }}>
       {/* Header */}
       <div style={{
         padding: '8px 14px',
-        background: 'rgba(0,217,163,0.04)',
-        borderBottom: '1px solid rgba(0,217,163,0.1)',
+        background: 'var(--gx-accent-soft)',
+        borderBottom: '1px solid var(--gx-border)',
         display: 'flex',
         alignItems: 'center',
         gap: 8,
         flexWrap: 'wrap',
       }}>
-        <span style={{ fontSize: 10, color: '#00d9a3', fontFamily: 'var(--font-mono)', letterSpacing: 1 }}>
+        <span style={{ fontSize: 10, color: 'var(--gx-accent)', fontFamily: 'var(--font-mono)', letterSpacing: 1 }}>
           {'{ }'}
         </span>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#5a7a9a', letterSpacing: 1 }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--gx-text-muted)', letterSpacing: 1 }}>
           {title}
         </span>
         {isCpp && activeLine >= 0 && (
           <span style={{
             marginLeft: 8,
             fontSize: 10,
-            color: '#00d9a3',
+            color: 'var(--gx-accent)',
             fontFamily: 'var(--font-mono)',
-            background: 'rgba(0,217,163,0.1)',
+            background: 'var(--gx-accent-soft)',
             padding: '2px 8px',
             borderRadius: 4,
             animation: 'pulse 1.5s ease infinite',
@@ -94,8 +94,8 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
         display: 'flex',
         gap: 6,
         padding: '8px 12px',
-        background: 'rgba(0,217,163,0.02)',
-        borderBottom: '1px solid rgba(0,217,163,0.08)',
+        background: 'var(--gx-accent-soft)',
+        borderBottom: '1px solid var(--gx-border)',
         flexWrap: 'wrap',
       }}>
         {LANGS.map(l => {
@@ -112,8 +112,8 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
                 fontFamily: 'var(--font-mono)',
                 fontSize: 11,
                 fontWeight: active ? 700 : 500,
-                background: active ? '#00d9a3' : 'transparent',
-                color: active ? '#fff' : '#5a7a9a',
+                background: active ? 'var(--gx-accent)' : 'transparent',
+                color: active ? 'var(--gx-text-inverse)' : 'var(--gx-text-muted)',
                 transition: 'all 0.15s',
               }}
             >
@@ -143,8 +143,8 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
                 ref={isActive ? activeRef : null}
                 style={{
                   padding: '0 14px',
-                  background: isActive ? '#00d9a322' : 'transparent',
-                  borderLeft: isActive ? '3px solid #00d9a3' : '3px solid transparent',
+                  background: isActive ? 'var(--gx-accent-soft)' : 'transparent',
+                  borderLeft: isActive ? '3px solid var(--gx-accent)' : '3px solid transparent',
                   transition: 'all 0.2s ease',
                   display: 'flex',
                   gap: 12,
@@ -152,7 +152,7 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
                 }}
               >
                 <span style={{
-                  color: isActive ? '#00d9a3' : '#3d5066',
+                  color: isActive ? 'var(--gx-accent)' : 'var(--gx-text-subtle)',
                   userSelect: 'none',
                   minWidth: 20,
                   textAlign: 'right',
@@ -164,9 +164,9 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
                 {isActive && (
                   <span style={{
                     fontSize: 9,
-                    color: '#00d9a3',
+                    color: 'var(--gx-accent)',
                     fontFamily: 'var(--font-mono)',
-                    background: 'rgba(0,217,163,0.15)',
+                    background: 'var(--gx-accent-soft)',
                     padding: '1px 5px',
                     borderRadius: 3,
                     whiteSpace: 'nowrap',
@@ -174,7 +174,7 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
                   }}>Currently executing →</span>
                 )}
                 <span style={{
-                  color: isActive ? '#00d9a3' : syntaxColor(line),
+                  color: isActive ? 'var(--gx-accent)' : syntaxColor(line),
                   fontWeight: isActive ? 600 : 400,
                   transition: 'color 0.2s',
                 }}>
@@ -190,11 +190,11 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
           textAlign: 'center',
           fontFamily: 'var(--font-mono)',
           fontSize: 12,
-          color: '#5a7a9a',
+          color: 'var(--gx-text-muted)',
         }}>
-          <div style={{ color: '#6a9955', marginBottom: 8 }}>{`// ${langLabel} code coming soon`}</div>
-          <div style={{ fontSize: 11, color: '#3d5066' }}>
-            We&apos;re still translating this one. Switch to the <strong style={{ color: '#00d9a3' }}>C++</strong> tab to follow along.
+          <div style={{ color: 'var(--gx-success)', marginBottom: 8 }}>{`// ${langLabel} code coming soon`}</div>
+          <div style={{ fontSize: 11, color: 'var(--gx-text-subtle)' }}>
+            We&apos;re still translating this one. Switch to the <strong style={{ color: 'var(--gx-accent)' }}>C++</strong> tab to follow along.
           </div>
         </div>
       )}
@@ -206,7 +206,7 @@ export default function CodePanel({ code, snippets = {}, title = 'Code', activeL
 
 function syntaxColor(line) {
   const trimmed = line.trim();
-  if (trimmed.startsWith('//') || trimmed.startsWith('#')) return '#6a9955';
-  if (/\b(int|void|bool|string|auto|vector|return|if|else|for|while|struct|class|def|function|let|const|var|public|private|static|new|None|True|False|null|self|print|console)\b/.test(trimmed)) return '#c586c0';
-  return '#e6edf3';
+  if (trimmed.startsWith('//') || trimmed.startsWith('#')) return 'var(--gx-success)';
+  if (/\b(int|void|bool|string|auto|vector|return|if|else|for|while|struct|class|def|function|let|const|var|public|private|static|new|None|True|False|null|self|print|console)\b/.test(trimmed)) return 'var(--gx-info)';
+  return 'var(--gx-text)';
 }

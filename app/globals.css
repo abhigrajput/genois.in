@@ -1,24 +1,28 @@
 @import "tailwindcss";
-/* Light design system. Tokens are inert custom properties and the `.gx-*`
-   component classes carry their own colours, so loading this globally does
-   not change any page that has not opted in via `.gx-app`. */
+/* Light design system — the only theme. Everything below this import is the
+   legacy layer: the same class names the pre-light pages already use, with
+   their colours repointed at the `--gx-*` tokens. Nothing here introduces a
+   second system; new work should reach for `.gx-*` / components/ui. */
 @import "./design-tokens.css";
 
 /* ─── Theme tokens (Tailwind v4 CSS-first config) ─── */
+/* Every value below now resolves to the light system in design-tokens.css.
+   The names are kept so existing `bg-primary` / `text-dark` / `text-muted`
+   utilities keep compiling — only what they paint has changed. */
 @theme {
-  --color-primary: #00d9a3;
-  --color-primary-dark: #00b389;
-  --color-neon2: #2ee6b0;
-  --color-neon3: #ff2d78;
-  --color-success: #1D9E75;
-  --color-danger: #ff2d78;
-  --color-info: #378ADD;
-  --color-warning: #EF9F27;
-  --color-dark: #e8f4ff;
-  --color-bg-base: #020812;
-  --color-bg2: #060f1e;
-  --color-bg3: #0a1628;
-  --color-muted: #5a7a9a;
+  --color-primary: #00805e;
+  --color-primary-dark: #006b4e;
+  --color-neon2: #00805e;
+  --color-neon3: #c02637;
+  --color-success: #00805e;
+  --color-danger: #c02637;
+  --color-info: #0b5fa5;
+  --color-warning: #a25f00;
+  --color-dark: #1a1a1a;
+  --color-bg-base: #ffffff;
+  --color-bg2: #f8f9fa;
+  --color-bg3: #f1f3f5;
+  --color-muted: #5c6470;
 
   --font-family-sans:    var(--font-body), system-ui, sans-serif;
   --font-family-mono:    var(--font-mono), monospace;
@@ -26,22 +30,24 @@
 }
 
 /* ─── CSS custom properties ─── */
+/* Legacy aliases. Kept as names, repointed at the light tokens so any rule or
+   inline style still reading `var(--neon)` / `var(--bg2)` lands on the system. */
 :root {
-  --neon: #00d9a3;
-  --neon2: #2ee6b0;
-  --neon3: #ff2d78;
-  --bg: #020812;
-  --bg2: #060f1e;
-  --bg3: #0a1628;
-  --border: rgba(0,217,163,0.12);
-  --text: #e8f4ff;
-  --muted: #5a7a9a;
+  --neon: var(--gx-accent);
+  --neon2: var(--gx-accent-hover);
+  --neon3: var(--gx-danger);
+  --bg: var(--gx-bg);
+  --bg2: var(--gx-surface);
+  --bg3: var(--gx-surface-2);
+  --border: var(--gx-border);
+  --text: var(--gx-text);
+  --muted: var(--gx-text-muted);
 
-  /* GENOIS "Focused Intensity" brand palette */
-  --gen-primary: #00d9a3;
-  --gen-primary-dk: #00b389;
-  --gen-accent: #ff6b4a;
-  --gen-amber: #ffb020;
+  /* GENOIS brand palette — folded into the one-accent light system */
+  --gen-primary: var(--gx-accent);
+  --gen-primary-dk: var(--gx-accent-hover);
+  --gen-accent: var(--gx-warning);
+  --gen-amber: var(--gx-warning);
 
   /* Legacy font aliases — keep `var(--font-syne/outfit/jetbrains)` refs resolving */
   --font-syne: var(--font-heading);
@@ -51,22 +57,26 @@
 
 * { box-sizing: border-box; }
 html, body { max-width: 100vw; overflow-x: hidden; }
-html { color-scheme: dark; }
+html { color-scheme: light; }
 
 body {
   font-family: var(--font-body), sans-serif;
-  background: #020812;
-  color: #e8f4ff;
+  background: var(--gx-bg);
+  color: var(--gx-text);
   -webkit-font-smoothing: antialiased;
 }
 
 /* ─── Scrollbar ─── */
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: #060f1e; }
-::-webkit-scrollbar-thumb { background: rgba(0,217,163,0.25); border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(0,217,163,0.45); }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--gx-surface); }
+::-webkit-scrollbar-thumb {
+  background: #ccd2d8;
+  border: 2px solid var(--gx-surface);
+  border-radius: var(--gx-radius-full);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--gx-border-strong); }
 
-select option { background: #060f1e; color: #e8f4ff; }
+select option { background: var(--gx-bg); color: var(--gx-text); }
 
 /* ─── Buttons ─── */
 .btn-primary {
@@ -78,18 +88,15 @@ select option { background: #060f1e; color: #e8f4ff; }
   font-weight: 600;
   font-size: 14px;
   font-family: var(--font-heading);
-  transition: all 0.2s;
-  background: linear-gradient(135deg, #00d9a3, #2ee6b0);
-  color: #020812;
-  border: none;
+  transition: background-color var(--gx-transition), border-color var(--gx-transition), color var(--gx-transition);
+  background: var(--gx-accent);
+  color: var(--gx-text-inverse);
+  border: 1px solid transparent;
   cursor: pointer;
 }
-.btn-primary:hover:not(:disabled) {
-  box-shadow: 0 0 28px rgba(0,217,163,0.45);
-  transform: translateY(-1px);
-}
-.btn-primary:active { transform: scale(0.97); }
-.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-primary:hover:not(:disabled) { background: var(--gx-accent-hover); }
+.btn-primary:active:not(:disabled) { background: var(--gx-accent-active); }
+.btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
 
 .btn-secondary {
   display: inline-flex;
@@ -100,18 +107,18 @@ select option { background: #060f1e; color: #e8f4ff; }
   font-weight: 500;
   font-size: 14px;
   font-family: var(--font-body);
-  transition: all 0.2s;
-  background: transparent;
-  color: #e8f4ff;
-  border: 1px solid rgba(0,217,163,0.2);
+  transition: background-color var(--gx-transition), border-color var(--gx-transition), color var(--gx-transition);
+  background: var(--gx-bg);
+  color: var(--gx-text);
+  border: 1px solid var(--gx-border-strong);
   cursor: pointer;
 }
 .btn-secondary:hover {
-  border-color: rgba(0,217,163,0.5);
-  color: #00d9a3;
-  background: rgba(0,217,163,0.05);
+  border-color: var(--gx-text-subtle);
+  color: var(--gx-text);
+  background: var(--gx-surface);
 }
-.btn-secondary:active { transform: scale(0.97); }
+.btn-secondary:active { background: var(--gx-surface-2); }
 
 .btn-danger {
   display: inline-flex;
@@ -122,53 +129,41 @@ select option { background: #060f1e; color: #e8f4ff; }
   font-weight: 600;
   font-size: 14px;
   font-family: var(--font-heading);
-  transition: all 0.2s;
-  background: transparent;
-  color: #ff2d78;
-  border: 1px solid rgba(255,45,120,0.35);
+  transition: background-color var(--gx-transition), border-color var(--gx-transition), color var(--gx-transition);
+  background: var(--gx-bg);
+  color: var(--gx-danger);
+  border: 1px solid var(--gx-danger-border);
   cursor: pointer;
 }
-.btn-danger:hover { background: rgba(255,45,120,0.08); }
-.btn-danger:active { transform: scale(0.97); }
+.btn-danger:hover { background: var(--gx-danger-soft); border-color: var(--gx-danger); }
 
 /* ─── Cards ─── */
+/* The border carries the card now; the gradient hairline and the lift-on-hover
+   glow are gone with the rest of the neon. */
 .card {
-  background: #070f1f;
-  border: 1px solid rgba(0,217,163,0.1);
-  border-radius: 14px;
+  background: var(--gx-bg);
+  border: 1px solid var(--gx-border);
+  border-radius: var(--gx-radius-md);
+  box-shadow: var(--gx-shadow-xs);
   padding: 20px;
   position: relative;
   overflow: hidden;
-}
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0,217,163,0.28), transparent);
 }
 
 .card-hover {
-  background: #070f1f;
-  border: 1px solid rgba(0,217,163,0.1);
-  border-radius: 14px;
+  background: var(--gx-bg);
+  border: 1px solid var(--gx-border);
+  border-radius: var(--gx-radius-md);
+  box-shadow: var(--gx-shadow-xs);
   padding: 20px;
   position: relative;
   overflow: hidden;
-  transition: all 0.2s;
+  transition: border-color var(--gx-transition), box-shadow var(--gx-transition);
   cursor: pointer;
 }
-.card-hover::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(0,217,163,0.28), transparent);
-}
 .card-hover:hover {
-  border-color: rgba(0,217,163,0.28);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0,217,163,0.07);
+  border-color: var(--gx-border-strong);
+  box-shadow: var(--gx-shadow-sm);
 }
 
 /* ─── Inputs ─── */
@@ -176,21 +171,20 @@ select option { background: #060f1e; color: #e8f4ff; }
   display: block;
   width: 100%;
   padding: 10px 14px;
-  border-radius: 8px;
-  border: 1px solid rgba(0,217,163,0.15);
-  background: rgba(255,255,255,0.03);
-  color: #e8f4ff;
+  border-radius: var(--gx-radius);
+  border: 1px solid var(--gx-border-strong);
+  background: var(--gx-bg);
+  color: var(--gx-text);
   font-size: 14px;
   font-family: var(--font-body);
   outline: none;
-  transition: all 0.2s;
+  transition: border-color var(--gx-transition), box-shadow var(--gx-transition);
 }
 .input:focus {
-  border-color: rgba(0,217,163,0.55);
-  background: rgba(0,217,163,0.05);
-  box-shadow: 0 0 0 3px rgba(0,217,163,0.14);
+  border-color: var(--gx-accent);
+  box-shadow: var(--gx-focus-ring);
 }
-.input::placeholder { color: #2a4a5a; }
+.input::placeholder { color: var(--gx-text-subtle); }
 
 /* ─── Badges ─── */
 .badge {
@@ -202,42 +196,38 @@ select option { background: #060f1e; color: #e8f4ff; }
   font-size: 12px;
   font-weight: 600;
 }
-.badge-primary { background: rgba(0,217,163,0.1); color: #00d9a3; border: 1px solid rgba(0,217,163,0.2); }
-.badge-success { background: rgba(29,158,117,0.14); color: #1D9E75; border: 1px solid rgba(29,158,117,0.25); }
-.badge-danger  { background: rgba(255,45,120,0.12); color: #ff2d78; border: 1px solid rgba(255,45,120,0.22); }
-.badge-warning { background: rgba(239,159,39,0.12); color: #EF9F27; border: 1px solid rgba(239,159,39,0.22); }
-.badge-gray    { background: rgba(90,122,154,0.12); color: #5a7a9a; border: 1px solid rgba(90,122,154,0.2); }
+.badge-primary { background: var(--gx-accent-soft);  color: var(--gx-accent);     border: 1px solid var(--gx-accent-border); }
+.badge-success { background: var(--gx-success-soft); color: var(--gx-success);    border: 1px solid var(--gx-success-border); }
+.badge-danger  { background: var(--gx-danger-soft);  color: var(--gx-danger);     border: 1px solid var(--gx-danger-border); }
+.badge-warning { background: var(--gx-warning-soft); color: var(--gx-warning);    border: 1px solid var(--gx-warning-border); }
+.badge-gray    { background: var(--gx-surface-2);    color: var(--gx-text-muted); border: 1px solid var(--gx-border); }
 
 /* ─── Typography ─── */
 .section-title {
   font-family: var(--font-heading);
   font-size: 15px;
   font-weight: 700;
-  color: #e8f4ff;
+  color: var(--gx-text);
 }
 
 .label {
   display: block;
   font-size: 11px;
   font-weight: 500;
-  color: #5a7a9a;
+  color: var(--gx-text-subtle);
   margin-bottom: 6px;
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   letter-spacing: 1px;
   text-transform: uppercase;
 }
 
 /* ─── Utilities ─── */
-.neon-text {
-  background: linear-gradient(135deg, #00d9a3, #2ee6b0);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+/* Was a clipped gradient. Flat accent now — the system has no gradient text. */
+.neon-text { color: var(--gx-accent); }
 
 .glow-border {
-  border: 1px solid rgba(0,217,163,0.3);
-  box-shadow: 0 0 20px rgba(0,217,163,0.07), inset 0 0 20px rgba(0,217,163,0.03);
+  border: 1px solid var(--gx-accent-border);
+  box-shadow: var(--gx-shadow-xs);
 }
 
 .page-fade { animation: fadeUp 0.25s ease forwards; }
@@ -259,26 +249,28 @@ select option { background: #060f1e; color: #e8f4ff; }
   0%,100% { transform: translateY(0); }
   50%     { transform: translateY(-6px); }
 }
+/* Was a neon glow pulse. Kept as a name so callers stay valid; it now steps the
+   border colour instead of emitting light. */
 @keyframes neonPulse {
-  0%,100% { box-shadow: 0 0 8px rgba(0,217,163,0.4); }
-  50%     { box-shadow: 0 0 20px rgba(0,217,163,0.8); }
+  0%,100% { border-color: var(--gx-accent-border); }
+  50%     { border-color: var(--gx-accent); }
 }
 
-/* ─── Dashboard — teal accent ─── */
-.stats-bar { border-bottom: 1px solid rgba(0,217,163,0.15); }
-.task-pill-done { background: rgba(0,217,163,0.15); color: #00d9a3; border: 1px solid rgba(0,217,163,0.3); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 20px; font-family: var(--font-body); font-size: 13px; font-weight: 600; transition: all 0.2s; }
-.task-pill-active { background: #00d9a3; color: #0a0a0f; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 20px; font-family: var(--font-body); font-size: 13px; font-weight: 600; transition: all 0.2s; }
-.task-pill-pending { background: rgba(255,255,255,0.04); color: #8a8a99; border: 1px solid rgba(255,255,255,0.08); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 20px; font-family: var(--font-body); font-size: 13px; font-weight: 600; transition: all 0.2s; }
-.task-pill-pending:hover { background: rgba(0,217,163,0.06); border-color: rgba(0,217,163,0.25); color: #00d9a3; }
+/* ─── Dashboard — accent ─── */
+.stats-bar { border-bottom: 1px solid var(--gx-border); }
+.task-pill-done { background: var(--gx-accent-soft); color: var(--gx-accent); border: 1px solid var(--gx-accent-border); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 20px; font-family: var(--font-body); font-size: 13px; font-weight: 600; transition: background-color var(--gx-transition), border-color var(--gx-transition), color var(--gx-transition); }
+.task-pill-active { background: var(--gx-accent); color: var(--gx-text-inverse); border: 1px solid transparent; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 20px; font-family: var(--font-body); font-size: 13px; font-weight: 600; transition: background-color var(--gx-transition), border-color var(--gx-transition), color var(--gx-transition); }
+.task-pill-pending { background: var(--gx-surface-2); color: var(--gx-text-muted); border: 1px solid var(--gx-border); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 20px; font-family: var(--font-body); font-size: 13px; font-weight: 600; transition: background-color var(--gx-transition), border-color var(--gx-transition), color var(--gx-transition); }
+.task-pill-pending:hover { background: var(--gx-accent-soft); border-color: var(--gx-accent-border); color: var(--gx-accent); }
 .pts-float { animation: pts-float 1.2s ease-out forwards; pointer-events: none; }
 @keyframes pts-float { 0% { opacity:1; transform:translateY(0) scale(1.2); } 100% { opacity:0; transform:translateY(-60px) scale(0.8); } }
 .pulse-amber { animation: pulse-amber 2s ease-in-out infinite; }
-@keyframes pulse-amber { 0%,100% { box-shadow: 0 0 0 0 rgba(251,191,36,0); } 50% { box-shadow: 0 0 14px 5px rgba(251,191,36,0.25); } }
-.streak-day { border-radius: 3px; transition: all 0.2s; position: relative; }
+@keyframes pulse-amber { 0%,100% { border-color: var(--gx-warning-border); } 50% { border-color: var(--gx-warning); } }
+.streak-day { border-radius: 3px; transition: transform var(--gx-transition); position: relative; }
 .streak-day:hover { transform: scale(1.4); z-index: 10; }
-.skeleton { background: linear-gradient(90deg, #111 25%, #1a1a1a 50%, #111 75%); background-size: 200% 100%; animation: skeleton-shimmer 1.5s infinite; border-radius: 8px; }
-@keyframes skeleton-shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-.sidebar-item-active { border-left: 3px solid #00d9a3 !important; background: rgba(0,217,163,0.08) !important; color: #00d9a3 !important; }
+/* Quiet opacity pulse, matching .gx-skeleton — no sweeping shimmer. */
+.skeleton { background: var(--gx-surface-2); animation: gx-pulse 1.6s var(--gx-ease) infinite; border-radius: var(--gx-radius); }
+.sidebar-item-active { border-left: 3px solid var(--gx-accent) !important; background: var(--gx-accent-soft) !important; color: var(--gx-accent) !important; }
 @keyframes confetti-particle {
   0%   { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1); }
   100% { opacity: 0; transform: translate(var(--tx), var(--ty)) rotate(720deg) scale(0); }
@@ -310,22 +302,23 @@ select option { background: #060f1e; color: #e8f4ff; }
 .gen-fade-up-d2 { animation-delay: 0.2s; }
 .gen-fade-up-d3 { animation-delay: 0.3s; }
 .gen-fade-up-d4 { animation-delay: 0.4s; }
-.gen-glow { transition: all 0.3s ease; }
-.gen-glow:hover { transform: translateY(-4px); border-color: rgba(0,217,163,0.5) !important; box-shadow: 0 8px 32px rgba(0,217,163,0.25); }
-.gen-card { transition: all 0.3s ease; }
-.gen-card:hover { transform: translateY(-3px); border-color: rgba(255,107,74,0.4) !important; box-shadow: 0 8px 28px rgba(255,107,74,0.15); }
+.gen-glow { transition: border-color var(--gx-transition), box-shadow var(--gx-transition); }
+.gen-glow:hover { border-color: var(--gx-border-strong) !important; box-shadow: var(--gx-shadow-sm); }
+.gen-card { transition: border-color var(--gx-transition), box-shadow var(--gx-transition); }
+.gen-card:hover { border-color: var(--gx-border-strong) !important; box-shadow: var(--gx-shadow-sm); }
 .gen-marquee { display: flex; gap: 56px; animation: gen-marquee 28s linear infinite; }
 @keyframes gen-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-@keyframes gen-pulse-glow { 0%,100% { box-shadow: 0 0 40px rgba(0,217,163,0.35); } 50% { box-shadow: 0 0 80px rgba(0,217,163,0.55); } }
-.gen-cta-pulse { animation: gen-pulse-glow 3s ease-in-out infinite; }
+/* Was an ambient glow pulse — the system bans those. Left inert so the class
+   name stays valid wherever it is still applied. */
+.gen-cta-pulse { box-shadow: var(--gx-shadow-xs); }
 .gen-grid-bg {
   background-image:
-    linear-gradient(rgba(0,217,163,0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,217,163,0.06) 1px, transparent 1px);
+    linear-gradient(rgba(16,24,40,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16,24,40,0.04) 1px, transparent 1px);
   background-size: 60px 60px;
 }
-.gen-nav-link { color: #9ca3af; text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
-.gen-nav-link:hover { color: #fff; }
+.gen-nav-link { color: var(--gx-text-muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color var(--gx-transition); }
+.gen-nav-link:hover { color: var(--gx-text); }
 .gen-mobile-only { display: none; }
 @media (max-width: 768px) {
   .gen-desktop-only { display: none !important; }
@@ -399,38 +392,11 @@ select option { background: #060f1e; color: #e8f4ff; }
   .gen-step-connector { display: none !important; }
 }
 
-/* ─── Matrix green glitch ─── */
-@keyframes gen-glitch-1 {
-  0%, 88%, 100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
-  90% { clip-path: inset(8% 0 58% 0); transform: translate(-3px, 0); color: #00ff41; }
-  92% { clip-path: inset(52% 0 22% 0); transform: translate(3px, 0); }
-  94% { clip-path: inset(82% 0 4% 0); transform: translate(-2px, 0); }
-}
-@keyframes gen-glitch-2 {
-  0%, 88%, 100% { clip-path: inset(0 0 100% 0); transform: translate(0); }
-  91% { clip-path: inset(62% 0 28% 0); transform: translate(4px, 0); color: #00ffff; }
-  93% { clip-path: inset(18% 0 68% 0); transform: translate(-4px, 0); }
-  95% { clip-path: inset(92% 0 1% 0); transform: translate(2px, 0); }
-}
+/* ─── Glitch text ─── */
+/* The RGB-split glitch was a dark-theme effect and reads as a rendering fault
+   on a white page. The class is kept (callers still pass data-text) but the
+   duplicated layers no longer paint. */
 .gen-glitch { position: relative; display: inline-block; }
-.gen-glitch::before,
-.gen-glitch::after {
-  content: attr(data-text);
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: transparent;
-  white-space: nowrap;
-}
-.gen-glitch::before {
-  color: #00ff41;
-  animation: gen-glitch-1 7s infinite;
-}
-.gen-glitch::after {
-  color: #00ff41;
-  animation: gen-glitch-2 7s infinite;
-  animation-delay: 0.4s;
-}
 
 /* ─── Cursor blink ─── */
 @keyframes gen-cursor-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
@@ -438,8 +404,8 @@ select option { background: #060f1e; color: #e8f4ff; }
 
 /* ─── Score flash (leaderboard) ─── */
 @keyframes gen-flash-anim {
-  0% { color: #00ff41; }
-  100% { color: #fff; }
+  0% { color: var(--gx-accent); }
+  100% { color: var(--gx-text); }
 }
 .gen-score-flash { animation: gen-flash-anim 0.65s ease forwards; }
 
@@ -463,7 +429,7 @@ select option { background: #060f1e; color: #e8f4ff; }
   .gen-domain-nav {
     width: 100% !important;
     border-right: none !important;
-    border-bottom: 1px solid rgba(0,255,65,0.1) !important;
+    border-bottom: 1px solid var(--gx-border) !important;
     display: flex !important;
     flex-wrap: wrap !important;
   }
@@ -474,14 +440,12 @@ select option { background: #060f1e; color: #e8f4ff; }
   .gen-particle-canvas { display: none !important; }
 }
 
-/* ─── Green neon button glow ─── */
+/* ─── Primary CTA hover — a colour step, not a glow ─── */
 .gen-cta-green {
-  transition: all 0.2s ease !important;
+  transition: background-color var(--gx-transition), border-color var(--gx-transition) !important;
 }
 .gen-cta-green:hover {
-  box-shadow: 0 0 36px rgba(0,255,65,0.55) !important;
-  transform: translateY(-2px) !important;
-  filter: brightness(1.08);
+  background: var(--gx-accent-hover) !important;
 }
 
 /* ─── Ticker ─── */
@@ -489,48 +453,43 @@ select option { background: #060f1e; color: #e8f4ff; }
 
 /* ═══ GENOIS brand — custom signature details ═══ */
 
-/* Mono eyebrow (§4.4) — uppercase, letter-spaced, teal */
+/* Eyebrow (§4.4) — uppercase, letter-spaced. Sans, not mono: the light system
+   reserves monospace for code. */
 .gen-eyebrow {
-  font-family: var(--font-mono);
+  font-family: var(--font-body);
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 3px;
   text-transform: uppercase;
-  color: #00d9a3;
+  color: var(--gx-accent);
 }
 
-/* Thin animated gradient line under section headers */
+/* Thin accent rule under section headers — flat, no slide animation */
 .gen-accent-line {
   height: 2px;
   width: 56px;
   border-radius: 2px;
-  background: linear-gradient(90deg, #00d9a3, #ff6b4a);
-  background-size: 200% 100%;
-  animation: gen-line-slide 4s ease-in-out infinite;
-}
-@keyframes gen-line-slide {
-  0%, 100% { background-position: 0% 0; }
-  50%      { background-position: 100% 0; }
+  background: var(--gx-accent);
 }
 
-/* Custom bullet — small teal square instead of a default dot */
+/* Custom bullet — small accent square instead of a default dot */
 .gen-bullet {
   display: inline-block;
   width: 7px; height: 7px;
   border-radius: 1px;
-  background: #00d9a3;
+  background: var(--gx-accent);
   flex-shrink: 0;
 }
 
-/* Teal focus ring for keyboard users (§4.1) — accessibility floor */
+/* Focus ring for keyboard users (§4.1) — accessibility floor */
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 2px solid #00d9a3;
+  outline: 2px solid var(--gx-accent);
   outline-offset: 2px;
-  border-radius: 6px;
+  border-radius: var(--gx-radius-sm);
 }
 
 /* Button press micro-interaction (§4.2) */
@@ -540,12 +499,12 @@ select:focus-visible {
 /* Demo subtask row — subtle hover: teal ring + faint wash via inset shadow,
    so it composes over the state-driven inline background without !important. */
 .gen-subtask:hover {
-  box-shadow: inset 0 0 0 1px rgba(0,217,163,0.35), inset 0 0 0 999px rgba(0,217,163,0.05);
+  box-shadow: inset 0 0 0 1px var(--gx-accent-border), inset 0 0 0 999px rgba(0,128,94,0.04);
 }
-/* …and the checkbox itself lights up: teal ring overlaid on its inline border
-   (inset) plus a soft outer glow — no !important needed. */
+/* …and the checkbox itself takes the accent ring, overlaid on its inline
+   border (inset) — no !important needed, and no outer glow. */
 .gen-subtask:hover .gen-check {
-  box-shadow: inset 0 0 0 1.5px rgba(0,217,163,0.8), 0 0 9px rgba(0,217,163,0.3);
+  box-shadow: inset 0 0 0 1.5px var(--gx-accent);
 }
 @media (hover: none) {
   .gen-subtask:hover { box-shadow: none; }
@@ -555,31 +514,26 @@ select:focus-visible {
 /* Touch tap feedback — a brief teal wash that fades out on finger-down.
    Added via JS on pointerdown (touch only), removed on animationend. */
 @keyframes gen-tap-flash {
-  0%   { box-shadow: inset 0 0 0 2px rgba(0,217,163,1), inset 0 0 0 999px rgba(0,217,163,0.48); }
-  100% { box-shadow: inset 0 0 0 2px rgba(0,217,163,0), inset 0 0 0 999px rgba(0,217,163,0); }
+  0%   { box-shadow: inset 0 0 0 2px rgba(0,128,94,1), inset 0 0 0 999px rgba(0,128,94,0.14); }
+  100% { box-shadow: inset 0 0 0 2px rgba(0,128,94,0), inset 0 0 0 999px rgba(0,128,94,0); }
 }
 .gen-tap { animation: gen-tap-flash 0.55s ease-out; }
 @media (prefers-reduced-motion: reduce) {
   .gen-tap { animation: none; }
 }
 
-/* Subtle border-gradient card (§4.3) */
+/* Was a gradient-border card (§4.3). Flat surface + a real border now. */
 .gen-gradient-border {
   position: relative;
-  border: 1px solid transparent;
-  background:
-    linear-gradient(var(--gb-bg, #12121a), var(--gb-bg, #12121a)) padding-box,
-    linear-gradient(135deg, rgba(0,217,163,0.4), rgba(255,107,74,0.18) 60%, rgba(0,217,163,0.05)) border-box;
+  background: var(--gb-bg, var(--gx-bg));
+  border: 1px solid var(--gx-border);
 }
 
-/* Cursor-following hero glow (§4.5) — driven by --mx/--my from JS, purely ambient */
+/* Was a cursor-following ambient glow (§4.5). The system bans ambient
+   animation, so this is inert — the element still lays out, it just paints
+   nothing. --mx/--my from JS are simply ignored. */
 .gen-hero-glow {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 30%), rgba(0,217,163,0.12), transparent 70%);
-  transition: background 0.2s ease;
+  display: none;
 }
 
 /* Bento feature grid — one 2×2 anchor + smaller cells around it */
@@ -608,7 +562,7 @@ select:focus-visible {
   position: absolute;
   top: 26px; left: 8%; right: 8%;
   height: 2px;
-  background: linear-gradient(90deg, rgba(0,217,163,0.05), rgba(0,217,163,0.45), rgba(255,107,74,0.35));
+  background: var(--gx-border);
 }
 @media (max-width: 720px) {
   .gen-timeline { grid-template-columns: 1fr; gap: 20px; }
@@ -645,25 +599,14 @@ select:focus-visible {
   .gen-compare { grid-template-columns: 1fr; }
 }
 
-/* Pulsing "live" dot for the interactive demo badge */
+/* "Live" dot for the interactive demo badge — a solid dot, no halo pulse */
 .gen-live-dot {
   display: inline-block;
   width: 7px; height: 7px;
   border-radius: 50%;
-  background: #00d9a3;
-  box-shadow: 0 0 0 0 rgba(0,217,163,0.5);
-  animation: gen-live-pulse 1.8s ease-out infinite;
-}
-@keyframes gen-live-pulse {
-  0%   { box-shadow: 0 0 0 0 rgba(0,217,163,0.5); }
-  70%  { box-shadow: 0 0 0 6px rgba(0,217,163,0); }
-  100% { box-shadow: 0 0 0 0 rgba(0,217,163,0); }
+  background: var(--gx-accent);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .gen-accent-line { animation: none; }
   [data-reveal] { transition: none; opacity: 1; transform: none; }
-  .gen-hero-glow { display: none; }
-  .gen-timeline::before { background: rgba(0,217,163,0.3); }
-  .gen-live-dot { animation: none; }
 }

@@ -12,8 +12,8 @@ const TYPES = [
   { value:'general',  label:'💬 General',            desc:'Something else' },
 ];
 
-const inp = { width:'100%', padding:'12px 14px', borderRadius:10, border:'1px solid rgba(0,217,163,0.12)', background:'#070f1f', color:'#e8e8ed', fontSize:14, outline:'none', boxSizing:'border-box', fontFamily:'var(--font-body)' };
-const label = { fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', letterSpacing:2, marginBottom:8, display:'block' };
+const inp = { width:'100%', padding:'12px 14px', borderRadius:10, border:'1px solid var(--gx-border)', background:'var(--gx-bg)', color:'var(--gx-text)', fontSize:14, outline:'none', boxSizing:'border-box', fontFamily:'var(--font-body)' };
+const label = { fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-text-muted)', letterSpacing:2, marginBottom:8, display:'block' };
 
 export default function FeedbackPage() {
   const { token } = useToken();
@@ -38,11 +38,11 @@ export default function FeedbackPage() {
   if (sent) return (
     <div style={{ maxWidth:560, margin:'0 auto', textAlign:'center', padding:40, fontFamily:'var(--font-body)' }}>
       <div style={{ fontSize:64, marginBottom:20 }}>🙏</div>
-      <h1 style={{ fontFamily:'var(--font-heading)', fontSize:26, fontWeight:800, color:'#e8e8ed', marginBottom:12 }}>Feedback Received</h1>
-      <p style={{ color:'#5a7a9a', fontSize:14, lineHeight:1.7, marginBottom:24 }}>
+      <h1 style={{ fontFamily:'var(--font-heading)', fontSize:26, fontWeight:800, color:'var(--gx-text)', marginBottom:12 }}>Feedback Received</h1>
+      <p style={{ color:'var(--gx-text-muted)', fontSize:14, lineHeight:1.7, marginBottom:24 }}>
         Thank you for taking the time to write to us. We read every message and will get back to you if needed.
       </p>
-      <button onClick={() => { setSent(false); setMessage(''); setSubject(''); }} style={{ padding:'12px 24px', borderRadius:10, border:'none', cursor:'pointer', background:'linear-gradient(135deg,#00d9a3,#ff6b4a)', color:'#020812', fontFamily:'var(--font-heading)', fontSize:14, fontWeight:700 }}>
+      <button onClick={() => { setSent(false); setMessage(''); setSubject(''); }} style={{ padding:'12px 24px', borderRadius:10, border:'none', cursor:'pointer', background:'var(--gx-accent)', color:'var(--gx-text-inverse)', fontFamily:'var(--font-heading)', fontSize:14, fontWeight:700 }}>
         Send Another →
       </button>
     </div>
@@ -51,16 +51,16 @@ export default function FeedbackPage() {
   return (
     <div style={{ maxWidth:640, margin:'0 auto', fontFamily:'var(--font-body)' }}>
       <div style={{ marginBottom:24 }}>
-        <h1 style={{ fontFamily:'var(--font-heading)', fontSize:24, fontWeight:800, color:'#e8e8ed', marginBottom:4 }}>💬 Send Feedback</h1>
-        <p style={{ color:'#5a7a9a', fontSize:13 }}>Bug? Suggestion? Complaint? We want to hear it. Every message goes directly to the founder.</p>
+        <h1 style={{ fontFamily:'var(--font-heading)', fontSize:24, fontWeight:800, color:'var(--gx-text)', marginBottom:4 }}>💬 Send Feedback</h1>
+        <p style={{ color:'var(--gx-text-muted)', fontSize:13 }}>Bug? Suggestion? Complaint? We want to hear it. Every message goes directly to the founder.</p>
       </div>
 
       <div style={{ ...label, display:'block', marginBottom:12 }}>TYPE OF FEEDBACK</div>
       <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(180px,1fr))', gap:8, marginBottom:20 }}>
         {TYPES.map(t => (
-          <button key={t.value} onClick={() => setType(t.value)} style={{ padding:'12px 14px', borderRadius:10, border:`1px solid ${type===t.value?'rgba(0,217,163,0.4)':'rgba(255,255,255,0.06)'}`, background:type===t.value?'rgba(0,217,163,0.08)':'rgba(255,255,255,0.02)', cursor:'pointer', textAlign:'left' }}>
-            <div style={{ fontSize:13, fontWeight:600, color:type===t.value?'#00d9a3':'#e8e8ed', marginBottom:3 }}>{t.label}</div>
-            <div style={{ fontSize:11, color:'#5a7a9a' }}>{t.desc}</div>
+          <button key={t.value} onClick={() => setType(t.value)} style={{ padding:'12px 14px', borderRadius:10, border:`1px solid ${type===t.value?'var(--gx-accent-border)':'var(--gx-border)'}`, background:type===t.value?'var(--gx-accent-soft)':'var(--gx-surface)', cursor:'pointer', textAlign:'left' }}>
+            <div style={{ fontSize:13, fontWeight:600, color:type===t.value?'var(--gx-accent)':'var(--gx-text)', marginBottom:3 }}>{t.label}</div>
+            <div style={{ fontSize:11, color:'var(--gx-text-muted)' }}>{t.desc}</div>
           </button>
         ))}
       </div>
@@ -73,7 +73,7 @@ export default function FeedbackPage() {
       <div style={{ marginBottom:16 }}>
         <span style={label}>YOUR MESSAGE *</span>
         <textarea value={message} onChange={e => setMessage(e.target.value)} rows={6} placeholder="Describe the issue or suggestion in detail. The more specific the better." style={{ ...inp, resize:'vertical', lineHeight:1.6 }} />
-        <div style={{ fontSize:11, color:message.length>10?'#1D9E75':'#5a7a9a', marginTop:4, fontFamily:'var(--font-mono)' }}>{message.length} characters {message.length>10?'✓':''}</div>
+        <div style={{ fontSize:11, color:message.length>10?'var(--gx-success)':'var(--gx-text-muted)', marginTop:4, fontFamily:'var(--font-mono)' }}>{message.length} characters {message.length>10?'✓':''}</div>
       </div>
 
       <div style={{ marginBottom:24 }}>
@@ -81,11 +81,11 @@ export default function FeedbackPage() {
         <input value={email} onChange={e => setEmail(e.target.value)} placeholder="your@email.com" type="email" style={inp} />
       </div>
 
-      <button onClick={submit} disabled={sending || !message} style={{ width:'100%', padding:14, borderRadius:12, border:'none', cursor:sending||!message?'not-allowed':'pointer', background:sending||!message?'rgba(0,217,163,0.15)':'linear-gradient(135deg,#00d9a3,#ff6b4a)', color:'#020812', fontFamily:'var(--font-heading)', fontSize:15, fontWeight:700, transition:'all 0.2s' }}>
+      <button onClick={submit} disabled={sending || !message} style={{ width:'100%', padding:14, borderRadius:12, border:'none', cursor:sending||!message?'not-allowed':'pointer', background:sending||!message?'var(--gx-accent-soft)':'var(--gx-accent)', color:'var(--gx-text-inverse)', fontFamily:'var(--font-heading)', fontSize:15, fontWeight:700, transition:'all 0.2s' }}>
         {sending ? 'Sending...' : 'Send Feedback →'}
       </button>
 
-      <div style={{ marginTop:16, textAlign:'center', fontSize:12, color:'#3a4a5a' }}>
+      <div style={{ marginTop:16, textAlign:'center', fontSize:12, color:'var(--gx-text-subtle)' }}>
         Every message goes directly to the founder. We read all of them.
       </div>
     </div>

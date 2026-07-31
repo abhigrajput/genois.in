@@ -14,7 +14,7 @@ export default function PublicPageWrapper({ children }) {
   }, []);
 
   if (isLoggedIn === null) {
-    return <div style={{ minHeight: '100vh', background: '#020812' }} />;
+    return <div style={{ minHeight: '100vh', background: 'var(--gx-surface)' }} />;
   }
 
   if (isLoggedIn) {

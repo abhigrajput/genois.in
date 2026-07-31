@@ -137,12 +137,12 @@ export default function SlidingWindowVisualizer() {
   const maxVal = Math.max(...arr, 1);
 
   const barColor = (idx) => {
-    if (!current) return '#1a2a3a';
-    if (current.dq?.[0] === idx && inWindow(idx)) return '#1d9e75'; // current max
-    if (idx === current.i && !current.done) return '#00d9a3';
-    if (current.dq?.includes(idx)) return '#ef9f27';
-    if (inWindow(idx)) return '#2a3a4a';
-    return '#1a2a3a';
+    if (!current) return 'var(--gx-surface-2)';
+    if (current.dq?.[0] === idx && inWindow(idx)) return 'var(--gx-success)'; // current max
+    if (idx === current.i && !current.done) return 'var(--gx-accent)';
+    if (current.dq?.includes(idx)) return 'var(--gx-warning)';
+    if (inWindow(idx)) return 'var(--gx-surface-3)';
+    return 'var(--gx-surface-2)';
   };
 
   return (
@@ -155,36 +155,36 @@ export default function SlidingWindowVisualizer() {
       />
 
       {/* Bars */}
-      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: '24px 16px 12px', minHeight: 180, display: 'flex', alignItems: 'flex-end', gap: 6, justifyContent: 'center' }}>
+      <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: '24px 16px 12px', minHeight: 180, display: 'flex', alignItems: 'flex-end', gap: 6, justifyContent: 'center' }}>
         {arr.map((v, i) => (
           <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: 1, maxWidth: 56 }}>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: barColor(i) }}>{v}</span>
             <div style={{ width: '100%', borderRadius: '4px 4px 0 0', height: `${(v / maxVal) * 130}px`, background: barColor(i), transition: 'all 0.3s ease', minHeight: 4, opacity: inWindow(i) || current?.dq?.includes(i) || !current ? 1 : 0.35 }} />
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: current?.i === i ? '#00d9a3' : '#2a3a4a' }}>{i}</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: current?.i === i ? 'var(--gx-accent)' : 'var(--gx-text-subtle)' }}>{i}</span>
           </div>
         ))}
       </div>
 
       {/* Deque + results */}
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        <div style={{ flex: 1, minWidth: 220, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(239,159,39,0.15)', borderRadius: 10, padding: '12px 14px' }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#ef9f27', letterSpacing: 1, marginBottom: 8 }}>DEQUE (indices, values ↓) — front = max</div>
+        <div style={{ flex: 1, minWidth: 220, background: 'var(--gx-surface)', border: '1px solid var(--gx-warning-border)', borderRadius: 10, padding: '12px 14px' }}>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-warning)', letterSpacing: 1, marginBottom: 8 }}>DEQUE (indices, values ↓) — front = max</div>
           <div style={{ display: 'flex', gap: 6, minHeight: 40, alignItems: 'center', flexWrap: 'wrap' }}>
             {current?.dq?.length ? current.dq.map((idx, pos) => (
               <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-                <div style={{ minWidth: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', background: pos === 0 ? 'rgba(29,158,117,0.2)' : 'rgba(239,159,39,0.12)', border: `2px solid ${pos === 0 ? '#1d9e75' : '#ef9f27'}`, borderRadius: 6, fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: pos === 0 ? '#1d9e75' : '#ef9f27' }}>{arr[idx]}</div>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#5a7a9a' }}>i={idx}</span>
+                <div style={{ minWidth: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', background: pos === 0 ? 'var(--gx-success-soft)' : 'var(--gx-warning-soft)', border: `2px solid ${pos === 0 ? 'var(--gx-success)' : 'var(--gx-warning)'}`, borderRadius: 6, fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: pos === 0 ? 'var(--gx-success)' : 'var(--gx-warning)' }}>{arr[idx]}</div>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--gx-text-muted)' }}>i={idx}</span>
               </div>
-            )) : <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#2a3a4a' }}>empty</span>}
+            )) : <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--gx-text-subtle)' }}>empty</span>}
           </div>
         </div>
 
-        <div style={{ flex: 1, minWidth: 220, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(29,158,117,0.15)', borderRadius: 10, padding: '12px 14px' }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#1d9e75', letterSpacing: 1, marginBottom: 8 }}>WINDOW MAXIMA (result)</div>
+        <div style={{ flex: 1, minWidth: 220, background: 'var(--gx-surface)', border: '1px solid var(--gx-success-border)', borderRadius: 10, padding: '12px 14px' }}>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-success)', letterSpacing: 1, marginBottom: 8 }}>WINDOW MAXIMA (result)</div>
           <div style={{ display: 'flex', gap: 6, minHeight: 40, alignItems: 'center', flexWrap: 'wrap' }}>
             {current?.res?.length ? current.res.map((v, i) => (
-              <div key={i} style={{ minWidth: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(29,158,117,0.15)', border: '2px solid rgba(29,158,117,0.5)', borderRadius: 6, fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: '#1d9e75' }}>{v}</div>
-            )) : <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#2a3a4a' }}>—</span>}
+              <div key={i} style={{ minWidth: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--gx-success-soft)', border: '2px solid var(--gx-success-border)', borderRadius: 6, fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: 'var(--gx-success)' }}>{v}</div>
+            )) : <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--gx-text-subtle)' }}>—</span>}
           </div>
         </div>
       </div>
@@ -197,30 +197,30 @@ export default function SlidingWindowVisualizer() {
       />
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        {[['#00d9a3', 'Current index'], ['#ef9f27', 'In deque'], ['#1d9e75', 'Window max'], ['#2a3a4a', 'In window']].map(([c, l]) => (
+        {[['var(--gx-accent)', 'Current index'], ['var(--gx-warning)', 'In deque'], ['var(--gx-success)', 'Window max'], ['var(--gx-surface-3)', 'In window']].map(([c, l]) => (
           <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 12, height: 12, borderRadius: 2, background: c, border: `1px solid ${c}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l}</span>
+            <span style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>
 
-      <div style={{ background: 'rgba(10,15,30,0.9)', border: '1px solid rgba(0,217,163,0.12)', borderRadius: 12, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-        <button onClick={() => setStepIdx((p) => Math.max(p - 1, 0))} style={ctrlBtn('#5a7a9a')}>⏮</button>
-        <button onClick={() => setIsPlaying((p) => !p)} style={{ ...ctrlBtn('#00d9a3'), background: 'rgba(0,217,163,0.12)', border: '1px solid rgba(0,217,163,0.35)', minWidth: 80, fontFamily: 'var(--font-body)', fontWeight: 600 }}>{isPlaying ? '⏸ Pause' : '▶ Play'}</button>
-        <button onClick={() => setStepIdx((p) => Math.min(p + 1, steps.length - 1))} style={ctrlBtn('#5a7a9a')}>⏭</button>
-        <button onClick={() => { setStepIdx(-1); setIsPlaying(false); }} style={{ ...ctrlBtn('#ff2d78'), background: 'rgba(255,45,120,0.08)', border: '1px solid rgba(255,45,120,0.25)', fontFamily: 'var(--font-body)' }}>↺ Reset</button>
+      <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        <button onClick={() => setStepIdx((p) => Math.max(p - 1, 0))} style={ctrlBtn('var(--gx-text-muted)')}>⏮</button>
+        <button onClick={() => setIsPlaying((p) => !p)} style={{ ...ctrlBtn('var(--gx-accent)'), background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-accent-border)', minWidth: 80, fontFamily: 'var(--font-body)', fontWeight: 600 }}>{isPlaying ? '⏸ Pause' : '▶ Play'}</button>
+        <button onClick={() => setStepIdx((p) => Math.min(p + 1, steps.length - 1))} style={ctrlBtn('var(--gx-text-muted)')}>⏭</button>
+        <button onClick={() => { setStepIdx(-1); setIsPlaying(false); }} style={{ ...ctrlBtn('var(--gx-danger)'), background: 'var(--gx-danger-soft)', border: '1px solid var(--gx-danger-border)', fontFamily: 'var(--font-body)' }}>↺ Reset</button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 8 }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1 }}>SPEED</span>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 1 }}>SPEED</span>
           {[1, 2, 3, 4].map((s) => (
-            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid #00d9a3' : '1px solid rgba(0,217,163,0.15)', background: speed === s ? 'rgba(0,217,163,0.12)' : 'transparent', color: speed === s ? '#00d9a3' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×', '1×', '2×', '3×'][s - 1]}</button>
+            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid var(--gx-accent)' : '1px solid var(--gx-border)', background: speed === s ? 'var(--gx-accent-soft)' : 'transparent', color: speed === s ? 'var(--gx-accent)' : 'var(--gx-text-muted)', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×', '1×', '2×', '3×'][s - 1]}</button>
           ))}
         </div>
-        <button onClick={() => setArr(generateArray(size))} style={{ ...ctrlBtn('#1D9E75'), background: 'rgba(29,158,117,0.1)', border: '1px solid rgba(29,158,117,0.25)', marginLeft: 'auto', fontFamily: 'var(--font-body)', fontSize: 12 }}>🎲 Randomize</button>
+        <button onClick={() => setArr(generateArray(size))} style={{ ...ctrlBtn('var(--gx-success)'), background: 'var(--gx-success-soft)', border: '1px solid var(--gx-success-border)', marginLeft: 'auto', fontFamily: 'var(--font-body)', fontSize: 12 }}>🎲 Randomize</button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1 }}>SIZE</span>
-          <input type="range" min={5} max={12} value={size} onChange={(e) => { const n = Number(e.target.value); setSize(n); setArr(generateArray(n)); }} style={{ width: 80, accentColor: '#00d9a3', cursor: 'pointer' }} />
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3' }}>{size}</span>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 1 }}>SIZE</span>
+          <input type="range" min={5} max={12} value={size} onChange={(e) => { const n = Number(e.target.value); setSize(n); setArr(generateArray(n)); }} style={{ width: 80, accentColor: 'var(--gx-accent)', cursor: 'pointer' }} />
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-accent)' }}>{size}</span>
         </div>
       </div>
 
@@ -229,4 +229,4 @@ export default function SlidingWindowVisualizer() {
   );
 }
 
-const ctrlBtn = (color) => ({ padding: '6px 14px', borderRadius: 8, border: `1px solid ${color}30`, background: 'transparent', color, fontSize: 13, cursor: 'pointer', transition: 'all 0.15s' });
+const ctrlBtn = (color) => ({ padding: '6px 14px', borderRadius: 8, border: `1px solid color-mix(in srgb, ${color} 19%, transparent)`, background: 'transparent', color, fontSize: 13, cursor: 'pointer', transition: 'all 0.15s' });

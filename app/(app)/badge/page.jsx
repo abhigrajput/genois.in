@@ -17,16 +17,16 @@ const DOMAINS = [
   { slug:'systemdesign', label:'System Design',    icon:'🏗️' },
 ];
 
-const LEVEL_COLOR = { proficient:'#4f9cf9', expert:'#EF9F27', master:'#1D9E75' };
+const LEVEL_COLOR = { proficient:'var(--gx-info)', expert:'var(--gx-warning)', master:'var(--gx-success)' };
 
 const S = {
-  page: { fontFamily:'var(--font-body)', minHeight:'100vh', background:'#020812', color:'#e8e8ed', padding:'28px 16px' },
-  card: { maxWidth:820, margin:'0 auto', background:'#070f1f', border:'1px solid rgba(0,217,163,0.12)', borderRadius:20, padding:28 },
-  btn:  { padding:'13px 28px', borderRadius:12, border:'none', cursor:'pointer', fontFamily:'var(--font-heading)', fontSize:14, fontWeight:700, background:'linear-gradient(135deg,#00d9a3,#ff6b4a)', color:'#020812' },
-  ghost:{ padding:'9px 18px', borderRadius:8, border:'1px solid rgba(0,217,163,0.2)', background:'transparent', cursor:'pointer', color:'#00d9a3', fontSize:12, fontFamily:'var(--font-heading)', fontWeight:600 },
+  page: { fontFamily:'var(--font-body)', minHeight:'100vh', background:'var(--gx-surface)', color:'var(--gx-text)', padding:'28px 16px' },
+  card: { maxWidth:820, margin:'0 auto', background:'var(--gx-bg)', border:'1px solid var(--gx-border)', borderRadius:20, padding:28 },
+  btn:  { padding:'13px 28px', borderRadius:12, border:'none', cursor:'pointer', fontFamily:'var(--font-heading)', fontSize:14, fontWeight:700, background:'var(--gx-accent)', color:'var(--gx-text-inverse)' },
+  ghost:{ padding:'9px 18px', borderRadius:8, border:'1px solid var(--gx-accent-border)', background:'transparent', cursor:'pointer', color:'var(--gx-accent)', fontSize:12, fontFamily:'var(--font-heading)', fontWeight:600 },
   mono: { fontFamily:'var(--font-mono)' },
-  h1:   { fontFamily:'var(--font-heading)', fontSize:26, fontWeight:800, color:'#e8e8ed', margin:'0 0 6px' },
-  sub:  { color:'#5a7a9a', fontSize:13, margin:'0 0 24px' },
+  h1:   { fontFamily:'var(--font-heading)', fontSize:26, fontWeight:800, color:'var(--gx-text)', margin:'0 0 6px' },
+  sub:  { color:'var(--gx-text-muted)', fontSize:13, margin:'0 0 24px' },
 };
 
 // ── Screen 1: Domain Select ───────────────────────────────────────────────
@@ -45,15 +45,15 @@ function DomainSelect({ badges, cooldowns, onSelect }) {
             const cd = cooldown ? Math.ceil((new Date(cooldown) - Date.now()) / 86400000) : 0;
             return (
               <button key={d.slug} onClick={() => onSelect(d, cd)}
-                style={{ background: active ? 'rgba(29,158,117,0.08)' : 'rgba(255,255,255,0.02)',
-                  border:`1px solid ${active ? 'rgba(29,158,117,0.3)' : inactive ? 'rgba(239,159,39,0.2)' : 'rgba(255,255,255,0.06)'}`,
+                style={{ background: active ? 'var(--gx-success-soft)' : 'var(--gx-surface)',
+                  border:`1px solid ${active ? 'var(--gx-success-border)' : inactive ? 'var(--gx-warning-border)' : 'var(--gx-border)'}`,
                   borderRadius:12, padding:'16px 12px', cursor:'pointer', textAlign:'center', transition:'all 0.15s' }}>
                 <div style={{ fontSize:28, marginBottom:8 }}>{d.icon}</div>
-                <div style={{ fontSize:13, fontWeight:600, color:'#e8e8ed', marginBottom:6 }}>{d.label}</div>
-                {active  && <div style={{ fontSize:10, color:'#1D9E75', ...S.mono }}>✅ {badge.daysLeft}d left</div>}
-                {inactive && <div style={{ fontSize:10, color:'#EF9F27', ...S.mono }}>↻ Renew</div>}
-                {cd > 0   && <div style={{ fontSize:10, color:'#ff2d78', ...S.mono }}>🕐 {cd}d cooldown</div>}
-                {!badge && !cd && <div style={{ fontSize:10, color:'#5a7a9a', ...S.mono }}>Not earned</div>}
+                <div style={{ fontSize:13, fontWeight:600, color:'var(--gx-text)', marginBottom:6 }}>{d.label}</div>
+                {active  && <div style={{ fontSize:10, color:'var(--gx-success)', ...S.mono }}>✅ {badge.daysLeft}d left</div>}
+                {inactive && <div style={{ fontSize:10, color:'var(--gx-warning)', ...S.mono }}>↻ Renew</div>}
+                {cd > 0   && <div style={{ fontSize:10, color:'var(--gx-danger)', ...S.mono }}>🕐 {cd}d cooldown</div>}
+                {!badge && !cd && <div style={{ fontSize:10, color:'var(--gx-text-muted)', ...S.mono }}>Not earned</div>}
               </button>
             );
           })}
@@ -111,38 +111,38 @@ function TestScreen({ questions, domain, onSubmit, submitting }) {
   const q = questions[current];
   const mm = String(Math.floor(timeLeft/60)).padStart(2,'0');
   const ss = String(timeLeft%60).padStart(2,'0');
-  const timerColor = timeLeft < 180 ? '#ff2d78' : timeLeft < 600 ? '#EF9F27' : '#00d9a3';
+  const timerColor = timeLeft < 180 ? 'var(--gx-danger)' : timeLeft < 600 ? 'var(--gx-warning)' : 'var(--gx-accent)';
   const answered = Object.keys(answers).length;
   const canSubmit = answered >= 25;
 
   return (
     <div style={S.page}>
       {/* Warning banner */}
-      <div style={{ maxWidth:820, margin:'0 auto 12px', background:'rgba(255,45,120,0.08)', border:'1px solid rgba(255,45,120,0.2)', borderRadius:8, padding:'8px 14px', display:'flex', alignItems:'center', gap:8 }}>
-        <span style={{ fontSize:11, color:'#ff2d78' }}>🔒 PROCTORED TEST — Tab switching detected. Strikes: </span>
-        {[0,1,2].map(i => <span key={i} style={{ fontSize:14, color: i < strikes ? '#ff2d78' : '#2a3a4a' }}>⚠️</span>)}
+      <div style={{ maxWidth:820, margin:'0 auto 12px', background:'var(--gx-danger-soft)', border:'1px solid var(--gx-danger-border)', borderRadius:8, padding:'8px 14px', display:'flex', alignItems:'center', gap:8 }}>
+        <span style={{ fontSize:11, color:'var(--gx-danger)' }}>🔒 PROCTORED TEST — Tab switching detected. Strikes: </span>
+        {[0,1,2].map(i => <span key={i} style={{ fontSize:14, color: i < strikes ? 'var(--gx-danger)' : 'var(--gx-text-subtle)' }}>⚠️</span>)}
       </div>
 
       {/* Top bar */}
       <div style={{ maxWidth:820, margin:'0 auto 12px', display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:8 }}>
         <div style={{ display:'flex', gap:10, alignItems:'center' }}>
           <span style={{ fontSize:18 }}>{DOMAINS.find(d=>d.slug===domain)?.icon}</span>
-          <span style={{ fontSize:12, color:'#5a7a9a', ...S.mono }}>Q {current+1}/{questions.length}</span>
-          <span style={{ fontSize:11, padding:'2px 8px', borderRadius:12, background:'rgba(0,217,163,0.08)', color:'#00d9a3' }}>{q?.type}</span>
+          <span style={{ fontSize:12, color:'var(--gx-text-muted)', ...S.mono }}>Q {current+1}/{questions.length}</span>
+          <span style={{ fontSize:11, padding:'2px 8px', borderRadius:12, background:'var(--gx-accent-soft)', color:'var(--gx-accent)' }}>{q?.type}</span>
         </div>
         <span style={{ fontSize:16, fontWeight:700, color:timerColor, ...S.mono }}>⏱ {mm}:{ss}</span>
       </div>
 
       {/* Progress */}
-      <div style={{ maxWidth:820, margin:'0 auto 14px', height:3, background:'rgba(255,255,255,0.05)', borderRadius:2 }}>
-        <div style={{ height:'100%', width:`${(answered/questions.length)*100}%`, background:'linear-gradient(90deg,#00d9a3,#ff6b4a)', borderRadius:2, transition:'width 0.3s' }} />
+      <div style={{ maxWidth:820, margin:'0 auto 14px', height:3, background:'var(--gx-surface)', borderRadius:2 }}>
+        <div style={{ height:'100%', width:`${(answered/questions.length)*100}%`, background:'var(--gx-accent)', borderRadius:2, transition:'width 0.3s' }} />
       </div>
 
       {/* Question card */}
       <div style={{ ...S.card, marginBottom:12 }}>
-        <div style={{ fontSize:14, color:'#e8e8ed', lineHeight:1.7, marginBottom: q?.code ? 14 : 20, fontWeight:500 }}>{q?.question}</div>
+        <div style={{ fontSize:14, color:'var(--gx-text)', lineHeight:1.7, marginBottom: q?.code ? 14 : 20, fontWeight:500 }}>{q?.question}</div>
         {q?.code && (
-          <pre style={{ background:'#0a0f1e', border:'1px solid rgba(255,107,74,0.2)', borderRadius:10, padding:14, overflowX:'auto', fontSize:12, lineHeight:1.6, color:'#c8d8e8', marginBottom:18, ...S.mono }}>
+          <pre style={{ background:'var(--gx-surface)', border:'1px solid var(--gx-warning-border)', borderRadius:10, padding:14, overflowX:'auto', fontSize:12, lineHeight:1.6, color:'var(--gx-text)', marginBottom:18, ...S.mono }}>
             {q.code}
           </pre>
         )}
@@ -152,10 +152,10 @@ function TestScreen({ questions, domain, onSubmit, submitting }) {
             return (
               <button key={opt} onClick={() => setAnswers(p => ({...p, [q.id]: opt}))}
                 style={{ display:'flex', gap:10, padding:'11px 14px', borderRadius:10,
-                  border:`1px solid ${sel ? '#00d9a3' : 'rgba(255,255,255,0.05)'}`,
-                  background: sel ? 'rgba(0,217,163,0.08)' : 'rgba(255,255,255,0.02)',
-                  color: sel ? '#00d9a3' : '#c8d8e8', cursor:'pointer', textAlign:'left', fontSize:13, fontFamily:'var(--font-body)' }}>
-                <span style={{ ...S.mono, fontSize:11, fontWeight:700, color: sel ? '#00d9a3' : '#5a7a9a', flexShrink:0, marginTop:2 }}>{opt}.</span>
+                  border:`1px solid ${sel ? 'var(--gx-accent)' : 'var(--gx-border)'}`,
+                  background: sel ? 'var(--gx-accent-soft)' : 'var(--gx-surface)',
+                  color: sel ? 'var(--gx-accent)' : 'var(--gx-text)', cursor:'pointer', textAlign:'left', fontSize:13, fontFamily:'var(--font-body)' }}>
+                <span style={{ ...S.mono, fontSize:11, fontWeight:700, color: sel ? 'var(--gx-accent)' : 'var(--gx-text-muted)', flexShrink:0, marginTop:2 }}>{opt}.</span>
                 <span>{q?.options?.[opt]}</span>
               </button>
             );
@@ -163,7 +163,7 @@ function TestScreen({ questions, domain, onSubmit, submitting }) {
         </div>
         <div style={{ marginTop:12, textAlign:'right' }}>
           <button onClick={() => setFlagged(p => ({...p, [q?.id]: !p[q?.id]}))}
-            style={{ ...S.ghost, fontSize:11, color: flagged[q?.id] ? '#EF9F27' : '#5a7a9a', borderColor: flagged[q?.id] ? 'rgba(239,159,39,0.3)' : 'rgba(255,255,255,0.06)' }}>
+            style={{ ...S.ghost, fontSize:11, color: flagged[q?.id] ? 'var(--gx-warning)' : 'var(--gx-text-muted)', borderColor: flagged[q?.id] ? 'var(--gx-warning-border)' : 'var(--gx-border)' }}>
             {flagged[q?.id] ? '🚩 Flagged' : '⚑ Flag'}
           </button>
         </div>
@@ -177,8 +177,8 @@ function TestScreen({ questions, domain, onSubmit, submitting }) {
             <button key={qs.id} onClick={() => setCurrent(i)}
               style={{ width:26, height:26, borderRadius:5, border:'none', cursor:'pointer', fontSize:9,
                 ...S.mono, fontWeight:700,
-                background: i===current ? '#00d9a3' : flagged[qs.id] ? '#EF9F27' : answers[qs.id] ? '#1D9E75' : 'rgba(255,255,255,0.05)',
-                color: i===current || flagged[qs.id] || answers[qs.id] ? '#020812' : '#5a7a9a' }}>
+                background: i===current ? 'var(--gx-accent)' : flagged[qs.id] ? 'var(--gx-warning)' : answers[qs.id] ? 'var(--gx-success)' : 'var(--gx-surface)',
+                color: i===current || flagged[qs.id] || answers[qs.id] ? 'var(--gx-text-inverse)' : 'var(--gx-text-muted)' }}>
               {i+1}
             </button>
           ))}
@@ -205,7 +205,7 @@ function TestScreen({ questions, domain, onSubmit, submitting }) {
 // ── Screen 3: Result ─────────────────────────────────────────────────────
 function ResultScreen({ result, domain, onViewBadges }) {
   const d = DOMAINS.find(x => x.slug === domain);
-  const lc = LEVEL_COLOR[result.level] || '#4f9cf9';
+  const lc = LEVEL_COLOR[result.level] || 'var(--gx-info)';
   const shareUrl = result.badge?.id ? `https://genois.in/verify/${result.badge.id}` : 'https://genois.in';
   const linkedinShare = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
   const topics = Object.entries(result.topicBreakdown || {});
@@ -217,18 +217,18 @@ function ResultScreen({ result, domain, onViewBadges }) {
           <>
             <div style={{ textAlign:'center', marginBottom:28 }}>
               <div style={{ fontSize:60, marginBottom:10 }}>🎖️</div>
-              <div style={{ display:'inline-flex', alignItems:'center', gap:10, background:`${lc}15`,
-                border:`2px solid ${lc}40`, borderRadius:40, padding:'10px 28px', marginBottom:10 }}>
+              <div style={{ display:'inline-flex', alignItems:'center', gap:10, background:`color-mix(in srgb, ${lc} 8%, transparent)`,
+                border:`2px solid color-mix(in srgb, ${lc} 25%, transparent)`, borderRadius:40, padding:'10px 28px', marginBottom:10 }}>
                 <span style={{ fontSize:20 }}>{d?.icon}</span>
                 <span style={{ fontFamily:'var(--font-heading)', fontSize:20, fontWeight:800, color:lc }}>
                   {d?.label} {result.level?.charAt(0).toUpperCase()+result.level?.slice(1)} Verified
                 </span>
               </div>
-              <div style={{ fontSize:34, fontWeight:700, ...S.mono, color:'#e8e8ed', marginBottom:4 }}>
-                {result.score}<span style={{ fontSize:16, color:'#5a7a9a' }}>/100</span>
+              <div style={{ fontSize:34, fontWeight:700, ...S.mono, color:'var(--gx-text)', marginBottom:4 }}>
+                {result.score}<span style={{ fontSize:16, color:'var(--gx-text-muted)' }}>/100</span>
               </div>
               {result.badge?.expiresAt && (
-                <div style={{ fontSize:12, color:'#5a7a9a' }}>
+                <div style={{ fontSize:12, color:'var(--gx-text-muted)' }}>
                   Valid until {new Date(result.badge.expiresAt).toLocaleDateString()}
                 </div>
               )}
@@ -236,15 +236,15 @@ function ResultScreen({ result, domain, onViewBadges }) {
 
             {topics.length > 0 && (
               <div style={{ marginBottom:20 }}>
-                <div style={{ fontSize:10, color:'#5a7a9a', letterSpacing:2, ...S.mono, marginBottom:10 }}>TOPIC BREAKDOWN</div>
+                <div style={{ fontSize:10, color:'var(--gx-text-muted)', letterSpacing:2, ...S.mono, marginBottom:10 }}>TOPIC BREAKDOWN</div>
                 {topics.map(([t, pct]) => (
                   <div key={t} style={{ marginBottom:8 }}>
                     <div style={{ display:'flex', justifyContent:'space-between', marginBottom:3 }}>
-                      <span style={{ fontSize:11, color:'#c8d8e8' }}>{t}</span>
-                      <span style={{ fontSize:11, ...S.mono, color: pct>=70?'#1D9E75':pct>=50?'#EF9F27':'#ff2d78' }}>{pct}%</span>
+                      <span style={{ fontSize:11, color:'var(--gx-text)' }}>{t}</span>
+                      <span style={{ fontSize:11, ...S.mono, color: pct>=70?'var(--gx-success)':pct>=50?'var(--gx-warning)':'var(--gx-danger)' }}>{pct}%</span>
                     </div>
-                    <div style={{ height:4, background:'rgba(255,255,255,0.05)', borderRadius:2 }}>
-                      <div style={{ height:'100%', width:`${pct}%`, borderRadius:2, background: pct>=70?'#1D9E75':pct>=50?'#EF9F27':'#ff2d78', transition:'width 0.8s' }} />
+                    <div style={{ height:4, background:'var(--gx-surface)', borderRadius:2 }}>
+                      <div style={{ height:'100%', width:`${pct}%`, borderRadius:2, background: pct>=70?'var(--gx-success)':pct>=50?'var(--gx-warning)':'var(--gx-danger)', transition:'width 0.8s' }} />
                     </div>
                   </div>
                 ))}
@@ -252,15 +252,15 @@ function ResultScreen({ result, domain, onViewBadges }) {
             )}
 
             {result.feedback && (
-              <div style={{ background:'rgba(0,217,163,0.04)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, padding:16, marginBottom:20 }}>
-                <div style={{ fontSize:10, color:'#00d9a3', letterSpacing:2, ...S.mono, marginBottom:6 }}>🤖 FEEDBACK</div>
-                <p style={{ fontSize:13, color:'#c8d8e8', lineHeight:1.7, margin:0 }}>{result.feedback}</p>
+              <div style={{ background:'var(--gx-accent-soft)', border:'1px solid var(--gx-border)', borderRadius:12, padding:16, marginBottom:20 }}>
+                <div style={{ fontSize:10, color:'var(--gx-accent)', letterSpacing:2, ...S.mono, marginBottom:6 }}>🤖 FEEDBACK</div>
+                <p style={{ fontSize:13, color:'var(--gx-text)', lineHeight:1.7, margin:0 }}>{result.feedback}</p>
               </div>
             )}
 
             <div style={{ display:'flex', gap:10, justifyContent:'center', flexWrap:'wrap' }}>
               <a href={linkedinShare} target="_blank" rel="noreferrer"
-                style={{ ...S.btn, textDecoration:'none', background:'#0077b5', color:'#fff', display:'inline-flex', alignItems:'center', gap:6 }}>
+                style={{ ...S.btn, textDecoration:'none', background:'#0077b5', color:'var(--gx-text)', display:'inline-flex', alignItems:'center', gap:6 }}>
                 Share on LinkedIn
               </a>
               <button onClick={onViewBadges} style={S.ghost}>View My Badges</button>
@@ -270,29 +270,29 @@ function ResultScreen({ result, domain, onViewBadges }) {
           <>
             <div style={{ textAlign:'center', marginBottom:24 }}>
               <div style={{ fontSize:56, marginBottom:10 }}>😔</div>
-              <div style={{ fontFamily:'var(--font-heading)', fontSize:22, fontWeight:800, color:'#ff2d78', marginBottom:6 }}>Not Passed Yet</div>
-              <div style={{ fontSize:32, fontWeight:700, ...S.mono, color:'#e8e8ed', marginBottom:4 }}>
-                {result.score}<span style={{ fontSize:14, color:'#5a7a9a' }}>/100 (need 70+)</span>
+              <div style={{ fontFamily:'var(--font-heading)', fontSize:22, fontWeight:800, color:'var(--gx-danger)', marginBottom:6 }}>Not Passed Yet</div>
+              <div style={{ fontSize:32, fontWeight:700, ...S.mono, color:'var(--gx-text)', marginBottom:4 }}>
+                {result.score}<span style={{ fontSize:14, color:'var(--gx-text-muted)' }}>/100 (need 70+)</span>
               </div>
               {result.cooldown && (
-                <div style={{ fontSize:12, color:'#ff2d78', marginTop:6 }}>
+                <div style={{ fontSize:12, color:'var(--gx-danger)', marginTop:6 }}>
                   🕐 Retry available in {result.cooldown.daysLeft} days
                 </div>
               )}
             </div>
 
             {result.weaknesses?.length > 0 && (
-              <div style={{ background:'rgba(255,45,120,0.06)', border:'1px solid rgba(255,45,120,0.15)', borderRadius:12, padding:16, marginBottom:16 }}>
-                <div style={{ fontSize:10, color:'#ff2d78', letterSpacing:2, ...S.mono, marginBottom:10 }}>FOCUS AREAS</div>
+              <div style={{ background:'var(--gx-danger-soft)', border:'1px solid var(--gx-danger-border)', borderRadius:12, padding:16, marginBottom:16 }}>
+                <div style={{ fontSize:10, color:'var(--gx-danger)', letterSpacing:2, ...S.mono, marginBottom:10 }}>FOCUS AREAS</div>
                 {result.weaknesses.map(w => (
-                  <div key={w} style={{ fontSize:12, color:'#c8d8e8', marginBottom:5, paddingLeft:10, borderLeft:'2px solid #ff2d78' }}>{w}</div>
+                  <div key={w} style={{ fontSize:12, color:'var(--gx-text)', marginBottom:5, paddingLeft:10, borderLeft:'2px solid var(--gx-danger)' }}>{w}</div>
                 ))}
               </div>
             )}
 
             {result.feedback && (
-              <div style={{ background:'rgba(0,217,163,0.03)', border:'1px solid rgba(0,217,163,0.08)', borderRadius:12, padding:14, marginBottom:20 }}>
-                <p style={{ fontSize:13, color:'#c8d8e8', lineHeight:1.7, margin:0 }}>{result.feedback}</p>
+              <div style={{ background:'var(--gx-accent-soft)', border:'1px solid var(--gx-border)', borderRadius:12, padding:14, marginBottom:20 }}>
+                <p style={{ fontSize:13, color:'var(--gx-text)', lineHeight:1.7, margin:0 }}>{result.feedback}</p>
               </div>
             )}
 
@@ -316,7 +316,7 @@ function MyBadgesScreen({ badges, onRenew, onBack }) {
           <button onClick={onBack} style={S.ghost}>← All Domains</button>
         </div>
         {badges.length === 0 ? (
-          <div style={{ textAlign:'center', padding:40, color:'#5a7a9a' }}>
+          <div style={{ textAlign:'center', padding:40, color:'var(--gx-text-muted)' }}>
             No badges yet. Start a verification test to earn your first badge.
           </div>
         ) : (
@@ -324,25 +324,25 @@ function MyBadgesScreen({ badges, onRenew, onBack }) {
             {badges.map(b => {
               const d = DOMAINS.find(x => x.slug === b.domain);
               const active = b.status === 'active';
-              const lc = active ? (LEVEL_COLOR[b.level] || '#4f9cf9') : '#3a4a5a';
+              const lc = active ? (LEVEL_COLOR[b.level] || 'var(--gx-info)') : 'var(--gx-text-subtle)';
               const shareUrl = `https://genois.in/verify/${b.id}`;
               return (
-                <div key={b.id} style={{ background: active ? `${lc}10` : 'rgba(255,255,255,0.02)',
-                  border:`1px solid ${active ? lc+'40' : 'rgba(255,255,255,0.05)'}`,
+                <div key={b.id} style={{ background: active ? lc : 'var(--gx-surface)',
+                  border:`1px solid ${active ? `color-mix(in srgb, ${lc} 25%, transparent)` : 'var(--gx-border)'}`,
                   borderRadius:14, padding:18, textAlign:'center',
-                  boxShadow: active ? `0 0 18px ${lc}15` : 'none' }}>
+                  boxShadow: active ? `0 0 18px color-mix(in srgb, ${lc} 8%, transparent)` : 'none' }}>
                   <div style={{ fontSize:32, marginBottom:8 }}>{d?.icon || '🎖️'}</div>
-                  <div style={{ fontFamily:'var(--font-heading)', fontSize:14, fontWeight:700, color: active ? lc : '#5a7a9a', marginBottom:4 }}>
+                  <div style={{ fontFamily:'var(--font-heading)', fontSize:14, fontWeight:700, color: active ? lc : 'var(--gx-text-muted)', marginBottom:4 }}>
                     {d?.label || b.domain}
                   </div>
-                  <div style={{ fontSize:11, ...S.mono, color:'#5a7a9a', marginBottom:6 }}>
+                  <div style={{ fontSize:11, ...S.mono, color:'var(--gx-text-muted)', marginBottom:6 }}>
                     {b.score}/100 · {b.level}
                   </div>
                   {active
-                    ? <div style={{ fontSize:11, color:'#1D9E75', background:'rgba(29,158,117,0.1)', borderRadius:20, padding:'3px 10px', display:'inline-block', marginBottom:10 }}>
+                    ? <div style={{ fontSize:11, color:'var(--gx-success)', background:'var(--gx-success-soft)', borderRadius:20, padding:'3px 10px', display:'inline-block', marginBottom:10 }}>
                         ✅ {b.daysLeft}d remaining
                       </div>
-                    : <div style={{ fontSize:11, color:'#EF9F27', marginBottom:10 }}>Expired</div>
+                    : <div style={{ fontSize:11, color:'var(--gx-warning)', marginBottom:10 }}>Expired</div>
                   }
                   <div style={{ display:'flex', gap:6, justifyContent:'center', flexWrap:'wrap' }}>
                     {!active && (
@@ -420,7 +420,7 @@ export default function BadgePage() {
     <div style={{ ...S.page, display:'flex', alignItems:'center', justifyContent:'center' }}>
       <div style={{ textAlign:'center' }}>
         <div style={{ fontSize:48, marginBottom:16 }}>⚙️</div>
-        <p style={{ color:'#5a7a9a' }}>Generating 30 advanced questions via GENOIS Engine...</p>
+        <p style={{ color:'var(--gx-text-muted)' }}>Generating 30 advanced questions via GENOIS Engine...</p>
       </div>
     </div>
   );
@@ -429,8 +429,8 @@ export default function BadgePage() {
     <div style={{ ...S.page, display:'flex', alignItems:'center', justifyContent:'center' }}>
       <div style={{ textAlign:'center' }}>
         <div style={{ fontSize:48, marginBottom:16 }}>🤖</div>
-        <h2 style={{ fontFamily:'var(--font-heading)', fontSize:20, color:'#e8e8ed', marginBottom:8 }}>GENOIS Engine is evaluating...</h2>
-        <p style={{ color:'#5a7a9a', fontSize:13 }}>Analyzing topic mastery, code understanding, and skill level.</p>
+        <h2 style={{ fontFamily:'var(--font-heading)', fontSize:20, color:'var(--gx-text)', marginBottom:8 }}>GENOIS Engine is evaluating...</h2>
+        <p style={{ color:'var(--gx-text-muted)', fontSize:13 }}>Analyzing topic mastery, code understanding, and skill level.</p>
       </div>
     </div>
   );

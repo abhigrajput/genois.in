@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { analyticsAPI } from '@/lib/api';
 import useAuthStore from '@/store/authStore';
 
-const SKILL_COLORS = { beginner:'#888780', intermediate:'#378ADD', advanced:'#1D9E75', job_ready:'#7F77DD' };
+const SKILL_COLORS = { beginner:'var(--gx-text-muted)', intermediate:'var(--gx-info)', advanced:'var(--gx-success)', job_ready:'var(--gx-info)' };
 const MILESTONES = [{label:'Beginner',min:0},{label:'Intermediate',min:25},{label:'Advanced',min:50},{label:'Job Ready',min:80}];
 
 export default function SkillIdentityPage() {
@@ -18,18 +18,18 @@ export default function SkillIdentityPage() {
   if (loading) return <div className="card h-64 animate-pulse bg-gray-50 max-w-3xl" />;
   if (!skill) return null;
 
-  const skillColor = SKILL_COLORS[skill.skillLevel] || '#888780';
+  const skillColor = SKILL_COLORS[skill.skillLevel] || 'var(--gx-text-muted)';
   // Readiness (the 6 axes + the job-ready number) is only rendered once the API
   // reports it as measured. It never is today, so the card shows an empty state
   // rather than bars derived from arbitrary constants.
   const readiness = skill.readinessAvailable ? skill.skillAreas : null;
   const areas = readiness ? [
-    { label:'Theoretical Knowledge', value: readiness.theoretical||0, color:'#7F77DD' },
-    { label:'Coding Ability', value: readiness.coding||0, color:'#1D9E75' },
-    { label:'Project Experience', value: readiness.projects||0, color:'#BA7517' },
-    { label:'Consistency', value: readiness.consistency||0, color:'#D4537E' },
-    { label:'Problem Solving', value: readiness.problemSolving||0, color:'#378ADD' },
-    { label:'Domain Depth', value: readiness.domainDepth||0, color:'#D85A30' },
+    { label:'Theoretical Knowledge', value: readiness.theoretical||0, color:'var(--gx-info)' },
+    { label:'Coding Ability', value: readiness.coding||0, color:'var(--gx-success)' },
+    { label:'Project Experience', value: readiness.projects||0, color:'var(--gx-warning)' },
+    { label:'Consistency', value: readiness.consistency||0, color:'var(--gx-danger)' },
+    { label:'Problem Solving', value: readiness.problemSolving||0, color:'var(--gx-info)' },
+    { label:'Domain Depth', value: readiness.domainDepth||0, color:'var(--gx-warning)' },
   ] : [];
   const tips = [
     skill.weakTopics?.length > 0 && `Review weak topics: ${skill.weakTopics.slice(0,2).map(w=>w.topic).join(', ')}`,
@@ -41,9 +41,9 @@ export default function SkillIdentityPage() {
     <div className="max-w-3xl space-y-6">
       <h1 className="text-2xl font-bold">Skill Identity</h1>
 
-      <div className="card border-2" style={{ borderColor: skillColor+'30', background: skillColor+'04' }}>
+      <div className="card border-2" style={{ borderColor: `color-mix(in srgb, ${skillColor} 19%, transparent)`, background: `color-mix(in srgb, ${skillColor} 2%, transparent)` }}>
         <div className="flex items-center gap-4 flex-wrap">
-          <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold flex-shrink-0" style={{ background: skillColor+'20', color: skillColor }}>
+          <div className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold flex-shrink-0" style={{ background: `color-mix(in srgb, ${skillColor} 13%, transparent)`, color: skillColor }}>
             {(user?.name||'G').split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
@@ -53,7 +53,7 @@ export default function SkillIdentityPage() {
           </div>
           <div className="flex gap-6">
             <div className="text-center">
-              <div className="text-2xl font-bold" style={{color:'#7F77DD'}}>{skill.progressPercent||0}%</div>
+              <div className="text-2xl font-bold" style={{color:'var(--gx-info)'}}>{skill.progressPercent||0}%</div>
               <div className="text-xs text-gray-400">Progress</div>
             </div>
           </div>
@@ -63,7 +63,7 @@ export default function SkillIdentityPage() {
       <div className="card">
         <h2 className="section-title mb-4">Learning Journey</h2>
         <div className="h-2 bg-gray-100 rounded-full overflow-hidden mb-6">
-          <div className="h-full rounded-full transition-all" style={{ width:`${skill.progressPercent||0}%`, background:`linear-gradient(90deg,#7F77DD,${skillColor})` }} />
+          <div className="h-full rounded-full transition-all" style={{ width:`${skill.progressPercent||0}%`, background:`var(--gx-info)` }} />
         </div>
         <div className="flex justify-between">
           {MILESTONES.map(m => {
@@ -106,14 +106,14 @@ export default function SkillIdentityPage() {
         <h2 className="section-title mb-3">Stats</h2>
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label:'Tests Taken', value: skill.stats?.totalTests||0, color:'#7F77DD' },
-            { label:'Avg Test Score', value:`${skill.stats?.avgTestScore||0}%`, color:'#1D9E75' },
-            { label:'Projects Done', value: skill.stats?.completedProjects||0, color:'#BA7517' },
-            { label:'Day Streak', value:`${skill.stats?.streak||0}d`, color:'#D4537E' },
-            { label:'Current Day', value: skill.stats?.currentDay||1, color:'#378ADD' },
-            { label:'Total Score', value: skill.stats?.totalScore||0, color:'#D85A30' },
+            { label:'Tests Taken', value: skill.stats?.totalTests||0, color:'var(--gx-info)' },
+            { label:'Avg Test Score', value:`${skill.stats?.avgTestScore||0}%`, color:'var(--gx-success)' },
+            { label:'Projects Done', value: skill.stats?.completedProjects||0, color:'var(--gx-warning)' },
+            { label:'Day Streak', value:`${skill.stats?.streak||0}d`, color:'var(--gx-danger)' },
+            { label:'Current Day', value: skill.stats?.currentDay||1, color:'var(--gx-info)' },
+            { label:'Total Score', value: skill.stats?.totalScore||0, color:'var(--gx-warning)' },
           ].map(s=>(
-            <div key={s.label} className="text-center p-3 rounded-xl" style={{background:s.color+'0f'}}>
+            <div key={s.label} className="text-center p-3 rounded-xl" style={{background:`color-mix(in srgb, ${s.color} 6%, transparent)`}}>
               <div className="text-xl font-bold" style={{color:s.color}}>{s.value}</div>
               <div className="text-xs text-gray-400 mt-0.5">{s.label}</div>
             </div>

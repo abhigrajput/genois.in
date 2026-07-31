@@ -83,11 +83,11 @@ function computeBFSSteps(src) {
 }
 
 function nodeColor(id, step) {
-  if (!step) return '#1a2a3a';
-  if (step.current === id) return '#00d9a3';
-  if (step.enqueueing === id) return '#ef9f27';
-  if (step.visited?.[id]) return '#1d9e75';
-  return '#1a2a3a';
+  if (!step) return 'var(--gx-surface-2)';
+  if (step.current === id) return 'var(--gx-accent)';
+  if (step.enqueueing === id) return 'var(--gx-warning)';
+  if (step.visited?.[id]) return 'var(--gx-success)';
+  return 'var(--gx-surface-2)';
 }
 
 export default function BFSVisualizer() {
@@ -132,13 +132,13 @@ export default function BFSVisualizer() {
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Source', value: src, color: '#00d9a3' },
-          { label: 'Current', value: current?.current >= 0 ? current.current : '-', color: '#ef9f27' },
-          { label: 'Visited', value: current?.visited?.filter(Boolean).length ?? 0, color: '#1d9e75' },
-          { label: 'Queue Size', value: current?.queue?.length ?? 0, color: '#ff6b4a' },
+          { label: 'Source', value: src, color: 'var(--gx-accent)' },
+          { label: 'Current', value: current?.current >= 0 ? current.current : '-', color: 'var(--gx-warning)' },
+          { label: 'Visited', value: current?.visited?.filter(Boolean).length ?? 0, color: 'var(--gx-success)' },
+          { label: 'Queue Size', value: current?.queue?.length ?? 0, color: 'var(--gx-warning)' },
         ].map(s => (
-          <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+          <div key={s.label} style={{ background: 'var(--gx-surface)', border: `1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)', marginBottom: 2 }}>{s.label}</div>
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
@@ -146,22 +146,22 @@ export default function BFSVisualizer() {
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {/* Graph SVG */}
-        <div style={{ flex: 1, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, overflow: 'hidden', minWidth: 280 }}>
+        <div style={{ flex: 1, background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, overflow: 'hidden', minWidth: 280 }}>
           <svg width="100%" viewBox={`0 0 ${SVG_W} ${SVG_H}`} style={{ display: 'block' }}>
             {GRAPH_EDGES.map(([a, b], i) => (
               <line key={i}
                 x1={GRAPH_NODES[a].x} y1={GRAPH_NODES[a].y + 60}
                 x2={GRAPH_NODES[b].x} y2={GRAPH_NODES[b].y + 60}
-                stroke="rgba(0,217,163,0.2)" strokeWidth={1.5} />
+                stroke="var(--gx-accent)" strokeWidth={1.5} />
             ))}
             {GRAPH_NODES.map(n => {
               const color = nodeColor(n.id, current);
               const isActive = current?.current === n.id;
               return (
                 <g key={n.id}>
-                  {isActive && <circle cx={n.x} cy={n.y + 60} r={28} fill="none" stroke="#00d9a3" strokeWidth={1} opacity={0.4} />}
+                  {isActive && <circle cx={n.x} cy={n.y + 60} r={28} fill="none" stroke="var(--gx-accent)" strokeWidth={1} opacity={0.4} />}
                   <circle cx={n.x} cy={n.y + 60} r={22}
-                    fill={color === '#1a2a3a' ? '#0d1a2a' : color + '22'}
+                    fill={color === 'var(--gx-surface-2)' ? 'var(--gx-surface)' : `color-mix(in srgb, ${color} 13%, transparent)`}
                     stroke={color} strokeWidth={isActive ? 2.5 : 1.5}
                     style={{ transition: 'all 0.3s ease' }} />
                   <text x={n.x} y={n.y + 65} textAnchor="middle"
@@ -177,24 +177,24 @@ export default function BFSVisualizer() {
         {/* Right panel: queue + adj list */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 200 }}>
           {/* Queue */}
-          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(255,107,74,0.2)', borderRadius: 10, padding: 12 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#ff6b4a', letterSpacing: 1, marginBottom: 8 }}>QUEUE (front→rear)</div>
+          <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-warning-border)', borderRadius: 10, padding: 12 }}>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-warning)', letterSpacing: 1, marginBottom: 8 }}>QUEUE (front→rear)</div>
             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', minHeight: 36 }}>
               {(current?.queue || []).map((v, i) => (
-                <span key={i} style={{ padding: '4px 12px', borderRadius: 6, background: 'rgba(255,107,74,0.15)', border: '1px solid rgba(255,107,74,0.3)', fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: '#ff6b4a' }}>{v}</span>
+                <span key={i} style={{ padding: '4px 12px', borderRadius: 6, background: 'var(--gx-warning-soft)', border: '1px solid var(--gx-warning-border)', fontFamily: 'var(--font-mono)', fontSize: 14, fontWeight: 700, color: 'var(--gx-warning)' }}>{v}</span>
               ))}
               {(!current?.queue || current.queue.length === 0) && (
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#2a3a4a' }}>empty</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--gx-text-subtle)' }}>empty</span>
               )}
             </div>
           </div>
           {/* Adjacency list */}
-          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 10, padding: 12 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>ADJACENCY LIST</div>
+          <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 10, padding: 12 }}>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 1, marginBottom: 8 }}>ADJACENCY LIST</div>
             {ADJ.map((nbrs, i) => (
               <div key={i} style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 3 }}>
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: nodeColor(i, current), minWidth: 18, fontWeight: 700 }}>{i}:</span>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#5a7a9a' }}>[{nbrs.join(', ')}]</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--gx-text-muted)' }}>[{nbrs.join(', ')}]</span>
               </div>
             ))}
           </div>
@@ -210,26 +210,26 @@ export default function BFSVisualizer() {
 
       {/* Controls */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a' }}>SRC</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)' }}>SRC</span>
         {GRAPH_NODES.map(n => (
-          <button key={n.id} onClick={() => setSrc(n.id)} style={{ padding: '4px 12px', borderRadius: 6, border: `1px solid ${src === n.id ? '#00d9a3' : 'rgba(0,217,163,0.15)'}`, background: src === n.id ? 'rgba(0,217,163,0.12)' : 'transparent', color: src === n.id ? '#00d9a3' : '#5a7a9a', fontSize: 12, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{n.id}</button>
+          <button key={n.id} onClick={() => setSrc(n.id)} style={{ padding: '4px 12px', borderRadius: 6, border: `1px solid ${src === n.id ? 'var(--gx-accent)' : 'var(--gx-border)'}`, background: src === n.id ? 'var(--gx-accent-soft)' : 'transparent', color: src === n.id ? 'var(--gx-accent)' : 'var(--gx-text-muted)', fontSize: 12, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{n.id}</button>
         ))}
-        <button onClick={start} style={btn('#00d9a3')}>▶ Start BFS</button>
-        <button onClick={() => setIsPlaying(p => !p)} style={btn('#ff6b4a')}>{isPlaying ? '⏸ Pause' : '▶ Resume'}</button>
-        <button onClick={() => setStepIdx(p => Math.min(p + 1, steps.length - 1))} style={btn('#ef9f27')}>⏭ Step</button>
+        <button onClick={start} style={btn('var(--gx-accent)')}>▶ Start BFS</button>
+        <button onClick={() => setIsPlaying(p => !p)} style={btn('var(--gx-warning)')}>{isPlaying ? '⏸ Pause' : '▶ Resume'}</button>
+        <button onClick={() => setStepIdx(p => Math.min(p + 1, steps.length - 1))} style={btn('var(--gx-warning)')}>⏭ Step</button>
         <div style={{ display: 'flex', gap: 4, alignItems: 'center' }}>
           {[1,2,3,4].map(s => (
-            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid #00d9a3' : '1px solid rgba(0,217,163,0.15)', background: speed === s ? 'rgba(0,217,163,0.12)' : 'transparent', color: speed === s ? '#00d9a3' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
+            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid var(--gx-accent)' : '1px solid var(--gx-border)', background: speed === s ? 'var(--gx-accent-soft)' : 'transparent', color: speed === s ? 'var(--gx-accent)' : 'var(--gx-text-muted)', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
           ))}
         </div>
-        <button onClick={reset} style={btn('#ff2d78')}>↺ Reset</button>
+        <button onClick={reset} style={btn('var(--gx-danger)')}>↺ Reset</button>
       </div>
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        {[['#00d9a3','Current'],['#ef9f27','Being Enqueued'],['#1d9e75','Visited'],['#1a2a3a','Unvisited']].map(([c,l]) => (
+        {[['var(--gx-accent)','Current'],['var(--gx-warning)','Being Enqueued'],['var(--gx-success)','Visited'],['var(--gx-surface-2)','Unvisited']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
-            <div style={{ width:12, height:12, borderRadius:'50%', background:c+'44', border:`2px solid ${c}` }}/>
-            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>
+            <div style={{ width:12, height:12, borderRadius:'50%', background:`color-mix(in srgb, ${c} 27%, transparent)`, border:`2px solid ${c}` }}/>
+            <span style={{ fontSize:11, color:'var(--gx-text-muted)', fontFamily:'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>
@@ -240,5 +240,5 @@ export default function BFSVisualizer() {
 }
 
 function btn(color) {
-  return { padding: '8px 16px', borderRadius: 8, border: `1px solid ${color}30`, background: `${color}10`, color, fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' };
+  return { padding: '8px 16px', borderRadius: 8, border: `1px solid color-mix(in srgb, ${color} 19%, transparent)`, background: `color-mix(in srgb, ${color} 6%, transparent)`, color, fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' };
 }

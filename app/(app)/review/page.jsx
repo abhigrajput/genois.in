@@ -16,9 +16,9 @@ const TYPE_META = {
 };
 
 function scoreColor(score) {
-  if (score >= 70) return '#1D9E75';
-  if (score >= 40) return '#EF9F27';
-  return '#ff2d78';
+  if (score >= 70) return 'var(--gx-success)';
+  if (score >= 40) return 'var(--gx-warning)';
+  return 'var(--gx-danger)';
 }
 
 export default function ReviewListPage() {
@@ -55,14 +55,14 @@ export default function ReviewListPage() {
 
   return (
     <div style={{ maxWidth: 780, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
-      <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: '#e8e8ed', marginBottom: 4 }}>📋 Answer Review</h1>
-      <p style={{ color: '#5a7a9a', fontSize: 13, marginBottom: 24 }}>Every test you take is saved here — see what you got wrong and why.</p>
+      <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 4 }}>📋 Answer Review</h1>
+      <p style={{ color: 'var(--gx-text-muted)', fontSize: 13, marginBottom: 24 }}>Every test you take is saved here — see what you got wrong and why.</p>
 
       {(!available || attempts.length === 0) && (
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.12)', borderRadius: 14, padding: 40, textAlign: 'center' }}>
+        <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 14, padding: 40, textAlign: 'center' }}>
           <div style={{ fontSize: 44, marginBottom: 12 }}>🗂</div>
-          <div style={{ color: '#e8e8ed', fontSize: 15, fontWeight: 600, marginBottom: 6 }}>No reviewable attempts yet</div>
-          <div style={{ color: '#5a7a9a', fontSize: 13, lineHeight: 1.6 }}>
+          <div style={{ color: 'var(--gx-text)', fontSize: 15, fontWeight: 600, marginBottom: 6 }}>No reviewable attempts yet</div>
+          <div style={{ color: 'var(--gx-text-muted)', fontSize: 13, lineHeight: 1.6 }}>
             {available
               ? 'Take a test, aptitude session, or diagnostic — full answer reviews will appear here.'
               : 'Review data isn’t available for older attempts. New attempts from now on will be reviewable here.'}
@@ -75,20 +75,20 @@ export default function ReviewListPage() {
           const meta = TYPE_META[a.attempt_type] || { icon: '📄', label: a.attempt_type };
           return (
             <Link key={a.id} href={`/review/${a.id}`} style={{ textDecoration: 'none' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14, background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: '14px 18px', cursor: 'pointer' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14, background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: '14px 18px', cursor: 'pointer' }}>
                 <span style={{ fontSize: 22 }}>{meta.icon}</span>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ color: '#e8e8ed', fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-heading)' }}>
+                  <div style={{ color: 'var(--gx-text)', fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-heading)' }}>
                     {meta.label}{a.topic ? ` · ${a.topic}` : ''}
                   </div>
-                  <div style={{ color: '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', marginTop: 2 }}>
+                  <div style={{ color: 'var(--gx-text-muted)', fontSize: 11, fontFamily: 'var(--font-mono)', marginTop: 2 }}>
                     {new Date(a.taken_at).toLocaleString()} · {a.correct_count}/{a.total_questions} correct
                   </div>
                 </div>
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: scoreColor(a.score) }}>
                   {a.score}%
                 </div>
-                <span style={{ color: '#00d9a3', fontSize: 14 }}>→</span>
+                <span style={{ color: 'var(--gx-accent)', fontSize: 14 }}>→</span>
               </div>
             </Link>
           );

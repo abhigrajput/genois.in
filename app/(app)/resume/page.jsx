@@ -7,9 +7,9 @@ import ErrorCard, { friendlyError } from '@/components/ui/ErrorCard';
 const MIN_CHARS = 200;
 
 function scoreColor(score) {
-  if (score >= 70) return '#1D9E75';
-  if (score >= 40) return '#EF9F27';
-  return '#ff2d78';
+  if (score >= 70) return 'var(--gx-success)';
+  if (score >= 40) return 'var(--gx-warning)';
+  return 'var(--gx-danger)';
 }
 
 function scoreVerdict(score) {
@@ -20,11 +20,11 @@ function scoreVerdict(score) {
   return 'Critical — needs a rework before you apply';
 }
 
-const card = { background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 20 };
-const label = { fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 2, color: '#5a7a9a', fontWeight: 600, marginBottom: 10 };
+const card = { background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 14, padding: 20 };
+const label = { fontFamily: 'var(--font-body)', fontSize: 10, letterSpacing: 2, color: 'var(--gx-text-muted)', fontWeight: 600, marginBottom: 10 };
 const inputStyle = {
-  width: '100%', padding: '11px 14px', borderRadius: 10, border: '1px solid rgba(0,217,163,0.16)',
-  background: '#030a16', color: '#e8e8ed', fontSize: 13, fontFamily: 'var(--font-body)', outline: 'none',
+  width: '100%', padding: '11px 14px', borderRadius: 10, border: '1px solid var(--gx-border)',
+  background: 'var(--gx-bg)', color: 'var(--gx-text)', fontSize: 13, fontFamily: 'var(--font-body)', outline: 'none',
 };
 
 function CopyButton({ text }) {
@@ -41,9 +41,9 @@ function CopyButton({ text }) {
       onClick={copy}
       style={{
         padding: '5px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 11, fontFamily: 'var(--font-mono)',
-        border: `1px solid ${copied ? 'rgba(0,217,163,0.5)' : 'rgba(0,217,163,0.22)'}`,
-        background: copied ? 'rgba(0,217,163,0.12)' : 'transparent',
-        color: '#00d9a3', whiteSpace: 'nowrap',
+        border: `1px solid ${copied ? 'var(--gx-accent-border)' : 'var(--gx-accent-border)'}`,
+        background: copied ? 'var(--gx-accent-soft)' : 'transparent',
+        color: 'var(--gx-accent)', whiteSpace: 'nowrap',
       }}
     >
       {copied ? '✓ Copied' : 'Copy'}
@@ -55,9 +55,9 @@ function SectionTitle({ icon, children, count }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
       <span style={{ fontSize: 17 }}>{icon}</span>
-      <span style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: '#e8e8ed' }}>{children}</span>
+      <span style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: 'var(--gx-text)' }}>{children}</span>
       {count != null && (
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', background: 'rgba(255,255,255,0.04)', padding: '2px 8px', borderRadius: 10 }}>{count}</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)', background: 'var(--gx-surface)', padding: '2px 8px', borderRadius: 10 }}>{count}</span>
       )}
     </div>
   );
@@ -133,8 +133,8 @@ export default function ResumeAtsPage() {
 
   return (
     <div style={{ maxWidth: 820, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
-      <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: '#e8e8ed', marginBottom: 4 }}>📄 Resume ATS Breakdown</h1>
-      <p style={{ color: '#5a7a9a', fontSize: 13, marginBottom: 24 }}>
+      <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 4 }}>📄 Resume ATS Breakdown</h1>
+      <p style={{ color: 'var(--gx-text-muted)', fontSize: 13, marginBottom: 24 }}>
         Paste your resume text and get an honest ATS score, missing keywords, and stronger rewrites of your weakest bullets.
       </p>
 
@@ -150,10 +150,10 @@ export default function ResumeAtsPage() {
               style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.6, minHeight: 260 }}
             />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: tooShort ? '#EF9F27' : '#37475a' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: tooShort ? 'var(--gx-warning)' : 'var(--gx-text-subtle)' }}>
                 {tooShort ? `Need at least ${MIN_CHARS} characters of resume text` : `${resumeText.trim().length.toLocaleString()} characters`}
               </span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#37475a' }}>text only · PDF upload coming later</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-subtle)' }}>text only · PDF upload coming later</span>
             </div>
           </div>
 
@@ -177,7 +177,7 @@ export default function ResumeAtsPage() {
                 maxLength={80}
                 style={inputStyle}
               />
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: '#37475a', marginTop: 6 }}>prefilled from your profile — edit freely</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--gx-text-subtle)', marginTop: 6 }}>prefilled from your profile — edit freely</div>
             </div>
           </div>
 
@@ -188,9 +188,9 @@ export default function ResumeAtsPage() {
               width: '100%', padding: 15, borderRadius: 12, border: 'none',
               cursor: resumeText.trim().length < MIN_CHARS ? 'not-allowed' : 'pointer',
               background: resumeText.trim().length < MIN_CHARS
-                ? 'rgba(255,255,255,0.06)'
-                : 'linear-gradient(135deg,#00d9a3,#2ee6b0)',
-              color: resumeText.trim().length < MIN_CHARS ? '#5a7a9a' : '#020812',
+                ? 'var(--gx-surface)'
+                : 'var(--gx-accent)',
+              color: resumeText.trim().length < MIN_CHARS ? 'var(--gx-text-muted)' : 'var(--gx-text-inverse)',
               fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 15,
             }}
           >
@@ -207,17 +207,17 @@ export default function ResumeAtsPage() {
                     onClick={() => { if (h.analysis?.ats_score != null) { setAnalysis(h.analysis); window.scrollTo({ top: 0, behavior: 'smooth' }); } }}
                     style={{
                       display: 'flex', alignItems: 'center', gap: 14, textAlign: 'left', cursor: 'pointer',
-                      background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: '12px 16px',
+                      background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: '12px 16px',
                     }}
                   >
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: 700, color: scoreColor(h.ats_score) }}>{h.ats_score}</span>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ color: '#e8e8ed', fontSize: 13, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div style={{ color: 'var(--gx-text)', fontSize: 13, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {h.target_role || 'General analysis'}{h.target_company ? ` · ${h.target_company}` : ''}
                       </div>
-                      <div style={{ color: '#5a7a9a', fontSize: 10, fontFamily: 'var(--font-mono)', marginTop: 2 }}>{new Date(h.created_at).toLocaleString()}</div>
+                      <div style={{ color: 'var(--gx-text-muted)', fontSize: 10, fontFamily: 'var(--font-mono)', marginTop: 2 }}>{new Date(h.created_at).toLocaleString()}</div>
                     </div>
-                    <span style={{ color: '#00d9a3', fontSize: 14 }}>→</span>
+                    <span style={{ color: 'var(--gx-accent)', fontSize: 14 }}>→</span>
                   </button>
                 ))}
               </div>
@@ -234,15 +234,15 @@ export default function ResumeAtsPage() {
               <div style={{ fontFamily: 'var(--font-heading)', fontSize: 52, fontWeight: 800, lineHeight: 1, color: scoreColor(analysis.ats_score) }}>
                 {analysis.ats_score}
               </div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 2, color: '#5a7a9a', marginTop: 6 }}>ATS SCORE / 100</div>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, letterSpacing: 2, color: 'var(--gx-text-muted)', marginTop: 6 }}>ATS SCORE / 100</div>
             </div>
             <div style={{ flex: 1, minWidth: 240 }}>
-              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: '#e8e8ed', marginBottom: 6 }}>
+              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, color: 'var(--gx-text)', marginBottom: 6 }}>
                 {scoreVerdict(analysis.ats_score)}
               </div>
-              <div style={{ fontSize: 13, color: '#c8d8e8', lineHeight: 1.65 }}>{analysis.score_explanation}</div>
+              <div style={{ fontSize: 13, color: 'var(--gx-text)', lineHeight: 1.65 }}>{analysis.score_explanation}</div>
               {(analysis.target_role || analysis.target_company) && (
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginTop: 10 }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)', marginTop: 10 }}>
                   scored against: {[analysis.target_role, analysis.target_company].filter(Boolean).join(' @ ')}
                 </div>
               )}
@@ -253,12 +253,12 @@ export default function ResumeAtsPage() {
           {analysis.missing_keywords?.length > 0 && (
             <div style={{ ...card, marginBottom: 14 }}>
               <SectionTitle icon="🔑" count={analysis.missing_keywords.length}>Missing keywords</SectionTitle>
-              <div style={{ fontSize: 12.5, color: '#5a7a9a', marginBottom: 12, lineHeight: 1.6 }}>
+              <div style={{ fontSize: 12.5, color: 'var(--gx-text-muted)', marginBottom: 12, lineHeight: 1.6 }}>
                 Terms recruiters and ATS filters expect for this role that your resume doesn&apos;t surface. Only add ones you can honestly back up.
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                 {analysis.missing_keywords.map((k, i) => (
-                  <span key={i} style={{ padding: '5px 12px', borderRadius: 20, background: 'rgba(239,159,39,0.08)', border: '1px solid rgba(239,159,39,0.3)', color: '#EF9F27', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
+                  <span key={i} style={{ padding: '5px 12px', borderRadius: 20, background: 'var(--gx-warning-soft)', border: '1px solid var(--gx-warning-border)', color: 'var(--gx-warning)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
                     {k}
                   </span>
                 ))}
@@ -270,23 +270,23 @@ export default function ResumeAtsPage() {
           {analysis.weak_bullets?.length > 0 && (
             <div style={{ ...card, marginBottom: 14 }}>
               <SectionTitle icon="✍️" count={analysis.weak_bullets.length}>Weak bullets — rewritten</SectionTitle>
-              <div style={{ fontSize: 12.5, color: '#5a7a9a', marginBottom: 14, lineHeight: 1.6 }}>
+              <div style={{ fontSize: 12.5, color: 'var(--gx-text-muted)', marginBottom: 14, lineHeight: 1.6 }}>
                 Numbers in [brackets] are placeholders — replace them with your real figures before using a rewrite.
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {analysis.weak_bullets.map((b, i) => (
-                  <div key={i} style={{ border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, overflow: 'hidden' }}>
-                    <div style={{ padding: '12px 16px', background: 'rgba(255,45,120,0.05)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 2, color: '#ff2d78', marginBottom: 6 }}>BEFORE</div>
-                      <div style={{ fontSize: 13, color: '#8b9bb0', lineHeight: 1.6 }}>{b.original}</div>
+                  <div key={i} style={{ border: '1px solid var(--gx-border)', borderRadius: 12, overflow: 'hidden' }}>
+                    <div style={{ padding: '12px 16px', background: 'var(--gx-danger-soft)', borderBottom: '1px solid var(--gx-border)' }}>
+                      <div style={{ fontFamily: 'var(--font-body)', fontSize: 9, letterSpacing: 2, color: 'var(--gx-danger)', marginBottom: 6 }}>BEFORE</div>
+                      <div style={{ fontSize: 13, color: 'var(--gx-text-muted)', lineHeight: 1.6 }}>{b.original}</div>
                     </div>
-                    <div style={{ padding: '12px 16px', background: 'rgba(0,217,163,0.05)' }}>
+                    <div style={{ padding: '12px 16px', background: 'var(--gx-accent-soft)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6, gap: 10 }}>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 2, color: '#00d9a3' }}>AFTER</span>
+                        <span style={{ fontFamily: 'var(--font-body)', fontSize: 9, letterSpacing: 2, color: 'var(--gx-accent)' }}>AFTER</span>
                         <CopyButton text={b.rewritten} />
                       </div>
-                      <div style={{ fontSize: 13, color: '#e8e8ed', lineHeight: 1.6, fontWeight: 500 }}>{b.rewritten}</div>
-                      {b.why && <div style={{ fontSize: 11.5, color: '#5a7a9a', marginTop: 8, lineHeight: 1.5 }}>💬 {b.why}</div>}
+                      <div style={{ fontSize: 13, color: 'var(--gx-text)', lineHeight: 1.6, fontWeight: 500 }}>{b.rewritten}</div>
+                      {b.why && <div style={{ fontSize: 11.5, color: 'var(--gx-text-muted)', marginTop: 8, lineHeight: 1.5 }}>💬 {b.why}</div>}
                     </div>
                   </div>
                 ))}
@@ -300,9 +300,9 @@ export default function ResumeAtsPage() {
               <SectionTitle icon="📊" count={analysis.missing_impact.length}>Bullets missing measurable impact</SectionTitle>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {analysis.missing_impact.map((m, i) => (
-                  <div key={i} style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                    <div style={{ fontSize: 13, color: '#8b9bb0', lineHeight: 1.6, marginBottom: 6 }}>&ldquo;{m.bullet}&rdquo;</div>
-                    <div style={{ fontSize: 12.5, color: '#c8d8e8', lineHeight: 1.55 }}>💡 {m.suggestion}</div>
+                  <div key={i} style={{ padding: '12px 16px', borderRadius: 10, background: 'var(--gx-surface)', border: '1px solid var(--gx-border)' }}>
+                    <div style={{ fontSize: 13, color: 'var(--gx-text-muted)', lineHeight: 1.6, marginBottom: 6 }}>&ldquo;{m.bullet}&rdquo;</div>
+                    <div style={{ fontSize: 12.5, color: 'var(--gx-text)', lineHeight: 1.55 }}>💡 {m.suggestion}</div>
                   </div>
                 ))}
               </div>
@@ -315,9 +315,9 @@ export default function ResumeAtsPage() {
               <SectionTitle icon="⚠️" count={analysis.formatting_flags.length}>Formatting risks for ATS parsers</SectionTitle>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {analysis.formatting_flags.map((f, i) => (
-                  <div key={i} style={{ padding: '12px 16px', borderRadius: 10, background: 'rgba(239,159,39,0.04)', border: '1px solid rgba(239,159,39,0.18)' }}>
-                    <div style={{ fontSize: 13, color: '#e8e8ed', fontWeight: 600, marginBottom: 4 }}>{f.issue}</div>
-                    <div style={{ fontSize: 12.5, color: '#c8d8e8', lineHeight: 1.55 }}>→ {f.fix}</div>
+                  <div key={i} style={{ padding: '12px 16px', borderRadius: 10, background: 'var(--gx-warning-soft)', border: '1px solid var(--gx-warning-border)' }}>
+                    <div style={{ fontSize: 13, color: 'var(--gx-text)', fontWeight: 600, marginBottom: 4 }}>{f.issue}</div>
+                    <div style={{ fontSize: 12.5, color: 'var(--gx-text)', lineHeight: 1.55 }}>→ {f.fix}</div>
                   </div>
                 ))}
               </div>
@@ -328,8 +328,8 @@ export default function ResumeAtsPage() {
             analysis.missing_impact?.length === 0 && analysis.formatting_flags?.length === 0 && (
             <div style={{ ...card, textAlign: 'center', marginBottom: 14 }}>
               <div style={{ fontSize: 36, marginBottom: 10 }}>✨</div>
-              <div style={{ color: '#e8e8ed', fontSize: 14, fontWeight: 600 }}>No specific issues found</div>
-              <div style={{ color: '#5a7a9a', fontSize: 12.5, marginTop: 6 }}>The analyzer didn&apos;t flag keywords, bullets, or formatting — the score explanation above is the full picture.</div>
+              <div style={{ color: 'var(--gx-text)', fontSize: 14, fontWeight: 600 }}>No specific issues found</div>
+              <div style={{ color: 'var(--gx-text-muted)', fontSize: 12.5, marginTop: 6 }}>The analyzer didn&apos;t flag keywords, bullets, or formatting — the score explanation above is the full picture.</div>
             </div>
           )}
 
@@ -337,8 +337,8 @@ export default function ResumeAtsPage() {
             onClick={() => { setAnalysis(null); setError(null); }}
             style={{
               width: '100%', padding: 14, borderRadius: 12, cursor: 'pointer',
-              border: '1px solid rgba(0,217,163,0.25)', background: 'transparent',
-              color: '#00d9a3', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14,
+              border: '1px solid var(--gx-accent-border)', background: 'transparent',
+              color: 'var(--gx-accent)', fontFamily: 'var(--font-heading)', fontWeight: 700, fontSize: 14,
             }}
           >
             ← Edit resume & re-analyze

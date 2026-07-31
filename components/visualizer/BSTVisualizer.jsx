@@ -206,14 +206,14 @@ export default function BSTVisualizer() {
     const stepNode = activePath[highlightStep];
     const isLastStep = highlightStep === activePath.length - 1;
     if (mode === 'search') {
-      if (isLastStep && id === stepNode) return searchFound ? '#1d9e75' : '#ff2d78';
-      if (activePath.indexOf(id) <= highlightStep && activePath.indexOf(id) >= 0) return '#ef9f27';
-      return '#1a2a3a';
+      if (isLastStep && id === stepNode) return searchFound ? 'var(--gx-success)' : 'var(--gx-danger)';
+      if (activePath.indexOf(id) <= highlightStep && activePath.indexOf(id) >= 0) return 'var(--gx-warning)';
+      return 'var(--gx-surface-2)';
     }
-    if (activePath.indexOf(id) < highlightStep && activePath.indexOf(id) >= 0) return '#ef9f27';
-    if (isLastStep && id === stepNode) return '#1d9e75';
-    if (id === stepNode) return '#ef9f27';
-    return '#1a2a3a';
+    if (activePath.indexOf(id) < highlightStep && activePath.indexOf(id) >= 0) return 'var(--gx-warning)';
+    if (isLastStep && id === stepNode) return 'var(--gx-success)';
+    if (id === stepNode) return 'var(--gx-warning)';
+    return 'var(--gx-surface-2)';
   }
 
   const SVG_W = 800, SVG_H = 320;
@@ -229,25 +229,25 @@ export default function BSTVisualizer() {
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Nodes', value: nodes.length, color: '#00d9a3' },
-          { label: 'Mode', value: mode.toUpperCase(), color: '#ef9f27' },
-          { label: 'Comparisons', value: Math.max(0, highlightStep), color: '#ff6b4a' },
-          { label: 'Result', value: searchFound === null ? '—' : searchFound ? 'Found' : 'Not Found', color: searchFound ? '#1d9e75' : searchFound === false ? '#ff2d78' : '#5a7a9a' },
+          { label: 'Nodes', value: nodes.length, color: 'var(--gx-accent)' },
+          { label: 'Mode', value: mode.toUpperCase(), color: 'var(--gx-warning)' },
+          { label: 'Comparisons', value: Math.max(0, highlightStep), color: 'var(--gx-warning)' },
+          { label: 'Result', value: searchFound === null ? '—' : searchFound ? 'Found' : 'Not Found', color: searchFound ? 'var(--gx-success)' : searchFound === false ? 'var(--gx-danger)' : 'var(--gx-text-muted)' },
         ].map(s => (
-          <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+          <div key={s.label} style={{ background: 'var(--gx-surface)', border: `1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)', marginBottom: 2 }}>{s.label}</div>
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
-      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, overflow: 'hidden' }}>
+      <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, overflow: 'hidden' }}>
         <svg width="100%" viewBox={`0 0 ${SVG_W} ${SVG_H}`} style={{ display: 'block' }}>
           {edges.map((e, i) => {
             const p = laidOut.find(n => n.id === e.parentId);
             const c = laidOut.find(n => n.id === e.id);
             return p && c ? (
-              <line key={i} x1={p.x} y1={p.y} x2={c.x} y2={c.y} stroke="rgba(0,217,163,0.2)" strokeWidth={1.5} />
+              <line key={i} x1={p.x} y1={p.y} x2={c.x} y2={c.y} stroke="var(--gx-accent)" strokeWidth={1.5} />
             ) : null;
           })}
           {laidOut.map(n => {
@@ -256,13 +256,13 @@ export default function BSTVisualizer() {
             return (
               <g key={n.id}>
                 {isActive && <circle cx={n.x} cy={n.y} r={26} fill="none" stroke={color} strokeWidth={1} opacity={0.4} />}
-                <circle cx={n.x} cy={n.y} r={20} fill={color === '#1a2a3a' ? '#0d1a2a' : color + '22'} stroke={color} strokeWidth={isActive ? 2.5 : 1.5} style={{ transition: 'all 0.3s ease' }} />
+                <circle cx={n.x} cy={n.y} r={20} fill={color === 'var(--gx-surface-2)' ? 'var(--gx-surface)' : `color-mix(in srgb, ${color} 13%, transparent)`} stroke={color} strokeWidth={isActive ? 2.5 : 1.5} style={{ transition: 'all 0.3s ease' }} />
                 <text x={n.x} y={n.y + 5} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700, fill: color, transition: 'fill 0.3s ease' }}>{n.val}</text>
               </g>
             );
           })}
           {nodes.length === 0 && (
-            <text x={SVG_W / 2} y={SVG_H / 2} textAnchor="middle" style={{ fontFamily: 'var(--font-body)', fontSize: 14, fill: '#2a3a4a' }}>Insert values to build a BST</text>
+            <text x={SVG_W / 2} y={SVG_H / 2} textAnchor="middle" style={{ fontFamily: 'var(--font-body)', fontSize: 14, fill: 'var(--gx-text-subtle)' }}>Insert values to build a BST</text>
           )}
         </svg>
       </div>
@@ -276,24 +276,24 @@ export default function BSTVisualizer() {
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
         <input type="number" value={inputVal} onChange={e => setInputVal(e.target.value)} onKeyDown={e => e.key === 'Enter' && doInsert()}
-          placeholder="Value..." style={{ background: 'rgba(0,217,163,0.04)', border: '1px solid rgba(0,217,163,0.2)', borderRadius: 8, padding: '7px 12px', color: '#e8e8ed', fontFamily: 'var(--font-mono)', fontSize: 13, outline: 'none', width: 100 }} />
-        <button onClick={doInsert} style={btn('#00d9a3')}>Insert</button>
-        <button onClick={doSearch} style={btn('#ff6b4a')}>Search</button>
-        <button onClick={() => setIsPlaying(p => !p)} style={btn('#ef9f27')}>{isPlaying ? '⏸ Pause' : '▶ Play'}</button>
+          placeholder="Value..." style={{ background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-accent-border)', borderRadius: 8, padding: '7px 12px', color: 'var(--gx-text)', fontFamily: 'var(--font-mono)', fontSize: 13, outline: 'none', width: 100 }} />
+        <button onClick={doInsert} style={btn('var(--gx-accent)')}>Insert</button>
+        <button onClick={doSearch} style={btn('var(--gx-warning)')}>Search</button>
+        <button onClick={() => setIsPlaying(p => !p)} style={btn('var(--gx-warning)')}>{isPlaying ? '⏸ Pause' : '▶ Play'}</button>
         <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a' }}>SPEED</span>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)' }}>SPEED</span>
           {[1, 2, 3, 4].map(s => (
-            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid #00d9a3' : '1px solid rgba(0,217,163,0.15)', background: speed === s ? 'rgba(0,217,163,0.12)' : 'transparent', color: speed === s ? '#00d9a3' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×', '1×', '2×', '3×'][s - 1]}</button>
+            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid var(--gx-accent)' : '1px solid var(--gx-border)', background: speed === s ? 'var(--gx-accent-soft)' : 'transparent', color: speed === s ? 'var(--gx-accent)' : 'var(--gx-text-muted)', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×', '1×', '2×', '3×'][s - 1]}</button>
           ))}
         </div>
-        <button onClick={reset} style={btn('#ff2d78')}>↺ Reset</button>
+        <button onClick={reset} style={btn('var(--gx-danger)')}>↺ Reset</button>
       </div>
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        {[['#1a2a3a', 'Default'], ['#ef9f27', 'Comparing'], ['#1d9e75', 'Inserted/Found'], ['#ff2d78', 'Not Found']].map(([c, l]) => (
+        {[['var(--gx-surface-2)', 'Default'], ['var(--gx-warning)', 'Comparing'], ['var(--gx-success)', 'Inserted/Found'], ['var(--gx-danger)', 'Not Found']].map(([c, l]) => (
           <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ width: 12, height: 12, borderRadius: '50%', background: c + '44', border: `2px solid ${c}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l}</span>
+            <div style={{ width: 12, height: 12, borderRadius: '50%', background: `color-mix(in srgb, ${c} 27%, transparent)`, border: `2px solid ${c}` }} />
+            <span style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>
@@ -303,5 +303,5 @@ export default function BSTVisualizer() {
 }
 
 function btn(color) {
-  return { padding: '8px 16px', borderRadius: 8, border: `1px solid ${color}30`, background: `${color}10`, color, fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' };
+  return { padding: '8px 16px', borderRadius: 8, border: `1px solid color-mix(in srgb, ${color} 19%, transparent)`, background: `color-mix(in srgb, ${color} 6%, transparent)`, color, fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' };
 }

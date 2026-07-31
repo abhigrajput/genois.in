@@ -160,20 +160,20 @@ export default function CodingPage() {
     }
   }
 
-  const card = { background:'#070f1f', border:'1px solid rgba(0,217,163,0.1)', borderRadius:14, padding:20, marginBottom:16 };
+  const card = { background:'var(--gx-bg)', border:'1px solid var(--gx-border)', borderRadius:14, padding:20, marginBottom:16 };
 
   const modeTab = (active) => ({
     padding:'8px 16px',borderRadius:8,border:'none',cursor:'pointer',
     fontFamily:'var(--font-heading)',fontSize:12,fontWeight:600,
-    background: active ? 'linear-gradient(135deg,#00d9a3,#ff6b4a)' : 'rgba(255,255,255,0.05)',
-    color: active ? '#020812' : '#5a7a9a',
+    background: active ? 'var(--gx-accent)' : 'var(--gx-surface)',
+    color: active ? 'var(--gx-text-inverse)' : 'var(--gx-text-muted)',
   });
   const companyChip = (active) => ({
     padding:'6px 14px',borderRadius:20,cursor:'pointer',fontSize:12,fontWeight:600,
     fontFamily:'var(--font-heading)',
-    border: active ? '1px solid rgba(0,217,163,0.5)' : '1px solid rgba(255,255,255,0.08)',
-    background: active ? 'rgba(0,217,163,0.12)' : 'transparent',
-    color: active ? '#00d9a3' : '#5a7a9a',
+    border: active ? '1px solid var(--gx-accent-border)' : '1px solid var(--gx-border)',
+    background: active ? 'var(--gx-accent-soft)' : 'transparent',
+    color: active ? 'var(--gx-accent)' : 'var(--gx-text-muted)',
   });
 
   if (!ready || pageLoading) return <LoadingSkeleton variant="page" label={mode === 'company' ? 'Preparing company practice problems…' : "Loading today's coding challenge…"} />;
@@ -193,8 +193,8 @@ export default function CodingPage() {
 
   return (
     <div style={{width:'100%', maxWidth: 1600, margin: '0 auto', fontFamily:'var(--font-body)'}}>
-      <h1 style={{fontFamily:'var(--font-heading)',fontSize:24,fontWeight:800,color:'#e8e8ed',marginBottom:6}}>Coding Challenge</h1>
-      <p style={{color:'#5a7a9a',fontSize:13,marginBottom:16}}>
+      <h1 style={{fontFamily:'var(--font-heading)',fontSize:24,fontWeight:800,color:'var(--gx-text)',marginBottom:6}}>Coding Challenge</h1>
+      <p style={{color:'var(--gx-text-muted)',fontSize:13,marginBottom:16}}>
         {mode === 'company'
           ? (selectedCompany ? `${selectedCompany} practice · problems written in the style of its OA` : 'Pick a target company to practice its OA pattern')
           : `Day ${currentDay} · Submit your solution for AI review`}
@@ -217,8 +217,8 @@ export default function CodingPage() {
 
       {mode === 'company' && selectedCompany && companyInfo && codingTest && (
         <div style={{...card, padding:'12px 16px'}}>
-          <div style={{fontSize:12,color:'#c8d8e8',lineHeight:1.6}}>{companyInfo.focus}</div>
-          <div style={{fontSize:11,color:'#5a7a9a',marginTop:6}}>
+          <div style={{fontSize:12,color:'var(--gx-text)',lineHeight:1.6}}>{companyInfo.focus}</div>
+          <div style={{fontSize:11,color:'var(--gx-text-muted)',marginTop:6}}>
             Practice problems written in the style of {selectedCompany}&apos;s OA — not real past questions.
           </div>
         </div>
@@ -227,10 +227,10 @@ export default function CodingPage() {
       {!codingTest ? (
         <div style={{...card,textAlign:'center',padding:48}}>
           <div style={{fontSize:48,marginBottom:16}}>{mode === 'company' ? '🎯' : '{}'}</div>
-          <div style={{color:'#e8e8ed',fontSize:16,fontWeight:600,marginBottom:8}}>
+          <div style={{color:'var(--gx-text)',fontSize:16,fontWeight:600,marginBottom:8}}>
             {mode === 'company' ? 'Pick a company to start practicing' : 'No coding challenge loaded'}
           </div>
-          <div style={{color:'#5a7a9a',fontSize:13}}>
+          <div style={{color:'var(--gx-text-muted)',fontSize:13}}>
             {mode === 'company'
               ? 'Problems are matched to each company’s OA difficulty and topic pattern'
               : <>Visit Daily Roadmap first to initialize today&apos;s challenge</>}
@@ -247,8 +247,8 @@ export default function CodingPage() {
         style={{
           padding:'8px 16px',borderRadius:8,border:'none',cursor:'pointer',
           fontFamily:'var(--font-heading)',fontSize:12,fontWeight:600,
-          background: currentTestIndex===i ? 'linear-gradient(135deg,#00d9a3,#ff6b4a)' : 'rgba(255,255,255,0.05)',
-          color: currentTestIndex===i ? '#020812' : '#5a7a9a',
+          background: currentTestIndex===i ? 'var(--gx-accent)' : 'var(--gx-surface)',
+          color: currentTestIndex===i ? 'var(--gx-text-inverse)' : 'var(--gx-text-muted)',
         }}>
         Problem {i+1} {t.difficulty ? '· '+t.difficulty : ''}
       </button>
@@ -256,41 +256,41 @@ export default function CodingPage() {
   </div>
 )}
           <div style={card}>
-            <div style={{fontFamily:'var(--font-heading)',fontSize:16,fontWeight:700,color:'#e8e8ed',marginBottom:8}}>{codingTest.title}</div>
-            <span style={{fontSize:11,fontFamily:'var(--font-mono)',color:'#1D9E75',background:'rgba(29,158,117,0.1)',padding:'2px 10px',borderRadius:20}}>{codingTest.difficulty}</span>
+            <div style={{fontFamily:'var(--font-heading)',fontSize:16,fontWeight:700,color:'var(--gx-text)',marginBottom:8}}>{codingTest.title}</div>
+            <span style={{fontSize:11,fontFamily:'var(--font-mono)',color:'var(--gx-success)',background:'var(--gx-success-soft)',padding:'2px 10px',borderRadius:20}}>{codingTest.difficulty}</span>
             {/* One honest label for every company-practice problem. Nothing in
                 the bank is a sourced past exam question, so no problem carries
                 a "real OA" claim. */}
             {codingTest.source && (
-              <span style={{fontSize:11,fontFamily:'var(--font-mono)',color:'#5a7a9a',background:'rgba(255,255,255,0.05)',padding:'2px 10px',borderRadius:20,marginLeft:6}}>
+              <span style={{fontSize:11,fontFamily:'var(--font-mono)',color:'var(--gx-text-muted)',background:'var(--gx-surface)',padding:'2px 10px',borderRadius:20,marginLeft:6}}>
                 Practice{selectedCompany ? ` · in the style of ${selectedCompany}` : ''}
               </span>
             )}
-            <div style={{fontSize:13,color:'#c8d8e8',lineHeight:1.7,marginTop:12,marginBottom:16}}>{codingTest.problem}</div>
+            <div style={{fontSize:13,color:'var(--gx-text)',lineHeight:1.7,marginTop:12,marginBottom:16}}>{codingTest.problem}</div>
             {codingTest.example_input && (
-              <div style={{background:'rgba(0,0,0,0.4)',borderRadius:8,padding:12,fontFamily:'var(--font-mono)',fontSize:12}}>
-                <div style={{color:'#5a7a9a',marginBottom:4}}>Input: <span style={{color:'#00d9a3'}}>{codingTest.example_input}</span></div>
-                <div style={{color:'#5a7a9a'}}>Output: <span style={{color:'#1D9E75'}}>{codingTest.example_output}</span></div>
+              <div style={{background:'rgba(16,24,40,0.4)',borderRadius:8,padding:12,fontFamily:'var(--font-mono)',fontSize:12}}>
+                <div style={{color:'var(--gx-text-muted)',marginBottom:4}}>Input: <span style={{color:'var(--gx-accent)'}}>{codingTest.example_input}</span></div>
+                <div style={{color:'var(--gx-text-muted)'}}>Output: <span style={{color:'var(--gx-success)'}}>{codingTest.example_output}</span></div>
               </div>
             )}
           </div>
 
           {(codingTest.hints||[]).length > 0 && (
             <div style={card}>
-              <div style={{fontSize:13,fontWeight:600,color:'#EF9F27',marginBottom:10,fontFamily:'var(--font-heading)'}}>Hints (costs 2 pts each)</div>
+              <div style={{fontSize:13,fontWeight:600,color:'var(--gx-warning)',marginBottom:10,fontFamily:'var(--font-heading)'}}>Hints (costs 2 pts each)</div>
               {hintIndex === -1 ? (
-                <button onClick={() => setHintIndex(0)} style={{padding:'8px 16px',borderRadius:8,border:'1px solid rgba(239,159,39,0.3)',background:'transparent',color:'#EF9F27',cursor:'pointer',fontSize:12}}>
+                <button onClick={() => setHintIndex(0)} style={{padding:'8px 16px',borderRadius:8,border:'1px solid var(--gx-warning-border)',background:'transparent',color:'var(--gx-warning)',cursor:'pointer',fontSize:12}}>
                   Show Hint 1
                 </button>
               ) : (
                 codingTest.hints.slice(0, hintIndex+1).map((hint,i) => (
-                  <div key={i} style={{fontSize:13,color:'#c8d8e8',padding:'8px 0',borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
+                  <div key={i} style={{fontSize:13,color:'var(--gx-text)',padding:'8px 0',borderBottom:'1px solid var(--gx-border)'}}>
                     💡 {hint}
                   </div>
                 ))
               )}
               {hintIndex >= 0 && hintIndex < codingTest.hints.length - 1 && (
-                <button onClick={() => setHintIndex(h => h+1)} style={{marginTop:8,padding:'6px 14px',borderRadius:8,border:'1px solid rgba(239,159,39,0.3)',background:'transparent',color:'#EF9F27',cursor:'pointer',fontSize:12}}>
+                <button onClick={() => setHintIndex(h => h+1)} style={{marginTop:8,padding:'6px 14px',borderRadius:8,border:'1px solid var(--gx-warning-border)',background:'transparent',color:'var(--gx-warning)',cursor:'pointer',fontSize:12}}>
                   Next Hint
                 </button>
               )}
@@ -312,15 +312,15 @@ export default function CodingPage() {
           </div>
 
           {result && (
-            <div style={{...card,borderColor: result.review?.isCorrect ? 'rgba(29,158,117,0.3)' : 'rgba(255,45,120,0.3)'}}>
+            <div style={{...card,borderColor: result.review?.isCorrect ? 'var(--gx-success-border)' : 'var(--gx-danger-border)'}}>
                <div style={{display:'flex',gap:8,marginBottom:12,flexWrap:'wrap'}}>
-                 <span style={{padding:'4px 12px',borderRadius:20,fontSize:12,fontWeight:600,background: result.review?.isCorrect?'rgba(29,158,117,0.15)':'rgba(255,45,120,0.15)',color: result.review?.isCorrect?'#1D9E75':'#ff2d78'}}>
+                 <span style={{padding:'4px 12px',borderRadius:20,fontSize:12,fontWeight:600,background: result.review?.isCorrect?'var(--gx-success-soft)':'var(--gx-danger-soft)',color: result.review?.isCorrect?'var(--gx-success)':'var(--gx-danger)'}}>
                    {result.review?.isCorrect ? '✓ Correct' : '✗ Needs Work'}
                  </span>
-                 <span style={{padding:'4px 12px',borderRadius:20,fontSize:12,background:'rgba(0,217,163,0.1)',color:'#00d9a3'}}>Score: {result.review?.score}/100</span>
-                 <span style={{padding:'4px 12px',borderRadius:20,fontSize:12,background:'rgba(186,117,23,0.1)',color:'#EF9F27'}}>+{result.points} pts</span>
+                 <span style={{padding:'4px 12px',borderRadius:20,fontSize:12,background:'var(--gx-accent-soft)',color:'var(--gx-accent)'}}>Score: {result.review?.score}/100</span>
+                 <span style={{padding:'4px 12px',borderRadius:20,fontSize:12,background:'var(--gx-warning-soft)',color:'var(--gx-warning)'}}>+{result.points} pts</span>
                </div>
-               <div style={{fontSize:13,color:'#c8d8e8',lineHeight:1.7}}>{result.review?.feedback}</div>
+               <div style={{fontSize:13,color:'var(--gx-text)',lineHeight:1.7}}>{result.review?.feedback}</div>
             </div>
           )}
         </div>

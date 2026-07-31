@@ -74,14 +74,14 @@ function computeSteps(arr) {
 }
 
 function barColor(idx, step) {
-  if (!step) return '#1a2a3a';
-  if (step.done) return '#1d9e75';
-  if (idx < step.sortedUpto) return '#1d9e75';
-  if (step.swapped?.includes(idx)) return '#1d9e75';
-  if (idx === step.minIdx) return '#ef9f27';
-  if (idx === step.current) return '#00d9a3';
-  if (idx === step.scanning) return '#ff6b4a';
-  return '#1a2a3a';
+  if (!step) return 'var(--gx-surface-2)';
+  if (step.done) return 'var(--gx-success)';
+  if (idx < step.sortedUpto) return 'var(--gx-success)';
+  if (step.swapped?.includes(idx)) return 'var(--gx-success)';
+  if (idx === step.minIdx) return 'var(--gx-warning)';
+  if (idx === step.current) return 'var(--gx-accent)';
+  if (idx === step.scanning) return 'var(--gx-warning)';
+  return 'var(--gx-surface-2)';
 }
 
 export default function SelectionSortVisualizer() {
@@ -123,23 +123,23 @@ export default function SelectionSortVisualizer() {
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Current Pass', value: current ? Math.min(current.sortedUpto + 1, arr.length) : 1, color: '#00d9a3' },
-          { label: 'Min Index', value: current?.minIdx ?? '-', color: '#ef9f27' },
-          { label: 'Time', value: 'O(n²)', color: '#ff6b4a' },
-          { label: 'Space', value: 'O(1)', color: '#1d9e75' },
+          { label: 'Current Pass', value: current ? Math.min(current.sortedUpto + 1, arr.length) : 1, color: 'var(--gx-accent)' },
+          { label: 'Min Index', value: current?.minIdx ?? '-', color: 'var(--gx-warning)' },
+          { label: 'Time', value: 'O(n²)', color: 'var(--gx-warning)' },
+          { label: 'Space', value: 'O(1)', color: 'var(--gx-success)' },
         ].map(s => (
-          <div key={s.label} style={{ background:'rgba(10,15,30,0.8)', border:`1px solid ${s.color}20`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
-            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
+          <div key={s.label} style={{ background:'var(--gx-surface)', border:`1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-text-muted)', marginBottom:2 }}>{s.label}</div>
             <div style={{ fontFamily:'var(--font-heading)', fontSize:20, fontWeight:700, color:s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
+      <div style={{ background:'var(--gx-surface)', border:'1px solid var(--gx-border)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
         {displayArr.map((v, i) => (
           <div key={i} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, flex:1, maxWidth:60 }}>
             <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:barColor(i, current) }}>{v}</span>
-            <div style={{ width:'100%', borderRadius:'4px 4px 0 0', height:`${(v / maxVal) * 160}px`, background:barColor(i, current), transition:'all 0.3s ease', boxShadow: current?.minIdx === i ? `0 0 14px #ef9f2780` : 'none', minHeight:4 }} />
+            <div style={{ width:'100%', borderRadius:'4px 4px 0 0', height:`${(v / maxVal) * 160}px`, background:barColor(i, current), transition:'all 0.3s ease', boxShadow: current?.minIdx === i ? `var(--gx-shadow-sm)` : 'none', minHeight:4 }} />
           </div>
         ))}
       </div>
@@ -152,10 +152,10 @@ export default function SelectionSortVisualizer() {
       />
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
-        {[['#1d9e75','Sorted'],['#00d9a3','Current Position'],['#ef9f27','Minimum Found'],['#ff6b4a','Scanning']].map(([c,l]) => (
+        {[['var(--gx-success)','Sorted'],['var(--gx-accent)','Current Position'],['var(--gx-warning)','Minimum Found'],['var(--gx-warning)','Scanning']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:2, background:c }}/>
-            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>
+            <span style={{ fontSize:11, color:'var(--gx-text-muted)', fontFamily:'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>

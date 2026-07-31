@@ -225,20 +225,20 @@ export default function PrimVisualizer() {
     const isCurrent = current.currU === vId;
     const isVisited = current.inMST[vId];
 
-    let border = '2px solid rgba(0, 217, 163, 0.2)';
-    let background = 'rgba(10,15,30,0.8)';
-    let color = '#5a7a9a';
+    let border = '2px solid var(--gx-accent-border)';
+    let background = 'var(--gx-surface)';
+    let color = 'var(--gx-text-muted)';
     let shadow = 'none';
 
     if (isCurrent) {
-      border = '2.5px solid #00d9a3';
-      background = 'rgba(0, 217, 163, 0.12)';
-      color = '#00d9a3';
-      shadow = '0 0 12px rgba(0,217,163,0.35)';
+      border = '2.5px solid var(--gx-accent)';
+      background = 'var(--gx-accent-soft)';
+      color = 'var(--gx-accent)';
+      shadow = 'none';
     } else if (isVisited) {
-      border = '2px solid #1d9e75';
-      background = 'rgba(29, 158, 117, 0.08)';
-      color = '#1d9e75';
+      border = '2px solid var(--gx-success)';
+      background = 'var(--gx-success-soft)';
+      color = 'var(--gx-success)';
     }
 
     return { border, background, color, boxShadow: shadow };
@@ -249,17 +249,17 @@ export default function PrimVisualizer() {
     const isCurrent = current.currEdge === edge.id;
     const isCand = current.pq.some(item => item.edgeId === edge.id && item.status === 'active');
 
-    let stroke = 'rgba(0, 217, 163, 0.12)';
+    let stroke = 'var(--gx-accent)';
     let width = 1.5;
 
     if (isCurrent) {
-      stroke = '#00d9a3';
+      stroke = 'var(--gx-accent)';
       width = 3;
     } else if (isMst) {
-      stroke = '#1d9e75';
+      stroke = 'var(--gx-success)';
       width = 3.5;
     } else if (isCand) {
-      stroke = '#ef9f27';
+      stroke = 'var(--gx-warning)';
       width = 2;
     }
 
@@ -278,26 +278,26 @@ export default function PrimVisualizer() {
       {/* Statistics board */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'MST Cost', value: current.mstEdges.reduce((acc, id) => acc + INITIAL_EDGES.find(e => e.id === id).w, 0), color: '#1d9e75' },
-          { label: 'MST Edges Added', value: `${current.mstEdges.length} / 5`, color: '#00d9a3' },
-          { label: 'Visited Vertices', value: `${current.inMST.filter(Boolean).length} / 6`, color: '#ff6b4a' },
-          { label: 'Active Candidates', value: current.pq.filter(x => x.status === 'active' && !current.inMST[x.v]).length, color: '#ef9f27' },
+          { label: 'MST Cost', value: current.mstEdges.reduce((acc, id) => acc + INITIAL_EDGES.find(e => e.id === id).w, 0), color: 'var(--gx-success)' },
+          { label: 'MST Edges Added', value: `${current.mstEdges.length} / 5`, color: 'var(--gx-accent)' },
+          { label: 'Visited Vertices', value: `${current.inMST.filter(Boolean).length} / 6`, color: 'var(--gx-warning)' },
+          { label: 'Active Candidates', value: current.pq.filter(x => x.status === 'active' && !current.inMST[x.v]).length, color: 'var(--gx-warning)' },
         ].map(s => (
-          <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+          <div key={s.label} style={{ background: 'var(--gx-surface)', border: `1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)', marginBottom: 2 }}>{s.label}</div>
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
       {/* Action narration */}
-      <div style={{ background: 'rgba(0,217,163,0.05)', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 8, padding: '8px 14px', fontFamily: 'var(--font-mono)', fontSize: 11, color: '#00d9a3' }}>
+      <div style={{ background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-border)', borderRadius: 8, padding: '8px 14px', fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--gx-accent)' }}>
         ▶ {current.description}
       </div>
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {/* Graph representation canvas */}
-        <div style={{ flex: 1.5, minWidth: 320, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 16, display: 'flex', justifyContent: 'center' }}>
+        <div style={{ flex: 1.5, minWidth: 320, background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: 16, display: 'flex', justifyContent: 'center' }}>
           <svg width="420" height="280" style={{ display: 'block', overflow: 'visible' }}>
             {/* Draw Edges */}
             {INITIAL_EDGES.map(e => {
@@ -316,8 +316,8 @@ export default function PrimVisualizer() {
                     style={{ transition: 'all 0.3s' }}
                   />
                   {/* Edge Weight Pill */}
-                  <rect x={mid.x - 8} y={mid.y - 8} width="16" height="16" rx="4" fill="#0d1424" stroke="rgba(0, 217, 163, 0.15)" strokeWidth="0.5" />
-                  <text x={mid.x} y={mid.y + 4} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fill: edgeStyles.stroke !== 'rgba(0, 217, 163, 0.12)' ? edgeStyles.stroke : '#5a7a9a', fontWeight: 'bold' }}>
+                  <rect x={mid.x - 8} y={mid.y - 8} width="16" height="16" rx="4" fill="var(--gx-text-inverse)" stroke="var(--gx-accent)" strokeWidth="0.5" />
+                  <text x={mid.x} y={mid.y + 4} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: 9, fill: edgeStyles.stroke !== 'var(--gx-accent)' ? edgeStyles.stroke : 'var(--gx-text-muted)', fontWeight: 'bold' }}>
                     {e.w}
                   </text>
                 </g>
@@ -341,12 +341,12 @@ export default function PrimVisualizer() {
 
         {/* Priority Queue state lists */}
         <div style={{ flex: 0.8, minWidth: 200 }}>
-          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 14 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>PRIORITY QUEUE (Sorted)</div>
+          <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: 14 }}>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 1, marginBottom: 8 }}>PRIORITY QUEUE (Sorted)</div>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 220, overflowY: 'auto' }}>
               {current.pq.length === 0 ? (
-                <div style={{ fontSize: 11, color: '#2a3a4a', fontFamily: 'var(--font-body)', padding: 8 }}>Queue is empty.</div>
+                <div style={{ fontSize: 11, color: 'var(--gx-text-subtle)', fontFamily: 'var(--font-body)', padding: 8 }}>Queue is empty.</div>
               ) : (
                 current.pq
                   .filter(item => !current.inMST[item.v] || item.status === 'mst')
@@ -358,13 +358,13 @@ export default function PrimVisualizer() {
                   })
                   .map((item, index) => {
                     const isMst = item.status === 'mst';
-                    const col = isMst ? '#1d9e75' : '#ef9f27';
-                    const bg = isMst ? 'rgba(29, 158, 117, 0.08)' : 'rgba(239, 159, 39, 0.05)';
+                    const col = isMst ? 'var(--gx-success)' : 'var(--gx-warning)';
+                    const bg = isMst ? 'var(--gx-success-soft)' : 'var(--gx-warning-soft)';
 
                     return (
                       <div key={index} style={{
                         display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                        background: bg, border: `1px solid ${col}25`, borderRadius: 6, padding: '5px 8px',
+                        background: bg, border: `1px solid color-mix(in srgb, ${col} 15%, transparent)`, borderRadius: 6, padding: '5px 8px',
                         fontFamily: 'var(--font-mono)', fontSize: 11, color: col,
                       }}>
                         <span>{VERTICES[item.u].label} ➔ {VERTICES[item.v].label}</span>
@@ -388,13 +388,13 @@ export default function PrimVisualizer() {
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {[
-          { color: '#00d9a3', label: 'Currently visited node / popped edge' },
-          { color: '#1d9e75', label: 'MST (Minimum Spanning Tree) nodes & edges' },
-          { color: '#ef9f27', label: 'Active PQ candidate connections' },
+          { color: 'var(--gx-accent)', label: 'Currently visited node / popped edge' },
+          { color: 'var(--gx-success)', label: 'MST (Minimum Spanning Tree) nodes & edges' },
+          { color: 'var(--gx-warning)', label: 'Active PQ candidate connections' },
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ width: 12, height: 12, borderRadius: 2, background: l.color + '22', border: `1.5px solid ${l.color}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l.label}</span>
+            <div style={{ width: 12, height: 12, borderRadius: 2, background: `color-mix(in srgb, ${l.color} 13%, transparent)`, border: `1.5px solid ${l.color}` }} />
+            <span style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)' }}>{l.label}</span>
           </div>
         ))}
       </div>

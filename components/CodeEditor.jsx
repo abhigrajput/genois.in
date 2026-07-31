@@ -52,22 +52,22 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
   }
 
   const statusColors = {
-    accepted: '#1D9E75',
-    wrong_answer: '#ff2d78',
-    compilation_error: '#EF9F27',
-    runtime_error: '#ff2d78',
-    time_limit_exceeded: '#EF9F27',
+    accepted: 'var(--gx-success)',
+    wrong_answer: 'var(--gx-danger)',
+    compilation_error: 'var(--gx-warning)',
+    runtime_error: 'var(--gx-danger)',
+    time_limit_exceeded: 'var(--gx-warning)',
   };
 
   return (
     <div style={{ fontFamily: 'var(--font-body)', width: '100%' }}>
       {taskDescription && (
-        <div style={{ background: 'rgba(0,217,163,0.04)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 10, padding: '12px 16px', marginBottom: 14 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 2, marginBottom: 6 }}>TASK</div>
-          <div style={{ fontSize: 14, color: '#c8d8e8', lineHeight: 1.6 }}>{taskDescription}</div>
+        <div style={{ background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-border)', borderRadius: 10, padding: '12px 16px', marginBottom: 14 }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-accent)', letterSpacing: 2, marginBottom: 6 }}>TASK</div>
+          <div style={{ fontSize: 14, color: 'var(--gx-text)', lineHeight: 1.6 }}>{taskDescription}</div>
           {expectedOutput && (
-            <div style={{ marginTop: 8, fontSize: 12, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>
-              Expected output: <span style={{ color: '#1D9E75' }}>{expectedOutput}</span>
+            <div style={{ marginTop: 8, fontSize: 12, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>
+              Expected output: <span style={{ color: 'var(--gx-success)' }}>{expectedOutput}</span>
             </div>
           )}
         </div>
@@ -76,16 +76,16 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, flexWrap: 'wrap', gap: 8 }}>
         <div style={{ display: 'flex', gap: 6 }}>
           {LANGUAGES.map(l => (
-            <button key={l} onClick={() => changeLanguage(l)} style={{ padding: '5px 12px', borderRadius: 20, border: `1px solid ${language === l ? 'rgba(0,217,163,0.4)' : 'rgba(255,255,255,0.08)'}`, background: language === l ? 'rgba(0,217,163,0.08)' : 'transparent', color: language === l ? '#00d9a3' : '#5a7a9a', cursor: 'pointer', fontSize: 11, fontFamily: 'var(--font-mono)' }}>
+            <button key={l} onClick={() => changeLanguage(l)} style={{ padding: '5px 12px', borderRadius: 20, border: `1px solid ${language === l ? 'var(--gx-accent-border)' : 'var(--gx-border)'}`, background: language === l ? 'var(--gx-accent-soft)' : 'transparent', color: language === l ? 'var(--gx-accent)' : 'var(--gx-text-muted)', cursor: 'pointer', fontSize: 11, fontFamily: 'var(--font-mono)' }}>
               {LANGUAGE_LABELS[l]}
             </button>
           ))}
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={() => setShowStdin(!showStdin)} style={{ padding: '5px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontSize: 11 }}>
+          <button onClick={() => setShowStdin(!showStdin)} style={{ padding: '5px 12px', borderRadius: 8, border: '1px solid var(--gx-border)', background: 'transparent', color: 'var(--gx-text-muted)', cursor: 'pointer', fontSize: 11 }}>
             {showStdin ? 'Hide Input' : 'Add Input'}
           </button>
-          <button onClick={() => { setCode(STARTERS[language]); setResult(null); }} style={{ padding: '5px 12px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.08)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontSize: 11 }}>
+          <button onClick={() => { setCode(STARTERS[language]); setResult(null); }} style={{ padding: '5px 12px', borderRadius: 8, border: '1px solid var(--gx-border)', background: 'transparent', color: 'var(--gx-text-muted)', cursor: 'pointer', fontSize: 11 }}>
             Reset
           </button>
         </div>
@@ -100,9 +100,9 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
           minHeight: 280,
           padding: '14px 16px',
           borderRadius: 10,
-          border: '1px solid rgba(0,217,163,0.1)',
-          background: '#050d1a',
-          color: '#e8e8ed',
+          border: '1px solid var(--gx-border)',
+          background: 'var(--gx-surface)',
+          color: 'var(--gx-text)',
           fontSize: 13,
           fontFamily: 'var(--font-mono)',
           outline: 'none',
@@ -125,8 +125,8 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
 
       {showStdin && (
         <div style={{ marginTop: 8 }}>
-          <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', marginBottom: 4 }}>STDIN (input for your program)</div>
-          <textarea value={stdin} onChange={e => setStdin(e.target.value)} rows={3} placeholder="Enter program input here..." style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(0,217,163,0.1)', background: '#050d1a', color: '#e8e8ed', fontSize: 12, fontFamily: 'var(--font-mono)', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }} />
+          <div style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 4 }}>STDIN (input for your program)</div>
+          <textarea value={stdin} onChange={e => setStdin(e.target.value)} rows={3} placeholder="Enter program input here..." style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--gx-border)', background: 'var(--gx-surface)', color: 'var(--gx-text)', fontSize: 12, fontFamily: 'var(--font-mono)', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }} />
         </div>
       )}
 
@@ -136,8 +136,8 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
         style={{
           width: '100%', padding: '13px', borderRadius: 10, border: 'none', marginTop: 10,
           cursor: running || isCompleted || !runEligible ? 'not-allowed' : 'pointer',
-          background: isCompleted ? 'rgba(29,158,117,0.2)' : !runEligible ? 'rgba(255,255,255,0.07)' : running ? 'rgba(0,217,163,0.15)' : 'linear-gradient(135deg,#00d9a3,#1D9E75)',
-          color: isCompleted ? '#1D9E75' : !runEligible ? '#555' : '#020812',
+          background: isCompleted ? 'var(--gx-success-soft)' : !runEligible ? 'var(--gx-surface)' : running ? 'var(--gx-accent-soft)' : 'var(--gx-accent)',
+          color: isCompleted ? 'var(--gx-success)' : !runEligible ? 'var(--gx-text-subtle)' : 'var(--gx-text-inverse)',
           fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700,
           transition: 'all 0.4s ease',
         }}>
@@ -145,16 +145,16 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
       </button>
 
       {result && (
-        <div style={{ marginTop: 14, background: '#050d1a', border: `1px solid ${statusColors[result.status] || 'rgba(255,255,255,0.1)'}30`, borderRadius: 10, padding: 16 }}>
+        <div style={{ marginTop: 14, background: 'var(--gx-surface)', border: `1px solid ${statusColors[result.status] || 'var(--gx-border)'}`, borderRadius: 10, padding: 16 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontSize: 16 }}>{result.passed ? '✅' : '❌'}</span>
-              <span style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: statusColors[result.status] || '#5a7a9a' }}>
+              <span style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: statusColors[result.status] || 'var(--gx-text-muted)' }}>
                 {result.statusDescription || result.status?.replace(/_/g, ' ').toUpperCase()}
               </span>
             </div>
             {result.time && (
-              <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>
+              <span style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>
                 {result.time}s · {result.memory}KB
               </span>
             )}
@@ -162,22 +162,22 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
 
           {result.stdout && (
             <div style={{ marginBottom: 10 }}>
-              <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 4 }}>OUTPUT</div>
-              <pre style={{ background: 'rgba(0,0,0,0.3)', padding: '10px 12px', borderRadius: 6, fontSize: 12, color: '#1D9E75', fontFamily: 'var(--font-mono)', margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{result.stdout}</pre>
+              <div style={{ fontSize: 10, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 4 }}>OUTPUT</div>
+              <pre style={{ background: 'var(--gx-surface-2)', padding: '10px 12px', borderRadius: 6, fontSize: 12, color: 'var(--gx-success)', fontFamily: 'var(--font-mono)', margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{result.stdout}</pre>
             </div>
           )}
 
           {result.stderr && (
             <div style={{ marginBottom: 10 }}>
-              <div style={{ fontSize: 10, color: '#ff2d78', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 4 }}>ERROR</div>
-              <pre style={{ background: 'rgba(255,45,120,0.05)', padding: '10px 12px', borderRadius: 6, fontSize: 12, color: '#ff2d78', fontFamily: 'var(--font-mono)', margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{result.stderr}</pre>
+              <div style={{ fontSize: 10, color: 'var(--gx-danger)', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 4 }}>ERROR</div>
+              <pre style={{ background: 'var(--gx-danger-soft)', padding: '10px 12px', borderRadius: 6, fontSize: 12, color: 'var(--gx-danger)', fontFamily: 'var(--font-mono)', margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{result.stderr}</pre>
             </div>
           )}
 
           {result.compile_output && (
             <div>
-              <div style={{ fontSize: 10, color: '#EF9F27', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 4 }}>COMPILE OUTPUT</div>
-              <pre style={{ background: 'rgba(239,159,39,0.05)', padding: '10px 12px', borderRadius: 6, fontSize: 12, color: '#EF9F27', fontFamily: 'var(--font-mono)', margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{result.compile_output}</pre>
+              <div style={{ fontSize: 10, color: 'var(--gx-warning)', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 4 }}>COMPILE OUTPUT</div>
+              <pre style={{ background: 'var(--gx-warning-soft)', padding: '10px 12px', borderRadius: 6, fontSize: 12, color: 'var(--gx-warning)', fontFamily: 'var(--font-mono)', margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{result.compile_output}</pre>
             </div>
           )}
         </div>

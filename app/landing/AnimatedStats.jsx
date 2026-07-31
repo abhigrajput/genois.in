@@ -1,8 +1,8 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 
-const PURPLE_LIGHT = '#2ee6b0';
-const CYAN = '#00b389';
+const PURPLE_LIGHT = 'var(--gx-accent)';
+const CYAN = 'var(--gx-accent-hover)';
 
 const STATS = [
   { target: 500, suffix: '+', label: 'Students Enrolled' },
@@ -35,13 +35,13 @@ function StatItem({ stat, started }) {
       <div style={{
         fontFamily: 'var(--font-syne), sans-serif',
         fontSize: 56, fontWeight: 800, lineHeight: 1.1,
-        backgroundImage: `linear-gradient(135deg, ${PURPLE_LIGHT}, ${CYAN})`,
+        backgroundImage: PURPLE_LIGHT,
         WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent',
       }}>
         {count}{stat.suffix}
       </div>
       <div style={{
-        fontSize: 12, color: '#6b7280',
+        fontSize: 12, color: 'var(--gx-text-muted)',
         letterSpacing: 1.5, textTransform: 'uppercase',
         marginTop: 10, fontFamily: 'var(--font-outfit), sans-serif',
       }}>

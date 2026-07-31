@@ -84,11 +84,11 @@ function computeSteps(arr) {
 }
 
 function barColor(idx, step) {
-  if (step.done) return '#1d9e75';
-  if (idx >= step.sortedFrom) return '#1d9e75';
-  if (step.swapped?.includes(idx)) return '#1d9e75';
-  if (step.comparing?.includes(idx)) return '#00d9a3';
-  return '#1a2a3a';
+  if (step.done) return 'var(--gx-success)';
+  if (idx >= step.sortedFrom) return 'var(--gx-success)';
+  if (step.swapped?.includes(idx)) return 'var(--gx-success)';
+  if (step.comparing?.includes(idx)) return 'var(--gx-accent)';
+  return 'var(--gx-surface-2)';
 }
 
 export default function BubbleSortVisualizer() {
@@ -139,16 +139,16 @@ export default function BubbleSortVisualizer() {
       {/* Stats */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Comparisons', value: current?.comparisons ?? 0, color: '#00d9a3' },
-          { label: 'Swaps', value: current?.swaps ?? 0, color: '#ef9f27' },
-          { label: 'Time', value: 'O(n²)', color: '#ff6b4a' },
-          { label: 'Space', value: 'O(1)', color: '#1d9e75' },
+          { label: 'Comparisons', value: current?.comparisons ?? 0, color: 'var(--gx-accent)' },
+          { label: 'Swaps', value: current?.swaps ?? 0, color: 'var(--gx-warning)' },
+          { label: 'Time', value: 'O(n²)', color: 'var(--gx-warning)' },
+          { label: 'Space', value: 'O(1)', color: 'var(--gx-success)' },
         ].map(s => (
           <div key={s.label} style={{
-            background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`,
+            background: 'var(--gx-surface)', border: `1px solid color-mix(in srgb, ${s.color} 13%, transparent)`,
             borderRadius: 8, padding: '8px 16px', minWidth: 100,
           }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)', marginBottom: 2 }}>{s.label}</div>
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
@@ -156,7 +156,7 @@ export default function BubbleSortVisualizer() {
 
       {/* Bar chart */}
       <div style={{
-        background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)',
+        background: 'var(--gx-surface)', border: '1px solid var(--gx-border)',
         borderRadius: 12, padding: '24px 16px', minHeight: 200,
         display: 'flex', alignItems: 'flex-end', gap: 6, justifyContent: 'center',
       }}>
@@ -184,10 +184,10 @@ export default function BubbleSortVisualizer() {
 
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        {[['#1a2a3a','Unsorted'],['#00d9a3','Comparing'],['#1d9e75','Sorted']].map(([c,l]) => (
+        {[['var(--gx-surface-2)','Unsorted'],['var(--gx-accent)','Comparing'],['var(--gx-success)','Sorted']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:2, background:c, border:`1px solid ${c}` }}/>
-            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>
+            <span style={{ fontSize:11, color:'var(--gx-text-muted)', fontFamily:'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>

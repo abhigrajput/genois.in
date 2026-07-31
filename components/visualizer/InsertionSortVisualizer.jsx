@@ -116,14 +116,14 @@ function computeSteps(arr) {
 }
 
 function barColor(idx, step) {
-  if (!step) return '#1a2a3a';
-  if (step.done) return '#1d9e75';
-  if (idx < step.sortedUpto && !step.comparing?.includes(idx) && !step.shifting?.includes(idx)) return '#1d9e75';
-  if (idx === step.placed) return '#1d9e75';
-  if (step.shifting?.includes(idx)) return '#378ADD';
-  if (step.comparing?.includes(idx)) return '#ff6b4a';
-  if (idx === step.key) return '#ef9f27';
-  return '#1a2a3a';
+  if (!step) return 'var(--gx-surface-2)';
+  if (step.done) return 'var(--gx-success)';
+  if (idx < step.sortedUpto && !step.comparing?.includes(idx) && !step.shifting?.includes(idx)) return 'var(--gx-success)';
+  if (idx === step.placed) return 'var(--gx-success)';
+  if (step.shifting?.includes(idx)) return 'var(--gx-info)';
+  if (step.comparing?.includes(idx)) return 'var(--gx-warning)';
+  if (idx === step.key) return 'var(--gx-warning)';
+  return 'var(--gx-surface-2)';
 }
 
 export default function InsertionSortVisualizer() {
@@ -165,24 +165,24 @@ export default function InsertionSortVisualizer() {
 
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
-          { label:'Key Value', value: current?.keyVal > 0 ? current.keyVal : '-', color:'#ef9f27' },
-          { label:'Comparisons', value: current?.comparisons ?? 0, color:'#00d9a3' },
-          { label:'Shifts', value: current?.shifts ?? 0, color:'#378ADD' },
-          { label:'Time', value:'O(n²)', color:'#ff6b4a' },
+          { label:'Key Value', value: current?.keyVal > 0 ? current.keyVal : '-', color:'var(--gx-warning)' },
+          { label:'Comparisons', value: current?.comparisons ?? 0, color:'var(--gx-accent)' },
+          { label:'Shifts', value: current?.shifts ?? 0, color:'var(--gx-info)' },
+          { label:'Time', value:'O(n²)', color:'var(--gx-warning)' },
         ].map(s => (
-          <div key={s.label} style={{ background:'rgba(10,15,30,0.8)', border:`1px solid ${s.color}20`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
-            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
+          <div key={s.label} style={{ background:'var(--gx-surface)', border:`1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-text-muted)', marginBottom:2 }}>{s.label}</div>
             <div style={{ fontFamily:'var(--font-heading)', fontSize:20, fontWeight:700, color:s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
+      <div style={{ background:'var(--gx-surface)', border:'1px solid var(--gx-border)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
         {displayArr.map((v, i) => (
           <div key={i} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, flex:1, maxWidth:60 }}>
             <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:barColor(i, current) }}>{v}</span>
             <div style={{ width:'100%', borderRadius:'4px 4px 0 0', height:`${(v / maxVal) * 160}px`, background:barColor(i, current), transition:'all 0.3s ease', minHeight:4,
-              boxShadow: i === current?.key ? `0 0 14px #ef9f2780` : 'none',
+              boxShadow: i === current?.key ? `var(--gx-shadow-sm)` : 'none',
             }} />
           </div>
         ))}
@@ -196,10 +196,10 @@ export default function InsertionSortVisualizer() {
       />
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
-        {[['#1d9e75','Sorted'],['#ef9f27','Key Element'],['#378ADD','Shifting'],['#ff6b4a','Comparing']].map(([c,l]) => (
+        {[['var(--gx-success)','Sorted'],['var(--gx-warning)','Key Element'],['var(--gx-info)','Shifting'],['var(--gx-warning)','Comparing']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:2, background:c }}/>
-            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>
+            <span style={{ fontSize:11, color:'var(--gx-text-muted)', fontFamily:'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>

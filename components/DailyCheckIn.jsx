@@ -2,9 +2,9 @@
 import { useState, useEffect } from 'react';
 import { MessageCircle, X } from 'lucide-react';
 
-const PURPLE = '#00d9a3';
-const PURPLE_LIGHT = '#2ee6b0';
-const MUTED = '#8b93a1';
+const PURPLE = 'var(--gx-accent)';
+const PURPLE_LIGHT = 'var(--gx-accent)';
+const MUTED = 'var(--gx-text-muted)';
 
 // Day-of-week messages. [name] is replaced with the user's first name.
 const DAY_MESSAGES = [
@@ -71,24 +71,24 @@ export default function DailyCheckIn({ name }) {
     <div style={{ position: 'fixed', right: 20, bottom: 20, zIndex: 1000, fontFamily: 'var(--font-body)' }}>
       {open ? (
         <div style={{
-          width: 320, maxWidth: 'calc(100vw - 40px)', background: '#12121a',
-          border: '1px solid rgba(0,217,163,0.28)', borderRadius: 18,
-          boxShadow: '0 24px 60px rgba(0,0,0,0.55)', overflow: 'hidden',
+          width: 320, maxWidth: 'calc(100vw - 40px)', background: 'var(--gx-bg)',
+          border: '1px solid var(--gx-accent-border)', borderRadius: 18,
+          boxShadow: 'var(--gx-shadow-md)', overflow: 'hidden',
           animation: 'dci-slide 0.28s cubic-bezier(0.16,1,0.3,1)',
         }}>
           {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 16px', background: 'rgba(0,217,163,0.1)', borderBottom: '1px solid rgba(0,217,163,0.18)' }}>
-            <div style={{ width: 32, height: 32, borderRadius: '50%', background: `linear-gradient(135deg, ${PURPLE}, #00b389)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 15, color: '#fff', flexShrink: 0 }}>G</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 16px', background: 'var(--gx-accent-soft)', borderBottom: '1px solid var(--gx-border)' }}>
+            <div style={{ width: 32, height: 32, borderRadius: '50%', background: PURPLE, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 15, color: 'var(--gx-text-inverse)', flexShrink: 0 }}>G</div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 13.5, fontWeight: 700, color: '#f8fafc' }}>GENOIS</div>
-              <div style={{ fontSize: 10.5, color: '#34d399', fontFamily: 'var(--font-mono)' }}>● online</div>
+              <div style={{ fontFamily: 'var(--font-heading)', fontSize: 13.5, fontWeight: 700, color: 'var(--gx-text)' }}>GENOIS</div>
+              <div style={{ fontSize: 10.5, color: 'var(--gx-success)', fontFamily: 'var(--font-mono)' }}>● online</div>
             </div>
             <button onClick={dismissButton} aria-label="Close" style={{ background: 'transparent', border: 'none', color: MUTED, cursor: 'pointer', padding: 4, lineHeight: 0, display: 'flex' }}><X size={16} strokeWidth={2} /></button>
           </div>
 
           {/* Body */}
           <div style={{ padding: '16px' }}>
-            <div style={{ background: 'rgba(0,217,163,0.14)', border: '1px solid rgba(0,217,163,0.25)', borderRadius: '4px 14px 14px 14px', padding: '11px 14px', color: '#f1f5f9', fontSize: 14, lineHeight: 1.55, marginBottom: 14 }}>
+            <div style={{ background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-accent-border)', borderRadius: '4px 14px 14px 14px', padding: '11px 14px', color: 'var(--gx-text)', fontSize: 14, lineHeight: 1.55, marginBottom: 14 }}>
               {busyReply ? 'No problem! Even 15 minutes counts. All the best! 🙌' : message}
             </div>
 
@@ -96,14 +96,14 @@ export default function DailyCheckIn({ name }) {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <button onClick={handleYes} style={{
                   padding: '11px 14px', borderRadius: 10, border: 'none', cursor: 'pointer',
-                  background: `linear-gradient(135deg, ${PURPLE}, #00b389)`, color: '#fff',
+                  background: PURPLE, color: 'var(--gx-text-inverse)',
                   fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700,
                 }}>
                   I'll do it 💪
                 </button>
                 <button onClick={handleBusy} style={{
                   padding: '11px 14px', borderRadius: 10, cursor: 'pointer',
-                  background: 'transparent', border: '1px solid rgba(0,217,163,0.25)', color: '#c7d2fe',
+                  background: 'transparent', border: '1px solid var(--gx-accent-border)', color: 'var(--gx-info)',
                   fontFamily: 'var(--font-body)', fontSize: 13.5, fontWeight: 600,
                 }}>
                   Busy today 😅
@@ -115,9 +115,9 @@ export default function DailyCheckIn({ name }) {
       ) : (
         <button onClick={() => setOpen(true)} aria-label="Daily check-in" style={{
           width: 58, height: 58, borderRadius: '50%', border: 'none', cursor: 'pointer',
-          background: `linear-gradient(135deg, ${PURPLE}, #00b389)`, color: '#fff',
+          background: PURPLE, color: 'var(--gx-text-inverse)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 10px 30px rgba(0,217,163,0.5)', animation: 'dci-pop 0.35s cubic-bezier(0.16,1,0.3,1), dci-float 3s ease-in-out infinite 0.35s',
+          boxShadow: 'var(--gx-shadow-sm)', animation: 'dci-pop 0.35s cubic-bezier(0.16,1,0.3,1), dci-float 3s ease-in-out infinite 0.35s',
         }}>
           <MessageCircle size={26} strokeWidth={2} />
         </button>

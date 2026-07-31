@@ -158,31 +158,31 @@ export default function LCSVisualizer() {
     const isTrace = current.traceback.some(pt => pt.r === r && pt.c === c);
     const isTraceMatch = isTrace && r > 0 && c > 0 && s1[r - 1] === s2[c - 1];
 
-    let border = '1px solid rgba(0, 217, 163, 0.08)';
-    let color = '#4a607a';
+    let border = '1px solid var(--gx-border)';
+    let color = 'var(--gx-text-subtle)';
     let background = 'transparent';
     let shadow = 'none';
 
     if (isCurrent) {
-      border = '2px solid #00d9a3';
-      color = '#00d9a3';
-      background = 'rgba(0, 217, 163, 0.08)';
-      shadow = '0 0 10px rgba(0, 217, 163, 0.2)';
+      border = '2px solid var(--gx-accent)';
+      color = 'var(--gx-accent)';
+      background = 'var(--gx-accent-soft)';
+      shadow = 'none';
     } else if (isTraceMatch) {
-      border = '2px solid #1d9e75';
-      color = '#fff';
-      background = '#1d9e75';
-      shadow = '0 0 10px rgba(29, 158, 117, 0.4)';
+      border = '2px solid var(--gx-success)';
+      color = 'var(--gx-text)';
+      background = 'var(--gx-success)';
+      shadow = 'none';
     } else if (isTrace) {
-      border = '2px solid #1d9e7580';
-      color = '#1d9e75';
-      background = 'rgba(29, 158, 117, 0.1)';
+      border = '2px solid var(--gx-success-border)';
+      color = 'var(--gx-success)';
+      background = 'var(--gx-success-soft)';
     } else if (cand) {
-      border = '1.5px dashed #ef9f27';
-      color = '#ef9f27';
-      background = 'rgba(239, 159, 39, 0.06)';
+      border = '1.5px dashed var(--gx-warning)';
+      color = 'var(--gx-warning)';
+      background = 'var(--gx-warning-soft)';
     } else if (current.dp[r][c] > 0 || r === 0 || c === 0) {
-      color = '#1d9e7580';
+      color = 'var(--gx-success)';
     }
 
     return { border, color, background, boxShadow: shadow };
@@ -207,13 +207,13 @@ export default function LCSVisualizer() {
       {/* Stats row */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'LCS Length', value: current.traceback.length ? current.dp[s1.length][s2.length] : '—', color: '#1d9e75' },
-          { label: 'LCS Subsequence', value: current.lcsString || '—', color: '#00d9a3' },
-          { label: 'String 1 (S1)', value: s1, color: '#ff6b4a' },
-          { label: 'String 2 (S2)', value: s2, color: '#ef9f27' },
+          { label: 'LCS Length', value: current.traceback.length ? current.dp[s1.length][s2.length] : '—', color: 'var(--gx-success)' },
+          { label: 'LCS Subsequence', value: current.lcsString || '—', color: 'var(--gx-accent)' },
+          { label: 'String 1 (S1)', value: s1, color: 'var(--gx-warning)' },
+          { label: 'String 2 (S2)', value: s2, color: 'var(--gx-warning)' },
         ].map(s => (
-          <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 110 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+          <div key={s.label} style={{ background: 'var(--gx-surface)', border: `1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius: 8, padding: '8px 16px', minWidth: 110 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)', marginBottom: 2 }}>{s.label}</div>
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: s.color, wordBreak: 'break-all' }}>{s.value}</div>
           </div>
         ))}
@@ -222,41 +222,41 @@ export default function LCSVisualizer() {
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {/* Left Side: String Configuration inputs */}
         <div style={{ minWidth: 220, flex: 0.7 }}>
-          <div style={{ background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#5a7a9a', letterSpacing: 1 }}>STRING CONFIGURATION</div>
+          <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 11, color: 'var(--gx-text-muted)', letterSpacing: 1 }}>STRING CONFIGURATION</div>
             
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>S1 (Vertical String)</span>
+              <span style={{ fontSize: 10, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>S1 (Vertical String)</span>
               <input type="text" value={s1} onChange={e => updateStrings(e.target.value, s2)} style={inpStyle} placeholder="Max 8 chars" />
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <span style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>S2 (Horizontal String)</span>
+              <span style={{ fontSize: 10, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>S2 (Horizontal String)</span>
               <input type="text" value={s2} onChange={e => updateStrings(s1, e.target.value)} style={inpStyle} placeholder="Max 8 chars" />
             </div>
 
-            <button onClick={() => updateStrings('ABCDGH', 'AEDFHR')} style={{ background: 'rgba(0,217,163,0.08)', border: '1px solid rgba(0,217,163,0.2)', borderRadius: 8, color: '#00d9a3', padding: '6px 12px', fontSize: 11, cursor: 'pointer', fontFamily: 'var(--font-heading)' }}>
+            <button onClick={() => updateStrings('ABCDGH', 'AEDFHR')} style={{ background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-accent-border)', borderRadius: 8, color: 'var(--gx-accent)', padding: '6px 12px', fontSize: 11, cursor: 'pointer', fontFamily: 'var(--font-heading)' }}>
               🎲 Preset Strings
             </button>
           </div>
         </div>
 
         {/* Right Side: LCS 2D Grid */}
-        <div style={{ flex: 1.5, minWidth: 320, background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 16, overflowX: 'auto' }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 12 }}>2D LCS COMPILER MATRIX [i][j]</div>
+        <div style={{ flex: 1.5, minWidth: 320, background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: 16, overflowX: 'auto' }}>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 1, marginBottom: 12 }}>2D LCS COMPILER MATRIX [i][j]</div>
           
           <table style={{ borderCollapse: 'collapse', margin: '0 auto', fontFamily: 'var(--font-mono)', fontSize: 11 }}>
             <thead>
               <tr>
-                <th style={{ padding: 6, borderBottom: '2px solid rgba(0,217,163,0.12)' }} />
-                <th style={{ padding: 6, color: '#5a7a9a', borderBottom: '2px solid rgba(0,217,163,0.12)', fontWeight: 'bold' }}>Ø</th>
+                <th style={{ padding: 6, borderBottom: '2px solid var(--gx-border)' }} />
+                <th style={{ padding: 6, color: 'var(--gx-text-muted)', borderBottom: '2px solid var(--gx-border)', fontWeight: 'bold' }}>Ø</th>
                 {s2.split('').map((char, j) => {
                   const isMatchHeader = current.currCell && current.currCell.c === j + 1;
                   return (
                     <th key={j} style={{
                       padding: 6,
-                      color: isMatchHeader ? '#00d9a3' : '#5a7a9a',
-                      borderBottom: '2px solid rgba(0,217,163,0.12)',
+                      color: isMatchHeader ? 'var(--gx-accent)' : 'var(--gx-text-muted)',
+                      borderBottom: '2px solid var(--gx-border)',
                       fontWeight: 'bold',
                       fontSize: 13,
                       transition: 'color 0.25s',
@@ -273,8 +273,8 @@ export default function LCSVisualizer() {
                   {/* Vertical Label */}
                   <td style={{
                     padding: '8px 12px',
-                    borderRight: '2px solid rgba(0,217,163,0.12)',
-                    color: current.currCell && current.currCell.r === r ? '#00d9a3' : '#5a7a9a',
+                    borderRight: '2px solid var(--gx-border)',
+                    color: current.currCell && current.currCell.r === r ? 'var(--gx-accent)' : 'var(--gx-text-muted)',
                     fontWeight: 'bold',
                     fontSize: 13,
                     transition: 'color 0.25s',
@@ -286,7 +286,7 @@ export default function LCSVisualizer() {
                     return (
                       <td key={c} style={{
                         padding: 0,
-                        border: '1px solid rgba(0, 217, 163, 0.04)',
+                        border: '1px solid var(--gx-border)',
                         textAlign: 'center',
                       }}>
                         <div style={{
@@ -316,13 +316,13 @@ export default function LCSVisualizer() {
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {[
-          { color: '#00d9a3', label: 'Computing cell [i][j]' },
-          { color: '#ef9f27', label: 'Dependencies (Diagonal mismatch candidate)' },
-          { color: '#1d9e75', label: 'Match path cell / Traceback intersection' },
+          { color: 'var(--gx-accent)', label: 'Computing cell [i][j]' },
+          { color: 'var(--gx-warning)', label: 'Dependencies (Diagonal mismatch candidate)' },
+          { color: 'var(--gx-success)', label: 'Match path cell / Traceback intersection' },
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ width: 12, height: 12, borderRadius: 2, background: l.color + '22', border: `1.5px solid ${l.color}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l.label}</span>
+            <div style={{ width: 12, height: 12, borderRadius: 2, background: `color-mix(in srgb, ${l.color} 13%, transparent)`, border: `1.5px solid ${l.color}` }} />
+            <span style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)' }}>{l.label}</span>
           </div>
         ))}
       </div>
@@ -354,11 +354,11 @@ export default function LCSVisualizer() {
 }
 
 const inpStyle = {
-  background: 'rgba(0,217,163,0.04)',
-  border: '1px solid rgba(0,217,163,0.2)',
+  background: 'var(--gx-accent-soft)',
+  border: '1px solid var(--gx-accent-border)',
   borderRadius: 8,
   padding: '6px 10px',
-  color: '#e8e8ed',
+  color: 'var(--gx-text)',
   fontFamily: 'var(--font-mono)',
   fontSize: 12,
   outline: 'none',

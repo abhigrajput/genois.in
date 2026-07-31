@@ -56,7 +56,7 @@ export default function GitHubPage() {
   }
 
   if (loading) return (
-    <div style={{ color: '#5a7a9a', padding: 60, textAlign: 'center', fontFamily: 'var(--font-mono)' }}>
+    <div style={{ color: 'var(--gx-text-muted)', padding: 60, textAlign: 'center', fontFamily: 'var(--font-mono)' }}>
       Loading GitHub profile...
     </div>
   );
@@ -65,16 +65,16 @@ export default function GitHubPage() {
     return (
       <div style={{ maxWidth: 560, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
         <div style={{ marginBottom: 32 }}>
-          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 4 }}>
+          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 4 }}>
             🐙 Connect GitHub
           </h1>
-          <p style={{ color: '#5a7a9a', fontSize: 13 }}>
+          <p style={{ color: 'var(--gx-text-muted)', fontSize: 13 }}>
             Connect your GitHub to show real code activity on your GENOIS profile.
           </p>
         </div>
 
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.12)', borderRadius: 14, padding: 28, marginBottom: 20 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#00d9a3', letterSpacing: 2, marginBottom: 20 }}>WHY CONNECT GITHUB</div>
+        <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 14, padding: 28, marginBottom: 20 }}>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-accent)', letterSpacing: 2, marginBottom: 20 }}>WHY CONNECT GITHUB</div>
           {[
             { icon: '✅', text: 'Shows real commit history — not self-reported' },
             { icon: '📊', text: 'Languages you actually code in' },
@@ -84,25 +84,25 @@ export default function GitHubPage() {
           ].map((f, i) => (
             <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 10 }}>
               <span style={{ fontSize: 16, flexShrink: 0 }}>{f.icon}</span>
-              <span style={{ fontSize: 14, color: '#c8d8e8' }}>{f.text}</span>
+              <span style={{ fontSize: 14, color: 'var(--gx-text)' }}>{f.text}</span>
             </div>
           ))}
 
           <div style={{ marginTop: 20 }}>
-            <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>YOUR GITHUB USERNAME</div>
+            <div style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>YOUR GITHUB USERNAME</div>
             <div style={{ display: 'flex', gap: 10 }}>
               <input
                 value={username}
                 onChange={e => setUsername(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && connect()}
                 placeholder="e.g. abhigrajput2004"
-                style={{ flex: 1, padding: '11px 14px', borderRadius: 10, border: '1px solid rgba(0,217,163,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 14, outline: 'none' }}
+                style={{ flex: 1, padding: '11px 14px', borderRadius: 10, border: '1px solid var(--gx-border)', background: 'var(--gx-surface)', color: 'var(--gx-text)', fontSize: 14, outline: 'none' }}
               />
-              <button onClick={connect} disabled={connecting} style={{ padding: '11px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', background: connecting ? 'rgba(0,217,163,0.2)' : 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700, flexShrink: 0 }}>
+              <button onClick={connect} disabled={connecting} style={{ padding: '11px 20px', borderRadius: 10, border: 'none', cursor: 'pointer', background: connecting ? 'var(--gx-accent-soft)' : 'var(--gx-accent)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700, flexShrink: 0 }}>
                 {connecting ? 'Connecting...' : 'Connect →'}
               </button>
             </div>
-            <p style={{ color: '#3a4a5a', fontSize: 11, fontFamily: 'var(--font-mono)', marginTop: 8 }}>
+            <p style={{ color: 'var(--gx-text-subtle)', fontSize: 11, fontFamily: 'var(--font-mono)', marginTop: 8 }}>
               Just your username — no OAuth required · Read only access
             </p>
           </div>
@@ -115,40 +115,40 @@ export default function GitHubPage() {
     <div style={{ fontFamily: 'var(--font-body)', width: '100%' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 4 }}>
+          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 4 }}>
             🐙 GitHub Profile
           </h1>
-          <a href={data.url} target="_blank" rel="noreferrer" style={{ color: '#00d9a3', fontSize: 13, textDecoration: 'none', fontFamily: 'var(--font-mono)' }}>
+          <a href={data.url} target="_blank" rel="noreferrer" style={{ color: 'var(--gx-accent)', fontSize: 13, textDecoration: 'none', fontFamily: 'var(--font-mono)' }}>
             @{data.username} →
           </a>
         </div>
-        <button onClick={sync} disabled={syncing} style={{ padding: '8px 18px', borderRadius: 10, border: '1px solid rgba(0,217,163,0.2)', background: 'transparent', color: '#00d9a3', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600 }}>
+        <button onClick={sync} disabled={syncing} style={{ padding: '8px 18px', borderRadius: 10, border: '1px solid var(--gx-accent-border)', background: 'transparent', color: 'var(--gx-accent)', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600 }}>
           {syncing ? 'Syncing...' : '🔄 Sync'}
         </button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(140px,1fr))', gap: 12, marginBottom: 24 }}>
         {[
-          { label: 'Repositories', value: data.repos, color: '#00d9a3' },
-          { label: 'Total Stars', value: data.stars, color: '#EF9F27' },
-          { label: 'Recent Commits', value: data.commits, color: '#1D9E75' },
-          { label: 'Languages', value: data.languages?.length || 0, color: '#ff6b4a' },
+          { label: 'Repositories', value: data.repos, color: 'var(--gx-accent)' },
+          { label: 'Total Stars', value: data.stars, color: 'var(--gx-warning)' },
+          { label: 'Recent Commits', value: data.commits, color: 'var(--gx-success)' },
+          { label: 'Languages', value: data.languages?.length || 0, color: 'var(--gx-warning)' },
         ].map(s => (
-          <div key={s.label} style={{ background: '#070f1f', border: `1px solid ${s.color}20`, borderRadius: 12, padding: '16px', textAlign: 'center' }}>
+          <div key={s.label} style={{ background: 'var(--gx-bg)', border: `1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius: 12, padding: '16px', textAlign: 'center' }}>
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, color: s.color }}>{s.value}</div>
-            <div style={{ fontSize: 11, color: '#5a7a9a', marginTop: 4 }}>{s.label}</div>
+            <div style={{ fontSize: 11, color: 'var(--gx-text-muted)', marginTop: 4 }}>{s.label}</div>
           </div>
         ))}
       </div>
 
       {data.languages?.length > 0 && (
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 14, padding: 20, marginBottom: 20 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 14 }}>LANGUAGES</div>
+        <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 14, padding: 20, marginBottom: 20 }}>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 2, marginBottom: 14 }}>LANGUAGES</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
             {data.languages.map((lang, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 12px', borderRadius: 20, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: LANG_COLORS[lang] || '#5a7a9a', flexShrink: 0 }} />
-                <span style={{ fontSize: 12, color: '#c8d8e8', fontFamily: 'var(--font-mono)' }}>{lang}</span>
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '5px 12px', borderRadius: 20, background: 'var(--gx-surface)', border: '1px solid var(--gx-border)' }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: LANG_COLORS[lang] || 'var(--gx-surface-2)', flexShrink: 0 }} />
+                <span style={{ fontSize: 12, color: 'var(--gx-text)', fontFamily: 'var(--font-mono)' }}>{lang}</span>
               </div>
             ))}
           </div>
@@ -157,28 +157,28 @@ export default function GitHubPage() {
 
       {data.recentRepos?.length > 0 && (
         <div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 14 }}>RECENT REPOSITORIES</div>
+          <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 2, marginBottom: 14 }}>RECENT REPOSITORIES</div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 12 }}>
             {data.recentRepos.map((repo, i) => (
-              <a key={i} href={repo.url} target="_blank" rel="noreferrer" style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.06)', borderRadius: 12, padding: 16, textDecoration: 'none', display: 'block', transition: 'border-color 0.2s' }}>
+              <a key={i} href={repo.url} target="_blank" rel="noreferrer" style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: 16, textDecoration: 'none', display: 'block', transition: 'border-color 0.2s' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: '#00d9a3' }}>{repo.name}</div>
-                  <div style={{ display: 'flex', gap: 8, fontSize: 11, color: '#5a7a9a', flexShrink: 0 }}>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: 'var(--gx-accent)' }}>{repo.name}</div>
+                  <div style={{ display: 'flex', gap: 8, fontSize: 11, color: 'var(--gx-text-muted)', flexShrink: 0 }}>
                     {repo.stars > 0 && <span>⭐ {repo.stars}</span>}
                     {repo.forks > 0 && <span>🍴 {repo.forks}</span>}
                   </div>
                 </div>
                 {repo.description && (
-                  <div style={{ fontSize: 12, color: '#5a7a9a', lineHeight: 1.5, marginBottom: 8 }}>{repo.description.substring(0, 80)}{repo.description.length > 80 ? '...' : ''}</div>
+                  <div style={{ fontSize: 12, color: 'var(--gx-text-muted)', lineHeight: 1.5, marginBottom: 8 }}>{repo.description.substring(0, 80)}{repo.description.length > 80 ? '...' : ''}</div>
                 )}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   {repo.language && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: LANG_COLORS[repo.language] || '#5a7a9a' }} />
-                      <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>{repo.language}</span>
+                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: LANG_COLORS[repo.language] || 'var(--gx-surface-2)' }} />
+                      <span style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>{repo.language}</span>
                     </div>
                   )}
-                  <span style={{ fontSize: 10, color: '#3a4a5a', fontFamily: 'var(--font-mono)' }}>{timeAgo(repo.updatedAt)}</span>
+                  <span style={{ fontSize: 10, color: 'var(--gx-text-subtle)', fontFamily: 'var(--font-mono)' }}>{timeAgo(repo.updatedAt)}</span>
                 </div>
               </a>
             ))}
@@ -187,7 +187,7 @@ export default function GitHubPage() {
       )}
 
       {data.lastSynced && (
-        <div style={{ marginTop: 16, textAlign: 'center', fontSize: 11, color: '#3a4a5a', fontFamily: 'var(--font-mono)' }}>
+        <div style={{ marginTop: 16, textAlign: 'center', fontSize: 11, color: 'var(--gx-text-subtle)', fontFamily: 'var(--font-mono)' }}>
           Last synced: {new Date(data.lastSynced).toLocaleDateString('en-IN')}
         </div>
       )}

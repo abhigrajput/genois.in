@@ -130,12 +130,12 @@ function computeSteps(input) {
 }
 
 function barColor(idx, step) {
-  if (!step) return '#1a2a3a';
-  if (step.done || idx >= step.sortedFrom) return '#1d9e75';
-  if (step.swapping?.includes(idx)) return '#ff2d78';
-  if (step.comparing?.includes(idx)) return '#00d9a3';
-  if (idx < step.heapRange) return '#2a3a4a';
-  return '#1a2a3a';
+  if (!step) return 'var(--gx-surface-2)';
+  if (step.done || idx >= step.sortedFrom) return 'var(--gx-success)';
+  if (step.swapping?.includes(idx)) return 'var(--gx-danger)';
+  if (step.comparing?.includes(idx)) return 'var(--gx-accent)';
+  if (idx < step.heapRange) return 'var(--gx-surface-3)';
+  return 'var(--gx-surface-2)';
 }
 
 export default function HeapSortVisualizer() {
@@ -184,24 +184,24 @@ export default function HeapSortVisualizer() {
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Comparisons', value: current?.comparisons ?? 0, color: '#00d9a3' },
-          { label: 'Swaps', value: current?.swaps ?? 0, color: '#ff2d78' },
-          { label: 'Time', value: 'O(n log n)', color: '#ff6b4a' },
-          { label: 'Space', value: 'O(1)', color: '#1d9e75' },
+          { label: 'Comparisons', value: current?.comparisons ?? 0, color: 'var(--gx-accent)' },
+          { label: 'Swaps', value: current?.swaps ?? 0, color: 'var(--gx-danger)' },
+          { label: 'Time', value: 'O(n log n)', color: 'var(--gx-warning)' },
+          { label: 'Space', value: 'O(1)', color: 'var(--gx-success)' },
         ].map((s) => (
-          <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+          <div key={s.label} style={{ background: 'var(--gx-surface)', border: `1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)', marginBottom: 2 }}>{s.label}</div>
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
-      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: '24px 16px', minHeight: 200, display: 'flex', alignItems: 'flex-end', gap: 6, justifyContent: 'center' }}>
+      <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: '24px 16px', minHeight: 200, display: 'flex', alignItems: 'flex-end', gap: 6, justifyContent: 'center' }}>
         {displayArr.map((v, i) => (
           <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, flex: 1, maxWidth: 60 }}>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: barColor(i, current) }}>{v}</span>
-            <div style={{ width: '100%', borderRadius: '4px 4px 0 0', height: `${(v / maxVal) * 160}px`, background: barColor(i, current), transition: 'all 0.3s ease', minHeight: 4, boxShadow: current?.swapping?.includes(i) ? '0 0 12px #ff2d7880' : 'none' }} />
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#2a3a4a' }}>{i}</span>
+            <div style={{ width: '100%', borderRadius: '4px 4px 0 0', height: `${(v / maxVal) * 160}px`, background: barColor(i, current), transition: 'all 0.3s ease', minHeight: 4, boxShadow: current?.swapping?.includes(i) ? 'var(--gx-shadow-sm)' : 'none' }} />
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--gx-text-subtle)' }}>{i}</span>
           </div>
         ))}
       </div>
@@ -214,10 +214,10 @@ export default function HeapSortVisualizer() {
       />
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        {[['#2a3a4a', 'In heap'], ['#00d9a3', 'Comparing'], ['#ff2d78', 'Swapping'], ['#1d9e75', 'Sorted (locked)']].map(([c, l]) => (
+        {[['var(--gx-surface-3)', 'In heap'], ['var(--gx-accent)', 'Comparing'], ['var(--gx-danger)', 'Swapping'], ['var(--gx-success)', 'Sorted (locked)']].map(([c, l]) => (
           <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             <div style={{ width: 12, height: 12, borderRadius: 2, background: c, border: `1px solid ${c}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l}</span>
+            <span style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>

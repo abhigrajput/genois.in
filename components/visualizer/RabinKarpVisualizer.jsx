@@ -163,14 +163,14 @@ export default function RabinKarpVisualizer() {
   }, [isPlaying, speed, steps.length]);
 
   const charColor = (idx) => {
-    if (windowStart < 0 || idx < windowStart || idx >= windowStart + m) return { bg: 'rgba(10,15,30,0.8)', bd: 'rgba(0,217,163,0.12)', fg: '#c8d8e8' };
+    if (windowStart < 0 || idx < windowStart || idx >= windowStart + m) return { bg: 'var(--gx-surface)', bd: 'var(--gx-border)', fg: 'var(--gx-text)' };
     const k = idx - windowStart;
-    if (current?.matched === true) return { bg: 'rgba(29,158,117,0.22)', bd: '#1d9e75', fg: '#1d9e75' };
+    if (current?.matched === true) return { bg: 'var(--gx-success-soft)', bd: 'var(--gx-success)', fg: 'var(--gx-success)' };
     if (current?.matched === 'spurious') {
-      if (k === current.mismatchAt) return { bg: 'rgba(255,45,120,0.22)', bd: '#ff2d78', fg: '#ff2d78' };
-      return { bg: 'rgba(239,159,39,0.18)', bd: '#ef9f27', fg: '#ef9f27' };
+      if (k === current.mismatchAt) return { bg: 'var(--gx-danger-soft)', bd: 'var(--gx-danger)', fg: 'var(--gx-danger)' };
+      return { bg: 'var(--gx-warning-soft)', bd: 'var(--gx-warning)', fg: 'var(--gx-warning)' };
     }
-    return { bg: 'rgba(0,217,163,0.14)', bd: '#00d9a3', fg: '#00d9a3' };
+    return { bg: 'var(--gx-accent-soft)', bd: 'var(--gx-accent)', fg: 'var(--gx-accent)' };
   };
 
   return (
@@ -184,12 +184,12 @@ export default function RabinKarpVisualizer() {
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Pattern hash', value: current?.ph ?? hashOf(pattern), color: '#ef9f27' },
-          { label: 'Window hash', value: current?.wh ?? '-', color: '#00d9a3' },
-          { label: 'base / mod', value: `${BASE}/${MOD}`, color: '#ff6b4a' },
+          { label: 'Pattern hash', value: current?.ph ?? hashOf(pattern), color: 'var(--gx-warning)' },
+          { label: 'Window hash', value: current?.wh ?? '-', color: 'var(--gx-accent)' },
+          { label: 'base / mod', value: `${BASE}/${MOD}`, color: 'var(--gx-warning)' },
         ].map((s) => (
-          <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 110 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+          <div key={s.label} style={{ background: 'var(--gx-surface)', border: `1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius: 8, padding: '8px 16px', minWidth: 110 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)', marginBottom: 2 }}>{s.label}</div>
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
@@ -197,23 +197,23 @@ export default function RabinKarpVisualizer() {
 
       {/* Pattern */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#ef9f27', letterSpacing: 1, minWidth: 60 }}>PATTERN</span>
+        <span style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-warning)', letterSpacing: 1, minWidth: 60 }}>PATTERN</span>
         {pattern.split('').map((ch, i) => (
-          <div key={i} style={{ width: 30, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(239,159,39,0.1)', border: '1px solid rgba(239,159,39,0.35)', borderRadius: 6, fontFamily: 'var(--font-mono)', fontSize: 15, fontWeight: 700, color: '#ef9f27' }}>{ch}</div>
+          <div key={i} style={{ width: 30, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--gx-warning-soft)', border: '1px solid var(--gx-warning-border)', borderRadius: 6, fontFamily: 'var(--font-mono)', fontSize: 15, fontWeight: 700, color: 'var(--gx-warning)' }}>{ch}</div>
         ))}
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#5a7a9a' }}>→ hash {current?.ph ?? hashOf(pattern)}</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--gx-text-muted)' }}>→ hash {current?.ph ?? hashOf(pattern)}</span>
       </div>
 
       {/* Text with sliding window */}
-      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: '16px', overflowX: 'auto' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 10 }}>TEXT</div>
+      <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: '16px', overflowX: 'auto' }}>
+        <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 1, marginBottom: 10 }}>TEXT</div>
         <div style={{ display: 'flex', gap: 5 }}>
           {text.split('').map((ch, i) => {
             const c = charColor(i);
             return (
               <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
                 <div style={{ width: 30, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', background: c.bg, border: `2px solid ${c.bd}`, borderRadius: 6, fontFamily: 'var(--font-mono)', fontSize: 15, fontWeight: 700, color: c.fg, transition: 'all 0.2s' }}>{ch}</div>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#2a3a4a' }}>{i}</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--gx-text-subtle)' }}>{i}</span>
               </div>
             );
           })}
@@ -228,28 +228,28 @@ export default function RabinKarpVisualizer() {
       />
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        {[['#00d9a3', 'Window (hash ≠)'], ['#ef9f27', 'Hash hit → verifying'], ['#ff2d78', 'Char mismatch'], ['#1d9e75', 'Match']].map(([c, l]) => (
+        {[['var(--gx-accent)', 'Window (hash ≠)'], ['var(--gx-warning)', 'Hash hit → verifying'], ['var(--gx-danger)', 'Char mismatch'], ['var(--gx-success)', 'Match']].map(([c, l]) => (
           <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ width: 12, height: 12, borderRadius: 2, background: `${c}22`, border: `2px solid ${c}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l}</span>
+            <div style={{ width: 12, height: 12, borderRadius: 2, background: `color-mix(in srgb, ${c} 13%, transparent)`, border: `2px solid ${c}` }} />
+            <span style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>
 
-      <div style={{ background: 'rgba(10,15,30,0.9)', border: '1px solid rgba(0,217,163,0.12)', borderRadius: 12, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-        <button onClick={() => setStepIdx((p) => Math.max(p - 1, 0))} style={ctrlBtn('#5a7a9a')}>⏮</button>
-        <button onClick={() => setIsPlaying((p) => !p)} style={{ ...ctrlBtn('#00d9a3'), background: 'rgba(0,217,163,0.12)', border: '1px solid rgba(0,217,163,0.35)', minWidth: 80, fontFamily: 'var(--font-body)', fontWeight: 600 }}>{isPlaying ? '⏸ Pause' : '▶ Play'}</button>
-        <button onClick={() => setStepIdx((p) => Math.min(p + 1, steps.length - 1))} style={ctrlBtn('#5a7a9a')}>⏭</button>
-        <button onClick={() => { setStepIdx(-1); setIsPlaying(false); }} style={{ ...ctrlBtn('#ff2d78'), background: 'rgba(255,45,120,0.08)', border: '1px solid rgba(255,45,120,0.25)', fontFamily: 'var(--font-body)' }}>↺ Reset</button>
+      <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        <button onClick={() => setStepIdx((p) => Math.max(p - 1, 0))} style={ctrlBtn('var(--gx-text-muted)')}>⏮</button>
+        <button onClick={() => setIsPlaying((p) => !p)} style={{ ...ctrlBtn('var(--gx-accent)'), background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-accent-border)', minWidth: 80, fontFamily: 'var(--font-body)', fontWeight: 600 }}>{isPlaying ? '⏸ Pause' : '▶ Play'}</button>
+        <button onClick={() => setStepIdx((p) => Math.min(p + 1, steps.length - 1))} style={ctrlBtn('var(--gx-text-muted)')}>⏭</button>
+        <button onClick={() => { setStepIdx(-1); setIsPlaying(false); }} style={{ ...ctrlBtn('var(--gx-danger)'), background: 'var(--gx-danger-soft)', border: '1px solid var(--gx-danger-border)', fontFamily: 'var(--font-body)' }}>↺ Reset</button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginLeft: 8 }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1 }}>SPEED</span>
+          <span style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 1 }}>SPEED</span>
           {[1, 2, 3, 4].map((s) => (
-            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid #00d9a3' : '1px solid rgba(0,217,163,0.15)', background: speed === s ? 'rgba(0,217,163,0.12)' : 'transparent', color: speed === s ? '#00d9a3' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×', '1×', '2×', '3×'][s - 1]}</button>
+            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 10px', borderRadius: 6, border: speed === s ? '1px solid var(--gx-accent)' : '1px solid var(--gx-border)', background: speed === s ? 'var(--gx-accent-soft)' : 'transparent', color: speed === s ? 'var(--gx-accent)' : 'var(--gx-text-muted)', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×', '1×', '2×', '3×'][s - 1]}</button>
           ))}
         </div>
         <div style={{ display: 'flex', gap: 4, marginLeft: 'auto' }}>
           {PRESETS.map((p, i) => (
-            <button key={i} onClick={() => setPreset(i)} style={{ padding: '4px 10px', borderRadius: 6, border: preset === i ? '1px solid #00d9a3' : '1px solid rgba(0,217,163,0.15)', background: preset === i ? 'rgba(0,217,163,0.12)' : 'transparent', color: preset === i ? '#00d9a3' : '#5a7a9a', fontSize: 10, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>&ldquo;{p.pattern}&rdquo;</button>
+            <button key={i} onClick={() => setPreset(i)} style={{ padding: '4px 10px', borderRadius: 6, border: preset === i ? '1px solid var(--gx-accent)' : '1px solid var(--gx-border)', background: preset === i ? 'var(--gx-accent-soft)' : 'transparent', color: preset === i ? 'var(--gx-accent)' : 'var(--gx-text-muted)', fontSize: 10, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>&ldquo;{p.pattern}&rdquo;</button>
           ))}
         </div>
       </div>
@@ -259,4 +259,4 @@ export default function RabinKarpVisualizer() {
   );
 }
 
-const ctrlBtn = (color) => ({ padding: '6px 14px', borderRadius: 8, border: `1px solid ${color}30`, background: 'transparent', color, fontSize: 13, cursor: 'pointer', transition: 'all 0.15s' });
+const ctrlBtn = (color) => ({ padding: '6px 14px', borderRadius: 8, border: `1px solid color-mix(in srgb, ${color} 19%, transparent)`, background: 'transparent', color, fontSize: 13, cursor: 'pointer', transition: 'all 0.15s' });

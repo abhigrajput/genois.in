@@ -104,13 +104,13 @@ export default function StackVisualizer() {
       {/* Stats */}
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
-          { label:'Size', value: stack.length, color:'#00d9a3' },
-          { label:'Top', value: stack.length > 0 ? stack[stack.length-1] : 'null', color:'#ef9f27' },
-          { label:'Capacity', value: MAX_SIZE, color:'#ff6b4a' },
-          { label:'Empty', value: stack.length === 0 ? 'Yes' : 'No', color:'#1d9e75' },
+          { label:'Size', value: stack.length, color:'var(--gx-accent)' },
+          { label:'Top', value: stack.length > 0 ? stack[stack.length-1] : 'null', color:'var(--gx-warning)' },
+          { label:'Capacity', value: MAX_SIZE, color:'var(--gx-warning)' },
+          { label:'Empty', value: stack.length === 0 ? 'Yes' : 'No', color:'var(--gx-success)' },
         ].map(s => (
-          <div key={s.label} style={{ background:'rgba(10,15,30,0.8)', border:`1px solid ${s.color}20`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
-            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
+          <div key={s.label} style={{ background:'var(--gx-surface)', border:`1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-text-muted)', marginBottom:2 }}>{s.label}</div>
             <div style={{ fontFamily:'var(--font-heading)', fontSize:20, fontWeight:700, color:s.color }}>{s.value}</div>
           </div>
         ))}
@@ -118,21 +118,21 @@ export default function StackVisualizer() {
 
       {/* Message */}
       {message && (
-        <div style={{ background:'rgba(0,217,163,0.05)', border:'1px solid rgba(0,217,163,0.15)', borderRadius:8, padding:'8px 14px', fontFamily:'var(--font-mono)', fontSize:12, color:'#00d9a3' }}>
+        <div style={{ background:'var(--gx-accent-soft)', border:'1px solid var(--gx-border)', borderRadius:8, padding:'8px 14px', fontFamily:'var(--font-mono)', fontSize:12, color:'var(--gx-accent)' }}>
           ▶ {message}
         </div>
       )}
 
       {/* Visual stack */}
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, padding:24, minHeight:300, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'flex-end', gap:0 }}>
+      <div style={{ background:'var(--gx-surface)', border:'1px solid var(--gx-border)', borderRadius:12, padding:24, minHeight:300, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'flex-end', gap:0 }}>
         {/* Empty slots */}
         {Array.from({ length: MAX_SIZE - stack.length }, (_, i) => (
           <div key={`empty-${i}`} style={{
-            width: 180, height: 44, border:'1px dashed rgba(0,217,163,0.1)',
+            width: 180, height: 44, border:'1px dashed var(--gx-border)',
             borderRadius: 0, display:'flex', alignItems:'center', justifyContent:'center',
             marginBottom: 0,
           }}>
-            <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'rgba(0,217,163,0.15)' }}>—</span>
+            <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-accent)' }}>—</span>
           </div>
         ))}
 
@@ -143,39 +143,39 @@ export default function StackVisualizer() {
           return (
             <div key={`${val}-${i}`} style={{
               width: 180, height: 44,
-              background: isTop ? 'rgba(0,217,163,0.12)' : 'rgba(26,42,58,0.8)',
-              border: isTop ? '1px solid rgba(0,217,163,0.5)' : '1px solid rgba(0,217,163,0.15)',
+              background: isTop ? 'var(--gx-accent-soft)' : 'var(--gx-surface-2)',
+              border: isTop ? '1px solid var(--gx-accent-border)' : '1px solid var(--gx-border)',
               borderRadius: 0,
               display:'flex', alignItems:'center', justifyContent:'space-between',
               padding:'0 16px',
               transition: 'all 0.35s ease',
               animation: isNew ? 'stackPush 0.35s ease' : 'none',
-              boxShadow: isTop ? '0 0 16px rgba(0,217,163,0.15)' : 'none',
+              boxShadow: isTop ? 'var(--gx-shadow-sm)' : 'none',
             }}>
-              <span style={{ fontFamily:'var(--font-mono)', fontSize:16, fontWeight:600, color: isTop ? '#00d9a3' : '#e8e8ed' }}>{val}</span>
-              {isTop && <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#00d9a3' }}>← TOP</span>}
+              <span style={{ fontFamily:'var(--font-mono)', fontSize:16, fontWeight:600, color: isTop ? 'var(--gx-accent)' : 'var(--gx-text)' }}>{val}</span>
+              {isTop && <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-accent)' }}>← TOP</span>}
             </div>
           );
         })}
 
         {stack.length === 0 && (
-          <div style={{ fontFamily:'var(--font-mono)', fontSize:12, color:'#2a3a4a', textAlign:'center', marginBottom:8 }}>
+          <div style={{ fontFamily:'var(--font-mono)', fontSize:12, color:'var(--gx-text-subtle)', textAlign:'center', marginBottom:8 }}>
             Stack is empty
           </div>
         )}
 
         {/* Bottom label */}
-        <div style={{ width:180, height:4, background:'rgba(0,217,163,0.3)', borderRadius:2, marginTop:2 }}/>
-        <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'#5a7a9a', marginTop:4 }}>BOTTOM</span>
+        <div style={{ width:180, height:4, background:'var(--gx-accent-soft)', borderRadius:2, marginTop:2 }}/>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'var(--gx-text-muted)', marginTop:4 }}>BOTTOM</span>
       </div>
 
       {/* Controls */}
       <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
         {[
-          { label:'Push', action:push, color:'#00d9a3', bg:'rgba(0,217,163,0.08)', border:'rgba(0,217,163,0.25)' },
-          { label:'Pop', action:pop, color:'#ff2d78', bg:'rgba(255,45,120,0.08)', border:'rgba(255,45,120,0.25)' },
-          { label:'Peek', action:peek, color:'#ef9f27', bg:'rgba(239,159,39,0.08)', border:'rgba(239,159,39,0.25)' },
-          { label:'Clear', action:clear, color:'#5a7a9a', bg:'transparent', border:'rgba(90,122,154,0.25)' },
+          { label:'Push', action:push, color:'var(--gx-accent)', bg:'var(--gx-accent-soft)', border:'var(--gx-accent-border)' },
+          { label:'Pop', action:pop, color:'var(--gx-danger)', bg:'var(--gx-danger-soft)', border:'var(--gx-danger-border)' },
+          { label:'Peek', action:peek, color:'var(--gx-warning)', bg:'var(--gx-warning-soft)', border:'var(--gx-warning-border)' },
+          { label:'Clear', action:clear, color:'var(--gx-text-muted)', bg:'transparent', border:'var(--gx-border)' },
         ].map(b => (
           <button key={b.label} onClick={b.action} style={{
             padding:'10px 24px', borderRadius:9, border:`1px solid ${b.border}`,

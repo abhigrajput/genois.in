@@ -10,9 +10,9 @@ class VisualizerErrorBoundary extends Component {
   static getDerivedStateFromError() { return { hasError: true }; }
   render() {
     if (this.state.hasError) return (
-      <div style={{ textAlign: 'center', padding: 60, color: '#6b7280' }}>
+      <div style={{ textAlign: 'center', padding: 60, color: 'var(--gx-text-muted)' }}>
         <div style={{ fontSize: 40, marginBottom: 12 }}>🚧</div>
-        <div style={{ fontSize: 16, color: '#fff', marginBottom: 8 }}>Visualizer loading...</div>
+        <div style={{ fontSize: 16, color: 'var(--gx-text)', marginBottom: 8 }}>Visualizer loading...</div>
         <div style={{ fontSize: 13 }}>Try selecting a different algorithm</div>
       </div>
     );
@@ -125,16 +125,16 @@ const ALGORITHMS = [
 ];
 
 const CATEGORY_COLORS = {
-  'Sorting':             '#00d9a3',
-  'Searching':           '#ff6b4a',
-  'Data Structures':     '#1d9e75',
-  'Trees':               '#ef9f27',
-  'Graphs':              '#ff2d78',
-  'Dynamic Programming': '#ef2dff',
-  'String Algorithms':   '#00ff88',
-  'Arrays & Techniques': '#37c0e8',
-  'Math':                '#f8d748',
-  'Backtracking':        '#ff5e00',
+  'Sorting':             'var(--gx-accent)',
+  'Searching':           'var(--gx-warning)',
+  'Data Structures':     'var(--gx-success)',
+  'Trees':               'var(--gx-warning)',
+  'Graphs':              'var(--gx-danger)',
+  'Dynamic Programming': 'var(--gx-info)',
+  'String Algorithms':   'var(--gx-accent)',
+  'Arrays & Techniques': 'var(--gx-info)',
+  'Math':                'var(--gx-warning)',
+  'Backtracking':        'var(--gx-warning)',
 };
 
 const CATEGORY_ICONS = {
@@ -154,7 +154,7 @@ function AlgoSkeleton() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16, animation: 'pulse 1.5s ease infinite' }}>
       {[200, 120, 80].map((h, i) => (
-        <div key={i} style={{ height: h, borderRadius: 12, background: 'rgba(0,217,163,0.03)', border: '1px solid rgba(0,217,163,0.06)' }} />
+        <div key={i} style={{ height: h, borderRadius: 12, background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-border)' }} />
       ))}
       <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>
     </div>
@@ -205,22 +205,22 @@ function DSAVisualizerInner() {
         flexShrink: 0,
         overflow: 'hidden',
         transition: 'width 0.25s ease',
-        borderRight: !isMobile && sidebarOpen ? '1px solid rgba(0,217,163,0.1)' : 'none',
-        borderBottom: isMobile && sidebarOpen ? '1px solid rgba(0,217,163,0.1)' : 'none',
+        borderRight: !isMobile && sidebarOpen ? '1px solid var(--gx-border)' : 'none',
+        borderBottom: isMobile && sidebarOpen ? '1px solid var(--gx-border)' : 'none',
         display: 'flex',
         flexDirection: 'column',
-        background: 'rgba(6,15,30,0.7)',
+        background: 'var(--gx-surface)',
         backdropFilter: 'blur(12px)',
         height: isMobile ? (sidebarOpen ? 'auto' : 0) : '100%',
         maxHeight: isMobile ? '44vh' : undefined,
       }}>
         <div style={{ padding: '14px 12px 8px', flexShrink: 0 }}>
           <div style={{ position: 'relative' }}>
-            <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 14, color: '#5a7a9a', pointerEvents: 'none' }}>🔍</span>
+            <span style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', fontSize: 14, color: 'var(--gx-text-muted)', pointerEvents: 'none' }}>🔍</span>
             <input
               type="text" value={search} onChange={e => setSearch(e.target.value)}
               placeholder="Search algorithms..."
-              style={{ width: '100%', background: 'rgba(0,217,163,0.04)', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 8, padding: '7px 10px 7px 32px', color: '#e8e8ed', fontSize: 12, fontFamily: 'var(--font-body)', outline: 'none' }}
+              style={{ width: '100%', background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-border)', borderRadius: 8, padding: '7px 10px 7px 32px', color: 'var(--gx-text)', fontSize: 12, fontFamily: 'var(--font-body)', outline: 'none' }}
             />
           </div>
         </div>
@@ -232,7 +232,7 @@ function DSAVisualizerInner() {
             const color = CATEGORY_COLORS[cat];
             return (
               <div key={cat} style={{ marginBottom: 8 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px 4px', fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: 2, color: color + '80', fontWeight: 600, textTransform: 'uppercase' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 8px 4px', fontFamily: 'var(--font-body)', fontSize: 9, letterSpacing: 2, color: `color-mix(in srgb, ${color} 50%, transparent)`, fontWeight: 600, textTransform: 'uppercase' }}>
                   <span>{CATEGORY_ICONS[cat]}</span>
                   {cat}
                 </div>
@@ -242,16 +242,16 @@ function DSAVisualizerInner() {
                     <button key={algo.id} onClick={() => setSelectedId(algo.id)} style={{
                       width: '100%', textAlign: 'left', display: 'flex', alignItems: 'center', gap: 10,
                       padding: '9px 10px', borderRadius: 8, marginBottom: 1, border: 'none',
-                      background: active ? `${color}12` : 'transparent',
+                      background: active ? `color-mix(in srgb, ${color} 7%, transparent)` : 'transparent',
                       borderLeft: active ? `2px solid ${color}` : '2px solid transparent',
-                      color: active ? color : '#5a7a9a',
+                      color: active ? color : 'var(--gx-text-muted)',
                       fontFamily: 'var(--font-body)', fontSize: 12, fontWeight: active ? 600 : 400,
                       cursor: 'pointer', transition: 'all 0.15s',
                     }}>
                       <span style={{ fontSize: 14 }}>{algo.icon}</span>
                       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
                         <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{algo.name}</span>
-                        <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: active ? color + '80' : '#2a3a4a', marginTop: 1 }}>{algo.complexity}</span>
+                        <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: active ? `color-mix(in srgb, ${color} 50%, transparent)` : 'var(--gx-text-subtle)', marginTop: 1 }}>{algo.complexity}</span>
                       </div>
                     </button>
                   );
@@ -262,7 +262,7 @@ function DSAVisualizerInner() {
         </nav>
 
         {/* Algorithm count */}
-        <div style={{ padding: '8px 16px', borderTop: '1px solid rgba(0,217,163,0.06)', fontFamily: 'var(--font-mono)', fontSize: 9, color: '#2a3a4a', flexShrink: 0 }}>
+        <div style={{ padding: '8px 16px', borderTop: '1px solid var(--gx-border)', fontFamily: 'var(--font-mono)', fontSize: 9, color: 'var(--gx-text-subtle)', flexShrink: 0 }}>
           {ALGORITHMS.length} ALGORITHMS TOTAL
         </div>
       </div>
@@ -273,7 +273,7 @@ function DSAVisualizerInner() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
           <button
             onClick={() => setSidebarOpen(p => !p)}
-            style={{ background: 'transparent', border: '1px solid rgba(0,217,163,0.15)', borderRadius: 8, color: '#5a7a9a', fontSize: 14, padding: '6px 10px', cursor: 'pointer', transition: 'all 0.15s', flexShrink: 0 }}
+            style={{ background: 'transparent', border: '1px solid var(--gx-border)', borderRadius: 8, color: 'var(--gx-text-muted)', fontSize: 14, padding: '6px 10px', cursor: 'pointer', transition: 'all 0.15s', flexShrink: 0 }}
             title="Toggle sidebar"
           >
             {sidebarOpen ? '◀' : '▶'}
@@ -282,16 +282,16 @@ function DSAVisualizerInner() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 24 }}>{selected.icon}</span>
             <div>
-              <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 800, color: '#e8e8ed', margin: 0, lineHeight: 1.2 }}>
+              <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 800, color: 'var(--gx-text)', margin: 0, lineHeight: 1.2 }}>
                 {selected.name}
               </h1>
               <div style={{ display: 'flex', gap: 8, marginTop: 3, flexWrap: 'wrap' }}>
                 <span style={{
-                  fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: 1,
-                  color: CATEGORY_COLORS[selected.category], background: `${CATEGORY_COLORS[selected.category]}12`,
-                  border: `1px solid ${CATEGORY_COLORS[selected.category]}25`, borderRadius: 20, padding: '2px 10px',
+                  fontFamily: 'var(--font-body)', fontSize: 10, letterSpacing: 1,
+                  color: CATEGORY_COLORS[selected.category], background: `color-mix(in srgb, ${CATEGORY_COLORS[selected.category]} 7%, transparent)`,
+                  border: `1px solid color-mix(in srgb, ${CATEGORY_COLORS[selected.category]} 15%, transparent)`, borderRadius: 20, padding: '2px 10px',
                 }}>{selected.category}</span>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', background: 'rgba(0,217,163,0.04)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 20, padding: '2px 10px' }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)', background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-border)', borderRadius: 20, padding: '2px 10px' }}>
                   {selected.complexity}
                 </span>
               </div>
@@ -304,8 +304,8 @@ function DSAVisualizerInner() {
               <button key={a.id} onClick={() => setSelectedId(a.id)} title={a.name}
                 style={{
                   width: 28, height: 28, borderRadius: 6,
-                  border: `1px solid ${selectedId === a.id ? CATEGORY_COLORS[a.category] : 'rgba(0,217,163,0.1)'}`,
-                  background: selectedId === a.id ? `${CATEGORY_COLORS[a.category]}15` : 'transparent',
+                  border: `1px solid ${selectedId === a.id ? CATEGORY_COLORS[a.category] : 'var(--gx-border)'}`,
+                  background: selectedId === a.id ? `color-mix(in srgb, ${CATEGORY_COLORS[a.category]} 8%, transparent)` : 'transparent',
                   cursor: 'pointer', fontSize: 14, transition: 'all 0.15s',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
@@ -317,10 +317,10 @@ function DSAVisualizerInner() {
 
         {/* Visualizer card */}
         <div style={{
-          background: 'rgba(8,14,28,0.8)', border: '1px solid rgba(0,217,163,0.1)',
+          background: 'var(--gx-surface)', border: '1px solid var(--gx-border)',
           borderRadius: 16, padding: '24px', position: 'relative', overflow: 'hidden',
         }}>
-          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: `linear-gradient(90deg,transparent,${CATEGORY_COLORS[selected.category]}60,transparent)` }} />
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 1, background: CATEGORY_COLORS[selected.category] }} />
 
           <VisualizerErrorBoundary key={selectedId}>
             <Suspense fallback={<AlgoSkeleton />}>

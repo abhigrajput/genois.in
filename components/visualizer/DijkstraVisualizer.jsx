@@ -126,10 +126,10 @@ function computeDijkstraSteps(src) {
 }
 
 function nodeColor(id, step, src) {
-  if (!step) return src === id ? '#00d9a3' : '#1a2a3a';
-  if (step.current === id) return '#00d9a3';
-  if (step.visited?.[id]) return '#1d9e75';
-  return '#1a2a3a';
+  if (!step) return src === id ? 'var(--gx-accent)' : 'var(--gx-surface-2)';
+  if (step.current === id) return 'var(--gx-accent)';
+  if (step.visited?.[id]) return 'var(--gx-success)';
+  return 'var(--gx-surface-2)';
 }
 
 export default function DijkstraVisualizer() {
@@ -173,13 +173,13 @@ export default function DijkstraVisualizer() {
 
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
-          { label:'Source', value:src, color:'#00d9a3' },
-          { label:'Current', value:current?.current>=0?current.current:'-', color:'#00d9a3' },
-          { label:'Visited', value:current?.visited?.filter(Boolean).length??0, color:'#1d9e75' },
-          { label:'Step', value:stepIdx>=0?stepIdx+1:0, color:'#ff6b4a' },
+          { label:'Source', value:src, color:'var(--gx-accent)' },
+          { label:'Current', value:current?.current>=0?current.current:'-', color:'var(--gx-accent)' },
+          { label:'Visited', value:current?.visited?.filter(Boolean).length??0, color:'var(--gx-success)' },
+          { label:'Step', value:stepIdx>=0?stepIdx+1:0, color:'var(--gx-warning)' },
         ].map(s=>(
-          <div key={s.label} style={{ background:'rgba(10,15,30,0.8)', border:`1px solid ${s.color}20`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
-            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
+          <div key={s.label} style={{ background:'var(--gx-surface)', border:`1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-text-muted)', marginBottom:2 }}>{s.label}</div>
             <div style={{ fontFamily:'var(--font-heading)', fontSize:20, fontWeight:700, color:s.color }}>{s.value}</div>
           </div>
         ))}
@@ -187,7 +187,7 @@ export default function DijkstraVisualizer() {
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
         {/* Graph */}
-        <div style={{ flex:2, background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, overflow:'hidden', minWidth:280 }}>
+        <div style={{ flex:2, background:'var(--gx-surface)', border:'1px solid var(--gx-border)', borderRadius:12, overflow:'hidden', minWidth:280 }}>
           <svg width="100%" viewBox={`0 0 ${SVG_W} ${SVG_H}`} style={{ display:'block' }}>
             {EDGES.map((e,i) => {
               const nu=NODES[e.u], nv=NODES[e.v];
@@ -195,9 +195,9 @@ export default function DijkstraVisualizer() {
               const mid = { x:(nu.x+nv.x)/2, y:(nu.y+nv.y)/2 };
               return (
                 <g key={i}>
-                  <line x1={nu.x} y1={nu.y} x2={nv.x} y2={nv.y} stroke={isRelaxing?'#ef9f27':'rgba(0,217,163,0.2)'} strokeWidth={isRelaxing?2.5:1.5} style={{transition:'all 0.3s'}} />
-                  <rect x={mid.x-12} y={mid.y-10} width={24} height={18} rx={4} fill={isRelaxing?'rgba(239,159,39,0.2)':'rgba(6,15,30,0.85)'} stroke={isRelaxing?'#ef9f27':'rgba(0,217,163,0.15)'} strokeWidth={1} />
-                  <text x={mid.x} y={mid.y+4} textAnchor="middle" style={{ fontFamily:'var(--font-mono)', fontSize:11, fontWeight:700, fill: isRelaxing ? '#ef9f27' : '#5a7a9a' }}>{e.w}</text>
+                  <line x1={nu.x} y1={nu.y} x2={nv.x} y2={nv.y} stroke={isRelaxing?'var(--gx-warning)':'var(--gx-accent-border)'} strokeWidth={isRelaxing?2.5:1.5} style={{transition:'all 0.3s'}} />
+                  <rect x={mid.x-12} y={mid.y-10} width={24} height={18} rx={4} fill={isRelaxing?'var(--gx-warning-soft)':'var(--gx-surface)'} stroke={isRelaxing?'var(--gx-warning)':'var(--gx-border)'} strokeWidth={1} />
+                  <text x={mid.x} y={mid.y+4} textAnchor="middle" style={{ fontFamily:'var(--font-mono)', fontSize:11, fontWeight:700, fill: isRelaxing ? 'var(--gx-warning)' : 'var(--gx-text-muted)' }}>{e.w}</text>
                 </g>
               );
             })}
@@ -206,8 +206,8 @@ export default function DijkstraVisualizer() {
               const isActive = current?.current===n.id;
               return (
                 <g key={n.id}>
-                  {isActive && <circle cx={n.x} cy={n.y} r={28} fill="none" stroke="#00d9a3" strokeWidth={1} opacity={0.4} />}
-                  <circle cx={n.x} cy={n.y} r={22} fill={color==='#1a2a3a'?'#0d1a2a':color+'22'} stroke={color} strokeWidth={isActive?2.5:1.5} style={{transition:'all 0.3s ease'}} />
+                  {isActive && <circle cx={n.x} cy={n.y} r={28} fill="none" stroke="var(--gx-accent)" strokeWidth={1} opacity={0.4} />}
+                  <circle cx={n.x} cy={n.y} r={22} fill={color==='var(--gx-surface-2)'?'var(--gx-surface)':`color-mix(in srgb, ${color} 13%, transparent)`} stroke={color} strokeWidth={isActive?2.5:1.5} style={{transition:'all 0.3s ease'}} />
                   <text x={n.x} y={n.y+5} textAnchor="middle" style={{ fontFamily:'var(--font-mono)', fontSize:14, fontWeight:700, fill:color }}>{n.id}</text>
                 </g>
               );
@@ -217,19 +217,19 @@ export default function DijkstraVisualizer() {
 
         {/* dist[] table */}
         <div style={{ flex:1, minWidth:200 }}>
-          <div style={{ background:'rgba(10,15,30,0.8)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:10, padding:12 }}>
-            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', letterSpacing:1, marginBottom:10 }}>DIST[] TABLE</div>
+          <div style={{ background:'var(--gx-surface)', border:'1px solid var(--gx-border)', borderRadius:10, padding:12 }}>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-text-muted)', letterSpacing:1, marginBottom:10 }}>DIST[] TABLE</div>
             {NODES.map(n => {
               const d = current?.dist?.[n.id] ?? INF;
               const isVisited = current?.visited?.[n.id];
               const isCurrent = current?.current === n.id;
               return (
-                <div key={n.id} style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6, padding:'4px 8px', borderRadius:6, background:isCurrent?'rgba(0,217,163,0.08)':isVisited?'rgba(29,158,117,0.05)':'transparent', border:`1px solid ${isCurrent?'rgba(0,217,163,0.2)':isVisited?'rgba(29,158,117,0.15)':'transparent'}`, transition:'all 0.3s' }}>
+                <div key={n.id} style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6, padding:'4px 8px', borderRadius:6, background:isCurrent?'var(--gx-accent-soft)':isVisited?'var(--gx-success-soft)':'transparent', border:`1px solid ${isCurrent?'var(--gx-accent-border)':isVisited?'var(--gx-success-border)':'transparent'}`, transition:'all 0.3s' }}>
                   <span style={{ fontFamily:'var(--font-mono)', fontSize:12, color:nodeColor(n.id,current,src), fontWeight:700, minWidth:20 }}>{n.id}</span>
-                  <div style={{ flex:1, height:6, borderRadius:3, background:'rgba(0,217,163,0.06)', overflow:'hidden' }}>
-                     <div style={{ height:'100%', borderRadius:3, background:isCurrent?'#00d9a3':isVisited?'#1d9e75':'rgba(0,217,163,0.2)', width:d===INF?'0%':`${Math.min(100,(100/(d+1))*10)}%`, transition:'width 0.4s ease' }} />
+                  <div style={{ flex:1, height:6, borderRadius:3, background:'var(--gx-accent-soft)', overflow:'hidden' }}>
+                     <div style={{ height:'100%', borderRadius:3, background:isCurrent?'var(--gx-accent)':isVisited?'var(--gx-success)':'var(--gx-accent-soft)', width:d===INF?'0%':`${Math.min(100,(100/(d+1))*10)}%`, transition:'width 0.4s ease' }} />
                   </div>
-                  <span style={{ fontFamily:'var(--font-mono)', fontSize:13, fontWeight:700, color:d===INF?'#2a3a4a':isCurrent?'#00d9a3':isVisited?'#1d9e75':'#e8e8ed', minWidth:24, textAlign:'right' }}>{d===INF?'∞':d}</span>
+                  <span style={{ fontFamily:'var(--font-mono)', fontSize:13, fontWeight:700, color:d===INF?'var(--gx-text-subtle)':isCurrent?'var(--gx-accent)':isVisited?'var(--gx-success)':'var(--gx-text)', minWidth:24, textAlign:'right' }}>{d===INF?'∞':d}</span>
                 </div>
               );
             })}
@@ -245,26 +245,26 @@ export default function DijkstraVisualizer() {
       />
 
       <div style={{ display:'flex', gap:8, flexWrap:'wrap', alignItems:'center' }}>
-        <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a' }}>SRC</span>
+        <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-text-muted)' }}>SRC</span>
         {NODES.map(n=>(
-          <button key={n.id} onClick={()=>setSrc(n.id)} style={{ padding:'4px 12px', borderRadius:6, border:`1px solid ${src===n.id?'#00d9a3':'rgba(0,217,163,0.15)'}`, background:src===n.id?'rgba(0,217,163,0.12)':'transparent', color:src===n.id?'#00d9a3':'#5a7a9a', fontSize:12, fontFamily:'var(--font-mono)', cursor:'pointer' }}>{n.id}</button>
+          <button key={n.id} onClick={()=>setSrc(n.id)} style={{ padding:'4px 12px', borderRadius:6, border:`1px solid ${src===n.id?'var(--gx-accent)':'var(--gx-border)'}`, background:src===n.id?'var(--gx-accent-soft)':'transparent', color:src===n.id?'var(--gx-accent)':'var(--gx-text-muted)', fontSize:12, fontFamily:'var(--font-mono)', cursor:'pointer' }}>{n.id}</button>
         ))}
-        <button onClick={start} style={btn('#00d9a3')}>▶ Run Dijkstra</button>
-        <button onClick={()=>setIsPlaying(p=>!p)} style={btn('#ff6b4a')}>{isPlaying?'⏸ Pause':'▶ Resume'}</button>
-        <button onClick={()=>setStepIdx(p=>Math.min(p+1,steps.length-1))} style={btn('#ef9f27')}>⏭ Step</button>
+        <button onClick={start} style={btn('var(--gx-accent)')}>▶ Run Dijkstra</button>
+        <button onClick={()=>setIsPlaying(p=>!p)} style={btn('var(--gx-warning)')}>{isPlaying?'⏸ Pause':'▶ Resume'}</button>
+        <button onClick={()=>setStepIdx(p=>Math.min(p+1,steps.length-1))} style={btn('var(--gx-warning)')}>⏭ Step</button>
         <div style={{ display:'flex', gap:4 }}>
           {[1,2,3,4].map(s=>(
-            <button key={s} onClick={()=>setSpeed(s)} style={{ padding:'3px 10px', borderRadius:6, border:speed===s?'1px solid #00d9a3':'1px solid rgba(0,217,163,0.15)', background:speed===s?'rgba(0,217,163,0.12)':'transparent', color:speed===s?'#00d9a3':'#5a7a9a', fontSize:11, fontFamily:'var(--font-mono)', cursor:'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
+            <button key={s} onClick={()=>setSpeed(s)} style={{ padding:'3px 10px', borderRadius:6, border:speed===s?'1px solid var(--gx-accent)':'1px solid var(--gx-border)', background:speed===s?'var(--gx-accent-soft)':'transparent', color:speed===s?'var(--gx-accent)':'var(--gx-text-muted)', fontSize:11, fontFamily:'var(--font-mono)', cursor:'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
           ))}
         </div>
-        <button onClick={reset} style={btn('#ff2d78')}>↺ Reset</button>
+        <button onClick={reset} style={btn('var(--gx-danger)')}>↺ Reset</button>
       </div>
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
-        {[['#00d9a3','Current'],['#ef9f27','Relaxing Edge'],['#1d9e75','Finalized']].map(([c,l])=>(
+        {[['var(--gx-accent)','Current'],['var(--gx-warning)','Relaxing Edge'],['var(--gx-success)','Finalized']].map(([c,l])=>(
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
-            <div style={{ width:12, height:12, borderRadius:'50%', background:c+'44', border:`2px solid ${c}` }}/>
-            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>
+            <div style={{ width:12, height:12, borderRadius:'50%', background:`color-mix(in srgb, ${c} 27%, transparent)`, border:`2px solid ${c}` }}/>
+            <span style={{ fontSize:11, color:'var(--gx-text-muted)', fontFamily:'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>
@@ -273,5 +273,5 @@ export default function DijkstraVisualizer() {
   );
 }
 function btn(color) {
-  return { padding:'8px 16px', borderRadius:8, border:`1px solid ${color}30`, background:`${color}10`, color, fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' };
+  return { padding:'8px 16px', borderRadius:8, border:`1px solid color-mix(in srgb, ${color} 19%, transparent)`, background:`color-mix(in srgb, ${color} 6%, transparent)`, color, fontFamily:'var(--font-heading)', fontSize:13, fontWeight:600, cursor:'pointer', transition:'all 0.15s' };
 }

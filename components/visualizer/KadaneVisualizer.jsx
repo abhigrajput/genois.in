@@ -116,11 +116,11 @@ export default function KadaneVisualizer() {
   const inCur = (i) => current && i >= current.curStart && i <= current.curEnd;
 
   const cellColor = (i) => {
-    if (!current) return '#1a2a3a';
-    if (i === current.i && !current.done) return current.restarted ? '#ff2d78' : '#00d9a3';
-    if (inBest(i)) return '#1d9e75';
-    if (inCur(i)) return '#ef9f27';
-    return '#1a2a3a';
+    if (!current) return 'var(--gx-surface-2)';
+    if (i === current.i && !current.done) return current.restarted ? 'var(--gx-danger)' : 'var(--gx-accent)';
+    if (inBest(i)) return 'var(--gx-success)';
+    if (inCur(i)) return 'var(--gx-warning)';
+    return 'var(--gx-surface-2)';
   };
 
   return (
@@ -134,18 +134,18 @@ export default function KadaneVisualizer() {
 
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'cur (ending here)', value: current?.cur ?? arr[0], color: '#ef9f27' },
-          { label: 'best (answer)', value: current?.best ?? arr[0], color: '#1d9e75' },
-          { label: 'Time', value: 'O(n)', color: '#ff6b4a' },
+          { label: 'cur (ending here)', value: current?.cur ?? arr[0], color: 'var(--gx-warning)' },
+          { label: 'best (answer)', value: current?.best ?? arr[0], color: 'var(--gx-success)' },
+          { label: 'Time', value: 'O(n)', color: 'var(--gx-warning)' },
         ].map((s) => (
-          <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 120 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+          <div key={s.label} style={{ background: 'var(--gx-surface)', border: `1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius: 8, padding: '8px 16px', minWidth: 120 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)', marginBottom: 2 }}>{s.label}</div>
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
-      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: '20px 16px', display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
+      <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: '20px 16px', display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
         {arr.map((v, i) => (
           <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3 }}>
             <div style={{
@@ -153,7 +153,7 @@ export default function KadaneVisualizer() {
               background: `${cellColor(i)}22`, border: `2px solid ${cellColor(i)}`, borderRadius: 8,
               fontFamily: 'var(--font-mono)', fontSize: 15, fontWeight: 700, color: cellColor(i), transition: 'all 0.25s',
             }}>{v}</div>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: current?.i === i ? '#00d9a3' : '#2a3a4a' }}>{i}</span>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: current?.i === i ? 'var(--gx-accent)' : 'var(--gx-text-subtle)' }}>{i}</span>
           </div>
         ))}
       </div>
@@ -166,10 +166,10 @@ export default function KadaneVisualizer() {
       />
 
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        {[['#00d9a3', 'Current index'], ['#ff2d78', 'Restart here'], ['#ef9f27', 'Current window'], ['#1d9e75', 'Best window']].map(([c, l]) => (
+        {[['var(--gx-accent)', 'Current index'], ['var(--gx-danger)', 'Restart here'], ['var(--gx-warning)', 'Current window'], ['var(--gx-success)', 'Best window']].map(([c, l]) => (
           <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ width: 12, height: 12, borderRadius: 2, background: `${c}22`, border: `2px solid ${c}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l}</span>
+            <div style={{ width: 12, height: 12, borderRadius: 2, background: `color-mix(in srgb, ${c} 13%, transparent)`, border: `2px solid ${c}` }} />
+            <span style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>

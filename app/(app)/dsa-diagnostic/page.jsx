@@ -8,9 +8,9 @@ const TOTAL_TIME = 20 * 60; // 20 minutes in seconds
 const MIN_TO_SUBMIT = 20;
 
 const LEVEL_CONFIG = {
-  BEGINNER:     { color: '#4f9cf9', bg: 'rgba(79,156,249,0.12)', emoji: '🌱', label: 'Beginner' },
-  INTERMEDIATE: { color: '#EF9F27', bg: 'rgba(239,159,39,0.12)',  emoji: '⚡', label: 'Intermediate' },
-  ADVANCED:     { color: '#1D9E75', bg: 'rgba(29,158,117,0.12)',  emoji: '🔥', label: 'Advanced' },
+  BEGINNER:     { color: 'var(--gx-info)', bg: 'var(--gx-info-soft)', emoji: '🌱', label: 'Beginner' },
+  INTERMEDIATE: { color: 'var(--gx-warning)', bg: 'var(--gx-warning-soft)',  emoji: '⚡', label: 'Intermediate' },
+  ADVANCED:     { color: 'var(--gx-success)', bg: 'var(--gx-success-soft)',  emoji: '🔥', label: 'Advanced' },
 };
 
 const TOPIC_LABELS = {
@@ -22,12 +22,12 @@ const TOPIC_LABELS = {
 
 // ─── Shared styles ──────────────────────────────────────────────────────────
 const S = {
-  page:     { fontFamily: 'var(--font-body)', minHeight: '100vh', background: '#020812', color: '#e8e8ed', padding: '32px 16px' },
-  card:     { maxWidth: 780, margin: '0 auto', background: '#070f1f', border: '1px solid rgba(0,217,163,0.12)', borderRadius: 20, padding: 32 },
-  h1:       { fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, color: '#e8e8ed', margin: '0 0 8px' },
-  sub:      { color: '#5a7a9a', fontSize: 14, lineHeight: 1.6, margin: '0 0 24px' },
-  btn:      { padding: '14px 32px', borderRadius: 12, border: 'none', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812' },
-  btnGhost: { padding: '10px 20px', borderRadius: 8, border: '1px solid rgba(0,217,163,0.2)', background: 'transparent', cursor: 'pointer', color: '#00d9a3', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600 },
+  page:     { fontFamily: 'var(--font-body)', minHeight: '100vh', background: 'var(--gx-surface)', color: 'var(--gx-text)', padding: '32px 16px' },
+  card:     { maxWidth: 780, margin: '0 auto', background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 20, padding: 32 },
+  h1:       { fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, color: 'var(--gx-text)', margin: '0 0 8px' },
+  sub:      { color: 'var(--gx-text-muted)', fontSize: 14, lineHeight: 1.6, margin: '0 0 24px' },
+  btn:      { padding: '14px 32px', borderRadius: 12, border: 'none', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)' },
+  btnGhost: { padding: '10px 20px', borderRadius: 8, border: '1px solid var(--gx-accent-border)', background: 'transparent', cursor: 'pointer', color: 'var(--gx-accent)', fontSize: 13, fontFamily: 'var(--font-heading)', fontWeight: 600 },
   mono:     { fontFamily: 'var(--font-mono)' },
 };
 
@@ -48,24 +48,24 @@ function IntroScreen({ onStart, loading, previousResult }) {
             {[['📺', '10 Code Snippets', 'Predict output & find errors'],
               ['📖', '15 Theory MCQs', 'DSA concepts & logic'],
               ['🤖', 'AI Evaluation', 'GENOIS Engine analyzes your strengths']].map(([icon, title, desc]) => (
-              <div key={title} style={{ background: 'rgba(0,217,163,0.04)', border: '1px solid rgba(0,217,163,0.08)', borderRadius: 12, padding: '14px 18px', flex: '1 1 180px', textAlign: 'left' }}>
+              <div key={title} style={{ background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: '14px 18px', flex: '1 1 180px', textAlign: 'left' }}>
                 <div style={{ fontSize: 20, marginBottom: 6 }}>{icon}</div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#e8e8ed', marginBottom: 3 }}>{title}</div>
-                <div style={{ fontSize: 11, color: '#5a7a9a' }}>{desc}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--gx-text)', marginBottom: 3 }}>{title}</div>
+                <div style={{ fontSize: 11, color: 'var(--gx-text-muted)' }}>{desc}</div>
               </div>
             ))}
           </div>
 
           {previousResult && (
-            <div style={{ background: 'rgba(0,217,163,0.04)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: '14px 20px', marginBottom: 20, textAlign: 'left' }}>
-              <div style={{ fontSize: 12, color: '#5a7a9a', marginBottom: 4, ...S.mono }}>PREVIOUS RESULT</div>
+            <div style={{ background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: '14px 20px', marginBottom: 20, textAlign: 'left' }}>
+              <div style={{ fontSize: 12, color: 'var(--gx-text-muted)', marginBottom: 4, ...S.mono }}>PREVIOUS RESULT</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <span style={{ fontSize: 22 }}>{LEVEL_CONFIG[previousResult.level]?.emoji}</span>
                 <div>
                   <div style={{ fontWeight: 700, color: LEVEL_CONFIG[previousResult.level]?.color }}>
                     {LEVEL_CONFIG[previousResult.level]?.label} · {previousResult.score}/100
                   </div>
-                  <div style={{ fontSize: 11, color: '#5a7a9a' }}>
+                  <div style={{ fontSize: 11, color: 'var(--gx-text-muted)' }}>
                     Taken {new Date(previousResult.taken_at).toLocaleDateString()} · Retake available in 30 days
                   </div>
                 </div>
@@ -123,7 +123,7 @@ function TestScreen({ questions, onSubmit, submitting }) {
 
   const mm = String(Math.floor(timeLeft / 60)).padStart(2, '0');
   const ss = String(timeLeft % 60).padStart(2, '0');
-  const timerColor = timeLeft < 120 ? '#ff2d78' : timeLeft < 300 ? '#EF9F27' : '#00d9a3';
+  const timerColor = timeLeft < 120 ? 'var(--gx-danger)' : timeLeft < 300 ? 'var(--gx-warning)' : 'var(--gx-accent)';
 
   const q = questions[current];
   const topicLabel = TOPIC_LABELS[q?.topic] || q?.topic;
@@ -133,31 +133,31 @@ function TestScreen({ questions, onSubmit, submitting }) {
       {/* Top bar */}
       <div style={{ maxWidth: 780, margin: '0 auto 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ ...S.mono, fontSize: 12, color: '#5a7a9a' }}>Q {current + 1}/{questions.length}</span>
-          <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: 'rgba(0,217,163,0.08)', color: '#00d9a3', ...S.mono }}>{topicLabel}</span>
-          <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: q?.type === 'code' ? 'rgba(255,107,74,0.12)' : 'rgba(29,158,117,0.1)', color: q?.type === 'code' ? '#ff6b4a' : '#1D9E75' }}>
+          <span style={{ ...S.mono, fontSize: 12, color: 'var(--gx-text-muted)' }}>Q {current + 1}/{questions.length}</span>
+          <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: 'var(--gx-accent-soft)', color: 'var(--gx-accent)', ...S.mono }}>{topicLabel}</span>
+          <span style={{ fontSize: 11, padding: '3px 10px', borderRadius: 20, background: q?.type === 'code' ? 'var(--gx-warning-soft)' : 'var(--gx-success-soft)', color: q?.type === 'code' ? 'var(--gx-warning)' : 'var(--gx-success)' }}>
             {q?.type === 'code' ? '💻 Code' : '📖 Theory'}
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <span style={{ ...S.mono, fontSize: 16, fontWeight: 700, color: timerColor }}>⏱ {mm}:{ss}</span>
-          <span style={{ fontSize: 12, color: '#5a7a9a' }}>{answeredCount}/{questions.length} answered</span>
+          <span style={{ fontSize: 12, color: 'var(--gx-text-muted)' }}>{answeredCount}/{questions.length} answered</span>
         </div>
       </div>
 
       {/* Progress bar */}
-      <div style={{ maxWidth: 780, margin: '0 auto 16px', height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: 2 }}>
-        <div style={{ height: '100%', width: `${(answeredCount / questions.length) * 100}%`, background: 'linear-gradient(90deg,#00d9a3,#ff6b4a)', borderRadius: 2, transition: 'width 0.3s' }} />
+      <div style={{ maxWidth: 780, margin: '0 auto 16px', height: 3, background: 'var(--gx-surface)', borderRadius: 2 }}>
+        <div style={{ height: '100%', width: `${(answeredCount / questions.length) * 100}%`, background: 'var(--gx-accent)', borderRadius: 2, transition: 'width 0.3s' }} />
       </div>
 
       {/* Question card */}
       <div style={{ ...S.card, marginBottom: 16 }}>
-        <div style={{ fontSize: 15, color: '#e8e8ed', lineHeight: 1.6, marginBottom: q?.code ? 16 : 24, fontWeight: 500 }}>
+        <div style={{ fontSize: 15, color: 'var(--gx-text)', lineHeight: 1.6, marginBottom: q?.code ? 16 : 24, fontWeight: 500 }}>
           {q?.question}
         </div>
 
         {q?.code && (
-          <pre style={{ background: '#0a0f1e', border: '1px solid rgba(255,107,74,0.2)', borderRadius: 10, padding: 16, overflowX: 'auto', fontSize: 13, lineHeight: 1.6, color: '#c8d8e8', marginBottom: 20, ...S.mono }}>
+          <pre style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-warning-border)', borderRadius: 10, padding: 16, overflowX: 'auto', fontSize: 13, lineHeight: 1.6, color: 'var(--gx-text)', marginBottom: 20, ...S.mono }}>
             {q.code}
           </pre>
         )}
@@ -171,13 +171,13 @@ function TestScreen({ questions, onSubmit, submitting }) {
                 onClick={() => setAnswers(prev => ({ ...prev, [q.id]: opt }))}
                 style={{
                   display: 'flex', alignItems: 'flex-start', gap: 12, padding: '12px 16px',
-                  borderRadius: 10, border: `1px solid ${selected ? '#00d9a3' : 'rgba(255,255,255,0.06)'}`,
-                  background: selected ? 'rgba(0,217,163,0.08)' : 'rgba(255,255,255,0.02)',
-                  color: selected ? '#00d9a3' : '#c8d8e8', cursor: 'pointer', textAlign: 'left',
+                  borderRadius: 10, border: `1px solid ${selected ? 'var(--gx-accent)' : 'var(--gx-border)'}`,
+                  background: selected ? 'var(--gx-accent-soft)' : 'var(--gx-surface)',
+                  color: selected ? 'var(--gx-accent)' : 'var(--gx-text)', cursor: 'pointer', textAlign: 'left',
                   transition: 'all 0.15s', fontSize: 14, fontFamily: 'var(--font-body)',
                 }}
               >
-                <span style={{ ...S.mono, fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 2, width: 18, color: selected ? '#00d9a3' : '#5a7a9a' }}>{opt}.</span>
+                <span style={{ ...S.mono, fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 2, width: 18, color: selected ? 'var(--gx-accent)' : 'var(--gx-text-muted)' }}>{opt}.</span>
                 <span>{q?.options?.[opt]}</span>
               </button>
             );
@@ -198,8 +198,8 @@ function TestScreen({ questions, onSubmit, submitting }) {
               style={{
                 width: 28, height: 28, borderRadius: 6, border: 'none', cursor: 'pointer', fontSize: 10,
                 fontFamily: 'var(--font-mono)', fontWeight: 700,
-                background: i === current ? '#00d9a3' : answers[qs.id] ? '#1D9E75' : 'rgba(255,255,255,0.06)',
-                color: i === current ? '#020812' : answers[qs.id] ? '#020812' : '#5a7a9a',
+                background: i === current ? 'var(--gx-accent)' : answers[qs.id] ? 'var(--gx-success)' : 'var(--gx-surface)',
+                color: i === current ? 'var(--gx-text-inverse)' : answers[qs.id] ? 'var(--gx-text-inverse)' : 'var(--gx-text-muted)',
               }}
             >
               {i + 1}
@@ -239,26 +239,26 @@ function ResultScreen({ result, onStartRoadmap }) {
         {/* Level badge */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{ fontSize: 64, marginBottom: 8 }}>{cfg.emoji}</div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: cfg.bg, border: `2px solid ${cfg.color}40`, borderRadius: 40, padding: '10px 28px', marginBottom: 12 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, background: cfg.bg, border: `2px solid color-mix(in srgb, ${cfg.color} 25%, transparent)`, borderRadius: 40, padding: '10px 28px', marginBottom: 12 }}>
             <span style={{ fontFamily: 'var(--font-heading)', fontSize: 22, fontWeight: 800, color: cfg.color }}>{cfg.label}</span>
           </div>
-          <div style={{ fontSize: 36, fontWeight: 700, color: '#e8e8ed', ...S.mono, marginBottom: 4 }}>{result.score}<span style={{ fontSize: 18, color: '#5a7a9a' }}>/100</span></div>
-          <div style={{ fontSize: 13, color: '#5a7a9a' }}>Your DSA diagnostic score</div>
+          <div style={{ fontSize: 36, fontWeight: 700, color: 'var(--gx-text)', ...S.mono, marginBottom: 4 }}>{result.score}<span style={{ fontSize: 18, color: 'var(--gx-text-muted)' }}>/100</span></div>
+          <div style={{ fontSize: 13, color: 'var(--gx-text-muted)' }}>Your DSA diagnostic score</div>
         </div>
 
         {/* Topic breakdown */}
         {topics.length > 0 && (
           <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 11, color: '#5a7a9a', letterSpacing: 2, ...S.mono, marginBottom: 12 }}>TOPIC BREAKDOWN</div>
+            <div style={{ fontSize: 11, color: 'var(--gx-text-muted)', letterSpacing: 2, ...S.mono, marginBottom: 12 }}>TOPIC BREAKDOWN</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {topics.map(([topic, pct]) => (
                 <div key={topic}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                    <span style={{ fontSize: 12, color: '#c8d8e8' }}>{TOPIC_LABELS[topic] || topic}</span>
-                    <span style={{ fontSize: 12, ...S.mono, color: pct >= 60 ? '#1D9E75' : pct >= 40 ? '#EF9F27' : '#ff2d78' }}>{pct}%</span>
+                    <span style={{ fontSize: 12, color: 'var(--gx-text)' }}>{TOPIC_LABELS[topic] || topic}</span>
+                    <span style={{ fontSize: 12, ...S.mono, color: pct >= 60 ? 'var(--gx-success)' : pct >= 40 ? 'var(--gx-warning)' : 'var(--gx-danger)' }}>{pct}%</span>
                   </div>
-                  <div style={{ height: 5, background: 'rgba(255,255,255,0.06)', borderRadius: 3 }}>
-                    <div style={{ height: '100%', width: `${pct}%`, borderRadius: 3, background: pct >= 60 ? '#1D9E75' : pct >= 40 ? '#EF9F27' : '#ff2d78', transition: 'width 0.8s ease' }} />
+                  <div style={{ height: 5, background: 'var(--gx-surface)', borderRadius: 3 }}>
+                    <div style={{ height: '100%', width: `${pct}%`, borderRadius: 3, background: pct >= 60 ? 'var(--gx-success)' : pct >= 40 ? 'var(--gx-warning)' : 'var(--gx-danger)', transition: 'width 0.8s ease' }} />
                   </div>
                 </div>
               ))}
@@ -269,18 +269,18 @@ function ResultScreen({ result, onStartRoadmap }) {
         {/* Strengths & Weaknesses */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 24 }}>
           {result.strengths?.length > 0 && (
-            <div style={{ background: 'rgba(29,158,117,0.06)', border: '1px solid rgba(29,158,117,0.15)', borderRadius: 12, padding: 16 }}>
-              <div style={{ fontSize: 11, color: '#1D9E75', letterSpacing: 2, ...S.mono, marginBottom: 10 }}>✅ STRENGTHS</div>
+            <div style={{ background: 'var(--gx-success-soft)', border: '1px solid var(--gx-success-border)', borderRadius: 12, padding: 16 }}>
+              <div style={{ fontSize: 11, color: 'var(--gx-success)', letterSpacing: 2, ...S.mono, marginBottom: 10 }}>✅ STRENGTHS</div>
               {result.strengths.map(s => (
-                <div key={s} style={{ fontSize: 12, color: '#c8d8e8', marginBottom: 6, paddingLeft: 12, borderLeft: '2px solid #1D9E75' }}>{TOPIC_LABELS[s] || s}</div>
+                <div key={s} style={{ fontSize: 12, color: 'var(--gx-text)', marginBottom: 6, paddingLeft: 12, borderLeft: '2px solid var(--gx-success)' }}>{TOPIC_LABELS[s] || s}</div>
               ))}
             </div>
           )}
           {result.weaknesses?.length > 0 && (
-            <div style={{ background: 'rgba(255,45,120,0.06)', border: '1px solid rgba(255,45,120,0.15)', borderRadius: 12, padding: 16 }}>
-              <div style={{ fontSize: 11, color: '#ff2d78', letterSpacing: 2, ...S.mono, marginBottom: 10 }}>📌 FOCUS AREAS</div>
+            <div style={{ background: 'var(--gx-danger-soft)', border: '1px solid var(--gx-danger-border)', borderRadius: 12, padding: 16 }}>
+              <div style={{ fontSize: 11, color: 'var(--gx-danger)', letterSpacing: 2, ...S.mono, marginBottom: 10 }}>📌 FOCUS AREAS</div>
               {result.weaknesses.map(w => (
-                <div key={w} style={{ fontSize: 12, color: '#c8d8e8', marginBottom: 6, paddingLeft: 12, borderLeft: '2px solid #ff2d78' }}>{TOPIC_LABELS[w] || w}</div>
+                <div key={w} style={{ fontSize: 12, color: 'var(--gx-text)', marginBottom: 6, paddingLeft: 12, borderLeft: '2px solid var(--gx-danger)' }}>{TOPIC_LABELS[w] || w}</div>
               ))}
             </div>
           )}
@@ -288,9 +288,9 @@ function ResultScreen({ result, onStartRoadmap }) {
 
         {/* AI Recommendation */}
         {result.recommendation && (
-          <div style={{ background: 'rgba(0,217,163,0.04)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 16, marginBottom: 28 }}>
-            <div style={{ fontSize: 11, color: '#00d9a3', letterSpacing: 2, ...S.mono, marginBottom: 8 }}>🤖 AI RECOMMENDATION</div>
-            <p style={{ fontSize: 13, color: '#c8d8e8', lineHeight: 1.7, margin: 0 }}>{result.recommendation}</p>
+          <div style={{ background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: 16, marginBottom: 28 }}>
+            <div style={{ fontSize: 11, color: 'var(--gx-accent)', letterSpacing: 2, ...S.mono, marginBottom: 8 }}>🤖 AI RECOMMENDATION</div>
+            <p style={{ fontSize: 13, color: 'var(--gx-text)', lineHeight: 1.7, margin: 0 }}>{result.recommendation}</p>
           </div>
         )}
 
@@ -369,11 +369,11 @@ export default function DSADiagnosticPage() {
       <div style={{ ...S.page, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: 56, marginBottom: 20 }}>🤖</div>
-          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, color: '#e8e8ed', marginBottom: 8 }}>GENOIS Engine is analyzing your answers...</h2>
-          <p style={{ color: '#5a7a9a', fontSize: 14 }}>Evaluating topic mastery, code accuracy, and learning path. This takes ~10 seconds.</p>
+          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 22, color: 'var(--gx-text)', marginBottom: 8 }}>GENOIS Engine is analyzing your answers...</h2>
+          <p style={{ color: 'var(--gx-text-muted)', fontSize: 14 }}>Evaluating topic mastery, code accuracy, and learning path. This takes ~10 seconds.</p>
           <div style={{ marginTop: 24, display: 'flex', gap: 6, justifyContent: 'center' }}>
             {[0, 1, 2].map(i => (
-              <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: '#00d9a3', animation: `bounce 1.2s ${i * 0.2}s infinite` }} />
+              <div key={i} style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--gx-accent)', animation: `bounce 1.2s ${i * 0.2}s infinite` }} />
             ))}
           </div>
         </div>
@@ -392,7 +392,7 @@ export default function DSADiagnosticPage() {
   return (
     <>
       {error && (
-        <div style={{ maxWidth: 780, margin: '16px auto 0', padding: '12px 16px', background: 'rgba(255,45,120,0.08)', border: '1px solid rgba(255,45,120,0.2)', borderRadius: 8, color: '#ff2d78', fontSize: 13 }}>
+        <div style={{ maxWidth: 780, margin: '16px auto 0', padding: '12px 16px', background: 'var(--gx-danger-soft)', border: '1px solid var(--gx-danger-border)', borderRadius: 8, color: 'var(--gx-danger)', fontSize: 13 }}>
           ⚠️ {error}
         </div>
       )}

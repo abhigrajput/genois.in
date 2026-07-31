@@ -1,7 +1,7 @@
 'use client';
 
 const shimmer = {
-  background: 'linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(0,217,163,0.08) 50%, rgba(255,255,255,0.04) 75%)',
+  background: 'var(--gx-surface)',
   backgroundSize: '200% 100%',
   animation: 'gskel-shimmer 1.4s ease-in-out infinite',
   borderRadius: 10,
@@ -50,7 +50,7 @@ export default function LoadingSkeleton({ variant = 'page', label = '' }) {
       )}
 
       {label && (
-        <div style={{ textAlign: 'center', marginTop: 22, color: '#5a7a9a', fontSize: 13, fontFamily: 'var(--font-mono)' }}>
+        <div style={{ textAlign: 'center', marginTop: 22, color: 'var(--gx-text-muted)', fontSize: 13, fontFamily: 'var(--font-mono)' }}>
           {label}
         </div>
       )}

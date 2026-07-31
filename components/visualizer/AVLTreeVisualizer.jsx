@@ -408,20 +408,20 @@ export default function AVLTreeVisualizer() {
       {/* Stats row */}
       <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
         {[
-          { label: 'Root Value', value: current.tree ? current.tree.val : '—', color: '#00d9a3' },
-          { label: 'Tree Height', value: current.tree ? current.tree.height : '—', color: '#ff6b4a' },
-          { label: 'Total Nodes', value: Object.keys(positions).length, color: '#1d9e75' },
-          { label: 'Balance State', value: current.unbalanced?.length ? 'Rebalancing' : 'Balanced', color: current.unbalanced?.length ? '#ff2d78' : '#1d9e75' },
+          { label: 'Root Value', value: current.tree ? current.tree.val : '—', color: 'var(--gx-accent)' },
+          { label: 'Tree Height', value: current.tree ? current.tree.height : '—', color: 'var(--gx-warning)' },
+          { label: 'Total Nodes', value: Object.keys(positions).length, color: 'var(--gx-success)' },
+          { label: 'Balance State', value: current.unbalanced?.length ? 'Rebalancing' : 'Balanced', color: current.unbalanced?.length ? 'var(--gx-danger)' : 'var(--gx-success)' },
         ].map(s => (
-          <div key={s.label} style={{ background: 'rgba(10,15,30,0.8)', border: `1px solid ${s.color}20`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', marginBottom: 2 }}>{s.label}</div>
+          <div key={s.label} style={{ background: 'var(--gx-surface)', border: `1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius: 8, padding: '8px 16px', minWidth: 100 }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)', marginBottom: 2 }}>{s.label}</div>
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
       {/* SVG Canvas */}
-      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 16, overflow: 'auto', display: 'flex', justifyContent: 'center', minHeight: 280 }}>
+      <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: 16, overflow: 'auto', display: 'flex', justifyContent: 'center', minHeight: 280 }}>
         {current.tree ? (
           <svg width={Math.max(totalW, 460)} height={280} style={{ display: 'block' }}>
             {/* Links */}
@@ -431,7 +431,7 @@ export default function AVLTreeVisualizer() {
                 <line key={link.id}
                   x1={link.from.x} y1={link.from.y}
                   x2={link.to.x} y2={link.to.y}
-                  stroke={isHl ? '#00d9a3' : 'rgba(0,217,163,0.15)'}
+                  stroke={isHl ? 'var(--gx-accent)' : 'var(--gx-border)'}
                   strokeWidth={isHl ? 2.5 : 1.5}
                   style={{ transition: 'all 0.3s' }}
                 />
@@ -444,32 +444,32 @@ export default function AVLTreeVisualizer() {
               const isUnb = current.unbalanced?.includes(node.id);
               const bf = getBF(node);
 
-              let stroke = 'rgba(0,217,163,0.3)';
-              let bg = 'rgba(13,20,36,0.9)';
+              let stroke = 'var(--gx-accent)';
+              let bg = 'var(--gx-surface)';
               let glow = 'none';
 
               if (isComp) {
-                stroke = '#00d9a3';
-                bg = 'rgba(0,217,163,0.08)';
-                glow = '0 0 10px #00d9a3';
+                stroke = 'var(--gx-accent)';
+                bg = 'var(--gx-accent-soft)';
+                glow = 'none';
               } else if (isUnb) {
-                stroke = '#ff2d78';
-                bg = 'rgba(255,45,120,0.1)';
-                glow = '0 0 12px #ff2d78';
+                stroke = 'var(--gx-danger)';
+                bg = 'var(--gx-danger-soft)';
+                glow = 'none';
               } else if (Math.abs(bf) > 1) {
-                stroke = '#ff2d7880';
+                stroke = 'var(--gx-danger)';
               }
 
               return (
                 <g key={node.id}>
                   {glow !== 'none' && <circle cx={x} cy={y} r={22} fill="none" stroke={stroke} strokeWidth={1} opacity={0.3} />}
                   <circle cx={x} cy={y} r={17} fill={bg} stroke={stroke} strokeWidth={2} style={{ transition: 'all 0.35s' }} />
-                  <text x={x} y={y + 4} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fill: isUnb ? '#ff2d78' : isComp ? '#00d9a3' : '#e8e8ed', fontWeight: 'bold' }}>
+                  <text x={x} y={y + 4} textAnchor="middle" style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fill: isUnb ? 'var(--gx-danger)' : isComp ? 'var(--gx-accent)' : 'var(--gx-text)', fontWeight: 'bold' }}>
                     {node.val}
                   </text>
                   
                   {/* Balance Factor Label */}
-                  <text x={x + 22} y={y - 2} style={{ fontFamily: 'var(--font-mono)', fontSize: 8, fill: Math.abs(bf) > 1 ? '#ff2d78' : '#5a7a9a', fontWeight: Math.abs(bf) > 1 ? 'bold' : 'normal' }}>
+                  <text x={x + 22} y={y - 2} style={{ fontFamily: 'var(--font-mono)', fontSize: 8, fill: Math.abs(bf) > 1 ? 'var(--gx-danger)' : 'var(--gx-text-muted)', fontWeight: Math.abs(bf) > 1 ? 'bold' : 'normal' }}>
                     BF:{bf > 0 ? `+${bf}` : bf}
                   </text>
                 </g>
@@ -477,7 +477,7 @@ export default function AVLTreeVisualizer() {
             })}
           </svg>
         ) : (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5a7a9a', fontFamily: 'var(--font-body)', fontSize: 13 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)', fontSize: 13 }}>
             Tree is empty. Insert a value to start.
           </div>
         )}
@@ -491,16 +491,16 @@ export default function AVLTreeVisualizer() {
       />
 
       {/* Interface Controls */}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', background: 'rgba(10,15,30,0.8)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: 12 }}>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: 12 }}>
         <input type="number" value={inputVal} onChange={e => setInputVal(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleInsert()} placeholder="Insert key..." style={inpStyle} />
-        <button onClick={handleInsert} style={btnStyle('#00d9a3')}>Insert Node</button>
-        <button onClick={handleRandomInsert} style={btnStyle('#ef9f27')}>🎲 Insert Random</button>
-        <button onClick={reset} style={btnStyle('#ff2d78')}>↺ Reset Tree</button>
+        <button onClick={handleInsert} style={btnStyle('var(--gx-accent)')}>Insert Node</button>
+        <button onClick={handleRandomInsert} style={btnStyle('var(--gx-warning)')}>🎲 Insert Random</button>
+        <button onClick={reset} style={btnStyle('var(--gx-danger)')}>↺ Reset Tree</button>
 
         <div style={{ display: 'flex', gap: 4, alignItems: 'center', marginLeft: 'auto' }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a' }}>SPEED</span>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-muted)' }}>SPEED</span>
           {[1,2,3,4].map(s => (
-            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 9px', borderRadius: 6, border: speed === s ? '1px solid #00d9a3' : '1px solid rgba(0,217,163,0.15)', background: speed === s ? 'rgba(0,217,163,0.12)' : 'transparent', color: speed === s ? '#00d9a3' : '#5a7a9a', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
+            <button key={s} onClick={() => setSpeed(s)} style={{ padding: '3px 9px', borderRadius: 6, border: speed === s ? '1px solid var(--gx-accent)' : '1px solid var(--gx-border)', background: speed === s ? 'var(--gx-accent-soft)' : 'transparent', color: speed === s ? 'var(--gx-accent)' : 'var(--gx-text-muted)', fontSize: 11, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{['0.5×','1×','2×','3×'][s-1]}</button>
           ))}
         </div>
       </div>
@@ -508,13 +508,13 @@ export default function AVLTreeVisualizer() {
       {/* Legend */}
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {[
-          { color: '#00d9a3', label: 'Comparing node / searching path' },
-          { color: '#ff2d78', label: 'Unbalanced node (requires rotation!)' },
-          { color: 'rgba(0,217,163,0.3)', label: 'Balanced node' },
+          { color: 'var(--gx-accent)', label: 'Comparing node / searching path' },
+          { color: 'var(--gx-danger)', label: 'Unbalanced node (requires rotation!)' },
+          { color: 'var(--gx-accent)', label: 'Balanced node' },
         ].map(l => (
           <div key={l.label} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <div style={{ width: 12, height: 12, borderRadius: 2, background: l.color + '22', border: `1.5px solid ${l.color}` }} />
-            <span style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-body)' }}>{l.label}</span>
+            <div style={{ width: 12, height: 12, borderRadius: 2, background: `color-mix(in srgb, ${l.color} 13%, transparent)`, border: `1.5px solid ${l.color}` }} />
+            <span style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)' }}>{l.label}</span>
           </div>
         ))}
       </div>
@@ -539,11 +539,11 @@ export default function AVLTreeVisualizer() {
 }
 
 const inpStyle = {
-  background: 'rgba(0,217,163,0.04)',
-  border: '1px solid rgba(0,217,163,0.2)',
+  background: 'var(--gx-accent-soft)',
+  border: '1px solid var(--gx-accent-border)',
   borderRadius: 8,
   padding: '6px 12px',
-  color: '#e8e8ed',
+  color: 'var(--gx-text)',
   fontFamily: 'var(--font-mono)',
   fontSize: 12,
   outline: 'none',
@@ -553,8 +553,8 @@ const inpStyle = {
 const btnStyle = (c) => ({
   padding: '7px 14px',
   borderRadius: 8,
-  border: `1px solid ${c}30`,
-  background: `${c}10`,
+  border: `1px solid color-mix(in srgb, ${c} 19%, transparent)`,
+  background: `color-mix(in srgb, ${c} 6%, transparent)`,
   color: c,
   fontFamily: 'var(--font-heading)',
   fontSize: 12,

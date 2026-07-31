@@ -6,16 +6,16 @@ import { trackSignup } from '@/lib/analytics';
 import useAuthStore from '@/store/authStore';
 
 const DOMAINS = [
-  { id: 'fullstack', label: 'Full Stack', icon: '⬡', color: '#00d9a3', desc: 'HTML CSS React Node.js' },
-  { id: 'dsa', label: 'DSA', icon: '◈', color: '#86efac', desc: 'Data Structures Algorithms' },
-  { id: 'aiml', label: 'AI / ML', icon: '◉', color: '#10b981', desc: 'LLMs Python Scikit-learn' },
-  { id: 'datascience', label: 'Data Science', icon: '◇', color: '#5eead4', desc: 'Pandas Visualization SQL' },
-  { id: 'cybersecurity', label: 'Cybersecurity', icon: '◆', color: '#22c55e', desc: 'Networks Pentesting Tools' },
-  { id: 'devops', label: 'DevOps', icon: '○', color: '#6ee7b7', desc: 'Docker Kubernetes CI/CD' },
-  { id: 'android', label: 'Mobile Dev', icon: '▣', color: '#14b8a6', desc: 'React Native Expo Flutter' },
-  { id: 'systemdesign', label: 'System Design', icon: '▦', color: '#4ade80', desc: 'Architecture Scalability' },
-  { id: 'blockchain', label: 'Blockchain', icon: '◎', color: '#2dd4bf', desc: 'Web3 Solidity Smart Contracts' },
-  { id: 'gamedev', label: 'Game Dev', icon: '▷', color: '#34d399', desc: 'Unity C# Game Design' },
+  { id: 'fullstack', label: 'Full Stack', icon: '⬡', color: 'var(--gx-accent)', desc: 'HTML CSS React Node.js' },
+  { id: 'dsa', label: 'DSA', icon: '◈', color: 'var(--gx-success)', desc: 'Data Structures Algorithms' },
+  { id: 'aiml', label: 'AI / ML', icon: '◉', color: 'var(--gx-success)', desc: 'LLMs Python Scikit-learn' },
+  { id: 'datascience', label: 'Data Science', icon: '◇', color: 'var(--gx-accent)', desc: 'Pandas Visualization SQL' },
+  { id: 'cybersecurity', label: 'Cybersecurity', icon: '◆', color: 'var(--gx-success)', desc: 'Networks Pentesting Tools' },
+  { id: 'devops', label: 'DevOps', icon: '○', color: 'var(--gx-accent)', desc: 'Docker Kubernetes CI/CD' },
+  { id: 'android', label: 'Mobile Dev', icon: '▣', color: 'var(--gx-accent)', desc: 'React Native Expo Flutter' },
+  { id: 'systemdesign', label: 'System Design', icon: '▦', color: 'var(--gx-success)', desc: 'Architecture Scalability' },
+  { id: 'blockchain', label: 'Blockchain', icon: '◎', color: 'var(--gx-accent)', desc: 'Web3 Solidity Smart Contracts' },
+  { id: 'gamedev', label: 'Game Dev', icon: '▷', color: 'var(--gx-success)', desc: 'Unity C# Game Design' },
 ];
 
 const COMPANIES = [
@@ -216,30 +216,30 @@ export default function OnboardingPage() {
 
   const chipStyle = (selected) => ({
     padding: '10px 14px', borderRadius: 10, cursor: 'pointer', textAlign: 'center',
-    background: selected ? 'rgba(0,255,136,0.1)' : '#070f1f',
-    border: `2px solid ${selected ? '#00ff88' : 'rgba(255,255,255,0.06)'}`,
-    color: selected ? '#00ff88' : '#c8d8e8',
+    background: selected ? 'var(--gx-accent-soft)' : 'var(--gx-bg)',
+    border: `2px solid ${selected ? 'var(--gx-accent)' : 'var(--gx-border)'}`,
+    color: selected ? 'var(--gx-accent)' : 'var(--gx-text)',
     fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600,
     transition: 'all 0.15s',
   });
 
-  const backBtn = { flex: 1, padding: '14px', borderRadius: 12, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 14 };
-  const nextBtn = (active) => ({ flex: 2, padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: active ? 'linear-gradient(135deg,#00d9a3,#ff6b4a)' : 'rgba(255,255,255,0.05)', color: active ? '#020812' : '#3a4a5a', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 });
+  const backBtn = { flex: 1, padding: '14px', borderRadius: 12, border: '1px solid var(--gx-border)', background: 'transparent', color: 'var(--gx-text-muted)', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 14 };
+  const nextBtn = (active) => ({ flex: 2, padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: active ? 'var(--gx-accent)' : 'var(--gx-surface)', color: active ? 'var(--gx-text-inverse)' : 'var(--gx-text-subtle)', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 });
 
   return (
-    <div style={{ minHeight: '100vh', background: '#020812', color: '#e8e8ed', fontFamily: 'var(--font-body)' }}>
-      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(0,217,163,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,217,163,0.015) 1px,transparent 1px)', backgroundSize: '56px 56px' }} />
+    <div style={{ minHeight: '100vh', background: 'var(--gx-surface)', color: 'var(--gx-text)', fontFamily: 'var(--font-body)' }}>
+      <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', backgroundImage: 'var(--gx-accent-soft) 1px,var(--gx-accent-soft) 1px', backgroundSize: '56px 56px' }} />
 
       <div style={{ position: 'relative', zIndex: 1, maxWidth: 560, margin: '0 auto', padding: '40px 20px' }}>
 
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, marginBottom: 20 }}>
-            <span style={{ color: '#00d9a3' }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
+            <span style={{ color: 'var(--gx-accent)' }}>GEN</span><span style={{ color: 'var(--gx-text)' }}>OIS</span>
           </div>
-          <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, marginBottom: 8, overflow: 'hidden' }}>
-            <div style={{ height: '100%', width: progress + '%', background: 'linear-gradient(90deg,#00d9a3,#ff6b4a)', borderRadius: 2, transition: 'width 0.4s' }} />
+          <div style={{ height: 4, background: 'var(--gx-surface)', borderRadius: 2, marginBottom: 8, overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: progress + '%', background: 'var(--gx-accent)', borderRadius: 2, transition: 'width 0.4s' }} />
           </div>
-          <div style={{ fontSize: 11, color: '#3a4a5a', fontFamily: 'var(--font-mono)' }}>
+          <div style={{ fontSize: 11, color: 'var(--gx-text-subtle)', fontFamily: 'var(--font-mono)' }}>
             Step {step + 1} of {STEPS.length}
           </div>
         </div>
@@ -248,20 +248,20 @@ export default function OnboardingPage() {
         {step === 0 && (
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: 64, marginBottom: 16 }}>🎯</div>
-            <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, color: '#e8e8ed', marginBottom: 12, lineHeight: 1.2 }}>
+            <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 28, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 12, lineHeight: 1.2 }}>
               Ready to prove your skill?
             </h1>
-            <p style={{ color: '#5a7a9a', fontSize: 16, lineHeight: 1.8, marginBottom: 12 }}>
+            <p style={{ color: 'var(--gx-text-muted)', fontSize: 16, lineHeight: 1.8, marginBottom: 12 }}>
               Every engineering student has a resume.
             </p>
-            <p style={{ color: '#ff2d78', fontSize: 16, fontWeight: 600, lineHeight: 1.8, marginBottom: 12 }}>
+            <p style={{ color: 'var(--gx-danger)', fontSize: 16, fontWeight: 600, lineHeight: 1.8, marginBottom: 12 }}>
               90% of them are fake.
             </p>
-            <p style={{ color: '#5a7a9a', fontSize: 16, lineHeight: 1.8, marginBottom: 32 }}>
+            <p style={{ color: 'var(--gx-text-muted)', fontSize: 16, lineHeight: 1.8, marginBottom: 32 }}>
               GENOIS ranks you on real daily performance. Daily coding, timed tests, actual projects. No shortcuts.
             </p>
-            <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 20, marginBottom: 28, textAlign: 'left' }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 2, marginBottom: 14 }}>WHAT YOU GET</div>
+            <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 14, padding: 20, marginBottom: 28, textAlign: 'left' }}>
+              <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 2, marginBottom: 14 }}>WHAT YOU GET</div>
               {[
                 { icon: '📅', text: '30-day AI-powered daily roadmap' },
                 { icon: '🎯', text: 'Daily tests, coding challenges, AI notes' },
@@ -271,15 +271,15 @@ export default function OnboardingPage() {
               ].map((f, i) => (
                 <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 10 }}>
                   <span style={{ fontSize: 18, flexShrink: 0 }}>{f.icon}</span>
-                  <span style={{ fontSize: 14, color: '#c8d8e8' }}>{f.text}</span>
+                  <span style={{ fontSize: 14, color: 'var(--gx-text)' }}>{f.text}</span>
                 </div>
               ))}
             </div>
-            <button onClick={() => setStep(1)} style={{ width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 17, fontWeight: 800, boxShadow: '0 0 30px rgba(0,217,163,0.3)' }}>
+            <button onClick={() => setStep(1)} style={{ width: '100%', padding: '16px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 17, fontWeight: 800, boxShadow: 'var(--gx-shadow-sm)' }}>
               Start Free — No Card Needed →
             </button>
-            <p style={{ marginTop: 12, color: '#3a4a5a', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
-              Already have an account? <a href="/login" style={{ color: '#00d9a3', textDecoration: 'none' }}>Login →</a>
+            <p style={{ marginTop: 12, color: 'var(--gx-text-subtle)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
+              Already have an account? <a href="/login" style={{ color: 'var(--gx-accent)', textDecoration: 'none' }}>Login →</a>
             </p>
           </div>
         )}
@@ -288,10 +288,10 @@ export default function OnboardingPage() {
         {step === 1 && (
           <div>
             <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>
+              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 8 }}>
                 Pick your battlefield
               </h2>
-              <p style={{ color: '#5a7a9a', fontSize: 14 }}>
+              <p style={{ color: 'var(--gx-text-muted)', fontSize: 14 }}>
                 Choose one domain. Master it in 30 days. Switch anytime.
               </p>
             </div>
@@ -299,13 +299,13 @@ export default function OnboardingPage() {
               {DOMAINS.map(d => (
                 <div key={d.id} onClick={() => setSelectedDomain(d.id)} style={{
                   padding: '16px 12px', borderRadius: 12, cursor: 'pointer', textAlign: 'center',
-                  background: selectedDomain === d.id ? `${d.color}15` : '#070f1f',
-                  border: `2px solid ${selectedDomain === d.id ? d.color : 'rgba(255,255,255,0.06)'}`,
+                  background: selectedDomain === d.id ? d.color : 'var(--gx-bg)',
+                  border: `2px solid ${selectedDomain === d.id ? d.color : 'var(--gx-border)'}`,
                   transition: 'all 0.15s',
                 }}>
                   <div style={{ fontSize: 24, marginBottom: 6 }}>{d.icon}</div>
-                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 700, color: selectedDomain === d.id ? d.color : '#e8e8ed', marginBottom: 4 }}>{d.label}</div>
-                  <div style={{ fontSize: 10, color: '#5a7a9a', lineHeight: 1.4 }}>{d.desc}</div>
+                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 700, color: selectedDomain === d.id ? d.color : 'var(--gx-text)', marginBottom: 4 }}>{d.label}</div>
+                  <div style={{ fontSize: 10, color: 'var(--gx-text-muted)', lineHeight: 1.4 }}>{d.desc}</div>
                 </div>
               ))}
             </div>
@@ -315,7 +315,7 @@ export default function OnboardingPage() {
                 Continue →
               </button>
             </div>
-            {error && <div style={{ color: '#ff2d78', fontSize: 13, textAlign: 'center', marginTop: 10 }}>{error}</div>}
+            {error && <div style={{ color: 'var(--gx-danger)', fontSize: 13, textAlign: 'center', marginTop: 10 }}>{error}</div>}
           </div>
         )}
 
@@ -323,10 +323,10 @@ export default function OnboardingPage() {
         {step === 2 && (
           <div>
             <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>
+              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 8 }}>
                 Tell us about yourself
               </h2>
-              <p style={{ color: '#5a7a9a', fontSize: 14 }}>
+              <p style={{ color: 'var(--gx-text-muted)', fontSize: 14 }}>
                 This helps us personalize your roadmap and show your college rank.
               </p>
             </div>
@@ -336,15 +336,15 @@ export default function OnboardingPage() {
                 { label: 'COLLEGE NAME', key: 'college', placeholder: 'LNCT Bhopal', type: 'text' },
               ].map(f => (
                 <div key={f.key}>
-                  <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 6 }}>{f.label}</div>
-                  <input type={f.type} value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))} placeholder={f.placeholder} style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,217,163,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                  <div style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)', letterSpacing: 1, marginBottom: 6 }}>{f.label}</div>
+                  <input type={f.type} value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))} placeholder={f.placeholder} style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid var(--gx-border)', background: 'var(--gx-surface)', color: 'var(--gx-text)', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
                 </div>
               ))}
               <div>
-                <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 6 }}>CURRENT YEAR</div>
+                <div style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)', letterSpacing: 1, marginBottom: 6 }}>CURRENT YEAR</div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   {['1', '2', '3', '4'].map(y => (
-                    <button key={y} onClick={() => setForm(p => ({ ...p, year: y }))} style={{ flex: 1, padding: '10px', borderRadius: 10, border: `1px solid ${form.year === y ? 'rgba(0,217,163,0.4)' : 'rgba(255,255,255,0.08)'}`, background: form.year === y ? 'rgba(0,217,163,0.08)' : 'transparent', color: form.year === y ? '#00d9a3' : '#5a7a9a', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
+                    <button key={y} onClick={() => setForm(p => ({ ...p, year: y }))} style={{ flex: 1, padding: '10px', borderRadius: 10, border: `1px solid ${form.year === y ? 'var(--gx-accent-border)' : 'var(--gx-border)'}`, background: form.year === y ? 'var(--gx-accent-soft)' : 'transparent', color: form.year === y ? 'var(--gx-accent)' : 'var(--gx-text-muted)', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
                       Year {y}
                     </button>
                   ))}
@@ -357,7 +357,7 @@ export default function OnboardingPage() {
                 Continue →
               </button>
             </div>
-            {error && <div style={{ color: '#ff2d78', fontSize: 13, textAlign: 'center', marginTop: 10 }}>{error}</div>}
+            {error && <div style={{ color: 'var(--gx-danger)', fontSize: 13, textAlign: 'center', marginTop: 10 }}>{error}</div>}
           </div>
         )}
 
@@ -365,16 +365,16 @@ export default function OnboardingPage() {
         {step === 3 && (
           <div>
             <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>
+              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 8 }}>
                 Where do you want to get placed?
               </h2>
-              <p style={{ color: '#5a7a9a', fontSize: 14 }}>
+              <p style={{ color: 'var(--gx-text-muted)', fontSize: 14 }}>
                 We&apos;ll customize your entire roadmap for these companies
               </p>
             </div>
 
             <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 10 }}>TARGET COMPANIES (select all that apply)</div>
+              <div style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)', letterSpacing: 1, marginBottom: 10 }}>TARGET COMPANIES (select all that apply)</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
                 {COMPANIES.map(c => (
                   <div key={c.id} onClick={() => toggleCompany(c.id)} style={chipStyle(targetCompanies.includes(c.id))}>
@@ -385,14 +385,14 @@ export default function OnboardingPage() {
             </div>
 
             <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 10 }}>HOW MANY MONTHS UNTIL PLACEMENT SEASON?</div>
+              <div style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)', letterSpacing: 1, marginBottom: 10 }}>HOW MANY MONTHS UNTIL PLACEMENT SEASON?</div>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 {MONTH_OPTIONS.map(m => (
                   <button key={m.value} onClick={() => setMonthsToPlacement(m.value)} style={{
                     padding: '9px 14px', borderRadius: 10, cursor: 'pointer',
-                    border: `1px solid ${monthsToPlacement === m.value ? '#00ff88' : 'rgba(255,255,255,0.08)'}`,
-                    background: monthsToPlacement === m.value ? 'rgba(0,255,136,0.1)' : 'transparent',
-                    color: monthsToPlacement === m.value ? '#00ff88' : '#5a7a9a',
+                    border: `1px solid ${monthsToPlacement === m.value ? 'var(--gx-accent)' : 'var(--gx-border)'}`,
+                    background: monthsToPlacement === m.value ? 'var(--gx-accent-soft)' : 'transparent',
+                    color: monthsToPlacement === m.value ? 'var(--gx-accent)' : 'var(--gx-text-muted)',
                     fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600,
                   }}>
                     {m.label}
@@ -414,16 +414,16 @@ export default function OnboardingPage() {
         {step === 4 && (
           <div>
             <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>
+              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 8 }}>
                 Where are you weak? Be honest.
               </h2>
-              <p style={{ color: '#5a7a9a', fontSize: 14 }}>
+              <p style={{ color: 'var(--gx-text-muted)', fontSize: 14 }}>
                 This is private. It helps us fix the gaps before interviews.
               </p>
             </div>
 
             <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 10 }}>WEAK AREAS (select all that apply)</div>
+              <div style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)', letterSpacing: 1, marginBottom: 10 }}>WEAK AREAS (select all that apply)</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
                 {WEAK_SUBJECTS.map(s => (
                   <div key={s} onClick={() => toggleWeakSubject(s)} style={chipStyle(weakSubjects.includes(s) || (s === "I'm strong everywhere" && weakSubjects.length === 0))}>
@@ -434,15 +434,15 @@ export default function OnboardingPage() {
             </div>
 
             <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 6 }}>YOUR APPROXIMATE CGPA</div>
+              <div style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)', letterSpacing: 1, marginBottom: 6 }}>YOUR APPROXIMATE CGPA</div>
               <input
                 type="number" min="0" max="10" step="0.1"
                 value={cgpa}
                 onChange={e => setCgpa(e.target.value)}
                 placeholder="e.g. 7.2"
-                style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,217,163,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
+                style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid var(--gx-border)', background: 'var(--gx-surface)', color: 'var(--gx-text)', fontSize: 14, outline: 'none', boxSizing: 'border-box' }}
               />
-              <div style={{ fontSize: 11, color: '#3a4a5a', marginTop: 6, fontFamily: 'var(--font-mono)' }}>
+              <div style={{ fontSize: 11, color: 'var(--gx-text-subtle)', marginTop: 6, fontFamily: 'var(--font-mono)' }}>
                 Helps show companies you&apos;re eligible for. Not shared publicly.
               </div>
             </div>
@@ -459,7 +459,7 @@ export default function OnboardingPage() {
                 </button>
               )}
             </div>
-            {authedMode && error && <div style={{ color: '#ff2d78', fontSize: 13, textAlign: 'center', marginTop: 10 }}>{error}</div>}
+            {authedMode && error && <div style={{ color: 'var(--gx-danger)', fontSize: 13, textAlign: 'center', marginTop: 10 }}>{error}</div>}
           </div>
         )}
 
@@ -467,20 +467,20 @@ export default function OnboardingPage() {
         {step === 5 && (
           <div>
             <div style={{ textAlign: 'center', marginBottom: 28 }}>
-              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 8 }}>
+              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 8 }}>
                 Create your account
               </h2>
-              <p style={{ color: '#5a7a9a', fontSize: 14 }}>
+              <p style={{ color: 'var(--gx-text-muted)', fontSize: 14 }}>
                 Last step. Set your email and password.
               </p>
             </div>
 
-            <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 12, padding: '12px 16px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 12, padding: '12px 16px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
               <div>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#e8e8ed' }}>{form.name} · {form.college}</div>
-                <div style={{ fontSize: 12, color: '#5a7a9a' }}>Domain: {DOMAINS.find(d => d.id === selectedDomain)?.label} · Year {form.year}</div>
+                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--gx-text)' }}>{form.name} · {form.college}</div>
+                <div style={{ fontSize: 12, color: 'var(--gx-text-muted)' }}>Domain: {DOMAINS.find(d => d.id === selectedDomain)?.label} · Year {form.year}</div>
                 {targetCompanies.length > 0 && (
-                  <div style={{ fontSize: 11, color: '#00ff88', marginTop: 2 }}>
+                  <div style={{ fontSize: 11, color: 'var(--gx-accent)', marginTop: 2 }}>
                     Target: {targetCompanies.slice(0, 3).join(', ')}{targetCompanies.length > 3 ? ` +${targetCompanies.length - 3}` : ''}
                   </div>
                 )}
@@ -493,25 +493,25 @@ export default function OnboardingPage() {
                 { label: 'PASSWORD', key: 'password', placeholder: 'Min 6 characters', type: 'password' },
               ].map(f => (
                 <div key={f.key}>
-                  <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', letterSpacing: 1, marginBottom: 6 }}>{f.label}</div>
-                  <input type={f.type} value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))} placeholder={f.placeholder} onKeyDown={e => e.key === 'Enter' && signup()} style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid rgba(0,217,163,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
+                  <div style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-body)', letterSpacing: 1, marginBottom: 6 }}>{f.label}</div>
+                  <input type={f.type} value={form[f.key]} onChange={e => setForm(p => ({ ...p, [f.key]: e.target.value }))} placeholder={f.placeholder} onKeyDown={e => e.key === 'Enter' && signup()} style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1px solid var(--gx-border)', background: 'var(--gx-surface)', color: 'var(--gx-text)', fontSize: 14, outline: 'none', boxSizing: 'border-box' }} />
                 </div>
               ))}
             </div>
 
             {error && (
-              <div style={{ padding: '10px 14px', borderRadius: 8, background: 'rgba(255,45,120,0.1)', border: '1px solid rgba(255,45,120,0.2)', color: '#ff2d78', fontSize: 13, marginBottom: 16 }}>
+              <div style={{ padding: '10px 14px', borderRadius: 8, background: 'var(--gx-danger-soft)', border: '1px solid var(--gx-danger-border)', color: 'var(--gx-danger)', fontSize: 13, marginBottom: 16 }}>
                 {error}
               </div>
             )}
 
             <div style={{ display: 'flex', gap: 10 }}>
               <button onClick={() => setStep(4)} style={backBtn}>← Back</button>
-              <button onClick={signup} disabled={loading} style={{ flex: 2, padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: loading ? 'rgba(0,217,163,0.2)' : 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, boxShadow: '0 0 20px rgba(0,217,163,0.2)' }}>
+              <button onClick={signup} disabled={loading} style={{ flex: 2, padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: loading ? 'var(--gx-accent-soft)' : 'var(--gx-accent)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, boxShadow: 'var(--gx-shadow-sm)' }}>
                 {loading ? 'Creating account...' : 'Start Free — 30 Days →'}
               </button>
             </div>
-            <p style={{ textAlign: 'center', color: '#3a4a5a', fontSize: 11, fontFamily: 'var(--font-mono)', marginTop: 10 }}>
+            <p style={{ textAlign: 'center', color: 'var(--gx-text-subtle)', fontSize: 11, fontFamily: 'var(--font-mono)', marginTop: 10 }}>
               No credit card · Cancel anytime · Free for 30 days
             </p>
           </div>

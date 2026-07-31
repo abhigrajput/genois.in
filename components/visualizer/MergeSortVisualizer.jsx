@@ -129,19 +129,19 @@ function computeSteps(arr) {
 }
 
 function barColor(idx, step) {
-  if (!step) return '#1a2a3a';
-  if (step.done) return '#1d9e75';
-  if (step.merged && idx >= step.merged[0] && idx <= step.merged[1]) return '#1d9e75';
-  if (step.placed === idx) return '#1d9e75';
-  if (step.merging === idx) return '#00d9a3';
-  if (step.left && idx >= step.left[0] && idx <= step.left[1]) return '#378ADD';
-  if (step.right && idx >= step.right[0] && idx <= step.right[1]) return '#ff6b4a';
+  if (!step) return 'var(--gx-surface-2)';
+  if (step.done) return 'var(--gx-success)';
+  if (step.merged && idx >= step.merged[0] && idx <= step.merged[1]) return 'var(--gx-success)';
+  if (step.placed === idx) return 'var(--gx-success)';
+  if (step.merging === idx) return 'var(--gx-accent)';
+  if (step.left && idx >= step.left[0] && idx <= step.left[1]) return 'var(--gx-info)';
+  if (step.right && idx >= step.right[0] && idx <= step.right[1]) return 'var(--gx-warning)';
   if (step.dividing) {
     const [l, m, r] = step.dividing;
-    if (idx >= l && idx <= m) return '#378ADD44';
-    if (idx >= m + 1 && idx <= r) return '#ff6b4a44';
+    if (idx >= l && idx <= m) return 'var(--gx-info)';
+    if (idx >= m + 1 && idx <= r) return 'var(--gx-warning)';
   }
-  return '#1a2a3a';
+  return 'var(--gx-surface-2)';
 }
 
 export default function MergeSortVisualizer() {
@@ -183,19 +183,19 @@ export default function MergeSortVisualizer() {
 
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
-          { label:'Phase', value: current?.dividing ? 'Divide' : current?.merging != null ? 'Merge' : current?.done ? 'Done' : '—', color:'#00d9a3' },
-          { label:'Time', value:'O(n log n)', color:'#ff6b4a' },
-          { label:'Space', value:'O(n)', color:'#ef9f27' },
-          { label:'Stable', value:'Yes', color:'#1d9e75' },
+          { label:'Phase', value: current?.dividing ? 'Divide' : current?.merging != null ? 'Merge' : current?.done ? 'Done' : '—', color:'var(--gx-accent)' },
+          { label:'Time', value:'O(n log n)', color:'var(--gx-warning)' },
+          { label:'Space', value:'O(n)', color:'var(--gx-warning)' },
+          { label:'Stable', value:'Yes', color:'var(--gx-success)' },
         ].map(s => (
-          <div key={s.label} style={{ background:'rgba(10,15,30,0.8)', border:`1px solid ${s.color}20`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
-            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
+          <div key={s.label} style={{ background:'var(--gx-surface)', border:`1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-text-muted)', marginBottom:2 }}>{s.label}</div>
             <div style={{ fontFamily:'var(--font-heading)', fontSize:18, fontWeight:700, color:s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
+      <div style={{ background:'var(--gx-surface)', border:'1px solid var(--gx-border)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
         {displayArr.map((v, i) => (
           <div key={i} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, flex:1, maxWidth:60 }}>
             <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:barColor(i, current) }}>{v}</span>
@@ -212,10 +212,10 @@ export default function MergeSortVisualizer() {
       />
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
-        {[['#378ADD','Left Half'],['#ff6b4a','Right Half'],['#00d9a3','Merging'],['#1d9e75','Merged']].map(([c,l]) => (
+        {[['var(--gx-info)','Left Half'],['var(--gx-warning)','Right Half'],['var(--gx-accent)','Merging'],['var(--gx-success)','Merged']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:2, background:c }}/>
-            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>
+            <span style={{ fontSize:11, color:'var(--gx-text-muted)', fontFamily:'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>

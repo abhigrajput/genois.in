@@ -70,7 +70,7 @@ export default function OnboardingTour() {
     <div style={{
       position: 'fixed',
       inset: 0,
-      background: 'rgba(2,8,18,0.85)',
+      background: 'var(--gx-bg)',
       backdropFilter: 'blur(10px)',
       zIndex: 99999,
       display: 'flex',
@@ -81,37 +81,37 @@ export default function OnboardingTour() {
       <div style={{
         maxWidth: 460,
         width: '100%',
-        background: 'linear-gradient(135deg,rgba(7,15,31,0.98),rgba(0,217,163,0.04))',
-        border: '1px solid rgba(0,217,163,0.25)',
+        background: 'var(--gx-bg)',
+        border: '1px solid var(--gx-accent-border)',
         borderRadius: 16,
         padding: 32,
         textAlign: 'center',
       }}>
         <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginBottom: 20 }}>
           {TOUR_STEPS.map((_, i) => (
-            <div key={i} style={{ width: i === step ? 24 : 6, height: 6, borderRadius: 3, background: i <= step ? '#00d9a3' : 'rgba(255,255,255,0.1)', transition: 'all 0.3s' }} />
+            <div key={i} style={{ width: i === step ? 24 : 6, height: 6, borderRadius: 3, background: i <= step ? 'var(--gx-accent)' : 'var(--gx-surface)', transition: 'all 0.3s' }} />
           ))}
         </div>
 
-        <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 12 }}>
+        <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 12 }}>
           {current.title}
         </h2>
-        <p style={{ color: '#8a9ab0', fontSize: 14, lineHeight: 1.7, marginBottom: 28 }}>
+        <p style={{ color: 'var(--gx-text-muted)', fontSize: 14, lineHeight: 1.7, marginBottom: 28 }}>
           {current.description}
         </p>
 
         <div style={{ display: 'flex', gap: 10, justifyContent: 'center' }}>
           {step > 0 && (
-            <button onClick={skip} style={{ padding: '10px 18px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600 }}>
+            <button onClick={skip} style={{ padding: '10px 18px', borderRadius: 10, border: '1px solid var(--gx-border)', background: 'transparent', color: 'var(--gx-text-muted)', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600 }}>
               Skip Tour
             </button>
           )}
-          <button onClick={next} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700 }}>
+          <button onClick={next} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700 }}>
             {current.cta} →
           </button>
         </div>
 
-        <div style={{ marginTop: 16, fontSize: 11, color: '#3a4a5a', fontFamily: 'var(--font-mono)' }}>
+        <div style={{ marginTop: 16, fontSize: 11, color: 'var(--gx-text-subtle)', fontFamily: 'var(--font-mono)' }}>
           {step + 1} / {TOUR_STEPS.length}
         </div>
       </div>

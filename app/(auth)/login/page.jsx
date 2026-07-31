@@ -8,11 +8,11 @@ import { authAPI } from '@/lib/api';
 import { trackLogin } from '@/lib/analytics';
 import { Check } from 'lucide-react';
 
-const PURPLE = '#00d9a3';
-const PURPLE_LIGHT = '#2ee6b0';
-const BG = '#0a0a0f';
-const CARD = '#12121a';
-const MUTED = '#8b93a1';
+const PURPLE = 'var(--gx-accent)';
+const PURPLE_LIGHT = 'var(--gx-accent)';
+const BG = 'var(--gx-surface)';
+const CARD = 'var(--gx-bg)';
+const MUTED = 'var(--gx-text-muted)';
 
 const BRAND_BULLETS = ['Free 30-day trial', 'No credit card needed', '10 career domains'];
 
@@ -176,14 +176,14 @@ export default function LoginPage() {
 
   const inputStyle = (key) => ({
     width: '100%', padding: '12px 14px', borderRadius: 10,
-    border: `1px solid ${fieldErrors[key] ? 'rgba(239,68,68,0.55)' : focused === key ? PURPLE : 'rgba(0,217,163,0.15)'}`,
-    background: focused === key ? 'rgba(0,217,163,0.06)' : 'rgba(255,255,255,0.03)',
-    color: '#f8fafc', fontSize: 14, fontFamily: 'var(--font-body)', outline: 'none',
+    border: `1px solid ${fieldErrors[key] ? 'var(--gx-danger-border)' : focused === key ? PURPLE : 'var(--gx-border)'}`,
+    background: focused === key ? 'var(--gx-accent-soft)' : 'var(--gx-surface)',
+    color: 'var(--gx-text)', fontSize: 14, fontFamily: 'var(--font-body)', outline: 'none',
     boxSizing: 'border-box', transition: 'all 0.18s',
-    boxShadow: focused === key ? '0 0 0 3px rgba(0,217,163,0.12)' : 'none',
+    boxShadow: focused === key ? '0 0 0 3px var(--gx-border)' : 'none',
   });
 
-  const fieldErrorStyle = { color: '#f87171', fontSize: 12, margin: '6px 2px 0' };
+  const fieldErrorStyle = { color: 'var(--gx-danger)', fontSize: 12, margin: '6px 2px 0' };
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', background: BG, fontFamily: 'var(--font-body)' }}>
@@ -192,30 +192,30 @@ export default function LoginPage() {
       <div className="gen-desktop-only" style={{
         width: '40%', maxWidth: 520, position: 'relative', overflow: 'hidden',
         display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '56px 52px',
-        background: 'linear-gradient(160deg, #15152a 0%, #0a0a0f 60%)',
-        borderRight: '1px solid rgba(0,217,163,0.12)',
+        background: 'var(--gx-bg)',
+        borderRight: '1px solid var(--gx-border)',
       }}>
-        <div style={{ position: 'absolute', top: -120, left: -100, width: 420, height: 420, borderRadius: '50%', background: 'radial-gradient(circle, rgba(0,217,163,0.22), transparent 65%)', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: -120, left: -100, width: 420, height: 420, borderRadius: '50%', background: 'transparent', pointerEvents: 'none' }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 34, letterSpacing: 0.5, marginBottom: 28 }}>
-            <span style={{ color: PURPLE }}>GEN</span><span style={{ color: '#f8fafc' }}>OIS</span>
+            <span style={{ color: PURPLE }}>GEN</span><span style={{ color: 'var(--gx-text)' }}>OIS</span>
           </div>
-          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 30, fontWeight: 800, color: '#f8fafc', lineHeight: 1.2, margin: '0 0 16px' }}>
+          <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 30, fontWeight: 800, color: 'var(--gx-text)', lineHeight: 1.2, margin: '0 0 16px' }}>
             Your placement journey starts here
           </h2>
-          <p style={{ color: '#9ca3af', fontSize: 15, lineHeight: 1.7, margin: '0 0 30px', maxWidth: 360 }}>
+          <p style={{ color: 'var(--gx-text-muted)', fontSize: 15, lineHeight: 1.7, margin: '0 0 30px', maxWidth: 360 }}>
             A 365-day AI roadmap personalized for your college, your target company, your timeline.
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 40 }}>
             {BRAND_BULLETS.map((b) => (
-              <div key={b} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: '#d1d5db' }}>
-                <span style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(0,217,163,0.15)', border: '1px solid rgba(0,217,163,0.4)', color: PURPLE_LIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={12} strokeWidth={2.5} color={PURPLE_LIGHT} /></span>
+              <div key={b} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, color: 'var(--gx-text-muted)' }}>
+                <span style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-accent-border)', color: PURPLE_LIGHT, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Check size={12} strokeWidth={2.5} color={PURPLE_LIGHT} /></span>
                 {b}
               </div>
             ))}
           </div>
-          <div style={{ padding: '16px 18px', borderRadius: 14, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(0,217,163,0.12)', maxWidth: 360 }}>
-            <p style={{ color: '#d1d5db', fontSize: 13.5, lineHeight: 1.6, margin: '0 0 8px', fontStyle: 'italic' }}>
+          <div style={{ padding: '16px 18px', borderRadius: 14, background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', maxWidth: 360 }}>
+            <p style={{ color: 'var(--gx-text-muted)', fontSize: 13.5, lineHeight: 1.6, margin: '0 0 8px', fontStyle: 'italic' }}>
               “Got placed at Infosys after 3 months on GENOIS.”
             </p>
             <div style={{ fontSize: 12, color: MUTED, fontFamily: 'var(--font-mono)' }}>— Priya S. · VTU</div>
@@ -230,29 +230,29 @@ export default function LoginPage() {
           {/* Mobile logo */}
           <div className="gen-mobile-only" style={{ textAlign: 'center', marginBottom: 24, display: 'none' }}>
             <span style={{ fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 28 }}>
-              <span style={{ color: PURPLE }}>GEN</span><span style={{ color: '#f8fafc' }}>OIS</span>
+              <span style={{ color: PURPLE }}>GEN</span><span style={{ color: 'var(--gx-text)' }}>OIS</span>
             </span>
           </div>
 
-          <div style={{ background: CARD, border: '1px solid rgba(0,217,163,0.14)', borderRadius: 18, padding: '32px 30px', boxShadow: '0 24px 60px rgba(0,0,0,0.45)' }}>
-            <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#f8fafc', margin: '0 0 6px' }}>Welcome back</h1>
+          <div style={{ background: CARD, border: '1px solid var(--gx-border)', borderRadius: 18, padding: '32px 30px', boxShadow: 'var(--gx-shadow-sm)' }}>
+            <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: 'var(--gx-text)', margin: '0 0 6px' }}>Welcome back</h1>
             <p style={{ color: MUTED, fontSize: 14, margin: '0 0 24px' }}>Sign in to continue your journey.</p>
 
             {verified && (
-              <div role="status" aria-live="polite" style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 10, padding: '10px 14px', color: '#10b981', fontSize: 13, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <Check size={16} strokeWidth={2.5} color="#10b981" style={{ flexShrink: 0 }} />
+              <div role="status" aria-live="polite" style={{ background: 'var(--gx-success-soft)', border: '1px solid var(--gx-success-border)', borderRadius: 10, padding: '10px 14px', color: 'var(--gx-success)', fontSize: 13, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Check size={16} strokeWidth={2.5} color="var(--gx-success)" style={{ flexShrink: 0 }} />
                 <span>Email verified! Please sign in.</span>
               </div>
             )}
 
             {error && (
-              <div role="alert" aria-live="assertive" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 10, padding: '10px 14px', color: '#f87171', fontSize: 13, marginBottom: 16 }}>{error}</div>
+              <div role="alert" aria-live="assertive" style={{ background: 'var(--gx-danger-soft)', border: '1px solid var(--gx-danger-border)', borderRadius: 10, padding: '10px 14px', color: 'var(--gx-danger)', fontSize: 13, marginBottom: 16 }}>{error}</div>
             )}
 
             {/* Google OAuth */}
             <button onClick={handleGoogleLogin} disabled={googleLoading || loading} type="button" style={{
-              width: '100%', padding: '12px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.12)',
-              background: '#fff', color: '#1f2937', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 600,
+              width: '100%', padding: '12px', borderRadius: 10, border: '1px solid var(--gx-border)',
+              background: 'var(--gx-bg)', color: 'var(--gx-text)', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 600,
               cursor: googleLoading ? 'wait' : 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
               gap: 10, marginBottom: 20, transition: 'all 0.2s', opacity: (googleLoading || loading) ? 0.7 : 1,
             }}>
@@ -266,14 +266,14 @@ export default function LoginPage() {
             </button>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+              <div style={{ flex: 1, height: 1, background: 'var(--gx-border)' }} />
               <span style={{ fontSize: 11, color: MUTED, fontFamily: 'var(--font-mono)' }}>OR</span>
-              <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)' }} />
+              <div style={{ flex: 1, height: 1, background: 'var(--gx-border)' }} />
             </div>
 
             <form onSubmit={submit} noValidate>
               <div style={{ marginBottom: 16 }}>
-                <label htmlFor="login-email" style={{ display: 'block', fontSize: 12, color: '#9ca3af', fontWeight: 500, marginBottom: 7 }}>Email</label>
+                <label htmlFor="login-email" style={{ display: 'block', fontSize: 12, color: 'var(--gx-text-muted)', fontWeight: 500, marginBottom: 7 }}>Email</label>
                 <input
                   id="login-email" name="email" type="email" autoComplete="email"
                   value={form.email}
@@ -285,7 +285,7 @@ export default function LoginPage() {
                 {fieldErrors.email && <p style={fieldErrorStyle}>{fieldErrors.email}</p>}
               </div>
               <div style={{ marginBottom: 22 }}>
-                <label htmlFor="login-password" style={{ display: 'block', fontSize: 12, color: '#9ca3af', fontWeight: 500, marginBottom: 7 }}>Password</label>
+                <label htmlFor="login-password" style={{ display: 'block', fontSize: 12, color: 'var(--gx-text-muted)', fontWeight: 500, marginBottom: 7 }}>Password</label>
                 <input
                   id="login-password" name="password" type="password" autoComplete="current-password"
                   value={form.password}
@@ -299,9 +299,9 @@ export default function LoginPage() {
               <button type="submit" disabled={loading} className="gen-press" style={{
                 width: '100%', padding: '13px', borderRadius: 10, border: 'none',
                 cursor: loading ? 'wait' : 'pointer',
-                background: loading ? 'rgba(0,217,163,0.5)' : `linear-gradient(135deg, ${PURPLE}, ${'#00b389'})`,
-                color: '#0a0a0f', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700,
-                boxShadow: '0 8px 24px rgba(0,217,163,0.32)', transition: 'all 0.2s',
+                background: loading ? 'var(--gx-accent)' : PURPLE,
+                color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700,
+                boxShadow: 'var(--gx-shadow-sm)', transition: 'all 0.2s',
               }}>
                 {loading ? 'Signing in…' : 'Sign In →'}
               </button>

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
 const DOMAIN_OPTIONS = ['', 'fullstack', 'dsa', 'ml', 'ai', 'ds', 'cybersec', 'cloud', 'mobile', 'devops', 'sysdesign'];
-const DOMAIN_COLORS = { cloud: '#378ADD', fullstack: '#7F77DD', dsa: '#1D9E75', ml: '#D85A30', ai: '#BA7517', ds: '#378ADD', cybersec: '#D4537E', mobile: '#E24B4A', devops: '#888780', sysdesign: '#534AB7' };
+const DOMAIN_COLORS = { cloud: 'var(--gx-info)', fullstack: 'var(--gx-info)', dsa: 'var(--gx-success)', ml: 'var(--gx-warning)', ai: 'var(--gx-warning)', ds: 'var(--gx-info)', cybersec: 'var(--gx-danger)', mobile: 'var(--gx-danger)', devops: 'var(--gx-text-muted)', sysdesign: 'var(--gx-info)' };
 
 export default function CompanyDashboardPage() {
   const router = useRouter();
@@ -77,39 +77,39 @@ export default function CompanyDashboardPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: '#020812', color: '#e8e8ed', fontFamily: 'var(--font-body)' }}>
-      <nav style={{ background: 'rgba(2,8,18,0.98)', borderBottom: '1px solid rgba(0,217,163,0.1)', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 100 }}>
+    <div style={{ minHeight: '100vh', background: 'var(--gx-surface)', color: 'var(--gx-text)', fontFamily: 'var(--font-body)' }}>
+      <nav style={{ background: 'var(--gx-bg)', borderBottom: '1px solid var(--gx-border)', padding: '0 24px', height: 56, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 100 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, fontWeight: 800 }}>
-            <span style={{ color: '#00d9a3' }}>GEN</span><span style={{ color: '#e8e8ed' }}>OIS</span>
+            <span style={{ color: 'var(--gx-accent)' }}>GEN</span><span style={{ color: 'var(--gx-text)' }}>OIS</span>
           </div>
           <div style={{ display: 'flex', gap: 4 }}>
-            <button style={{ padding: '6px 14px', borderRadius: 8, border: 'none', background: 'rgba(0,217,163,0.08)', color: '#00d9a3', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>Students</button>
-            <button onClick={() => router.push('/company/challenges')} style={{ padding: '6px 14px', borderRadius: 8, border: 'none', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontSize: 13 }}>Challenges</button>
+            <button style={{ padding: '6px 14px', borderRadius: 8, border: 'none', background: 'var(--gx-accent-soft)', color: 'var(--gx-accent)', cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>Students</button>
+            <button onClick={() => router.push('/company/challenges')} style={{ padding: '6px 14px', borderRadius: 8, border: 'none', background: 'transparent', color: 'var(--gx-text-muted)', cursor: 'pointer', fontSize: 13 }}>Challenges</button>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {company && <span style={{ fontSize: 13, color: '#5a7a9a' }}>{company.name}</span>}
-          <button onClick={logout} style={{ padding: '6px 14px', borderRadius: 8, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontSize: 13 }}>Logout</button>
+          {company && <span style={{ fontSize: 13, color: 'var(--gx-text-muted)' }}>{company.name}</span>}
+          <button onClick={logout} style={{ padding: '6px 14px', borderRadius: 8, border: '1px solid var(--gx-border)', background: 'transparent', color: 'var(--gx-text-muted)', cursor: 'pointer', fontSize: 13 }}>Logout</button>
         </div>
       </nav>
 
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '32px 24px' }}>
 
         <div style={{ marginBottom: 28 }}>
-          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: '#e8e8ed', marginBottom: 4 }}>
+          <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 4 }}>
             Find Your Next Engineer
           </h1>
-          <p style={{ color: '#5a7a9a', fontSize: 13 }}>
+          <p style={{ color: 'var(--gx-text-muted)', fontSize: 13 }}>
             Browse top students ranked by real daily performance. Filter by domain, score, and college.
           </p>
         </div>
 
-        <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 14, padding: 20, marginBottom: 24 }}>
+        <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 14, padding: 20, marginBottom: 24 }}>
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
             <div style={{ flex: 1, minWidth: 140 }}>
-              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>DOMAIN</div>
-              <select value={filters.domain} onChange={e => setFilters(p => ({ ...p, domain: e.target.value }))} style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(0,217,163,0.15)', background: '#070f1f', color: '#e8e8ed', fontSize: 13, outline: 'none' }}>
+              <div style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>DOMAIN</div>
+              <select value={filters.domain} onChange={e => setFilters(p => ({ ...p, domain: e.target.value }))} style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--gx-border)', background: 'var(--gx-bg)', color: 'var(--gx-text)', fontSize: 13, outline: 'none' }}>
                 <option value="">All Domains</option>
                 {DOMAIN_OPTIONS.filter(Boolean).map(d => (
                   <option key={d} value={d}>{d.toUpperCase()}</option>
@@ -117,8 +117,8 @@ export default function CompanyDashboardPage() {
               </select>
             </div>
             <div style={{ flex: 1, minWidth: 140 }}>
-              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>MIN SCORE</div>
-              <select value={filters.minScore} onChange={e => setFilters(p => ({ ...p, minScore: parseInt(e.target.value) }))} style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(0,217,163,0.15)', background: '#070f1f', color: '#e8e8ed', fontSize: 13, outline: 'none' }}>
+              <div style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>MIN SCORE</div>
+              <select value={filters.minScore} onChange={e => setFilters(p => ({ ...p, minScore: parseInt(e.target.value) }))} style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--gx-border)', background: 'var(--gx-bg)', color: 'var(--gx-text)', fontSize: 13, outline: 'none' }}>
                 <option value={0}>Any Score</option>
                 <option value={100}>100+ pts</option>
                 <option value={300}>300+ pts</option>
@@ -127,8 +127,8 @@ export default function CompanyDashboardPage() {
               </select>
             </div>
             <div style={{ flex: 1, minWidth: 140 }}>
-              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>SKILL LEVEL</div>
-              <select value={filters.tier || ''} onChange={e => setFilters(p => ({ ...p, tier: e.target.value }))} style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(0,217,163,0.15)', background: '#070f1f', color: '#e8e8ed', fontSize: 13, outline: 'none' }}>
+              <div style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>SKILL LEVEL</div>
+              <select value={filters.tier || ''} onChange={e => setFilters(p => ({ ...p, tier: e.target.value }))} style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--gx-border)', background: 'var(--gx-bg)', color: 'var(--gx-text)', fontSize: 13, outline: 'none' }}>
                 <option value="">All Levels</option>
                 <option value="fresher">🌱 Fresher</option>
                 <option value="junior">💼 Junior</option>
@@ -138,49 +138,49 @@ export default function CompanyDashboardPage() {
               </select>
             </div>
             <div style={{ flex: 2, minWidth: 180 }}>
-              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>COLLEGE</div>
-              <input value={filters.college} onChange={e => setFilters(p => ({ ...p, college: e.target.value }))} placeholder="Search college name..." style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(0,217,163,0.15)', background: 'rgba(255,255,255,0.02)', color: '#e8e8ed', fontSize: 13, outline: 'none', boxSizing: 'border-box' }} />
+              <div style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>COLLEGE</div>
+              <input value={filters.college} onChange={e => setFilters(p => ({ ...p, college: e.target.value }))} placeholder="Search college name..." style={{ width: '100%', padding: '10px 12px', borderRadius: 8, border: '1px solid var(--gx-border)', background: 'var(--gx-surface)', color: 'var(--gx-text)', fontSize: 13, outline: 'none', boxSizing: 'border-box' }} />
             </div>
-            <button onClick={applyFilters} style={{ padding: '10px 24px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700, flexShrink: 0 }}>
+            <button onClick={applyFilters} style={{ padding: '10px 24px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700, flexShrink: 0 }}>
               Search →
             </button>
           </div>
         </div>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: '#5a7a9a' }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--gx-text-muted)' }}>
             {students.length} students found
           </div>
-          <div style={{ fontSize: 12, color: '#3a4a5a', fontFamily: 'var(--font-mono)' }}>
+          <div style={{ fontSize: 12, color: 'var(--gx-text-subtle)', fontFamily: 'var(--font-mono)' }}>
             Ranked by GENOIS Score — Real verified skill
           </div>
         </div>
 
         {loading ? (
-          <div style={{ padding: 60, textAlign: 'center', color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>
+          <div style={{ padding: 60, textAlign: 'center', color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>
             Loading students...
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(320px,1fr))', gap: 14 }}>
             {students.map((s, i) => {
-              const color = DOMAIN_COLORS[s.domain] || '#00d9a3';
+              const color = DOMAIN_COLORS[s.domain] || 'var(--gx-accent)';
               return (
-                <div key={i} style={{ background: '#070f1f', border: `1px solid ${color}18`, borderRadius: 14, padding: 20, position: 'relative', overflow: 'hidden' }}>
-                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg,transparent,${color},transparent)` }} />
+                <div key={i} style={{ background: 'var(--gx-bg)', border: `1px solid color-mix(in srgb, ${color} 9%, transparent)`, borderRadius: 14, padding: 20, position: 'relative', overflow: 'hidden' }}>
+                  <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: color }} />
 
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 800, color: '#e8e8ed', marginBottom: 3 }}>{s.name}</div>
-                      <div style={{ fontSize: 12, color: '#5a7a9a', marginBottom: 6 }}>{s.college}</div>
+                      <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 3 }}>{s.name}</div>
+                      <div style={{ fontSize: 12, color: 'var(--gx-text-muted)', marginBottom: 6 }}>{s.college}</div>
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                        <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: `${color}15`, color, fontFamily: 'var(--font-mono)' }}>
+                        <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: `color-mix(in srgb, ${color} 8%, transparent)`, color, fontFamily: 'var(--font-mono)' }}>
                           {s.domain?.toUpperCase()}
                         </span>
-                        <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'rgba(0,217,163,0.06)', color: '#00d9a3', fontFamily: 'var(--font-mono)' }}>
+                        <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: 'var(--gx-accent-soft)', color: 'var(--gx-accent)', fontFamily: 'var(--font-mono)' }}>
                           Rank #{s.rank}
                         </span>
                         {s.skillTier && (
-                          <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: `${s.skillTier.color}15`, color: s.skillTier.color, fontFamily: 'var(--font-mono)' }}>
+                          <span style={{ fontSize: 10, padding: '2px 8px', borderRadius: 20, background: `color-mix(in srgb, ${s.skillTier.color} 8%, transparent)`, color: s.skillTier.color, fontFamily: 'var(--font-mono)' }}>
                             {s.skillTier.icon} {s.skillTier.label.toUpperCase()}
                           </span>
                         )}
@@ -190,22 +190,22 @@ export default function CompanyDashboardPage() {
                       <div style={{ fontFamily: 'var(--font-heading)', fontSize: 24, fontWeight: 800, color }}>
                         {s.score}
                       </div>
-                      <div style={{ fontSize: 10, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>pts</div>
+                      <div style={{ fontSize: 10, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>pts</div>
                     </div>
                   </div>
 
-                  <div style={{ display: 'flex', gap: 12, marginBottom: 14, fontSize: 12, color: '#5a7a9a', fontFamily: 'var(--font-mono)' }}>
+                  <div style={{ display: 'flex', gap: 12, marginBottom: 14, fontSize: 12, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>
                     <span>🔥 {s.streak}d streak</span>
                     <span>📅 Day {s.currentDay}</span>
                   </div>
 
                   <div style={{ display: 'flex', gap: 8 }}>
                     {s.linkedinUrl && (
-                      <a href={s.linkedinUrl} target="_blank" rel="noreferrer" style={{ flex: 1, padding: '8px', borderRadius: 8, border: '1px solid rgba(0,119,181,0.3)', background: 'rgba(0,119,181,0.08)', color: '#0077B5', textDecoration: 'none', fontSize: 12, fontFamily: 'var(--font-heading)', fontWeight: 600, textAlign: 'center' }}>
+                      <a href={s.linkedinUrl} target="_blank" rel="noreferrer" style={{ flex: 1, padding: '8px', borderRadius: 8, border: '1px solid var(--gx-info-border)', background: 'var(--gx-info-soft)', color: '#0077B5', textDecoration: 'none', fontSize: 12, fontFamily: 'var(--font-heading)', fontWeight: 600, textAlign: 'center' }}>
                         LinkedIn
                       </a>
                     )}
-                    <button onClick={() => setContactModal(s)} style={{ flex: 2, padding: '8px', borderRadius: 8, border: 'none', cursor: 'pointer', background: `linear-gradient(135deg,${color},${color}99)`, color: '#fff', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 700 }}>
+                    <button onClick={() => setContactModal(s)} style={{ flex: 2, padding: '8px', borderRadius: 8, border: 'none', cursor: 'pointer', background: color, color: 'var(--gx-text)', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 700 }}>
                       Contact Student →
                     </button>
                   </div>
@@ -216,30 +216,30 @@ export default function CompanyDashboardPage() {
         )}
 
         {students.length === 0 && !loading && (
-          <div style={{ padding: 60, textAlign: 'center', background: '#070f1f', border: '1px solid rgba(0,217,163,0.06)', borderRadius: 14 }}>
+          <div style={{ padding: 60, textAlign: 'center', background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 14 }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>🔍</div>
-            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: '#e8e8ed', marginBottom: 8 }}>No students found</div>
-            <div style={{ color: '#5a7a9a', fontSize: 14 }}>Try adjusting your filters.</div>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--gx-text)', marginBottom: 8 }}>No students found</div>
+            <div style={{ color: 'var(--gx-text-muted)', fontSize: 14 }}>Try adjusting your filters.</div>
           </div>
         )}
       </div>
 
       {contactModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-          <div style={{ background: '#070f1f', border: '1px solid rgba(0,217,163,0.2)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 480 }}>
-            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800, color: '#e8e8ed', marginBottom: 4 }}>
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(16,24,40,0.4)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+          <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-accent-border)', borderRadius: 16, padding: 28, width: '100%', maxWidth: 480 }}>
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 4 }}>
               Contact {contactModal.name}
             </div>
-            <div style={{ fontSize: 13, color: '#5a7a9a', marginBottom: 20 }}>
+            <div style={{ fontSize: 13, color: 'var(--gx-text-muted)', marginBottom: 20 }}>
               We will email {contactModal.name} with your contact request. They will reply to your company email directly.
             </div>
             <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 11, color: '#5a7a9a', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>MESSAGE (optional)</div>
-              <textarea value={message} onChange={e => setMessage(e.target.value)} placeholder={`Hi ${contactModal.name}, we found your GENOIS profile and are interested in discussing a role at ${company?.name}...`} rows={4} style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid rgba(0,217,163,0.15)', background: 'rgba(255,255,255,0.03)', color: '#e8e8ed', fontSize: 13, outline: 'none', resize: 'vertical', boxSizing: 'border-box' }} />
+              <div style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)', marginBottom: 6 }}>MESSAGE (optional)</div>
+              <textarea value={message} onChange={e => setMessage(e.target.value)} placeholder={`Hi ${contactModal.name}, we found your GENOIS profile and are interested in discussing a role at ${company?.name}...`} rows={4} style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--gx-border)', background: 'var(--gx-surface)', color: 'var(--gx-text)', fontSize: 13, outline: 'none', resize: 'vertical', boxSizing: 'border-box' }} />
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={() => { setContactModal(null); setMessage(''); }} style={{ flex: 1, padding: '12px', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#5a7a9a', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13 }}>Cancel</button>
-              <button onClick={contactStudent} disabled={!!contactingId} style={{ flex: 2, padding: '12px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'linear-gradient(135deg,#00d9a3,#ff6b4a)', color: '#020812', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700 }}>
+              <button onClick={() => { setContactModal(null); setMessage(''); }} style={{ flex: 1, padding: '12px', borderRadius: 10, border: '1px solid var(--gx-border)', background: 'transparent', color: 'var(--gx-text-muted)', cursor: 'pointer', fontFamily: 'var(--font-heading)', fontSize: 13 }}>Cancel</button>
+              <button onClick={contactStudent} disabled={!!contactingId} style={{ flex: 2, padding: '12px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700 }}>
                 {contactingId ? 'Sending...' : 'Send Contact Request →'}
               </button>
             </div>

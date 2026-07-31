@@ -133,10 +133,10 @@ export default function CountingSortVisualizer() {
 
   const cell = (val, active, activeColor) => ({
     minWidth: 30, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center',
-    background: active ? `${activeColor}22` : 'rgba(10,15,30,0.8)',
-    border: `1px solid ${active ? activeColor : 'rgba(0,217,163,0.12)'}`,
+    background: active ? activeColor : 'var(--gx-surface)',
+    border: `1px solid ${active ? activeColor : 'var(--gx-border)'}`,
     borderRadius: 6, fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 700,
-    color: val === null ? '#2a3a4a' : active ? activeColor : '#c8d8e8', transition: 'all 0.25s',
+    color: val === null ? 'var(--gx-text-subtle)' : active ? activeColor : 'var(--gx-text)', transition: 'all 0.25s',
   });
 
   return (
@@ -150,41 +150,41 @@ export default function CountingSortVisualizer() {
       />
 
       {/* Input array */}
-      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(0,217,163,0.1)', borderRadius: 10, padding: '12px 16px' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#5a7a9a', letterSpacing: 1, marginBottom: 8 }}>INPUT ARRAY</div>
+      <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 10, padding: '12px 16px' }}>
+        <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 1, marginBottom: 8 }}>INPUT ARRAY</div>
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           {view.array.map((v, i) => (
             <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-              <div style={cell(v, i === view.scanIdx, '#00d9a3')}>{v}</div>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#2a3a4a' }}>{i}</span>
+              <div style={cell(v, i === view.scanIdx, 'var(--gx-accent)')}>{v}</div>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--gx-text-subtle)' }}>{i}</span>
             </div>
           ))}
         </div>
       </div>
 
       {/* Count array */}
-      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(239,159,39,0.15)', borderRadius: 10, padding: '12px 16px' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#ef9f27', letterSpacing: 1, marginBottom: 8 }}>
+      <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-warning-border)', borderRadius: 10, padding: '12px 16px' }}>
+        <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-warning)', letterSpacing: 1, marginBottom: 8 }}>
           COUNT ARRAY {current?.phase === 'prefix' ? '(→ prefix sums / positions)' : current?.phase === 'place' ? '(consumed right-to-left)' : '(tallies)'}
         </div>
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           {view.count.map((v, i) => (
             <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-              <div style={cell(v, i === view.countIdx, '#ef9f27')}>{v}</div>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#5a7a9a' }}>[{i}]</span>
+              <div style={cell(v, i === view.countIdx, 'var(--gx-warning)')}>{v}</div>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--gx-text-muted)' }}>[{i}]</span>
             </div>
           ))}
         </div>
       </div>
 
       {/* Output array */}
-      <div style={{ background: 'rgba(10,15,30,0.6)', border: '1px solid rgba(29,158,117,0.15)', borderRadius: 10, padding: '12px 16px' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: '#1d9e75', letterSpacing: 1, marginBottom: 8 }}>OUTPUT ARRAY</div>
+      <div style={{ background: 'var(--gx-surface)', border: '1px solid var(--gx-success-border)', borderRadius: 10, padding: '12px 16px' }}>
+        <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-success)', letterSpacing: 1, marginBottom: 8 }}>OUTPUT ARRAY</div>
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           {view.out.map((v, i) => (
             <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-              <div style={cell(v, i === view.placeIdx, '#1d9e75')}>{v === null ? '·' : v}</div>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: '#2a3a4a' }}>{i}</span>
+              <div style={cell(v, i === view.placeIdx, 'var(--gx-success)')}>{v === null ? '·' : v}</div>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 8, color: 'var(--gx-text-subtle)' }}>{i}</span>
             </div>
           ))}
         </div>

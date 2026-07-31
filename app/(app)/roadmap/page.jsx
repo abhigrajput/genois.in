@@ -10,9 +10,9 @@ import ErrorCard, { friendlyError } from '@/components/ui/ErrorCard';
 
 // ── Shared Tailwind class tokens (native utilities only) ──
 const CARD =
-  'relative overflow-hidden rounded-2xl border border-primary/10 bg-[#070f1a] p-5';
+  'relative overflow-hidden rounded-2xl border border-primary/10 bg-[var(--gx-surface)] p-5';
 const ACTION_BTN =
-  'w-full cursor-pointer rounded-[10px] border-none bg-[linear-gradient(135deg,#00d9a3,#ff6b4a)] px-7 py-3.5 text-[15px] font-bold text-[#020812] transition-all hover:brightness-110 hover:shadow-[0_0_28px_rgba(0,217,163,0.35)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50';
+  'w-full cursor-pointer rounded-[10px] border-none bg-[var(--gx-accent)] px-7 py-3.5 text-[15px] font-bold text-[var(--gx-text-inverse)] transition-all hover:brightness-110 hover:shadow-sm active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50';
 const EYEBROW =
   'font-mono text-[11px] font-extrabold uppercase tracking-[1px] text-muted';
 
@@ -24,7 +24,7 @@ function YouTubeEmbed({ url, title }) {
         href={url}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 rounded-[10px] border border-[#00ff88]/30 bg-[#00ff88]/10 px-5 py-3 text-sm font-semibold text-[#00ff88] no-underline transition-all hover:bg-[#00ff88]/20 focus-visible:outline-none"
+        className="inline-flex items-center gap-2 rounded-[10px] border border-[var(--gx-accent)]/30 bg-[var(--gx-accent)]/10 px-5 py-3 text-sm font-semibold text-[var(--gx-accent)] no-underline transition-all hover:bg-[var(--gx-accent)]/20 focus-visible:outline-none"
       >
         ▶ Watch on YouTube →
       </a>
@@ -57,8 +57,8 @@ const MAX_DAY = 365;
 // Day-difficulty badge styles (roadmap depth metadata — easy/medium/hard).
 const DIFF_BADGE = {
   easy: 'border-success/25 bg-success/10 text-success',
-  medium: 'border-[#ffb020]/25 bg-[#ffb020]/10 text-[#ffb020]',
-  hard: 'border-[#ff2d78]/25 bg-[#ff2d78]/10 text-[#ff5c8a]',
+  medium: 'border-[var(--gx-warning)]/25 bg-[var(--gx-warning)]/10 text-[var(--gx-warning)]',
+  hard: 'border-[var(--gx-danger)]/25 bg-[var(--gx-danger)]/10 text-[var(--gx-danger)]',
 };
 
 // Compact metadata strip under the day title. Every field is optional — old
@@ -70,7 +70,7 @@ function DayMetaStrip({ meta }) {
   return (
     <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
       {meta.estimated_time && (
-        <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 font-mono text-[10px] font-bold text-[#c8d8e8]">
+        <span className="rounded-full border border-[var(--gx-border)] bg-[var(--gx-surface)] px-2.5 py-1 font-mono text-[10px] font-bold text-[var(--gx-text)]">
           ⏱ ~{meta.estimated_time} min
         </span>
       )}
@@ -83,7 +83,7 @@ function DayMetaStrip({ meta }) {
         <span className="inline-flex flex-wrap items-center gap-1 font-mono text-[10px] text-muted">
           builds on:
           {meta.prerequisites.slice(0, 4).map((p) => (
-            <span key={p} className="rounded-full border border-primary/15 bg-primary/[0.06] px-2 py-0.5 text-[10px] text-[#8fd9c4]">
+            <span key={p} className="rounded-full border border-primary/15 bg-primary/[0.06] px-2 py-0.5 text-[10px] text-[var(--gx-accent)]">
               {p}
             </span>
           ))}
@@ -393,7 +393,7 @@ export default function DailyRoadmapPage() {
     <div className="w-full max-w-full space-y-6 overflow-x-hidden font-sans">
       {/* Top Banner Area — stacks vertically on mobile so the title never
           collides with the action buttons; becomes a single row at ≥md. */}
-      <div className="flex flex-col gap-4 border-b border-white/[0.06] pb-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-4 border-b border-[var(--gx-border)] pb-4 md:flex-row md:items-center md:justify-between">
         <div className="min-w-0">
           <h1
             className="line-clamp-3 font-display font-bold text-dark"
@@ -406,7 +406,7 @@ export default function DailyRoadmapPage() {
             {viewDay !== officialDay && (
               <span
                 className={`ml-2 font-semibold ${
-                  viewDay < officialDay ? 'text-success' : 'text-[#ffb020]'
+                  viewDay < officialDay ? 'text-success' : 'text-[var(--gx-warning)]'
                 }`}
               >
                 {viewDay < officialDay ? '· ✓ Completed day (revisiting)' : '· Upcoming — preview'}
@@ -426,7 +426,7 @@ export default function DailyRoadmapPage() {
             onClick={handleRegenerate}
             disabled={regenerating || navLoading}
             title="Rebuild this roadmap from your current profile (target company, timeline, weak areas)"
-            className="cursor-pointer whitespace-nowrap rounded-[10px] border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 font-display text-[13px] font-bold text-primary transition-all hover:enabled:border-primary/40 hover:enabled:bg-primary/10 active:enabled:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60"
+            className="cursor-pointer whitespace-nowrap rounded-[10px] border border-[var(--gx-border)] bg-[var(--gx-surface)] px-4 py-2.5 font-display text-[13px] font-bold text-primary transition-all hover:enabled:border-primary/40 hover:enabled:bg-primary/10 active:enabled:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {regenerating ? 'Regenerating…' : '↻ Regenerate'}
           </button>
@@ -445,7 +445,7 @@ export default function DailyRoadmapPage() {
           onClick={() => viewDay > 1 && loadDay(viewDay - 1)}
           disabled={viewDay <= 1 || navLoading}
           aria-label="Previous day"
-          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] border border-white/[0.08] bg-white/[0.03] text-base font-bold text-primary transition-all hover:enabled:border-primary/40 hover:enabled:bg-primary/10 active:enabled:scale-95 disabled:cursor-not-allowed disabled:text-[#3a4a5a]"
+          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] border border-[var(--gx-border)] bg-[var(--gx-surface)] text-base font-bold text-primary transition-all hover:enabled:border-primary/40 hover:enabled:bg-primary/10 active:enabled:scale-95 disabled:cursor-not-allowed disabled:text-[var(--gx-text-subtle)]"
         >
           ‹
         </button>
@@ -467,10 +467,10 @@ export default function DailyRoadmapPage() {
                   isViewing
                     ? 'border-2 border-primary bg-primary/10 text-primary'
                     : isDone
-                      ? 'border border-white/[0.08] bg-success/[0.08] text-success hover:border-success/40'
+                      ? 'border border-[var(--gx-border)] bg-success/[0.08] text-success hover:border-success/40'
                       : isCurrent
-                        ? 'border border-white/[0.08] bg-white/[0.02] text-[#ffb020] hover:border-[#ffb020]/40'
-                        : 'border border-white/[0.08] bg-white/[0.02] text-muted hover:border-primary/40 hover:text-primary'
+                        ? 'border border-[var(--gx-border)] bg-[var(--gx-surface)] text-[var(--gx-warning)] hover:border-[var(--gx-warning)]/40'
+                        : 'border border-[var(--gx-border)] bg-[var(--gx-surface)] text-muted hover:border-primary/40 hover:text-primary'
                 }`}
               >
                 {isDone ? '✓' : ''}
@@ -484,7 +484,7 @@ export default function DailyRoadmapPage() {
           onClick={() => viewDay < MAX_DAY && loadDay(viewDay + 1)}
           disabled={viewDay >= MAX_DAY || navLoading}
           aria-label="Next day"
-          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] border border-white/[0.08] bg-white/[0.03] text-base font-bold text-primary transition-all hover:enabled:border-primary/40 hover:enabled:bg-primary/10 active:enabled:scale-95 disabled:cursor-not-allowed disabled:text-[#3a4a5a]"
+          className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-[10px] border border-[var(--gx-border)] bg-[var(--gx-surface)] text-base font-bold text-primary transition-all hover:enabled:border-primary/40 hover:enabled:bg-primary/10 active:enabled:scale-95 disabled:cursor-not-allowed disabled:text-[var(--gx-text-subtle)]"
         >
           ›
         </button>
@@ -502,15 +502,15 @@ export default function DailyRoadmapPage() {
 
       {/* Skip Basics — only meaningful while the user is still in the foundation phase */}
       {officialDay <= 3 && (
-        <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-xl border border-[#ffb020]/20 bg-[#ffb020]/[0.06] px-4 py-3">
-          <div className="text-[13px] text-[#c8d8e8]">
-            <strong className="text-[#ffb020]">Already know the basics?</strong> Skip the fundamentals and
+        <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-xl border border-[var(--gx-warning)]/20 bg-[var(--gx-warning)]/[0.06] px-4 py-3">
+          <div className="text-[13px] text-[var(--gx-text)]">
+            <strong className="text-[var(--gx-warning)]">Already know the basics?</strong> Skip the fundamentals and
             jump straight to Medium/Hard problems.
           </div>
           <button
             onClick={handleSkipBasics}
             disabled={skipping}
-            className="flex-shrink-0 cursor-pointer rounded-[10px] border-none bg-[linear-gradient(135deg,#ffb020,#ff6b4a)] px-[18px] py-2.5 text-[13px] font-bold text-[#020812] transition-all hover:brightness-110 hover:shadow-[0_0_24px_rgba(255,176,32,0.35)] active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex-shrink-0 cursor-pointer rounded-[10px] border-none bg-[var(--gx-warning)] px-[18px] py-2.5 text-[13px] font-bold text-[var(--gx-text-inverse)] transition-all hover:brightness-110 hover:shadow-sm active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {skipping ? 'Skipping…' : 'Skip Basics →'}
           </button>
@@ -523,7 +523,7 @@ export default function DailyRoadmapPage() {
         <div className="space-y-6 lg:col-span-2">
           {/* Day Unlock Alerts */}
           {dayUnlocked && (
-            <div className="w-full rounded-xl border border-success bg-success/10 p-4 text-center text-dark shadow-[0_0_20px_rgba(29,158,117,0.2)]">
+            <div className="w-full rounded-xl border border-success bg-success/10 p-4 text-center text-dark shadow-sm">
               <div className="text-lg font-bold">🎉 Day {currentDay} Complete! You earned 100 points!</div>
               <div className="mt-1 text-sm text-success">Day {newDay} is now unlocked</div>
             </div>
@@ -531,11 +531,11 @@ export default function DailyRoadmapPage() {
 
           {/* PROJECT DAY BANNER */}
           {isProjectDay && project && (
-            <div className="relative overflow-hidden rounded-2xl border border-primary/15 bg-[linear-gradient(135deg,#091322,#070f1a)] p-6">
-              <div className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(0,217,163,0.5),transparent)]" />
+            <div className="relative overflow-hidden rounded-2xl border border-primary/15 bg-[var(--gx-surface)] p-6">
+              <div className="absolute inset-x-0 top-0 h-px bg-[var(--gx-accent)]" />
 
               <div className="mb-3 flex flex-wrap justify-between gap-2">
-                <span className="rounded-full border border-[#ff6b4a]/30 bg-[#ff6b4a]/15 px-2.5 py-1 font-mono text-[11px] font-bold uppercase text-[#9d85ff]">
+                <span className="rounded-full border border-[var(--gx-warning)]/30 bg-[var(--gx-warning)]/15 px-2.5 py-1 font-mono text-[11px] font-bold uppercase text-[var(--gx-warning)]">
                   🚀 Project Week! Time to Build
                 </span>
                 <span className="text-[13px] font-semibold text-muted">
@@ -544,7 +544,7 @@ export default function DailyRoadmapPage() {
               </div>
 
               <h2 className="font-display text-xl font-extrabold text-dark">{project.title}</h2>
-              <p className="mt-1.5 text-sm leading-relaxed text-[#8aa2b9]">{project.description}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-[var(--gx-text-muted)]">{project.description}</p>
 
               {/* Steps */}
               <div className="mt-5">
@@ -555,7 +555,7 @@ export default function DailyRoadmapPage() {
                   {project.steps?.map((step, idx) => (
                     <div
                       key={idx}
-                      className="flex gap-2.5 rounded-lg border border-white/[0.04] bg-white/[0.02] px-3.5 py-2.5 text-[13px] text-[#c8d8e8]"
+                      className="flex gap-2.5 rounded-lg border border-[var(--gx-border)] bg-[var(--gx-surface)] px-3.5 py-2.5 text-[13px] text-[var(--gx-text)]"
                     >
                       <span className="font-mono font-bold text-primary">0{idx + 1}</span>
                       <span>{step}</span>
@@ -565,7 +565,7 @@ export default function DailyRoadmapPage() {
               </div>
 
               {/* GitHub Submission Form */}
-              <div className="mt-6 border-t border-white/[0.06] pt-5">
+              <div className="mt-6 border-t border-[var(--gx-border)] pt-5">
                 <h3 className="mb-3 text-[15px] font-bold text-dark">Submit Your Code</h3>
 
                 {projectProgress?.status === 'submitted' && (
@@ -584,7 +584,7 @@ export default function DailyRoadmapPage() {
                         {aiFeedbackParsed.grade} ({aiFeedbackParsed.score}/100)
                       </span>
                     </div>
-                    <p className="mb-3 text-[13px] leading-relaxed text-[#a2b9cd]">
+                    <p className="mb-3 text-[13px] leading-relaxed text-[var(--gx-text-muted)]">
                       {aiFeedbackParsed.overall_feedback}
                     </p>
                     <div className="grid grid-cols-2 gap-3 text-xs">
@@ -595,7 +595,7 @@ export default function DailyRoadmapPage() {
                         ))}
                       </div>
                       <div>
-                        <div className="mb-1 font-bold text-[#ff5c8a]">Improvements</div>
+                        <div className="mb-1 font-bold text-[var(--gx-danger)]">Improvements</div>
                         {aiFeedbackParsed.improvements?.slice(0, 2).map((im, i) => (
                           <div key={i}>• {im}</div>
                         ))}
@@ -616,7 +616,7 @@ export default function DailyRoadmapPage() {
                         value={projectUrl}
                         onChange={(e) => setProjectUrl(e.target.value)}
                         placeholder="https://github.com/yourusername/your-project"
-                        className="w-full rounded-lg border border-primary/15 bg-white/[0.03] p-3 text-[13px] text-dark outline-none transition-all focus:border-primary/50 focus:bg-primary/5"
+                        className="w-full rounded-lg border border-primary/15 bg-[var(--gx-surface)] p-3 text-[13px] text-dark outline-none transition-all focus:border-primary/50 focus:bg-primary/5"
                       />
                     </div>
                     <div>
@@ -628,7 +628,7 @@ export default function DailyRoadmapPage() {
                         onChange={(e) => setProjectNotes(e.target.value)}
                         rows={2}
                         placeholder="Brief notes about your tech stack or challenges faced..."
-                        className="w-full resize-none rounded-lg border border-primary/15 bg-white/[0.03] p-3 text-[13px] text-dark outline-none transition-all focus:border-primary/50 focus:bg-primary/5"
+                        className="w-full resize-none rounded-lg border border-primary/15 bg-[var(--gx-surface)] p-3 text-[13px] text-dark outline-none transition-all focus:border-primary/50 focus:bg-primary/5"
                       />
                     </div>
                     <button type="submit" disabled={submittingProject} className={ACTION_BTN}>
@@ -653,8 +653,8 @@ export default function DailyRoadmapPage() {
                     done
                       ? 'border-success/25 bg-success/10 text-success hover:bg-success/20'
                       : active
-                        ? 'border-primary bg-primary text-[#020812] shadow-[0_0_16px_rgba(0,217,163,0.3)]'
-                        : 'border-white/[0.08] bg-white/[0.03] text-muted hover:border-primary/40 hover:text-primary'
+                        ? 'border-primary bg-primary text-[var(--gx-text-inverse)] shadow-sm'
+                        : 'border-[var(--gx-border)] bg-[var(--gx-surface)] text-muted hover:border-primary/40 hover:text-primary'
                   }`}
                 >
                   {done ? '✓ ' : ''}
@@ -665,7 +665,7 @@ export default function DailyRoadmapPage() {
           </div>
 
           {/* Main Card View */}
-          <div className="min-h-64 w-full rounded-2xl border border-primary/10 bg-[#070f1a] p-5">
+          <div className="min-h-64 w-full rounded-2xl border border-primary/10 bg-[var(--gx-surface)] p-5">
             {activeStep === 0 && (
               <div className="space-y-4">
                 <h3 className="section-title">▶ Watch Video — {roadmapItem?.topic}</h3>
@@ -683,8 +683,8 @@ export default function DailyRoadmapPage() {
                     disabled={!videoEligible}
                     className={`w-full cursor-pointer rounded-[10px] px-7 py-3.5 text-[15px] font-bold transition-all active:enabled:scale-[0.98] ${
                       videoEligible
-                        ? 'border-none bg-[linear-gradient(135deg,#00ff88,#00cc66)] text-black hover:brightness-110'
-                        : 'cursor-not-allowed border border-white/10 bg-white/[0.07] text-[#666]'
+                        ? 'border-none bg-[var(--gx-accent)] text-black hover:brightness-110'
+                        : 'cursor-not-allowed border border-[var(--gx-border)] bg-[var(--gx-surface-2)] text-[var(--gx-text-subtle)]'
                     }`}
                   >
                     {videoEligible
@@ -712,7 +712,7 @@ export default function DailyRoadmapPage() {
                         href={r.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 text-sm font-medium text-dark transition-all hover:border-primary/40 hover:bg-primary/5"
+                        className="flex items-center gap-3 rounded-xl border border-[var(--gx-border)] bg-[var(--gx-surface)] p-3 text-sm font-medium text-dark transition-all hover:border-primary/40 hover:bg-primary/5"
                       >
                         📚 {r.label} ↗
                       </a>
@@ -733,11 +733,11 @@ export default function DailyRoadmapPage() {
                 <h3 className="section-title">{'{ }'} Coding Challenge</h3>
                 {codingTest ? (
                   <>
-                    <div className="rounded-xl bg-black/30 p-4">
+                    <div className="rounded-xl bg-[rgba(16,24,40,0.4)] p-4">
                       <div className="mb-1.5 text-[15px] font-semibold text-dark">{codingTest.title}</div>
-                      <p className="text-[13px] leading-relaxed text-[#c8d8e8]">{codingTest.problem}</p>
+                      <p className="text-[13px] leading-relaxed text-[var(--gx-text)]">{codingTest.problem}</p>
                       {codingTest.example_input && (
-                        <div className="mt-3 rounded-lg bg-black/40 p-2.5 font-mono text-xs">
+                        <div className="mt-3 rounded-lg bg-[rgba(16,24,40,0.4)] p-2.5 font-mono text-xs">
                           <div className="text-muted">
                             Input: <span className="text-primary">{codingTest.example_input}</span>
                           </div>
@@ -755,7 +755,7 @@ export default function DailyRoadmapPage() {
                       isCompleted={isTaskDone('coding') || !!codeResult}
                     />
                     {codeResult && (
-                      <div className="space-y-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+                      <div className="space-y-2 rounded-xl border border-[var(--gx-border)] bg-[var(--gx-surface)] p-4">
                         <div className="flex gap-2">
                           <span
                             className={`badge ${codeResult.review?.isCorrect ? 'badge-success' : 'badge-danger'}`}
@@ -764,7 +764,7 @@ export default function DailyRoadmapPage() {
                           </span>
                           <span className="badge badge-primary">Score: {codeResult.review?.score}/100</span>
                         </div>
-                        <p className="text-sm text-[#a2b9cd]">{codeResult.review?.feedback}</p>
+                        <p className="text-sm text-[var(--gx-text-muted)]">{codeResult.review?.feedback}</p>
                       </div>
                     )}
                   </>
@@ -796,7 +796,7 @@ export default function DailyRoadmapPage() {
                               className={`flex cursor-pointer items-center gap-2 rounded-lg border p-2.5 transition-all ${
                                 testAnswers[i] === opt[0]
                                   ? 'border-primary bg-primary/5'
-                                  : 'border-white/[0.06] hover:border-primary/30'
+                                  : 'border-[var(--gx-border)] hover:border-primary/30'
                               }`}
                             >
                               <input
@@ -806,7 +806,7 @@ export default function DailyRoadmapPage() {
                                 onChange={(e) => setTestAnswers((a) => ({ ...a, [i]: e.target.value }))}
                                 className="accent-primary"
                               />
-                              <span className="text-sm text-[#c8d8e8]">{opt}</span>
+                              <span className="text-sm text-[var(--gx-text)]">{opt}</span>
                             </label>
                           ))}
                         </div>
@@ -825,12 +825,12 @@ export default function DailyRoadmapPage() {
                   <div className="space-y-3">
                     <div
                       className={`rounded-xl p-6 text-center ${
-                        testResult.result === 'passed' ? 'bg-success/[0.08]' : 'bg-[#ffb020]/[0.08]'
+                        testResult.result === 'passed' ? 'bg-success/[0.08]' : 'bg-[var(--gx-warning)]/[0.08]'
                       }`}
                     >
                       <div
                         className={`text-4xl font-bold ${
-                          testResult.result === 'passed' ? 'text-success' : 'text-[#ffb020]'
+                          testResult.result === 'passed' ? 'text-success' : 'text-[var(--gx-warning)]'
                         }`}
                       >
                         {testResult.score}%
@@ -874,8 +874,8 @@ export default function DailyRoadmapPage() {
                       onClick={() => setNoteType(t)}
                       className={`cursor-pointer rounded-full border px-3 py-1.5 text-xs font-medium capitalize transition-all active:scale-[0.97] ${
                         noteType === t
-                          ? 'border-primary bg-primary text-[#020812]'
-                          : 'border-white/[0.08] bg-white/[0.03] text-muted hover:border-primary/40 hover:text-primary'
+                          ? 'border-primary bg-primary text-[var(--gx-text-inverse)]'
+                          : 'border-[var(--gx-border)] bg-[var(--gx-surface)] text-muted hover:border-primary/40 hover:text-primary'
                       }`}
                     >
                       {t}
@@ -887,7 +887,7 @@ export default function DailyRoadmapPage() {
                     {noteLoading ? 'GENOIS Engine is writing notes...' : `Generate ${noteType} notes`}
                   </button>
                 ) : (
-                  <div className="whitespace-pre-wrap rounded-xl border border-primary/[0.08] bg-[#0a1628] p-5 text-sm leading-[1.9] text-dark">
+                  <div className="whitespace-pre-wrap rounded-xl border border-primary/[0.08] bg-[var(--gx-surface)] p-5 text-sm leading-[1.9] text-dark">
                     {note.content}
                   </div>
                 )}
@@ -898,7 +898,7 @@ export default function DailyRoadmapPage() {
 
           {/* Progress Bar */}
           <div className="flex items-center gap-3">
-            <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/[0.06]">
+            <div className="h-2 flex-1 overflow-hidden rounded-full bg-[var(--gx-surface-2)]">
               <div
                 className="h-full rounded-full bg-primary transition-all"
                 style={{ width: `${(completedCount / 5) * 100}%` }}
@@ -918,7 +918,7 @@ export default function DailyRoadmapPage() {
               </h3>
               <div className="flex flex-col gap-2">
                 {dayMeta.learning_objectives.map((o, i) => (
-                  <div key={i} className="flex items-start gap-2 text-[13px] leading-normal text-[#c8d8e8]">
+                  <div key={i} className="flex items-start gap-2 text-[13px] leading-normal text-[var(--gx-text)]">
                     <span className="flex-shrink-0 text-success">✓</span>
                     <span>{o}</span>
                   </div>
@@ -939,7 +939,7 @@ export default function DailyRoadmapPage() {
                     <span className="inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-primary/10 text-[11px] font-bold text-primary">
                       {i + 1}
                     </span>
-                    <span className="text-[13px] leading-normal text-[#c8d8e8]">{obj}</span>
+                    <span className="text-[13px] leading-normal text-[var(--gx-text)]">{obj}</span>
                   </div>
                 ))}
               </div>
@@ -956,7 +956,7 @@ export default function DailyRoadmapPage() {
                 {keyConcepts.map((concept, i) => (
                   <span
                     key={i}
-                    className="rounded-lg border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-xs text-[#a2b9cd]"
+                    className="rounded-lg border border-[var(--gx-border)] bg-[var(--gx-surface)] px-3 py-1.5 text-xs text-[var(--gx-text-muted)]"
                   >
                     #{concept}
                   </span>
@@ -967,14 +967,14 @@ export default function DailyRoadmapPage() {
 
           {/* Coding Problem Spotlight */}
           {codingProblem && (
-            <div className="relative overflow-hidden rounded-2xl border border-success/15 bg-[#070f1a] p-5">
+            <div className="relative overflow-hidden rounded-2xl border border-success/15 bg-[var(--gx-surface)] p-5">
               <div className="mb-2.5 flex items-center gap-2">
                 <span className="text-base">💻</span>
                 <h3 className="font-display text-sm font-extrabold uppercase tracking-[1px] text-dark">
                   Coding Problem
                 </h3>
               </div>
-              <p className="mb-3.5 text-[13px] leading-normal text-[#c8d8e8]">
+              <p className="mb-3.5 text-[13px] leading-normal text-[var(--gx-text)]">
                 Validate today's skills by solving: <strong className="text-primary">{codingProblem}</strong>
               </p>
               {codingProblemUrl && (
@@ -996,11 +996,11 @@ export default function DailyRoadmapPage() {
       {showOverview && (
         <div
           onClick={() => setShowOverview(false)}
-          className="fixed inset-0 z-[1000] flex items-center justify-center bg-[#020812]/85 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[1000] flex items-center justify-center bg-[var(--gx-surface)]/85 p-4 backdrop-blur-sm"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="max-h-[86vh] w-full max-w-[680px] overflow-y-auto rounded-2xl border border-primary/15 bg-[#070f1a] p-6"
+            className="max-h-[86vh] w-full max-w-[680px] overflow-y-auto rounded-2xl border border-primary/15 bg-[var(--gx-surface)] p-6"
           >
             <div className="mb-2 flex items-start justify-between">
               <div>
@@ -1033,14 +1033,14 @@ export default function DailyRoadmapPage() {
                     {overview.macroPhases.map((p) => (
                       <div
                         key={p.key}
-                        className="flex items-start gap-3 rounded-[10px] border border-white/[0.05] bg-white/[0.02] px-3.5 py-3"
+                        className="flex items-start gap-3 rounded-[10px] border border-[var(--gx-border)] bg-[var(--gx-surface)] px-3.5 py-3"
                       >
                         <span className="min-w-[88px] flex-shrink-0 font-mono text-[11px] font-extrabold text-primary">
                           {p.key}
                         </span>
                         <div>
-                          <div className="mb-0.5 font-mono text-xs text-[#ffb020]">{p.days}</div>
-                          <div className="text-[13px] leading-normal text-[#c8d8e8]">{p.summary}</div>
+                          <div className="mb-0.5 font-mono text-xs text-[var(--gx-warning)]">{p.days}</div>
+                          <div className="text-[13px] leading-normal text-[var(--gx-text)]">{p.summary}</div>
                         </div>
                       </div>
                     ))}
@@ -1052,7 +1052,7 @@ export default function DailyRoadmapPage() {
                   <div className={`${EYEBROW} mb-2.5 tracking-[1px]`}>WHAT YOU&apos;LL COVER</div>
                   <div className="flex flex-col gap-1.5">
                     {overview.topics.map((t, i) => (
-                      <div key={i} className="flex gap-2.5 text-[12.5px] leading-normal text-[#c8d8e8]">
+                      <div key={i} className="flex gap-2.5 text-[12.5px] leading-normal text-[var(--gx-text)]">
                         <span className="min-w-[52px] flex-shrink-0 font-mono text-success">W{t.weeks}</span>
                         <span>{t.focus}</span>
                       </div>
@@ -1068,7 +1068,7 @@ export default function DailyRoadmapPage() {
                       {overview.projects.map((p, i) => (
                         <span
                           key={i}
-                          className="rounded-lg border border-white/[0.07] bg-white/[0.03] px-2.5 py-1.5 text-[11.5px] text-[#a2b9cd]"
+                          className="rounded-lg border border-[var(--gx-border)] bg-[var(--gx-surface)] px-2.5 py-1.5 text-[11.5px] text-[var(--gx-text-muted)]"
                         >
                           W{p.week} · {p.title}
                         </span>

@@ -179,18 +179,18 @@ function computeSteps(arr) {
 }
 
 function barColor(idx, step) {
-  if (!step) return '#1a2a3a';
-  if (step.done) return '#1d9e75';
-  if (step.pivotPlaced === idx) return '#1d9e75';
-  if (step.pivot === idx) return '#ef9f27';
-  if (step.swapped?.includes(idx)) return '#00d9a3';
-  if (step.scanning === idx) return '#378ADD';
-  if (step.subarray && idx >= step.subarray[0] && idx <= step.subarray[1]) return '#1a2a4a';
+  if (!step) return 'var(--gx-surface-2)';
+  if (step.done) return 'var(--gx-success)';
+  if (step.pivotPlaced === idx) return 'var(--gx-success)';
+  if (step.pivot === idx) return 'var(--gx-warning)';
+  if (step.swapped?.includes(idx)) return 'var(--gx-accent)';
+  if (step.scanning === idx) return 'var(--gx-info)';
+  if (step.subarray && idx >= step.subarray[0] && idx <= step.subarray[1]) return 'var(--gx-info-soft)';
   if (step.low != null && idx >= step.low && idx < step.pivot) {
-    if (step.i != null && idx <= step.i) return '#ff6b4a';
-    return '#1a2a3a';
+    if (step.i != null && idx <= step.i) return 'var(--gx-warning)';
+    return 'var(--gx-surface-2)';
   }
-  return '#1a2a3a';
+  return 'var(--gx-surface-2)';
 }
 
 export default function QuickSortVisualizer() {
@@ -232,27 +232,27 @@ export default function QuickSortVisualizer() {
 
       <div style={{ display:'flex', gap:12, flexWrap:'wrap' }}>
         {[
-          { label:'Pivot Value', value: current?.pivot != null && !current.done ? displayArr[current.pivot] : '-', color:'#ef9f27' },
-          { label:'Phase', value: current?.pivotPlaced != null ? 'Placed' : current?.scanning != null ? 'Scanning' : current?.done ? 'Done' : 'Divide', color:'#00d9a3' },
-          { label:'Avg Time', value:'O(n log n)', color:'#ff6b4a' },
-          { label:'Space', value:'O(log n)', color:'#1d9e75' },
+          { label:'Pivot Value', value: current?.pivot != null && !current.done ? displayArr[current.pivot] : '-', color:'var(--gx-warning)' },
+          { label:'Phase', value: current?.pivotPlaced != null ? 'Placed' : current?.scanning != null ? 'Scanning' : current?.done ? 'Done' : 'Divide', color:'var(--gx-accent)' },
+          { label:'Avg Time', value:'O(n log n)', color:'var(--gx-warning)' },
+          { label:'Space', value:'O(log n)', color:'var(--gx-success)' },
         ].map(s => (
-          <div key={s.label} style={{ background:'rgba(10,15,30,0.8)', border:`1px solid ${s.color}20`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
-            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'#5a7a9a', marginBottom:2 }}>{s.label}</div>
+          <div key={s.label} style={{ background:'var(--gx-surface)', border:`1px solid color-mix(in srgb, ${s.color} 13%, transparent)`, borderRadius:8, padding:'8px 16px', minWidth:100 }}>
+            <div style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-text-muted)', marginBottom:2 }}>{s.label}</div>
             <div style={{ fontFamily:'var(--font-heading)', fontSize:18, fontWeight:700, color:s.color }}>{s.value}</div>
           </div>
         ))}
       </div>
 
-      <div style={{ background:'rgba(10,15,30,0.6)', border:'1px solid rgba(0,217,163,0.1)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
+      <div style={{ background:'var(--gx-surface)', border:'1px solid var(--gx-border)', borderRadius:12, padding:'24px 16px', minHeight:200, display:'flex', alignItems:'flex-end', gap:6, justifyContent:'center' }}>
         {displayArr.map((v, i) => (
           <div key={i} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, flex:1, maxWidth:60 }}>
             <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:barColor(i, current) }}>{v}</span>
             <div style={{ width:'100%', borderRadius:'4px 4px 0 0', height:`${(v / maxVal) * 160}px`, background:barColor(i, current), transition:'all 0.3s ease', minHeight:4,
-              boxShadow: current?.pivot === i ? `0 0 16px #ef9f2780` : 'none',
+              boxShadow: current?.pivot === i ? `var(--gx-shadow-sm)` : 'none',
             }} />
             {current?.pivot === i && (
-              <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'#ef9f27', marginTop:2 }}>PIVOT</span>
+              <span style={{ fontFamily:'var(--font-mono)', fontSize:9, color:'var(--gx-warning)', marginTop:2 }}>PIVOT</span>
             )}
           </div>
         ))}
@@ -266,10 +266,10 @@ export default function QuickSortVisualizer() {
       />
 
       <div style={{ display:'flex', gap:16, flexWrap:'wrap' }}>
-        {[['#ef9f27','Pivot'],['#ff6b4a','≤ Pivot'],['#378ADD','Scanning'],['#00d9a3','Swapping'],['#1d9e75','Placed']].map(([c,l]) => (
+        {[['var(--gx-warning)','Pivot'],['var(--gx-warning)','≤ Pivot'],['var(--gx-info)','Scanning'],['var(--gx-accent)','Swapping'],['var(--gx-success)','Placed']].map(([c,l]) => (
           <div key={l} style={{ display:'flex', alignItems:'center', gap:6 }}>
             <div style={{ width:12, height:12, borderRadius:2, background:c }}/>
-            <span style={{ fontSize:11, color:'#5a7a9a', fontFamily:'var(--font-body)' }}>{l}</span>
+            <span style={{ fontSize:11, color:'var(--gx-text-muted)', fontFamily:'var(--font-body)' }}>{l}</span>
           </div>
         ))}
       </div>

@@ -1,15 +1,15 @@
 'use client';
 
 const STATUS_COLORS = {
-  compare:  '#00d9a3',
-  sorted:   '#1d9e75',
-  found:    '#1d9e75',
-  pivot:    '#ef9f27',
-  key:      '#ef9f27',
-  mismatch: '#ff2d78',
-  error:    '#ff2d78',
-  info:     '#ff6b4a',
-  default:  '#8b949e',
+  compare:  'var(--gx-accent)',
+  sorted:   'var(--gx-success)',
+  found:    'var(--gx-success)',
+  pivot:    'var(--gx-warning)',
+  key:      'var(--gx-warning)',
+  mismatch: 'var(--gx-danger)',
+  error:    'var(--gx-danger)',
+  info:     'var(--gx-warning)',
+  default:  'var(--gx-text-muted)',
 };
 
 export default function StepExplanation({ stepNumber, totalSteps, explanation, status = 'default' }) {
@@ -17,8 +17,8 @@ export default function StepExplanation({ stepNumber, totalSteps, explanation, s
   const color = STATUS_COLORS[status] ?? STATUS_COLORS.default;
   return (
     <div style={{
-      background: 'rgba(10,15,30,0.8)',
-      border: `1px solid ${color}30`,
+      background: 'var(--gx-surface)',
+      border: `1px solid color-mix(in srgb, ${color} 19%, transparent)`,
       borderLeft: `4px solid ${color}`,
       borderRadius: 8,
       padding: '12px 16px',
@@ -26,10 +26,10 @@ export default function StepExplanation({ stepNumber, totalSteps, explanation, s
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
         <span style={{
-          fontFamily: 'var(--font-mono)',
+          fontFamily: 'var(--font-body)',
           fontSize: 10,
           color: color,
-          background: `${color}18`,
+          background: `color-mix(in srgb, ${color} 9%, transparent)`,
           padding: '2px 8px',
           borderRadius: 4,
           letterSpacing: 1,
@@ -50,7 +50,7 @@ export default function StepExplanation({ stepNumber, totalSteps, explanation, s
       <div style={{
         fontFamily: 'var(--font-body)',
         fontSize: 14,
-        color: '#e8e8ed',
+        color: 'var(--gx-text)',
         lineHeight: 1.65,
       }}>
         {explanation}
