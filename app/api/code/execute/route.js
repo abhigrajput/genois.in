@@ -9,10 +9,11 @@ const JUDGE0_URL = 'https://judge0-ce.p.rapidapi.com';
 // it rather than shipping a header the provider will reject with a 403.
 const RAPIDAPI_KEY = (process.env.RAPIDAPI_KEY || '').replace(/\\[rnt]/g, '').replace(/\s/g, '');
 
-// A RapidAPI key is a 50-char token. Anything shorter is a truncated paste or a
-// placeholder — it will 403 on every call, so treat it as "not configured"
-// instead of burning a round-trip to find out.
-const KEY_LOOKS_VALID = RAPIDAPI_KEY.length >= 40;
+// Only an absent key is "not configured". Guessing at a key's validity from its
+// length disabled a key that was actually present, and a length check can never
+// tell a subscribed key from an unsubscribed one anyway — only the provider can.
+// Every other rejection is reported from the provider's real answer below.
+const HAS_KEY = RAPIDAPI_KEY.length > 0;
 
 const EXEC_TIMEOUT_MS = 20000;
 const MAX_CODE_CHARS = 50000;
@@ -90,9 +91,9 @@ export async function GET(request) {
   const payload = await getUserFromRequest(request);
   if (!payload) return errorResponse('Unauthorized', 401);
   return successResponse({
-    configured: KEY_LOOKS_VALID,
+    configured: HAS_KEY,
     languages: Object.keys(LANGUAGE_IDS),
-    message: KEY_LOOKS_VALID ? null : NOT_CONFIGURED_MESSAGE,
+    message: HAS_KEY ? null : NOT_CONFIGURED_MESSAGE,
   });
 }
 
@@ -115,12 +116,8 @@ export async function POST(request) {
       return errorResponse(`"${language}" can't be run here. Supported: ${Object.keys(LANGUAGE_IDS).join(', ')}.`, 400);
     }
 
-    if (!KEY_LOOKS_VALID) {
-      if (RAPIDAPI_KEY) {
-        console.error(`CODE_EXEC_MISCONFIGURED: RAPIDAPI_KEY is ${RAPIDAPI_KEY.length} chars — a RapidAPI key is 50. Execution disabled.`);
-      } else {
-        console.error('CODE_EXEC_MISCONFIGURED: RAPIDAPI_KEY is unset. Execution disabled.');
-      }
+    if (!HAS_KEY) {
+      console.error('CODE_EXEC_MISCONFIGURED: RAPIDAPI_KEY is unset. Execution disabled.');
       return errorResponse(NOT_CONFIGURED_MESSAGE, 503);
     }
 

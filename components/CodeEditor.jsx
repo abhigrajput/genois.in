@@ -74,13 +74,22 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
         body: JSON.stringify({ code, language, stdin, expectedOutput }),
       });
       const d = await r.json();
-      if (r.ok && d.success) {
+      // A result card is only ever rendered for code that actually reached a
+      // runner and came back with a real status. Anything else is reported as
+      // "couldn't run" — the old code turned a 403 "not subscribed" body into a
+      // success card reading UNKNOWN, which looked exactly like a real run.
+      if (r.ok && d.success && d.data?.status) {
         setResult(d.data);
       } else {
-        // The server always sends a specific reason now — show it in place,
-        // not as a toast that disappears before it can be read.
-        setRunError(d?.message || `The code runner failed (HTTP ${r.status}).`);
-        if (r.status === 503) setExecAvailable(false);
+        const reason = d?.message || `The code runner failed (HTTP ${r.status}).`;
+        setRunError(reason);
+        // 503 is the server saying execution is unavailable, not that this
+        // particular program failed. Disable Run and keep the reason on screen
+        // so the state is explained after the error panel is scrolled past.
+        if (r.status === 503) {
+          setExecAvailable(false);
+          setExecNotice(reason);
+        }
       }
     } catch {
       setRunError("Couldn't reach the server to run your code — check your connection and try again.");
@@ -106,7 +115,10 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
   };
 
   const runDisabled = running || isCompleted || !runEligible || execAvailable === false;
-  const submitDisabled = submitting || isCompleted || !runEligible;
+  // `runEligible` is the read gate on *running* code — it was never a gate on
+  // submitting. Wiring Submit to it left the button inert and unexplained for
+  // the first 30 seconds after every page load.
+  const submitDisabled = submitting || isCompleted;
 
   const btnBase = {
     flex: 1, padding: '13px', borderRadius: 10, border: 'none',
@@ -216,10 +228,10 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
           style={{
             ...btnBase,
             cursor: submitDisabled ? 'not-allowed' : 'pointer',
-            background: isCompleted ? 'var(--gx-success-soft)' : !runEligible ? 'var(--gx-surface)' : submitting ? 'var(--gx-accent-soft)' : 'var(--gx-accent)',
-            color: isCompleted ? 'var(--gx-success)' : !runEligible ? 'var(--gx-text-subtle)' : 'var(--gx-text-inverse)',
+            background: isCompleted ? 'var(--gx-success-soft)' : submitting ? 'var(--gx-accent-soft)' : 'var(--gx-accent)',
+            color: isCompleted ? 'var(--gx-success)' : 'var(--gx-text-inverse)',
           }}>
-          {isCompleted ? '✓ Submitted' : !runEligible ? `Read problem for ${runTimeLeft}s` : submitting ? '⏳ Reviewing…' : '✓ Submit for Review'}
+          {isCompleted ? '✓ Submitted' : submitting ? '⏳ Reviewing…' : '✓ Submit for Review'}
         </button>
       </div>
 

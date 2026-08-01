@@ -834,7 +834,11 @@ export default function DailyRoadmapPage() {
                       taskDescription={codingTest?.problem || 'Complete the coding challenge'}
                       expectedOutput={codingTest?.example_output || null}
                       onComplete={submitCode}
-                      isCompleted={isTaskDone('coding') || !!codeResult}
+                      // Only this session's submission locks the editor.
+                      // `isTaskDone('coding')` is a day-progress flag that
+                      // survives reloads, so keying the lock to it left Submit
+                      // and Run permanently dead for the rest of the day.
+                      isCompleted={!!codeResult}
                       submitting={codeLoading}
                     />
                     {codeResult && (
