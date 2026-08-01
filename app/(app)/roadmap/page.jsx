@@ -195,8 +195,8 @@ export default function DailyRoadmapPage() {
   const [testLoading, setTestLoading] = useState(false);
 
   const [codingTest, setCodingTest] = useState(null);
-  const [code, setCode] = useState('// Write your solution here\n');
-  const [codeLanguage, setCodeLanguage] = useState('javascript');
+  // Code + language come from <CodeEditor/> on submit — the page keeping its own
+  // copy meant the placeholder string was what got sent for review.
   const [codeResult, setCodeResult] = useState(null);
   const [codeLoading, setCodeLoading] = useState(false);
 
@@ -255,7 +255,6 @@ export default function DailyRoadmapPage() {
       setTest(null);
       setTestAnswers({});
       setTestResult(null);
-      setCode('// Write your solution here\n');
       setCodeResult(null);
       setNote(null);
     } catch (err) {
@@ -360,10 +359,11 @@ export default function DailyRoadmapPage() {
     }
   }
 
-  async function submitCode() {
+  async function submitCode(code, language) {
+    if (!codingTest || !code?.trim()) return;
     setCodeLoading(true);
     try {
-      const res = await codingAPI.submit({ codingTestId: codingTest.id, code, language: codeLanguage });
+      const res = await codingAPI.submit({ codingTestId: codingTest.id, code, language: language || 'javascript' });
       setCodeResult(res.data);
       await completeTask('coding');
     } catch (err) {
@@ -829,11 +829,13 @@ export default function DailyRoadmapPage() {
                       )}
                     </div>
                     <CodeEditor
+                      key={codingTest.id}
                       token={localStorage.getItem('genois_token')}
                       taskDescription={codingTest?.problem || 'Complete the coding challenge'}
                       expectedOutput={codingTest?.example_output || null}
                       onComplete={submitCode}
                       isCompleted={isTaskDone('coding') || !!codeResult}
+                      submitting={codeLoading}
                     />
                     {codeResult && (
                       <div className="space-y-2 rounded-xl border border-[var(--gx-border)] bg-[var(--gx-surface)] p-4">
@@ -846,6 +848,11 @@ export default function DailyRoadmapPage() {
                           <span className="badge badge-primary">Score: {codeResult.review?.score}/100</span>
                         </div>
                         <p className="text-sm text-[var(--gx-text-muted)]">{codeResult.review?.feedback}</p>
+                        {/* Same qualifier as the coding page: this verdict is a
+                            reviewer reading the code, not a test-case run. */}
+                        <p className="text-[11px] text-[var(--gx-text-subtle)]">
+                          AI-evaluated — a reviewer read your code and judged the approach. It was not run against hidden test cases.
+                        </p>
                       </div>
                     )}
                   </>

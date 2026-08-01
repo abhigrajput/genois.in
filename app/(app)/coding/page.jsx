@@ -11,8 +11,9 @@ export default function CodingPage() {
   const [codingTest, setCodingTest] = useState(null);
   const [codingTests, setCodingTests] = useState([]);
   const [currentTestIndex, setCurrentTestIndex] = useState(0);
-  const [code, setCode] = useState('// Write your solution here\n\n');
-  const [language, setLanguage] = useState('javascript');
+  // The code and language live inside <CodeEditor/> — the page must never keep
+  // its own copy, because the copy is what used to get submitted (a blank
+  // placeholder) instead of the student's actual solution.
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
@@ -77,7 +78,6 @@ export default function CodingPage() {
 
   function resetWorkspace() {
     setResult(null);
-    setCode('// Write your solution here\n\n');
     setHintIndex(-1);
     setCurrentTestIndex(0);
   }
@@ -142,14 +142,15 @@ export default function CodingPage() {
     loadCompanyProblems(name);
   }
 
-  async function submitCode() {
-    if (!codingTest || !code.trim() || !token) return;
+  // `code`/`language` come from the editor itself — see CodeEditor's onComplete.
+  async function submitCode(code, language) {
+    if (!codingTest || !code?.trim() || !token) return;
     setLoading(true);
     try {
       const res = await apiFetch('/api/coding/submit', token, 'POST', {
         codingTestId: codingTest.id,
         code,
-        language,
+        language: language || 'javascript',
       });
       setResult(res.data);
       toast.success('Code reviewed!');
@@ -243,7 +244,7 @@ export default function CodingPage() {
   <div style={{display:'flex',gap:8,marginBottom:16,flexWrap:'wrap'}}>
     {codingTests.map((t,i) => (
       <button key={i}
-        onClick={() => { setCurrentTestIndex(i); setCodingTest(codingTests[i]); setResult(null); setCode('// Write your solution here\n\n'); setCodeEligible(false); setCodeTimeLeft(30); }}
+        onClick={() => { setCurrentTestIndex(i); setCodingTest(codingTests[i]); setResult(null); setCodeEligible(false); setCodeTimeLeft(30); }}
         style={{
           padding:'8px 16px',borderRadius:8,border:'none',cursor:'pointer',
           fontFamily:'var(--font-heading)',fontSize:12,fontWeight:600,
@@ -300,12 +301,17 @@ export default function CodingPage() {
 
         <div>
           <div style={{...card,padding:0,overflow:'hidden'}}>
+            {/* Keyed on the problem so switching problems gives a fresh editor —
+                otherwise problem 1's code stayed in the box and got submitted
+                as the answer to problem 2. */}
             <CodeEditor
+              key={codingTest.id || currentTestIndex}
               token={token}
               taskDescription={codingTest?.problem || 'Complete the coding challenge'}
               expectedOutput={codingTest?.example_output || null}
               onComplete={submitCode}
               isCompleted={!!result}
+              submitting={loading}
               runEligible={codeEligible}
               runTimeLeft={codeTimeLeft}
             />
@@ -321,6 +327,12 @@ export default function CodingPage() {
                  <span style={{padding:'4px 12px',borderRadius:20,fontSize:12,background:'var(--gx-warning-soft)',color:'var(--gx-warning)'}}>+{result.points} pts</span>
                </div>
                <div style={{fontSize:13,color:'var(--gx-text)',lineHeight:1.7}}>{result.review?.feedback}</div>
+               {/* This verdict comes from an AI reviewer reading the code — not
+                   from running it against test cases. Saying "Correct" without
+                   that qualifier claims a guarantee we don't have. */}
+               <div style={{fontSize:11,color:'var(--gx-text-subtle)',lineHeight:1.6,marginTop:12,fontFamily:'var(--font-mono)'}}>
+                 AI-evaluated — a reviewer read your code and judged the approach. It was not run against hidden test cases.
+               </div>
             </div>
           )}
         </div>
