@@ -2,8 +2,9 @@ import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { successResponse, errorResponse } from '@/lib/response';
-import { generateDayContent, buildDayMeta } from '@/lib/curriculumGenerator';
+import { generateDayContent, buildDayMeta, isDsaTrack } from '@/lib/curriculumGenerator';
 import { getRoadmapTargeting } from '@/lib/roadmapTargeting';
+import { getPatternPlan } from '@/lib/dsaPatternProgress';
 import { youtubeSearchUrl } from '@/lib/youtubeEmbed';
 
 const TASK_TYPES = ['video', 'resource', 'coding', 'test', 'notes'];
@@ -94,6 +95,30 @@ export async function GET(request, { params }) {
 
     const domainMatches = !roadmapItem || roadmapItem.domain_slug === user.domain_slug;
 
+    // ── Pattern plan ────────────────────────────────────────────────────────
+    // Computed on EVERY request (DSA track only), cache hit or not, because the
+    // pattern board is page furniture: it must not vanish when the student
+    // clicks back through past days. It's a rollup of rows that already exist —
+    // no AI call — and it needs the same readiness read the miss path uses, so
+    // both are hoisted above the cache branch and shared.
+    const dsaTrack = isDsaTrack(user.domain_slug);
+    let targeting = null;
+    let patternPlan = null;
+    if (dsaTrack) {
+      try {
+        targeting = await getRoadmapTargeting(payload.userId, { dayNumber });
+      } catch (e) {
+        console.warn('[roadmap/day] targeting unavailable:', e.message);
+      }
+      try {
+        patternPlan = await getPatternPlan(payload.userId, {
+          user, targeting, currentDay: officialDay, skipBasics: level === 'advanced',
+        });
+      } catch (e) {
+        console.warn('[roadmap/day] pattern plan unavailable:', e.message);
+      }
+    }
+
     let dayContent;
     if (domainMatches && isComplete(roadmapItem)) {
       dayContent = {
@@ -118,14 +143,18 @@ export async function GET(request, { params }) {
       // route deliberately does NOT do is the gap-staleness invalidation: this
       // endpoint serves arbitrary past and preview days, and rewriting a day the
       // student already worked through would rewrite their history.
-      let targeting = null;
-      try {
-        targeting = await getRoadmapTargeting(payload.userId, { dayNumber });
-      } catch (e) {
-        console.warn('[roadmap/day] targeting unavailable:', e.message);
+      //
+      // For non-DSA tracks `targeting` wasn't computed above (the plan doesn't
+      // apply), so it's read here — the miss path always needs it.
+      if (!dsaTrack) {
+        try {
+          targeting = await getRoadmapTargeting(payload.userId, { dayNumber });
+        } catch (e) {
+          console.warn('[roadmap/day] targeting unavailable:', e.message);
+        }
       }
 
-      dayContent = await generateDayContent(user.domain_slug, dayNumber, level, user, { targeting });
+      dayContent = await generateDayContent(user.domain_slug, dayNumber, level, user, { targeting, patternPlan });
       dayContent.meta = buildDayMeta(dayContent);
 
       const cachePayload = {
@@ -285,6 +314,10 @@ export async function GET(request, { params }) {
       // The gap this specific day was generated against, if any. Read from the
       // stored row so a past day reports what it was actually built for.
       dayFocus: (dayContent.meta?.focus || dayContent.focus) || null,
+      // The live pattern board (DSA track only), plus the pattern THIS day was
+      // built for — which for a past day is deliberately the older one.
+      patternPlan: patternPlan || null,
+      dayPattern: (dayContent.meta?.pattern || dayContent.pattern) || null,
     });
   } catch (error) {
     console.error('Roadmap day view error:', error);

@@ -7,6 +7,7 @@ import CodeEditor from '@/components/CodeEditor';
 import { toEmbedUrl } from '@/lib/youtubeEmbed';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 import ErrorCard, { friendlyError } from '@/components/ui/ErrorCard';
+import PatternTrack from '@/components/roadmap/PatternTrack';
 
 // ── Shared Tailwind class tokens (native utilities only) ──
 const CARD =
@@ -453,6 +454,8 @@ export default function DailyRoadmapPage() {
     dayMeta,
     targeting,
     dayFocus,
+    patternPlan,
+    dayPattern,
   } = daily;
   const completedCount = tasks.filter((t) => t.status === 'completed').length;
 
@@ -481,6 +484,15 @@ export default function DailyRoadmapPage() {
           >
             Day {currentDay} — {roadmapItem?.topic}
           </h1>
+          {/* On a pattern-based track the day number is PACE, not curriculum —
+              say which pattern this day belongs to so the two aren't confused.
+              `dayPattern` is what the day was generated for (read from the
+              cached row), which can lag today's plan; that's deliberate. */}
+          {dayPattern && (
+            <p className="mt-1 font-mono text-[11px] font-bold uppercase tracking-[1px] text-[var(--gx-accent)]">
+              Pattern: {dayPattern.name}
+            </p>
+          )}
           <p className="mt-1 text-sm text-gray-400">
             Week {currentWeek} · {roadmapItem?.difficulty}
             {viewDay !== officialDay && (
@@ -597,6 +609,12 @@ export default function DailyRoadmapPage() {
           </button>
         </div>
       )}
+
+      {/* ─── PATTERN BOARD (DSA track only; null everywhere else) ───
+          The organizing unit of the roadmap: one pattern at a time, with the
+          evidence behind why it's current and what clears it. Renders nothing
+          when there's no plan, so every other track is untouched. */}
+      <PatternTrack plan={patternPlan} onChanged={() => loadDay(viewDay)} />
 
       {/* Main Grid: 2 Columns on Desktop */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">

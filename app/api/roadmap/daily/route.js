@@ -2,10 +2,11 @@ import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { successResponse, errorResponse } from '@/lib/response';
-import { generateDayContent, buildDayMeta } from '@/lib/curriculumGenerator';
+import { generateDayContent, buildDayMeta, isDsaTrack } from '@/lib/curriculumGenerator';
 import { roadmapTotalDays } from '@/lib/roadmapCache';
 import { youtubeSearchUrl } from '@/lib/youtubeEmbed';
 import { getRoadmapTargeting, isFocusStale, targetingForClient } from '@/lib/roadmapTargeting';
+import { getPatternPlan } from '@/lib/dsaPatternProgress';
 
 const TASK_TYPES = ['video', 'resource', 'coding', 'test', 'notes'];
 const TOTAL_TASKS = 5;
@@ -138,16 +139,46 @@ export async function GET(request) {
       targeting = null;
     }
 
+    // ── Pattern-based organization ─────────────────────────────────────────
+    // WHICH pattern the student is working through, and why. Rigid track
+    // routing: DSA only (see isDsaTrack) — a pattern plan must never reshape an
+    // AI/ML or DevOps day. Never fatal; a null plan generates the day exactly as
+    // it did before the pattern roadmap existed.
+    let patternPlan = null;
+    if (isDsaTrack(user.domain_slug)) {
+      try {
+        patternPlan = await getPatternPlan(payload.userId, {
+          user,
+          targeting,
+          currentDay: displayDay,
+          skipBasics: level === 'advanced',
+        });
+      } catch (e) {
+        console.warn('[roadmap/daily] pattern plan unavailable:', e.message);
+      }
+    }
+
     // A cached day planned against a gap set that has since changed is stale:
     // the student may have closed the very gap it was built to fix. Keyed on
     // the gap SET, not on scores, so ordinary practice doesn't churn the cache.
     const cachedFocus = roadmapItem?.meta?.focus || null;
     const focusStale = isFocusStale(cachedFocus, targeting);
 
+    // A cached day belonging to a pattern the student has since ADVANCED PAST is
+    // stale for the same reason — it teaches a pattern they no longer sit in.
+    // Deliberately keyed on the pattern ID only, not on solved counts: ticking a
+    // problem must not burn an AI generation, exactly as scores don't (rule 4 in
+    // lib/roadmapTargeting.js). A day cached before patterns existed has no
+    // meta.pattern and is only stale once a plan actually exists, so legacy rows
+    // don't all regenerate at once.
+    const cachedPattern = roadmapItem?.meta?.pattern || null;
+    const patternStale = !!patternPlan?.current
+      && (!cachedPattern || cachedPattern.id !== patternPlan.current.id);
+
     let dayContent;
     let cacheHit = false;
 
-    if (domainMatches && !focusStale && isComplete(roadmapItem)) {
+    if (domainMatches && !focusStale && !patternStale && isComplete(roadmapItem)) {
       // Hydrate dayContent shape from the cached row — no AI call.
       cacheHit = true;
       dayContent = {
@@ -169,7 +200,7 @@ export async function GET(request) {
       };
     } else {
       // ── 2. Cache miss — call AI then persist for next time ──────────────
-      dayContent = await generateDayContent(user.domain_slug, displayDay, level, user, { targeting });
+      dayContent = await generateDayContent(user.domain_slug, displayDay, level, user, { targeting, patternPlan });
       dayContent.meta = buildDayMeta(dayContent);
 
       // The model is asked for a "best YouTube URL" but hallucinates video ids
@@ -342,6 +373,12 @@ export async function GET(request) {
       // The gap THIS day was actually generated against, which on a cache hit
       // is the one stored at generation time — not today's recomputed pick.
       dayFocus: (cacheHit ? roadmapItem?.meta?.focus : dayContent?.focus) || null,
+      // The pattern-based plan (DSA track only; null everywhere else). The page
+      // renders the pattern board from this — no second request.
+      patternPlan: patternPlan || null,
+      // Same discipline as dayFocus: the pattern THIS day was built for, read
+      // from the stored row on a cache hit. Null on every pre-pattern row.
+      dayPattern: (cacheHit ? roadmapItem?.meta?.pattern : dayContent?.pattern) || null,
       // Roadmap depth metadata. Old cached rows fall back to their stored
       // estimated_min (real, previously generated) — never invented fields.
       dayMeta: buildDayMeta(dayContent.meta) || buildDayMeta({ estimated_time: roadmapItem?.estimated_min }),
