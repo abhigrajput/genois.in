@@ -74,13 +74,18 @@ function itemsToText(items) {
 async function extractPdf(file, onProgress) {
   const pdfjs = await import('pdfjs-dist');
 
-  // pdf.js parses in a Web Worker. Resolving the worker through import.meta.url
-  // lets the bundler emit and fingerprint it, which keeps the worker's version
-  // locked to the API's — a mismatch is a hard error in pdf.js.
-  pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-    'pdfjs-dist/build/pdf.worker.min.mjs',
-    import.meta.url
-  ).toString();
+  // pdf.js parses in a Web Worker, served from public/ at a fixed path.
+  //
+  // This was previously `new URL('pdfjs-dist/build/pdf.worker.min.mjs',
+  // import.meta.url)`. Webpack turns that into an emitted asset, but Turbopack
+  // — the default bundler for `next build` in Next 16, and therefore what
+  // Vercel runs — does not, so the deployed build 404'd on the worker while
+  // local dev worked. A public/ path resolves identically under either bundler.
+  //
+  // scripts/copy-pdf-worker.mjs refreshes that copy on install and before every
+  // build, so it can never drift from the installed pdfjs-dist: pdf.js refuses
+  // to run when the worker and API versions differ.
+  pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.mjs';
 
   const buffer = await file.arrayBuffer();
   // destroy() lives on the loading task, not the document proxy — releasing the
@@ -128,6 +133,12 @@ function failureMessage(err, kind) {
   }
   if (/zip|end of central directory|not a valid|body element/i.test(msg)) {
     return 'This DOCX could not be read — it may be corrupted or saved in a different format. Try re-saving it as .docx, or paste the text instead.';
+  }
+  // A version mismatch means public/pdf.worker.min.mjs went stale against the
+  // installed pdfjs-dist — a deploy problem, not the student's browser. Name it
+  // so it is diagnosable from a screenshot instead of looking like a hiccup.
+  if (/does not match the Worker version|API version/i.test(msg)) {
+    return 'The PDF reader is misconfigured on our side (version mismatch) — we are on it. Paste your resume text instead for now.';
   }
   if (/worker/i.test(msg)) {
     return 'The PDF reader failed to start in your browser. Reload the page and try again, or paste the text instead.';
