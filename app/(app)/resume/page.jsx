@@ -3,8 +3,13 @@ import { useState, useEffect } from 'react';
 import { useToken, apiFetch, apiFetchWithTimeout } from '@/lib/useApi';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 import ErrorCard, { friendlyError } from '@/components/ui/ErrorCard';
+import ResumeFileUpload from '@/components/ResumeFileUpload';
 
 const MIN_CHARS = 200;
+// Mirrors MAX_RESUME_CHARS in /api/resume/analyze. A long PDF can sail past it,
+// and letting the student find out via a server 400 after waiting on the
+// analyzer is a worse way to learn they need to trim it.
+const MAX_CHARS = 15000;
 
 function scoreColor(score) {
   if (score >= 70) return 'var(--gx-success)';
@@ -130,30 +135,37 @@ export default function ResumeAtsPage() {
   );
 
   const tooShort = resumeText.trim().length > 0 && resumeText.trim().length < MIN_CHARS;
+  const tooLong = resumeText.trim().length > MAX_CHARS;
 
   return (
     <div style={{ maxWidth: 820, margin: '0 auto', fontFamily: 'var(--font-body)' }}>
       <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: 'var(--gx-text)', marginBottom: 4 }}>📄 Resume ATS Breakdown</h1>
       <p style={{ color: 'var(--gx-text-muted)', fontSize: 13, marginBottom: 24 }}>
-        Paste your resume text and get an honest ATS score, missing keywords, and stronger rewrites of your weakest bullets.
+        Upload your resume or paste the text, and get an honest ATS score, missing keywords, and stronger rewrites of your weakest bullets.
       </p>
 
       {!analysis && (
         <>
+          <ResumeFileUpload onExtract={setResumeText} />
+
           <div style={{ ...card, marginBottom: 14 }}>
             <div style={label}>RESUME TEXT</div>
             <textarea
               value={resumeText}
               onChange={e => setResumeText(e.target.value)}
-              placeholder={'Paste the full text of your resume here — select all in your PDF/doc and copy.\n\nInclude every section: education, skills, projects, experience, achievements.'}
+              placeholder={'Upload a PDF or DOCX above, or paste the full text of your resume here.\n\nInclude every section: education, skills, projects, experience, achievements.'}
               rows={14}
               style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.6, minHeight: 260 }}
             />
             <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: tooShort ? 'var(--gx-warning)' : 'var(--gx-text-subtle)' }}>
-                {tooShort ? `Need at least ${MIN_CHARS} characters of resume text` : `${resumeText.trim().length.toLocaleString()} characters`}
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: tooShort || tooLong ? 'var(--gx-warning)' : 'var(--gx-text-subtle)' }}>
+                {tooShort
+                  ? `Need at least ${MIN_CHARS} characters of resume text`
+                  : tooLong
+                    ? `${resumeText.trim().length.toLocaleString()} characters — over the ${MAX_CHARS.toLocaleString()} limit, trim it before analyzing`
+                    : `${resumeText.trim().length.toLocaleString()} characters`}
               </span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-subtle)' }}>text only · PDF upload coming later</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-subtle)' }}>PDF · DOCX · or paste text</span>
             </div>
           </div>
 
