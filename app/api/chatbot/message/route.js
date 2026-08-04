@@ -7,8 +7,9 @@ import { sanitizeChatHistory, sanitizeUserMessage } from '@/lib/security';
 import { updateStreak, getStreakDay, getStreakDayStart } from '@/lib/streak';
 import { buildFullStudentContext, buildMentorPrompt } from '@/lib/contextBuilder';
 import { searchKnowledgeBase, formatRagContext } from '@/lib/ragSearch';
+import { getMentorEvidence, buildEvidenceBlock, buildActionInstructions } from '@/lib/mentorEvidence';
 
-function buildChatbotSystem(mentorPrompt, domain, mode, ragContext = '') {
+function buildChatbotSystem(mentorPrompt, domain, mode, ragContext = '', evidenceBlock = '', actionInstructions = '') {
   const modeInstructions = {
     general: 'Answer general CS and engineering questions clearly.',
     coding: 'Focus on clean working code with clear explanations. Always use code blocks.',
@@ -19,6 +20,8 @@ function buildChatbotSystem(mentorPrompt, domain, mode, ragContext = '') {
 
   return `${mentorPrompt}
 ${ragContext}
+${evidenceBlock}
+${actionInstructions}
 
 === THIS CONVERSATION ===
 Mode: ${mode}. ${modeInstructions[mode] || modeInstructions.general}
@@ -57,6 +60,31 @@ export async function POST(request) {
     const mentorPrompt = buildMentorPrompt(ctx);
     const primaryTarget = ctx.targetCompanies[0] || null;
 
+    // Evidence-awareness. Everything the student's own assessments, readiness
+    // and pattern roadmap actually say — so an answer can be grounded in
+    // "Trees, 31% over 16 questions" instead of generic advice. Never fatal:
+    // if any of it is unavailable the mentor falls back to exactly the prompt
+    // it used before this existed, which claims nothing it can't back up.
+    let evidenceBlock = '';
+    let actionInstructions = '';
+    try {
+      const evidence = await getMentorEvidence(payload.userId, {
+        // Shaped from the context we already loaded — no extra users read.
+        user: {
+          domain_slug: ctx.domain,
+          level: ctx.selfReportedLevel,
+          target_companies: ctx.targetCompanies,
+          weak_subjects: ctx.weakSubjects,
+          months_to_placement: ctx.monthsToPlacement,
+        },
+        currentDay: ctx.currentDay,
+      });
+      evidenceBlock = buildEvidenceBlock(evidence);
+      actionInstructions = buildActionInstructions(evidence, cleanMessage);
+    } catch (e) {
+      console.warn('[chatbot] evidence context unavailable:', e.message);
+    }
+
     const ragResults = await searchKnowledgeBase(cleanMessage, ctx.domain, primaryTarget, 3);
     const ragContext = formatRagContext(ragResults);
 
@@ -64,7 +92,9 @@ export async function POST(request) {
       mentorPrompt,
       ctx.domain,
       selectedMode,
-      ragContext
+      ragContext,
+      evidenceBlock,
+      actionInstructions
     );
 
     const messages = [
