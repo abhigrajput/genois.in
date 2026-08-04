@@ -200,7 +200,7 @@ export default function DSARoadmapPage() {
     { key: 'resource', icon: '📖', label: 'Read Resource', desc: dayData.resourceTitle, link: dayData.resource, type: 'external' },
     { key: 'coding', icon: '💻', label: 'Coding Problem (C++)', desc: dayData.codingProblem, stlNote: 'Solve this in C++. Focus on STL: vector, map, set, pair, priority_queue, stack, queue.', type: 'internal', action: () => window.open(dayData.problemLink || '#', '_blank') },
     { key: 'test', icon: '📝', label: 'Daily Test', desc: dayData.testTopic, type: 'internal', action: () => setShowDailyTest(true) },
-    { key: 'notes', icon: '📋', label: 'AI Notes', desc: dayData.notesTopic, type: 'internal', action: loadNotes },
+    { key: 'notes', icon: '📋', label: 'Notes', desc: dayData.notesTopic, type: 'internal', action: loadNotes },
   ];
 
   return (
@@ -310,7 +310,7 @@ export default function DSARoadmapPage() {
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(16,24,40,0.4)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
           <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-accent-border)', borderRadius: 16, width: '100%', maxWidth: 700, maxHeight: '80vh', display: 'flex', flexDirection: 'column' }}>
             <div style={{ padding: 20, borderBottom: '1px solid var(--gx-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: 'var(--gx-text)', margin: 0 }}>📚 AI Notes — {dayData.topic}</h2>
+              <h2 style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: 'var(--gx-text)', margin: 0 }}>📚 Notes — {dayData.topic}</h2>
               <button onClick={() => setShowNotes(false)} style={{ background: 'transparent', border: 'none', color: 'var(--gx-text-muted)', fontSize: 24, cursor: 'pointer' }}>×</button>
             </div>
             <div style={{ padding: 20, overflowY: 'auto', flex: 1, color: 'var(--gx-text)', lineHeight: 1.6, whiteSpace: 'pre-wrap', fontFamily: 'var(--font-body)' }}>

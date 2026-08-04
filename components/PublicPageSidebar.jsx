@@ -28,8 +28,8 @@ export default function PublicPageSidebar({ currentPath }) {
       { href: '/dsa-guide', label: 'DSA Guide', icon: '📘' },
       { href: '/dsa-roadmap', label: 'DSA Roadmap', icon: '📙' },
     ]},
-    { title: 'AI TOOLS', items: [
-      { href: '/mentor', label: 'AI Mentor', icon: '🎯' },
+    { title: 'TOOLS', items: [
+      { href: '/mentor', label: 'Mentor', icon: '🎯' },
       { href: '/chatbot', label: 'Chatbot', icon: '💬' },
       { href: '/anxiety', label: '2AM Chat', icon: '🌙' },
     ]},

@@ -860,7 +860,7 @@ export default function DashboardPage() {
               <SectionLabel style={{ marginBottom: 12 }}>Quick Access</SectionLabel>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
                 {[
-                  { href: '/chatbot', icon: Bot, label: 'AI Mentor' },
+                  { href: '/chatbot', icon: Bot, label: 'Mentor' },
                   { href: '/dsa-visualizer', icon: Play, label: 'Visualizer' },
                   { href: '/voice-interview', icon: Mic, label: 'Voice Sim' },
                 ].map(q => (
@@ -894,7 +894,7 @@ export default function DashboardPage() {
               <span style={{ width: 24, height: 24, borderRadius: 'var(--gx-radius-sm)', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'var(--gx-accent-soft)', color: ACCENT, flexShrink: 0 }}>
                 <Brain size={14} strokeWidth={2} />
               </span>
-              <SectionLabel style={{ color: ACCENT }}>Your AI Mentor</SectionLabel>
+              <SectionLabel style={{ color: ACCENT }}>Your Mentor</SectionLabel>
             </div>
             {insight ? (
               <div style={{ fontSize: 14, color: TEXT, lineHeight: 1.6 }}>{insight}</div>

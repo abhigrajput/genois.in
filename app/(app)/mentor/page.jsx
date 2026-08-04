@@ -80,7 +80,7 @@ export default function MentorPage() {
     <div className="w-full flex flex-col" style={{ maxWidth: 1600, margin: '0 auto', height:'calc(100vh - 120px)' }}>
       <div className="mb-4 flex-shrink-0">
         <div className="flex items-center justify-between mb-3">
-          <h1 className="text-2xl font-bold">AI Mentor</h1>
+          <h1 className="text-2xl font-bold">Mentor</h1>
           {messages.length > 0 && (
             <button onClick={clearChat}
               className="text-xs font-medium px-3 py-1.5 rounded-full border border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-300 transition-all">
@@ -102,7 +102,7 @@ export default function MentorPage() {
         {messages.length === 0 && (
           <div className="text-center py-10 space-y-4">
             <div className="text-4xl">◉</div>
-            <div className="font-semibold text-dark">Your personal AI Mentor</div>
+            <div className="font-semibold text-dark">Your personal Mentor</div>
             <div className="text-sm text-gray-400">Knows your progress, weak topics, and domain.</div>
             <div className="flex flex-col gap-2 max-w-xs mx-auto">
               {(QUICK[mode] || []).map((q, i) => (

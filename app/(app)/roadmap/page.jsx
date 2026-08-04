@@ -50,7 +50,7 @@ const STEP_LABELS = {
   resource: 'Read Resource',
   coding: 'Coding Challenge',
   test: 'Daily Test',
-  notes: 'AI Notes',
+  notes: 'Notes',
 };
 
 const MAX_DAY = 365;
@@ -976,7 +976,7 @@ export default function DailyRoadmapPage() {
 
             {activeStep === 4 && (
               <div className="space-y-4">
-                <h3 className="section-title">≡ AI Study Notes — {roadmapItem?.topic}</h3>
+                <h3 className="section-title">≡ Study Notes — {roadmapItem?.topic}</h3>
                 <div className="flex gap-2">
                   {['theory', 'coding', 'full', 'revision'].map((t) => (
                     <button

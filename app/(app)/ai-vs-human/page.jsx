@@ -45,7 +45,7 @@ export default function AIvsHumanPage() {
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: 36 }}>
         <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 34, fontWeight: 800, color: 'var(--gx-text)', margin: '0 0 10px' }}>
-          AI vs Human 🤖
+          Your Edge
         </h1>
         <p style={{ color: MUTED, fontSize: 16, lineHeight: 1.6, maxWidth: 640, margin: '0 auto' }}>
           I am the AI — and I'll be honest: there are some things I can never do.

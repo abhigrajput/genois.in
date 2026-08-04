@@ -19,7 +19,7 @@ export default function WelcomePage() {
 
   const STEPS = [
     { icon: '👋', title: `Welcome to GENOIS!`, desc: 'You just made a decision that most engineers never make — to prove your skill instead of just claiming it.' },
-    { icon: '📅', title: 'Your 30-day journey starts today', desc: 'Every morning you get 5 tasks. Video, Resource, Coding Challenge, Daily Test, AI Notes. Complete all 5 and your day advances.' },
+    { icon: '📅', title: 'Your 30-day journey starts today', desc: 'Every morning you get 5 tasks. Video, Resource, Coding Challenge, Daily Test, Notes. Complete all 5 and your day advances.' },
     { icon: '🏆', title: 'You will be ranked', desc: 'After each daily test your GENOIS score updates and you get ranked against students from across India. This rank is real. You cannot fake it.' },
     { icon: '🎯', title: 'One rule', desc: 'Show up every day. Miss a day and your streak breaks. Miss too many days and you fall in rank. The grind is the point.' },
   ];

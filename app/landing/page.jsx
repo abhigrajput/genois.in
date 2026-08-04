@@ -87,7 +87,7 @@ const FEATURES = [
     desc: 'Points earned, days completed, where your accuracy actually sits. Your streak and score are on every screen, so progress is a number and not a feeling.',
   },
   {
-    icon: Bot, href: '/chatbot', title: 'AI mentor',
+    icon: Bot, href: '/chatbot', title: 'Mentor',
     desc: 'An always-on mentor that knows your domain, with separate modes for coding, project and career questions. For the 1am doubt that would otherwise end the session.',
   },
 ];
@@ -95,10 +95,10 @@ const FEATURES = [
 // The remaining live sidebar routes — listed, not oversold.
 const ALSO_INCLUDED = [
   { icon: Map, label: 'DSA Roadmap', href: '/dsa-roadmap' },
-  { icon: FileText, label: 'AI Notes', href: '/notes' },
+  { icon: FileText, label: 'Notes', href: '/notes' },
   { icon: FolderGit2, label: 'Projects', href: '/projects' },
   { icon: ClipboardList, label: 'Answer Review', href: '/review' },
-  { icon: Zap, label: 'AI vs Human', href: '/ai-vs-human' },
+  { icon: Zap, label: 'Your Edge', href: '/ai-vs-human' },
 ];
 
 // The day-1 task the interactive demo walks through. The four sub-steps are the

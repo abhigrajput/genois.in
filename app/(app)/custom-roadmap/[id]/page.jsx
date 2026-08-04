@@ -253,7 +253,7 @@ export default function CustomRoadmapDetailPage() {
 
         {activeTask === 'notes' && (
           <div>
-            <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-info)', letterSpacing: 2, marginBottom: 12 }}>AI NOTES</div>
+            <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-info)', letterSpacing: 2, marginBottom: 12 }}>NOTES</div>
             {!notes ? (
               <div style={{ textAlign: 'center', paddingTop: 20 }}>
                 <button onClick={generateNotes} disabled={loadingNotes || isTaskDone('notes')} style={{ padding: '14px 32px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'var(--gx-info)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700 }}>

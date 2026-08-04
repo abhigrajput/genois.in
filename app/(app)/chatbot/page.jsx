@@ -66,7 +66,7 @@ export default function ChatbotPage() {
     <div className="w-full flex flex-col" style={{ height:'calc(100vh - 120px)', width: '100%' }}>
       <div className="mb-4 flex-shrink-0">
         <div className="flex items-center justify-between mb-3">
-          <h1 className="text-2xl font-bold">AI Chatbot</h1>
+          <h1 className="text-2xl font-bold">Mentor</h1>
           {messages.length > 0 && (
             <button onClick={clearChat}
               className="text-xs font-medium px-3 py-1.5 rounded-full border border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-300 transition-all">

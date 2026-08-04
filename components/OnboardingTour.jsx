@@ -19,7 +19,7 @@ const TOUR_STEPS = [
     cta: 'Continue',
   },
   {
-    title: '🎯 AI Mentor',
+    title: '🎯 Mentor',
     description: '5 modes: Explain, Quiz, Roast, Career Path, Mock Interview. Use them when stuck.',
     cta: 'Continue',
   },
