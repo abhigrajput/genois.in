@@ -1,183 +1,197 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+/**
+ * /notes — curated study material first, freeform notes second.
+ *
+ * WHAT CHANGED AND WHY
+ * --------------------
+ * This page used to be one thing: a sidebar of saved notes and a textarea, with
+ * a "type a topic and an AI writes it" flow bolted on. A tester's verdict was
+ * that it "feels like a ChatGPT wrapper / note editor — I'd rather have curated
+ * revision sheets, cheat sheets, flashcards, and pattern-based interview notes".
+ *
+ * So the DEFAULT tab is now a shelf of curated sheets that already exist, and
+ * generation is a small secondary control inside My Notes.
+ *
+ * WHAT DID NOT CHANGE
+ * -------------------
+ * My Notes is the previous editor, moved into a component with its behaviour
+ * intact: same endpoints, same autosave, same delete. No note was migrated,
+ * reshaped or removed — this rework only ADDS a second tab beside it.
+ */
+import { useState, useEffect } from 'react';
 import { useToken, apiFetch } from '@/lib/useApi';
 import toast from 'react-hot-toast';
+import SheetLibrary from '@/components/notes/SheetLibrary';
+import SheetReader from '@/components/notes/SheetReader';
+import NotesEditor from '@/components/notes/NotesEditor';
+
+const TABS = [
+  { key: 'study', label: 'Study Material' },
+  { key: 'mine', label: 'My Notes' },
+];
 
 export default function NotesPage() {
   const { token, ready } = useToken();
-  const [notes, setNotes] = useState([]);
-  const [selected, setSelected] = useState(null);
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [creating, setCreating] = useState(false);
-  const saveTimer = useRef(null);
+
+  // Curated is the default view — that is the whole point of the rework.
+  const [tab, setTab] = useState('study');
+  const [openSheet, setOpenSheet] = useState(null);
+
+  const [library, setLibrary] = useState(null);
+  const [loadingLibrary, setLoadingLibrary] = useState(true);
+  const [libraryError, setLibraryError] = useState(null);
+
+  // Bumped when a sheet is saved into notes, so the editor reloads and selects it.
+  const [focusNoteId, setFocusNoteId] = useState(null);
 
   useEffect(() => {
     if (!ready || !token) return;
-    loadNotes();
+    let cancelled = false;
+    (async () => {
+      try {
+        const r = await apiFetch('/api/study-sheets', token);
+        if (!cancelled) setLibrary(r.data);
+      } catch (e) {
+        if (!cancelled) setLibraryError(e.message || 'Could not load study material');
+      }
+      if (!cancelled) setLoadingLibrary(false);
+    })();
+    return () => { cancelled = true; };
   }, [ready, token]);
 
-  async function loadNotes() {
-    try {
-      const r = await apiFetch('/api/notes', token);
-      setNotes(r.data?.notes || []);
-      if (r.data?.notes?.length > 0) {
-        selectNote(r.data.notes[0]);
-      }
-    } catch (e) {
-      toast.error('Failed to load notes');
-    }
-    setLoading(false);
+  function handleSheetSaved(noteId) {
+    setFocusNoteId(noteId);
+    setOpenSheet(null);
+    setTab('mine');
   }
 
-  function selectNote(note) {
-    setSelected(note);
-    setTitle(note.title);
-    setContent(note.content || '');
-  }
-
-  async function createNote() {
-    setCreating(true);
-    try {
-      const r = await apiFetch('/api/notes', token, 'POST', {
-        title: 'Untitled Note',
-        content: '',
-      });
-      const newNote = r.data?.note;
-      setNotes(prev => [newNote, ...prev]);
-      selectNote(newNote);
-      toast.success('New note created');
-    } catch (e) {
-      toast.error(e.message);
-    }
-    setCreating(false);
-  }
-
-  async function saveNote() {
-    if (!selected) return;
-    setSaving(true);
-    try {
-      const r = await apiFetch(`/api/notes/${selected.id}`, token, 'PUT', { title, content });
-      const updated = r.data?.note;
-      setNotes(prev => prev.map(n => n.id === selected.id ? updated : n));
-      setSelected(updated);
-    } catch (e) {
-      toast.error('Failed to save');
-    }
-    setSaving(false);
-  }
-
-  async function deleteNote(noteId) {
-    try {
-      await apiFetch(`/api/notes/${noteId}`, token, 'DELETE');
-      const remaining = notes.filter(n => n.id !== noteId);
-      setNotes(remaining);
-      if (selected?.id === noteId) {
-        if (remaining.length > 0) selectNote(remaining[0]);
-        else { setSelected(null); setTitle(''); setContent(''); }
-      }
-      toast.success('Note deleted');
-    } catch (e) {
-      toast.error(e.message);
-    }
-  }
-
-  function handleTitleChange(val) {
-    setTitle(val);
-    clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(saveNote, 2000);
-  }
-
-  function handleContentChange(val) {
-    setContent(val);
-    clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(saveNote, 2000);
-  }
-
-  if (loading) return (
-    <div style={{ padding: 60, textAlign: 'center', color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>
-      Loading notes...
-    </div>
-  );
+  if (!ready) return null;
 
   return (
-    <div style={{ fontFamily: 'var(--font-body)', width: '100%', height: 'calc(100vh - 80px)', display: 'flex', gap: 0, borderRadius: 14, overflow: 'hidden', border: '1px solid var(--gx-border)' }}>
+    <div style={{ width: '100%', maxWidth: 1180, margin: '0 auto', padding: '4px 0 40px' }}>
 
-      {/* SIDEBAR */}
-      <div style={{ width: 260, flexShrink: 0, background: 'var(--gx-bg)', borderRight: '1px solid var(--gx-border)', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ padding: '16px 14px', borderBottom: '1px solid var(--gx-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, color: 'var(--gx-text)' }}>📒 My Notes</div>
-          <button onClick={createNote} disabled={creating} style={{ padding: '6px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 700 }}>
-            {creating ? '...' : '+ New'}
+      <header style={{ marginBottom: 18 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 750, color: 'var(--gx-text)', margin: 0 }}>Notes</h1>
+        <p style={{ fontSize: 13.5, color: 'var(--gx-text-muted)', margin: '6px 0 0' }}>
+          Curated revision sheets, cheat sheets and flashcards — plus your own notes.
+        </p>
+      </header>
+
+      <div className="gx-segment" role="tablist" aria-label="Notes view" style={{ marginBottom: 20 }}>
+        {TABS.map(t => (
+          <button
+            key={t.key}
+            role="tab"
+            aria-selected={tab === t.key}
+            className="gx-segment__item"
+            onClick={() => { setTab(t.key); setOpenSheet(null); }}
+          >
+            {t.label}
           </button>
-        </div>
-
-        <div style={{ flex: 1, overflowY: 'auto' }}>
-          {notes.length === 0 ? (
-            <div style={{ padding: 20, textAlign: 'center', color: 'var(--gx-text-subtle)', fontSize: 13 }}>
-              No notes yet. Click + New to start.
-            </div>
-          ) : (
-            notes.map(note => (
-              <div key={note.id} onClick={() => selectNote(note)} style={{ padding: '12px 14px', cursor: 'pointer', borderBottom: '1px solid var(--gx-border)', background: selected?.id === note.id ? 'var(--gx-accent-soft)' : 'transparent', borderLeft: selected?.id === note.id ? '2px solid var(--gx-accent)' : '2px solid transparent', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 600, color: selected?.id === note.id ? 'var(--gx-accent)' : 'var(--gx-text)', marginBottom: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {note.title || 'Untitled'}
-                  </div>
-                  <div style={{ fontSize: 11, color: 'var(--gx-text-subtle)', fontFamily: 'var(--font-mono)' }}>
-                    {new Date(note.updated_at).toLocaleDateString()}
-                  </div>
-                </div>
-                <button onClick={e => { e.stopPropagation(); deleteNote(note.id); }} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: 'var(--gx-text-subtle)', fontSize: 14, padding: '2px 4px', flexShrink: 0, opacity: 0.5 }}>
-                  🗑
-                </button>
-              </div>
-            ))
-          )}
-        </div>
+        ))}
       </div>
 
-      {/* EDITOR */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--gx-surface)' }}>
-        {selected ? (
-          <>
-            <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--gx-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-              <input value={title} onChange={e => handleTitleChange(e.target.value)} placeholder="Note title..." style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--gx-text)' }} />
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: saving ? 'var(--gx-warning)' : 'var(--gx-text-subtle)' }}>
-                  {saving ? 'Saving...' : 'Auto-saved'}
-                </span>
-                <button onClick={saveNote} style={{ padding: '6px 14px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'var(--gx-accent-soft)', color: 'var(--gx-accent)', fontFamily: 'var(--font-heading)', fontSize: 12, fontWeight: 600 }}>
-                  Save
-                </button>
-              </div>
-            </div>
-            <textarea value={content} onChange={e => handleContentChange(e.target.value)} placeholder="Start typing your notes here...&#10;&#10;Tips:&#10;• Use this to save key concepts&#10;• Write down important formulas&#10;• Note your daily learnings" style={{ flex: 1, padding: '20px', background: 'transparent', border: 'none', outline: 'none', resize: 'none', color: 'var(--gx-text)', fontFamily: 'var(--font-body)', fontSize: 14, lineHeight: 1.8 }} />
-            <div style={{ padding: '8px 20px', borderTop: '1px solid var(--gx-border)', display: 'flex', gap: 16 }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-subtle)' }}>
-                {content.length} characters
-              </span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-subtle)' }}>
-                {content.split('\n').length} lines
-              </span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--gx-text-subtle)' }}>
-                {content.split(' ').filter(w => w).length} words
-              </span>
-            </div>
-          </>
+      {tab === 'study' && (
+        loadingLibrary ? (
+          <div style={{ padding: 50, textAlign: 'center', color: 'var(--gx-text-muted)' }}>
+            Loading study material...
+          </div>
+        ) : libraryError ? (
+          <div className="gx-alert gx-alert--danger">{libraryError}</div>
+        ) : openSheet ? (
+          <SheetReader
+            sheetId={openSheet}
+            token={token}
+            onBack={() => setOpenSheet(null)}
+            onSaved={handleSheetSaved}
+          />
         ) : (
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, color: 'var(--gx-text-subtle)' }}>
-            <div style={{ fontSize: 48 }}>📒</div>
-            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 18, fontWeight: 700, color: 'var(--gx-text-muted)' }}>No note selected</div>
-            <div style={{ fontSize: 13, color: 'var(--gx-text-subtle)' }}>Create a new note or select one from the list</div>
-            <button onClick={createNote} style={{ padding: '10px 24px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>
-              + Create First Note
+          <SheetLibrary
+            sheets={library?.sheets || []}
+            groups={library?.groups || []}
+            evidence={library?.evidence}
+            onOpen={setOpenSheet}
+          />
+        )
+      )}
+
+      {tab === 'mine' && (
+        <>
+          <GenerateNote token={token} onCreated={setFocusNoteId} />
+          <NotesEditor token={token} focusNoteId={focusNoteId} />
+        </>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Generation, demoted.
+ *
+ * It still exists — some topics have no curated sheet, and removing a working
+ * feature was not the ask. But it is now one collapsed row inside the secondary
+ * tab rather than the identity of the page, and it says plainly that the curated
+ * sheets are the better first stop.
+ *
+ * Reuses the existing /api/notes/generate and /api/notes endpoints unchanged:
+ * generate the text, then save it as an ordinary note.
+ */
+function GenerateNote({ token, onCreated }) {
+  const [open, setOpen] = useState(false);
+  const [topic, setTopic] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  async function generate() {
+    const t = topic.trim();
+    if (!t) return;
+    setBusy(true);
+    try {
+      const gen = await apiFetch('/api/notes/generate', token, 'POST', { topic: t });
+      const content = gen.data?.notes || '';
+      if (!content) throw new Error('Nothing was generated');
+      const saved = await apiFetch('/api/notes', token, 'POST', { title: t, content });
+      toast.success('Note generated and saved');
+      setTopic('');
+      setOpen(false);
+      onCreated?.(saved.data?.note?.id || null);
+    } catch (e) {
+      toast.error(e.message || 'Could not generate');
+    }
+    setBusy(false);
+  }
+
+  return (
+    <div style={{ marginBottom: 14 }}>
+      {!open ? (
+        <button className="gx-btn gx-btn--ghost gx-btn--sm" onClick={() => setOpen(true)}>
+          + Generate a note on a topic
+        </button>
+      ) : (
+        <div className="gx-card" style={{ padding: 14 }}>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+            <input
+              className="gx-input"
+              value={topic}
+              onChange={e => setTopic(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') generate(); }}
+              placeholder="Topic, e.g. Kruskal's algorithm"
+              aria-label="Topic to generate a note about"
+              style={{ flex: 1, minWidth: 200 }}
+              disabled={busy}
+            />
+            <button className="gx-btn gx-btn--primary gx-btn--sm" onClick={generate} disabled={busy || !topic.trim()}>
+              {busy ? 'Generating...' : 'Generate'}
+            </button>
+            <button className="gx-btn gx-btn--ghost gx-btn--sm" onClick={() => setOpen(false)} disabled={busy}>
+              Cancel
             </button>
           </div>
-        )}
-      </div>
+          <p style={{ fontSize: 12, color: 'var(--gx-text-subtle)', margin: '10px 0 0' }}>
+            For topics with no curated sheet. Generated text is a starting point, not reviewed material — check
+            Study Material first.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
