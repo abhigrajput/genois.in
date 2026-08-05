@@ -2,12 +2,29 @@ import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 
+/**
+ * GET /api/profile/[userId] — the signed-in student's own private profile.
+ *
+ * The [userId] segment is addressing only, never authority. Being logged in was
+ * previously enough to read ANY id in this table, which handed every account the
+ * whole cohort's weak topics, readiness and 30-day activity graph by walking
+ * uuids. The id in the path must therefore match the id in the verified
+ * genois_token, and the token is the only thing that decides whose rows load.
+ *
+ * Sharing a profile publicly is a different feature with a different, curated
+ * shape: /api/public/profile/[username], which deliberately omits weak topics
+ * and the activity graph. Nothing here is a substitute for it.
+ */
 export async function GET(request, context) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
 
     const { userId } = await context.params;
+
+    // 404, not 403: a mismatch must not confirm that the requested id exists.
+    if (userId !== payload.userId) return errorResponse('User not found', 404);
+
     const supabase = getAdminClient();
 
     const { data: user, error } = await supabase
