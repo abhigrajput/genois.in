@@ -125,7 +125,11 @@ export async function POST(request) {
 
     const response = await askClaudeChat(messages, system, 1500);
 
-    await supabase.from('mentor_history').insert({
+    // supabase-js resolves with { error } instead of throwing, so an unchecked
+    // insert fails silently: the user still gets their reply and nothing is
+    // persisted or logged. Surface it — the reply is worth more than the
+    // history row, so this stays non-fatal, but it must not be invisible.
+    const { error: historyError } = await supabase.from('mentor_history').insert({
       user_id: payload.userId,
       message: cleanMessage,
       response,
@@ -133,6 +137,15 @@ export async function POST(request) {
       domain: ctx.domain,
       topic: ctx.topic,
     });
+    if (historyError) {
+      console.error('Mentor history insert failed:', {
+        userId: payload.userId,
+        mode: selectedMode,
+        code: historyError.code,
+        message: historyError.message,
+        details: historyError.details,
+      });
+    }
 
     return successResponse({
       response,
