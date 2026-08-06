@@ -106,13 +106,24 @@ export default function AppLayout({ children }) {
 
   // Auth gate — runs once on mount.
   useEffect(() => {
+    if (isAuthenticated) { setChecking(false); return; }
+
+    // FIX P4 follow-up, mirroring lib/usePermission.js: the session lives in the
+    // httpOnly `genois_token` cookie that JS cannot read, so treating a missing
+    // localStorage token as "logged out" bounced cookie-authenticated users to
+    // /login before the page mounted — ahead of usePermission's own cookie-first
+    // fetch, which then never got the chance to run.
+    //
+    // Ask the server instead. authAPI sends the cookie with credentials:
+    // 'include' and attaches the Bearer header only while a pre-migration token
+    // still exists (lib/api.js), and getUserFromRequest accepts either
+    // (lib/auth.js) — so no server change is needed. The cost is that a genuinely
+    // logged-out visitor makes one /api/auth/profile call that 401s before the
+    // redirect, the same trade already accepted in usePermission.
     const token = typeof window !== 'undefined' ? localStorage.getItem('genois_token') : null;
-    if (!isAuthenticated && !token) { router.push('/login'); return; }
-    if (!isAuthenticated && token) {
-      authAPI.getProfile()
-        .then(res => { setAuth(res.data.user, token, res.data.progress, res.data.score, res.data.skill); setChecking(false); })
-        .catch(() => { localStorage.removeItem('genois_token'); router.push('/login'); });
-    } else { setChecking(false); }
+    authAPI.getProfile()
+      .then(res => { setAuth(res.data.user, token, res.data.progress, res.data.score, res.data.skill); setChecking(false); })
+      .catch(() => { localStorage.removeItem('genois_token'); router.push('/login'); });
   }, []);
 
   const toggleCollapsed = () => {
