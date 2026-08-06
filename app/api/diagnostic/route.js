@@ -266,18 +266,20 @@ export async function POST(request) {
       })),
     });
 
-    await supabase.from('diagnostic_tests').update({
+    const { error: writeErr } = await supabase.from('diagnostic_tests').update({
       answers,
       score: percentage,
       skill_level: skillLevel,
       completed: true,
       taken_at: new Date().toISOString(),
     }).eq('user_id', payload.userId);
+    if (writeErr) console.error('DB write failed: diagnostic_tests.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
-    await supabase.from('progress').update({
+    const { error: writeErr2 } = await supabase.from('progress').update({
       diagnostic_score: percentage,
       diagnostic_taken: true,
     }).eq('user_id', payload.userId);
+    if (writeErr2) console.error('DB write failed: progress.update', { code: writeErr2.code, message: writeErr2.message, details: writeErr2.details });
 
     return successResponse({
       score: percentage,

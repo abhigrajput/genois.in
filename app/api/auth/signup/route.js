@@ -131,10 +131,11 @@ export async function POST(request) {
     // Use email_verify_token column (actual column name in users table)
     const verificationToken = crypto.randomBytes(32).toString('hex');
     const verifyExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
-    await supabase.from('users').update({
+    const { error: writeErr } = await supabase.from('users').update({
       email_verify_token:      verificationToken,
       email_verify_expires_at: verifyExpires.toISOString(),
     }).eq('id', user.id);
+    if (writeErr) console.error('DB write failed: users.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     const verifyUrl = 'https://genois.in/api/auth/verify-email?token=' + verificationToken;
 

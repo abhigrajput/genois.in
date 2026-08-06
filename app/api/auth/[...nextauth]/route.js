@@ -30,9 +30,10 @@ const authOptions = {
           .single();
 
         if (existing) {
-          await supabase.from('users')
+          const { error: writeErr } = await supabase.from('users')
             .update({ email_verified: true })
             .eq('id', existing.id);
+          if (writeErr) console.error('DB write failed: users.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
           return true;
         }
 

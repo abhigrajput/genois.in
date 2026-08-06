@@ -75,12 +75,13 @@ export async function POST(request, context) {
 
     // Award points — don't let score failure block step
     try {
-      await supabase.from('score_events').insert({
+      const { error: writeErr } = await supabase.from('score_events').insert({
         user_id: payload.userId,
         event_type: 'project_step',
         points: 8,
         description: 'Completed project step ' + (stepNumber + 1),
       });
+      if (writeErr) console.error('DB write failed: score_events.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
     } catch (e) {
       console.error('Score event error:', e.message);
     }

@@ -43,10 +43,11 @@ export async function POST(request) {
         cleared++;
       }
 
-      await supabase
+      const { error: writeErr } = await supabase
         .from('users')
         .update({ weekly_badge: badge, badge_updated_at: now })
         .eq('id', user_id);
+      if (writeErr) console.error('DB write failed: users.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
     }
 
     return successResponse({

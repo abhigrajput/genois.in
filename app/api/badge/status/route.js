@@ -31,7 +31,8 @@ export async function GET(request) {
       .map(b => b.id);
 
     if (expiredIds.length > 0) {
-      await supabase.from('user_badges').update({ status: 'inactive' }).in('id', expiredIds);
+      const { error: writeErr } = await supabase.from('user_badges').update({ status: 'inactive' }).in('id', expiredIds);
+      if (writeErr) console.error('DB write failed: user_badges.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
     }
 
     // Also fetch cooldowns

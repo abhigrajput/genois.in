@@ -23,13 +23,14 @@ export async function POST(request) {
     const token = crypto.randomBytes(32).toString('hex');
     const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
-    await supabase
+    const { error: writeErr } = await supabase
       .from('users')
       .update({
         email_verify_token: token,
         email_verify_expires_at: expires,
       })
       .eq('id', user.id);
+    if (writeErr) console.error('DB write failed: users.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://www.genois.in'}/api/auth/verify-email?token=${token}`;
 

@@ -58,7 +58,8 @@ export async function DELETE(request, { params }) {
       return errorResponse('Note not found', 404);
     }
 
-    await supabase.from('notes').delete().eq('id', id);
+    const { error: writeErr } = await supabase.from('notes').delete().eq('id', id);
+    if (writeErr) console.error('DB write failed: notes.delete', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
     return successResponse({ deleted: true });
   } catch (error) {
     return errorResponse('Internal server error', 500);

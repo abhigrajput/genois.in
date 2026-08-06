@@ -36,7 +36,7 @@ export async function POST(request) {
     };
     const notif = pickMessage(type, context);
 
-    await supabase.from('notifications_log').insert({
+    const { error: writeErr } = await supabase.from('notifications_log').insert({
       user_id: payload.userId,
       type,
       channel: 'in_app',
@@ -44,6 +44,7 @@ export async function POST(request) {
       message: notif.message,
       icon: notif.icon,
     });
+    if (writeErr) console.error('DB write failed: notifications_log.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     // Two gates, deliberately. `email_enabled` is the in-app settings toggle;
     // the opt-out flag is the unsubscribe link, which has to work for a user

@@ -79,7 +79,7 @@ export async function POST(request, context) {
         .single();
 
       if (!existing.data) {
-        await supabase.from('custom_tasks').insert({
+        const { error: writeErr } = await supabase.from('custom_tasks').insert({
           custom_roadmap_id: id,
           user_id: payload.userId,
           day_number: dayNumber || roadmap.current_day,
@@ -88,6 +88,7 @@ export async function POST(request, context) {
           score: 10,
           completed_at: new Date().toISOString(),
         });
+        if (writeErr) console.error('DB write failed: custom_tasks.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
       }
 
       const { data: allTasks } = await supabase
@@ -102,15 +103,17 @@ export async function POST(request, context) {
       const allDone = requiredTypes.every(t => completedTypes.includes(t));
 
       if (allDone && roadmap.current_day < roadmap.total_days) {
-        await supabase
+        const { error: writeErr2 } = await supabase
           .from('custom_roadmaps')
           .update({ current_day: roadmap.current_day + 1 })
           .eq('id', id);
+        if (writeErr2) console.error('DB write failed: custom_roadmaps.update', { code: writeErr2.code, message: writeErr2.message, details: writeErr2.details });
       } else if (allDone && roadmap.current_day >= roadmap.total_days) {
-        await supabase
+        const { error: writeErr3 } = await supabase
           .from('custom_roadmaps')
           .update({ status: 'completed' })
           .eq('id', id);
+        if (writeErr3) console.error('DB write failed: custom_roadmaps.update', { code: writeErr3.code, message: writeErr3.message, details: writeErr3.details });
       }
 
       return successResponse({ completedCount: completedTypes.length + 1, allDone });

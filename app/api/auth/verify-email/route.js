@@ -26,12 +26,13 @@ export async function GET(request) {
       return errorResponse('Verification link expired. Please request a new one.', 400);
     }
 
-    await supabase
+    const { error: writeErr } = await supabase
       .from('users')
       .update({
         email_verified: true,
       })
       .eq('id', user.id);
+    if (writeErr) console.error('DB write failed: users.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     const { NextResponse } = await import('next/server');
     return NextResponse.redirect(new URL('/login?verified=true', request.url));

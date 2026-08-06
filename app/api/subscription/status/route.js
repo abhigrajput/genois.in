@@ -27,7 +27,8 @@ export async function GET(request) {
         : 0;
 
       if (daysLeft === 0 && trialEnd && now > trialEnd) {
-        await supabase.from('users').update({ plan: 'free' }).eq('id', payload.userId);
+        const { error: writeErr } = await supabase.from('users').update({ plan: 'free' }).eq('id', payload.userId);
+        if (writeErr) console.error('DB write failed: users.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
         return successResponse({
           plan: 'free', isActive: false, daysLeft: 0,
           expired: true, message: 'Trial expired',

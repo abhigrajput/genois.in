@@ -49,7 +49,7 @@ export async function POST(request) {
     const recentCommits = pushEvents.reduce((sum, e) => sum + (e.payload?.commits?.length || 0), 0);
 
     const supabase = getAdminClient();
-    await supabase.from('users').update({
+    const { error: writeErr } = await supabase.from('users').update({
       github_username: cleanUsername,
       github_url: profile.html_url,
       github_connected: true,
@@ -59,6 +59,7 @@ export async function POST(request) {
       github_languages: languages,
       github_last_synced: new Date().toISOString(),
     }).eq('id', payload.userId);
+    if (writeErr) console.error('DB write failed: users.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     return successResponse({
       username: cleanUsername,

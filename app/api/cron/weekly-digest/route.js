@@ -133,10 +133,11 @@ export async function GET(request) {
           `,
         });
 
-        await supabase.from('weekly_email_log').insert({
+        const { error: writeErr } = await supabase.from('weekly_email_log').insert({
           user_id: user.id,
           week_of: today,
         });
+        if (writeErr) console.error('DB write failed: weekly_email_log.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
         sent++;
       } catch (e) { 
         console.error('Failed for', user.email, e.message);

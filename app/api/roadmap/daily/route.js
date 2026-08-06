@@ -22,7 +22,7 @@ async function ensureTasksExist(supabase, userId, dayNumber, roadmapId, domainSl
   const missing = TASK_TYPES.filter(t => !existingTypes.has(t));
 
   if (missing.length > 0) {
-    await supabase.from('tasks').insert(
+    const { error: writeErr } = await supabase.from('tasks').insert(
       missing.map(type => ({
         user_id: userId,
         roadmap_id: roadmapId,
@@ -34,6 +34,7 @@ async function ensureTasksExist(supabase, userId, dayNumber, roadmapId, domainSl
         score: 0,
       }))
     );
+    if (writeErr) console.error('DB write failed: tasks.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
   }
 
   const { data: tasks } = await supabase
@@ -95,7 +96,7 @@ export async function GET(request) {
       displayDay = Math.min(currentDay + 1, totalDays);
       const newWeek = Math.ceil(displayDay / 7);
       const newProgressPercent = Math.min(100, Math.round(((displayDay - 1) / 30) * 100));
-      await supabase
+      const { error: writeErr2 } = await supabase
         .from('progress')
         .update({
           current_day: displayDay,
@@ -105,6 +106,7 @@ export async function GET(request) {
           last_completed_date: today,
         })
         .eq('user_id', payload.userId);
+      if (writeErr2) console.error('DB write failed: progress.update', { code: writeErr2.code, message: writeErr2.message, details: writeErr2.details });
     }
 
     const level = user.level || 'beginner';

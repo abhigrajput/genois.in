@@ -48,10 +48,11 @@ export async function GET(request) {
   }
 
   // --- 3. Upsert into cache ---
-  await supabase.from('video_cache').upsert(
+  const { error: writeErr } = await supabase.from('video_cache').upsert(
     { topic, video_url: url, updated_at: new Date().toISOString() },
     { onConflict: 'topic' }
   );
+  if (writeErr) console.error('DB write failed: video_cache.upsert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
   return Response.json({ url, cached: false });
 }

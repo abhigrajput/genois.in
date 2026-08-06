@@ -95,12 +95,13 @@ export async function POST(request) {
     const supabase = getAdminClient();
 
     if (action === 'start') {
-      await supabase.from('dsa_roadmap_progress').upsert({
+      const { error: writeErr } = await supabase.from('dsa_roadmap_progress').upsert({
         user_id: payload.userId,
         language: language || 'cpp',
         current_day: 1,
         last_active_date: new Date().toISOString().split('T')[0],
       }, { onConflict: 'user_id' });
+      if (writeErr) console.error('DB write failed: dsa_roadmap_progress.upsert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
       return successResponse({ started: true });
     }
 
@@ -142,26 +143,29 @@ export async function POST(request) {
 
       const scoreValue = Object.values(tasksCompleted).filter(Boolean).length * 20;
 
-      await supabase.from('dsa_day_tasks').upsert({
+      const { error: writeErr2 } = await supabase.from('dsa_day_tasks').upsert({
         user_id: payload.userId,
         day_number: day,
         tasks_completed: bitmask,
         day_score: scoreValue,
       }, { onConflict: 'user_id,day_number' });
+      if (writeErr2) console.error('DB write failed: dsa_day_tasks.upsert', { code: writeErr2.code, message: writeErr2.message, details: writeErr2.details });
 
       if (allDone) {
         const { data: prog } = await supabase.from('dsa_roadmap_progress').select('current_day').eq('user_id', payload.userId).single();
         if (prog?.current_day === day) {
-          await supabase.from('dsa_roadmap_progress').update({
+          const { error: writeErr3 } = await supabase.from('dsa_roadmap_progress').update({
             current_day: day + 1,
             last_active_date: new Date().toISOString().split('T')[0],
           }).eq('user_id', payload.userId);
+          if (writeErr3) console.error('DB write failed: dsa_roadmap_progress.update', { code: writeErr3.code, message: writeErr3.message, details: writeErr3.details });
         }
 
         const { data: cur } = await supabase.from('scores').select('total_score').eq('user_id', payload.userId).single();
-        await supabase.from('scores').update({
+        const { error: writeErr4 } = await supabase.from('scores').update({
           total_score: (cur?.total_score || 0) + 20,
         }).eq('user_id', payload.userId);
+        if (writeErr4) console.error('DB write failed: scores.update', { code: writeErr4.code, message: writeErr4.message, details: writeErr4.details });
       }
 
       return successResponse({ tasksCompleted, allDone });

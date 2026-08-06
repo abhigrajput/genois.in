@@ -146,7 +146,8 @@ Return ONLY valid JSON array with exactly ${roundConfig.questionCount} questions
     if (cachedQuestions) {
       const updatedRounds = [...rounds];
       updatedRounds[roundIndex] = { ...currentRound, questions: cachedQuestions, status: 'in_progress' };
-      await supabase.from('interview_sessions').update({ rounds: updatedRounds }).eq('id', sessionId);
+      const { error: writeErr } = await supabase.from('interview_sessions').update({ rounds: updatedRounds }).eq('id', sessionId);
+      if (writeErr) console.error('DB write failed: interview_sessions.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
       return successResponse({
         round: updatedRounds[roundIndex],
         roundIndex,
@@ -170,7 +171,8 @@ Return ONLY valid JSON array with exactly ${roundConfig.questionCount} questions
 
     const updatedRounds = [...rounds];
     updatedRounds[roundIndex] = { ...currentRound, questions, status: 'in_progress' };
-    await supabase.from('interview_sessions').update({ rounds: updatedRounds }).eq('id', sessionId);
+    const { error: writeErr2 } = await supabase.from('interview_sessions').update({ rounds: updatedRounds }).eq('id', sessionId);
+    if (writeErr2) console.error('DB write failed: interview_sessions.update', { code: writeErr2.code, message: writeErr2.message, details: writeErr2.details });
 
     return successResponse({
       round: updatedRounds[roundIndex],
@@ -312,13 +314,14 @@ Return ONLY valid JSON:
 
       if (overallVerdict === 'SELECTED') {
         const { data: cur } = await supabase.from('scores').select('total_score').eq('user_id', payload.userId).single();
-        await supabase.from('scores').update({
+        const { error: writeErr3 } = await supabase.from('scores').update({
           total_score: (cur?.total_score || 0) + 100,
         }).eq('user_id', payload.userId);
+        if (writeErr3) console.error('DB write failed: scores.update', { code: writeErr3.code, message: writeErr3.message, details: writeErr3.details });
       }
     }
 
-    await supabase.from('interview_sessions').update({
+    const { error: writeErr4 } = await supabase.from('interview_sessions').update({
       rounds: updatedRounds,
       current_round: isLastRound ? rounds.length : roundIndex + 1,
       overall_score: overallScore,
@@ -327,6 +330,7 @@ Return ONLY valid JSON:
       completed: isLastRound,
       completed_at: isLastRound ? new Date().toISOString() : null,
     }).eq('id', sessionId);
+    if (writeErr4) console.error('DB write failed: interview_sessions.update', { code: writeErr4.code, message: writeErr4.message, details: writeErr4.details });
 
     return successResponse({
       evaluation,

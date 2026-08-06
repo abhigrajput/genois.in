@@ -65,12 +65,13 @@ export async function POST(request) {
 
     const response = await askClaudeChat(messages, system, 600);
 
-    await supabase.from('anxiety_chat').insert({
+    const { error: writeErr } = await supabase.from('anxiety_chat').insert({
       user_id: payload.userId,
       message: cleanMessage,
       response,
       mood: mood || null,
     });
+    if (writeErr) console.error('DB write failed: anxiety_chat.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     return successResponse({ response });
   } catch (error) {

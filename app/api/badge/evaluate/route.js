@@ -167,8 +167,9 @@ export async function POST(request) {
         .single();
 
       // Clear any cooldown on pass
-      await supabase.from('badge_cooldowns').delete()
+      const { error: writeErr } = await supabase.from('badge_cooldowns').delete()
         .eq('user_id', payload.userId).eq('domain', domain);
+      if (writeErr) console.error('DB write failed: badge_cooldowns.delete', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
       return successResponse({
         passed: true,
@@ -188,12 +189,13 @@ export async function POST(request) {
       });
     } else {
       const unlocksAt = new Date(Date.now() + COOLDOWN_DAYS * 24 * 60 * 60 * 1000).toISOString();
-      await supabase.from('badge_cooldowns').upsert({
+      const { error: writeErr2 } = await supabase.from('badge_cooldowns').upsert({
         user_id: payload.userId,
         domain,
         failed_at: now,
         unlocks_at: unlocksAt,
       }, { onConflict: 'user_id,domain' });
+      if (writeErr2) console.error('DB write failed: badge_cooldowns.upsert', { code: writeErr2.code, message: writeErr2.message, details: writeErr2.details });
 
       return successResponse({
         passed: false,

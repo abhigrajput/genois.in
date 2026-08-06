@@ -10,13 +10,14 @@ export async function POST(request) {
     const { event_type, page, feature, metadata } = await request.json();
     const supabase = getAdminClient();
 
-    await supabase.from('user_events').insert({
+    const { error: writeErr } = await supabase.from('user_events').insert({
       user_id: payload.userId,
       event_type: event_type || 'page_view',
       page: page || null,
       feature: feature || null,
       metadata: metadata || {},
     });
+    if (writeErr) console.error('DB write failed: user_events.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     return successResponse({ tracked: true });
   } catch {

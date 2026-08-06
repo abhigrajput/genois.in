@@ -30,16 +30,18 @@ export async function POST(request) {
     const supabase = getAdminClient();
 
     if (action === 'mark_read' && notificationId) {
-      await supabase.from('notifications_log').update({
+      const { error: writeErr } = await supabase.from('notifications_log').update({
         read: true,
         read_at: new Date().toISOString(),
       }).eq('id', notificationId).eq('user_id', payload.userId);
+      if (writeErr) console.error('DB write failed: notifications_log.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
     }
     if (action === 'mark_all_read') {
-      await supabase.from('notifications_log').update({
+      const { error: writeErr2 } = await supabase.from('notifications_log').update({
         read: true,
         read_at: new Date().toISOString(),
       }).eq('user_id', payload.userId).eq('read', false);
+      if (writeErr2) console.error('DB write failed: notifications_log.update', { code: writeErr2.code, message: writeErr2.message, details: writeErr2.details });
     }
     return successResponse({ success: true });
   } catch (error) {

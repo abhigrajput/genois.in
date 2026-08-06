@@ -66,12 +66,13 @@ export async function POST(request) {
       return errorResponse('Payment could not be verified', 402);
     }
 
-    await supabase.from('prep_packs').insert({
+    const { error: writeErr } = await supabase.from('prep_packs').insert({
       user_id: payload.userId,
       company: companySlug,
       payment_id: paymentId,
       amount: PREP_PACK_PRICE_RUPEES,
     });
+    if (writeErr) console.error('DB write failed: prep_packs.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     return successResponse({ message: 'Pack unlocked successfully' });
   } catch (error) {

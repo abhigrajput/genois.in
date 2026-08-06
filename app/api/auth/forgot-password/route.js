@@ -58,10 +58,11 @@ export async function POST(request) {
     const expires = new Date(Date.now() + 60 * 60 * 1000).toISOString();
 
     if (user) {
-      await supabase.from('users').update({
+      const { error: writeErr } = await supabase.from('users').update({
         reset_token: token,
         reset_token_expires: expires,
       }).eq('id', user.id);
+      if (writeErr) console.error('DB write failed: users.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
       const resetUrl = `https://www.genois.in/reset-password?token=${token}`;
 

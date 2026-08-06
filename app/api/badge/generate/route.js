@@ -205,10 +205,11 @@ Return a JSON array of exactly 30 objects.`;
     console.log(`[badge/generate] Generated via ${source} for domain=${domain}`);
 
     // Upsert cache (unique per domain)
-    await supabase.from('badge_questions').upsert(
+    const { error: writeErr } = await supabase.from('badge_questions').upsert(
       { domain, questions, created_at: new Date().toISOString() },
       { onConflict: 'domain' }
     );
+    if (writeErr) console.error('DB write failed: badge_questions.upsert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
     return successResponse({ questions, domain, expiresAt, cached: false, source });

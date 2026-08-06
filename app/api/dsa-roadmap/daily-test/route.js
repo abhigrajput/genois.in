@@ -131,10 +131,11 @@ export async function POST(request) {
         .eq('id', payload.userId)
         .single();
       
-      await supabase
+      const { error: writeErr } = await supabase
         .from('users')
         .update({ total_score: (existing?.total_score || 0) + 25 })
         .eq('id', payload.userId);
+      if (writeErr) console.error('DB write failed: users.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
     }
 
     return successResponse({ correct, total: questions.length, score, passed, pointsAwarded: passed ? 25 : 0 });

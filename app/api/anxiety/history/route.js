@@ -27,8 +27,9 @@ export async function DELETE(request) {
     if (!payload) return errorResponse('Unauthorized', 401);
 
     const supabase = getAdminClient();
-    await supabase.from('anxiety_chat')
+    const { error: writeErr } = await supabase.from('anxiety_chat')
       .delete().eq('user_id', payload.userId);
+    if (writeErr) console.error('DB write failed: anxiety_chat.delete', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     return successResponse({ cleared: true });
   } catch (error) {

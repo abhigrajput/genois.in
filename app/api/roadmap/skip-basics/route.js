@@ -40,8 +40,9 @@ export async function POST(request) {
     }
 
     // Also flag the preference on the user for future generations.
-    await supabase.from('users').update({ level: 'advanced' }).eq('id', payload.userId)
+    const { error: writeErr } = await supabase.from('users').update({ level: 'advanced' }).eq('id', payload.userId)
       .then(undefined, () => {});
+    if (writeErr) console.error('DB write failed: users.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     return successResponse({ currentDay: newDay, skipped: true }, 'Skipped to the BUILD phase');
   } catch (error) {

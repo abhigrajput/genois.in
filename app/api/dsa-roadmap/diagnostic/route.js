@@ -68,15 +68,16 @@ export async function POST(request) {
     const nextRetake = new Date();
     nextRetake.setDate(nextRetake.getDate() + 30);
 
-    await supabase.from('dsa_diagnostic_tests').insert({
+    const { error: writeErr } = await supabase.from('dsa_diagnostic_tests').insert({
       user_id: payload.userId,
       theory_score: theoryScore,
       coding_score: codingScore,
       total_score: totalScore,
       determined_level: level,
     });
+    if (writeErr) console.error('DB write failed: dsa_diagnostic_tests.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
-    await supabase.from('dsa_roadmap_progress').upsert({
+    const { error: writeErr2 } = await supabase.from('dsa_roadmap_progress').upsert({
       user_id: payload.userId,
       level,
       current_day: 1,
@@ -85,6 +86,7 @@ export async function POST(request) {
       next_diagnostic_date: nextRetake.toISOString().split('T')[0],
       last_active_date: new Date().toISOString().split('T')[0],
     }, { onConflict: 'user_id' });
+    if (writeErr2) console.error('DB write failed: dsa_roadmap_progress.upsert', { code: writeErr2.code, message: writeErr2.message, details: writeErr2.details });
 
     return successResponse({
       theoryScore,

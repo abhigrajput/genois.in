@@ -24,9 +24,10 @@ export async function GET(request, { params }) {
       .from('scores').select('total_score').eq('user_id', payload.userId).single();
 
     if (score) {
-      await supabase.from('scores').update({
+      const { error: writeErr } = await supabase.from('scores').update({
         total_score: Math.max(0, (score.total_score || 0) - 2),
       }).eq('user_id', payload.userId);
+      if (writeErr) console.error('DB write failed: scores.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
     }
 
     return successResponse({ hint, hintIndex, pointsDeducted: 2 });

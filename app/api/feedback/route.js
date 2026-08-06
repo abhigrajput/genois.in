@@ -39,7 +39,7 @@ export async function POST(request) {
 
     const supabase = getAdminClient();
 
-    await supabase.from('feedback').insert({
+    const { error: writeErr } = await supabase.from('feedback').insert({
       user_id: payload?.userId || null,
       type: type || 'general',
       subject: subject || 'No subject',
@@ -48,6 +48,7 @@ export async function POST(request) {
       status: 'new',
       created_at: new Date().toISOString(),
     });
+    if (writeErr) console.error('DB write failed: feedback.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     const { Resend } = await import('resend');
     const resend = new Resend(process.env.RESEND_API_KEY);

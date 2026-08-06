@@ -206,7 +206,8 @@ Return plain text only.`;
         });
       }
 
-      await supabase.from('mock_interviews').update(updateData).eq('id', interviewId);
+      const { error: writeErr } = await supabase.from('mock_interviews').update(updateData).eq('id', interviewId);
+      if (writeErr) console.error('DB write failed: mock_interviews.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
       const nextQuestion = isLast ? null : interview.questions[questionIndex + 1];
 

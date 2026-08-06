@@ -73,8 +73,9 @@ export async function POST(request) {
     const endDate = new Date();
     endDate.setMonth(endDate.getMonth() + planConfig.months);
 
-    await supabase.from('users')
+    const { error: writeErr } = await supabase.from('users')
       .update({ plan: 'premium' }).eq('id', payload.userId);
+    if (writeErr) console.error('DB write failed: users.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     const { data: subscription } = await supabase
       .from('subscriptions').upsert({
@@ -92,17 +93,19 @@ export async function POST(request) {
       .from('scores').select('total_score').eq('user_id', payload.userId).single();
 
     if (score) {
-      await supabase.from('scores').update({
+      const { error: writeErr2 } = await supabase.from('scores').update({
         total_score: (score.total_score || 0) + 100,
       }).eq('user_id', payload.userId);
+      if (writeErr2) console.error('DB write failed: scores.update', { code: writeErr2.code, message: writeErr2.message, details: writeErr2.details });
     }
 
-    await supabase.from('score_events').insert({
+    const { error: writeErr3 } = await supabase.from('score_events').insert({
       user_id: payload.userId,
       type: 'subscription',
       points: 100,
       reason: 'Premium subscription welcome bonus',
     });
+    if (writeErr3) console.error('DB write failed: score_events.insert', { code: writeErr3.code, message: writeErr3.message, details: writeErr3.details });
 
     return successResponse({
       subscription,

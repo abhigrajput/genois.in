@@ -48,11 +48,12 @@ export async function POST(request) {
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    await supabase.from('users').update({
+    const { error: writeErr } = await supabase.from('users').update({
       password_hash: hashedPassword,
       reset_token: null,
       reset_token_expires: null,
     }).eq('id', user.id);
+    if (writeErr) console.error('DB write failed: users.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     return successResponse({ message: 'Password reset successfully. You can now login.' });
   } catch (error) {

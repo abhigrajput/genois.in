@@ -427,7 +427,8 @@ export async function GET(request) {
     console.log(`[dsa-diagnostic/generate] Generated via ${source}`);
 
     // Cache in Supabase
-    await supabase.from('diagnostic_questions').insert({ questions });
+    const { error: writeErr } = await supabase.from('diagnostic_questions').insert({ questions });
+    if (writeErr) console.error('DB write failed: diagnostic_questions.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     return successResponse({ questions, cached: false, source });
   } catch (error) {

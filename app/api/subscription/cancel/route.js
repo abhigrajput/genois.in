@@ -14,9 +14,10 @@ export async function POST(request) {
 
     if (!sub) return errorResponse('No active subscription found', 404);
 
-    await supabase.from('subscriptions').update({
+    const { error: writeErr } = await supabase.from('subscriptions').update({
       status: 'cancelled',
     }).eq('user_id', payload.userId);
+    if (writeErr) console.error('DB write failed: subscriptions.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     return successResponse({
       message: 'Subscription cancelled. Access continues until end date.',

@@ -27,12 +27,13 @@ export async function POST(request) {
 
     if (!student) return errorResponse('Student not found', 404);
 
-    await supabase.from('company_contacts').insert({
+    const { error: writeErr } = await supabase.from('company_contacts').insert({
       company_id: company.companyId,
       student_user_id: studentUserId,
       message: message || null,
       status: 'sent',
     });
+    if (writeErr) console.error('DB write failed: company_contacts.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     try {
       const resend = new Resend(process.env.RESEND_API_KEY);

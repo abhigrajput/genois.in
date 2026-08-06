@@ -36,7 +36,7 @@ export async function POST(request) {
 
     const emailEnabled = prefs.email_enabled ?? true;
 
-    await supabase.from('notification_preferences').upsert({
+    const { error: writeErr } = await supabase.from('notification_preferences').upsert({
       user_id: payload.userId,
       email_enabled: emailEnabled,
       push_enabled: prefs.push_enabled ?? true,
@@ -46,6 +46,7 @@ export async function POST(request) {
       push_subscription: prefs.push_subscription || null,
       updated_at: new Date().toISOString(),
     }, { onConflict: 'user_id' });
+    if (writeErr) console.error('DB write failed: notification_preferences.upsert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     // Keep this toggle and the unsubscribe flag in lockstep. Without this, a
     // user who unsubscribed from an email footer and later switched email back

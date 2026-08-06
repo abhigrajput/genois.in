@@ -100,7 +100,8 @@ export async function POST(request) {
     // Async update last_active (fire-and-forget)
     setTimeout(async () => {
       try {
-        await supabase.from('progress').update({ last_active_date: new Date().toISOString() }).eq('user_id', user.id);
+        const { error: writeErr } = await supabase.from('progress').update({ last_active_date: new Date().toISOString() }).eq('user_id', user.id);
+        if (writeErr) console.error('DB write failed: progress.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
       } catch {}
     }, 0);
 

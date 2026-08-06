@@ -67,12 +67,13 @@ export async function GET(request) {
     let filtered = students.filter(Boolean);
     if (tier) filtered = filtered.filter(s => s.skillTier?.tier === tier);
 
-    await supabase.from('company_views').insert(
+    const { error: writeErr } = await supabase.from('company_views').insert(
       filtered.slice(0, 10).map(s => ({
         company_id: company.companyId,
         student_user_id: s.userId,
       }))
     );
+    if (writeErr) console.error('DB write failed: company_views.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     return successResponse({ students: filtered, total: filtered.length });
   } catch (error) {

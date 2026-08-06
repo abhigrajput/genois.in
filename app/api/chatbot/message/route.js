@@ -104,13 +104,14 @@ export async function POST(request) {
 
     const response = await askClaudeChat(messages, system, 1200);
 
-    await supabase.from('chat_history').insert({
+    const { error: writeErr } = await supabase.from('chat_history').insert({
       user_id: payload.userId,
       message: cleanMessage,
       response,
       mode: selectedMode,
       domain: ctx.domain,
     });
+    if (writeErr) console.error('DB write failed: chat_history.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     // Trigger streak on 3rd message of the streak day
     const streakDayStart = getStreakDayStart(getStreakDay());

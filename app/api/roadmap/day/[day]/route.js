@@ -21,7 +21,7 @@ async function ensureTasksExist(supabase, userId, dayNumber, roadmapId, domainSl
   const missing = TASK_TYPES.filter(t => !existingTypes.has(t));
 
   if (missing.length > 0) {
-    await supabase.from('tasks').insert(
+    const { error: writeErr } = await supabase.from('tasks').insert(
       missing.map(type => ({
         user_id: userId,
         roadmap_id: roadmapId,
@@ -33,6 +33,7 @@ async function ensureTasksExist(supabase, userId, dayNumber, roadmapId, domainSl
         score: 0,
       }))
     );
+    if (writeErr) console.error('DB write failed: tasks.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
   }
 
   const { data: tasks } = await supabase

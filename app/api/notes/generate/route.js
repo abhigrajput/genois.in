@@ -72,12 +72,13 @@ Format with clear headings. Use clear, professional English (Indian student leve
     }
 
     // Cache for 30 days
-    await supabase.from('ai_cache').upsert({ cache_key: cacheKey, response: notes, expires_at: new Date(Date.now() + 30*24*60*60*1000).toISOString(), hits: 1 }, { onConflict: 'cache_key' });
+    const { error: writeErr } = await supabase.from('ai_cache').upsert({ cache_key: cacheKey, response: notes, expires_at: new Date(Date.now() + 30*24*60*60*1000).toISOString(), hits: 1 }, { onConflict: 'cache_key' });
+    if (writeErr) console.error('DB write failed: ai_cache.upsert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     // If it was roadmap daily note generation, let's also insert into the 'notes' table for the user's dashboard notes list
     if (roadmapId) {
       try {
-        await supabase.from('notes').upsert({
+        const { error: writeErr2 } = await supabase.from('notes').upsert({
           user_id: payload.userId,
           roadmap_id: roadmapId,
           domain_slug: domain || 'fullstack',
@@ -86,6 +87,7 @@ Format with clear headings. Use clear, professional English (Indian student leve
           content: notes,
           ai_generated: true,
         }, { onConflict: 'user_id,roadmap_id,type' });
+        if (writeErr2) console.error('DB write failed: notes.upsert', { code: writeErr2.code, message: writeErr2.message, details: writeErr2.details });
       } catch (e) {
         console.error('Failed to save to user notes table:', e);
       }

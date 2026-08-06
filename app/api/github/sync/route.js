@@ -39,13 +39,14 @@ export async function POST(request) {
     const pushEvents = events.filter(e => e.type === 'PushEvent');
     const recentCommits = pushEvents.reduce((sum, e) => sum + (e.payload?.commits?.length || 0), 0);
 
-    await supabase.from('users').update({
+    const { error: writeErr } = await supabase.from('users').update({
       github_repos: profile.public_repos || 0,
       github_stars: totalStars,
       github_commits: recentCommits,
       github_languages: languages,
       github_last_synced: new Date().toISOString(),
     }).eq('id', payload.userId);
+    if (writeErr) console.error('DB write failed: users.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     return successResponse({
       repos: profile.public_repos || 0,
