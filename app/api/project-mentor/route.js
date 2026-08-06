@@ -2,9 +2,10 @@ import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { sanitizeChatHistory, sanitizeUserMessage, sanitizeForAI } from '@/lib/security';
-import Anthropic from '@anthropic-ai/sdk';
-
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+// Use the shared client from lib/claude.js rather than constructing a second
+// one: it strips the whitespace and literal "\r\n" that the Vercel env var has
+// been seen carrying, which otherwise 401s every call on this route.
+import anthropic from '@/lib/claude';
 
 export async function POST(request) {
   try {
