@@ -26,6 +26,7 @@ const EXEC_TIMEOUT_MS = 25000;   // our deadline on the whole provider round-tri
 const RUN_TIMEOUT_MS = 5000;     // the student's program's own deadline (Piston)
 const COMPILE_TIMEOUT_MS = 10000;
 const MAX_CODE_CHARS = 50000;
+const RUNS_PER_MINUTE = 10;      // per user, across all instances (Upstash-backed)
 const RUNTIMES_TTL_MS = 60 * 60 * 1000;
 
 // GENOIS's language selector → each provider's name for the same runtime.
@@ -56,6 +57,8 @@ class ExecUnavailable extends Error {
 
 const UNREACHABLE_MESSAGE =
   'Running code is temporarily unavailable — our execution service is unreachable. You can still write your solution and submit it for review; your score and progress are unaffected.';
+const RATE_LIMIT_MESSAGE =
+  `You're running code too fast — wait a moment and press Run again. Your code is still here. (Limit: ${RUNS_PER_MINUTE} runs per minute.)`;
 const BUSY_MESSAGE =
   'The code runner is busy right now (it is a shared free service). Wait a moment and press Run again — your code is still here.';
 
@@ -290,7 +293,12 @@ export async function POST(request) {
   try {
     const payload = await getUserFromRequest(request);
     if (!payload) return errorResponse('Unauthorized', 401);
-    if (!await rateLimit(`code_${payload.userId}`, 10, 60000)) return rateLimitResponse();
+    // paiza's guest API is a shared free service used from GENOIS's single egress
+    // IP: one student hammering Run gets *everyone* throttled by the provider.
+    // 10 runs/min is well above real editing rhythm and well under abuse.
+    if (!await rateLimit(`code_${payload.userId}`, RUNS_PER_MINUTE, 60000)) {
+      return rateLimitResponse(60, RATE_LIMIT_MESSAGE);
+    }
 
     const { code, language, stdin, expectedOutput } = await request.json();
     if (!code || !String(code).trim()) return errorResponse('Write some code before running it.', 400);

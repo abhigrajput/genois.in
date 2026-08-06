@@ -77,7 +77,8 @@ export async function POST(request) {
     .from('knowledge_base')
     .select('metadata');
   if (fetchError) {
-    return errorResponse(`knowledge_base table not ready: ${fetchError.message}`, 400);
+    console.error('RAG_SEED_FETCH:', fetchError?.message || fetchError);
+    return errorResponse('Something went wrong, please retry.', 500);
   }
 
   const existingHashes = new Set((existing || []).map(r => r.metadata?.hash).filter(Boolean));
@@ -99,7 +100,10 @@ export async function POST(request) {
       metadata: { keywords: entry.keywords, hash },
     });
     if (error) {
-      return errorResponse(`Insert failed: ${error.message}`, 400, { inserted, skipped });
+      // The counts are the operator's progress signal and leak nothing; the DB
+      // error itself stays in the log.
+      console.error('RAG_SEED_INSERT:', error?.message || error);
+      return errorResponse('Something went wrong, please retry.', 500, { inserted, skipped });
     }
     existingHashes.add(hash);
     inserted++;

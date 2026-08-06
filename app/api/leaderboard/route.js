@@ -31,9 +31,11 @@ export async function GET(request) {
       .limit(100);
 
     if (error) {
+      // The Postgres error text names tables, columns and constraints. It goes to
+      // the server log; the client gets nothing it could map the schema from.
       console.error('Leaderboard query error:', error);
       if (cachedLeaderboard) return successResponse(cachedLeaderboard);
-      return errorResponse('Failed to load leaderboard: ' + error.message, 500);
+      return errorResponse('Something went wrong, please retry.', 500);
     }
 
     // Batch-fetch progress (day/streak) for the ranked users in a single query

@@ -131,7 +131,10 @@ async function runMigrationsViaPg(dbUrl) {
         await client.query(migration.sql);
         results.push({ name: migration.name, status: 'applied' });
       } catch (err) {
-        results.push({ name: migration.name, status: 'error', error: err.message });
+        // Which migration failed is the useful signal and is safe to return.
+        // The Postgres error text (schema names, constraints) stays in the log.
+        console.error(`ADMIN_MIGRATE[${migration.name}]:`, err?.message || err);
+        results.push({ name: migration.name, status: 'error' });
       }
     }
     const rmCheck = await client.query(
@@ -178,7 +181,9 @@ export async function POST(request) {
       const result = await runMigrationsViaPg(dbUrl);
       return successResponse({ via: 'DATABASE_URL', ...result });
     } catch (err) {
-      return errorResponse(`DB connection failed: ${err.message}`, 500);
+      // A pg connect failure echoes the host, port and user from DATABASE_URL.
+      console.error('ADMIN_MIGRATE_CONNECT:', err?.message || err);
+      return errorResponse('Something went wrong, please retry.', 500);
     }
   }
 
