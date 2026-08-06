@@ -91,7 +91,7 @@ Return ONLY valid JSON array with no markdown or explanation:
         ];
       }
 
-      const { data: interview } = await supabase
+      const { data: interview, error: writeErr2 } = await supabase
         .from('mock_interviews')
         .insert({
           user_id: payload.userId,
@@ -103,6 +103,7 @@ Return ONLY valid JSON array with no markdown or explanation:
         })
         .select()
         .single();
+      if (writeErr2) console.error('DB write failed: mock_interviews.insert', { code: writeErr2.code, message: writeErr2.message, details: writeErr2.details });
 
       return successResponse({ interview, firstQuestion: questions[0] });
     }

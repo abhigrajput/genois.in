@@ -297,7 +297,7 @@ export async function GET(request) {
         .maybeSingle();
 
       if (!dbProj) {
-        const { data: newProj } = await supabase
+        const { data: newProj, error: writeErr3 } = await supabase
           .from('projects')
           .insert({
             domain_slug: user.domain_slug,
@@ -311,6 +311,7 @@ export async function GET(request) {
           })
           .select('id')
           .single();
+        if (writeErr3) console.error('DB write failed: projects.insert', { code: writeErr3.code, message: writeErr3.message, details: writeErr3.details });
         dbProj = newProj;
       }
 

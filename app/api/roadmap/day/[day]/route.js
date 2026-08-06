@@ -238,7 +238,7 @@ export async function GET(request, { params }) {
         .maybeSingle();
 
       if (!dbProj) {
-        const { data: newProj } = await supabase
+        const { data: newProj, error: writeErr2 } = await supabase
           .from('projects')
           .insert({
             domain_slug: user.domain_slug,
@@ -252,6 +252,7 @@ export async function GET(request, { params }) {
           })
           .select('id')
           .single();
+        if (writeErr2) console.error('DB write failed: projects.insert', { code: writeErr2.code, message: writeErr2.message, details: writeErr2.details });
         dbProj = newProj;
       }
       if (dbProj) dayContent.project.id = dbProj.id;

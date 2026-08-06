@@ -41,7 +41,7 @@ export async function POST(request) {
       .eq('id', payload.userId)
       .single();
 
-    const { data: outcome } = await supabase
+    const { data: outcome, error: writeErr } = await supabase
       .from('outcomes')
       .insert({
         user_id: payload.userId,
@@ -56,6 +56,7 @@ export async function POST(request) {
       })
       .select()
       .single();
+    if (writeErr) console.error('DB write failed: outcomes.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     return successResponse({ outcome });
   } catch (error) {

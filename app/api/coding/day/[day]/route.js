@@ -103,7 +103,7 @@ Return JSON array with exactly 5 objects:
         .single();
 
       if (!existing_single) {
-        const { data: saved } = await supabase
+        const { data: saved, error: writeErr } = await supabase
           .from('coding_tests')
           .insert({
             domain_slug: user.domain_slug,
@@ -119,6 +119,7 @@ Return JSON array with exactly 5 objects:
           })
           .select()
           .single();
+        if (writeErr) console.error('DB write failed: coding_tests.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
         if (saved) savedTests.push(saved);
       } else {
         savedTests.push(existing_single);

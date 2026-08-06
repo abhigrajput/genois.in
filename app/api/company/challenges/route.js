@@ -103,7 +103,7 @@ Return ONLY valid JSON array with no markdown:
       return errorResponse('Failed to generate questions. Try again.', 500);
     }
 
-    const { data: challenge } = await supabase
+    const { data: challenge, error: writeErr } = await supabase
       .from('company_challenges')
       .insert({
         company_id: company.companyId,
@@ -116,6 +116,7 @@ Return ONLY valid JSON array with no markdown:
       })
       .select()
       .single();
+    if (writeErr) console.error('DB write failed: company_challenges.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     return successResponse({ challenge });
   } catch (error) {

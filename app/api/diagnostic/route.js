@@ -192,7 +192,7 @@ Easy = 10 pts, Medium = 15 pts, Hard = 20 pts`;
       ];
     }
 
-    const { data: diagnostic } = await supabase
+    const { data: diagnostic, error: writeErr3 } = await supabase
       .from('diagnostic_tests')
       .insert({
         user_id: payload.userId,
@@ -202,6 +202,7 @@ Easy = 10 pts, Medium = 15 pts, Hard = 20 pts`;
       })
       .select()
       .single();
+    if (writeErr3) console.error('DB write failed: diagnostic_tests.insert', { code: writeErr3.code, message: writeErr3.message, details: writeErr3.details });
 
     return successResponse({ diagnostic, alreadyTaken: false });
   } catch (error) {

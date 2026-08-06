@@ -36,7 +36,7 @@ export async function POST(request) {
     if (!config) return errorResponse('Invalid company type', 400);
 
     const supabase = getAdminClient();
-    const { data: session } = await supabase
+    const { data: session, error: writeErr } = await supabase
       .from('interview_sessions')
       .insert({
         user_id: payload.userId,
@@ -48,6 +48,7 @@ export async function POST(request) {
       })
       .select()
       .single();
+    if (writeErr) console.error('DB write failed: interview_sessions.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     return successResponse({ session, config });
   } catch (error) {

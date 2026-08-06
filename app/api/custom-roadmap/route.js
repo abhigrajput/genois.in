@@ -94,7 +94,7 @@ Return ONLY valid JSON with no markdown:
       return errorResponse('Failed to generate roadmap. Try again.', 500);
     }
 
-    const { data: roadmap } = await supabase
+    const { data: roadmap, error: writeErr } = await supabase
       .from('custom_roadmaps')
       .insert({
         user_id: payload.userId,
@@ -107,6 +107,7 @@ Return ONLY valid JSON with no markdown:
       })
       .select()
       .single();
+    if (writeErr) console.error('DB write failed: custom_roadmaps.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     return successResponse({ roadmap, roadmapData });
   } catch (error) {

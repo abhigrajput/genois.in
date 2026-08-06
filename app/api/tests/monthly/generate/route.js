@@ -48,7 +48,7 @@ export async function POST(request) {
     const questionsForDb = questions.map(({ correct, explanation, ...q }) => q);
     const answers = questions.map(q => ({ correct: q.correct, explanation: q.explanation }));
 
-    const { data: test } = await supabase.from('tests').insert({
+    const { data: test, error: writeErr } = await supabase.from('tests').insert({
       user_id: payload.userId,
       domain_slug: user.domain_slug,
       topic: 'Monthly Evaluation',
@@ -59,6 +59,7 @@ export async function POST(request) {
       answers,
       result: 'pending',
     }).select().single();
+    if (writeErr) console.error('DB write failed: tests.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
 
     return successResponse({ testId: test.id, questions: questionsForDb });
   } catch (error) {

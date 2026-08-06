@@ -152,7 +152,7 @@ export async function POST(request) {
 
     if (passed) {
       const expiresAt = new Date(Date.now() + BADGE_DAYS * 24 * 60 * 60 * 1000).toISOString();
-      const { data: badge } = await supabase
+      const { data: badge, error: writeErr3 } = await supabase
         .from('user_badges')
         .upsert({
           user_id: payload.userId,
@@ -165,6 +165,7 @@ export async function POST(request) {
         }, { onConflict: 'user_id,domain' })
         .select()
         .single();
+      if (writeErr3) console.error('DB write failed: user_badges.upsert', { code: writeErr3.code, message: writeErr3.message, details: writeErr3.details });
 
       // Clear any cooldown on pass
       const { error: writeErr } = await supabase.from('badge_cooldowns').delete()
