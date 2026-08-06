@@ -75,9 +75,14 @@ export async function POST(request) {
 
     const { error: writeErr } = await supabase.from('users')
       .update({ plan: 'premium' }).eq('id', payload.userId);
-    if (writeErr) console.error('DB write failed: users.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
+    // Fatal: this update IS the entitlement the user paid for. Returning
+    // success without it means a completed payment and no premium access.
+    if (writeErr) {
+      console.error('SUBSCRIPTION_PLAN_GRANT_FAILED:', { userId: payload.userId, paymentId, code: writeErr.code, message: writeErr.message, details: writeErr.details });
+      return errorResponse('Payment received but we could not activate your plan. Contact support with your payment id.', 500);
+    }
 
-    const { data: subscription } = await supabase
+    const { data: subscription, error: subErr } = await supabase
       .from('subscriptions').upsert({
         user_id: payload.userId,
         plan: planKey,
@@ -88,6 +93,13 @@ export async function POST(request) {
         currency: planConfig.currency,
         end_date: endDate.toISOString(),
       }, { onConflict: 'user_id' }).select().single();
+
+    // Fatal for the same reason, and this row is the payment record itself —
+    // without it there is nothing tying the payment to the subscription.
+    if (subErr) {
+      console.error('SUBSCRIPTION_UPSERT_FAILED:', { userId: payload.userId, paymentId, code: subErr.code, message: subErr.message, details: subErr.details });
+      return errorResponse('Payment received but we could not record your subscription. Contact support with your payment id.', 500);
+    }
 
     const { data: score } = await supabase
       .from('scores').select('total_score').eq('user_id', payload.userId).single();

@@ -32,7 +32,13 @@ export async function GET(request) {
         email_verified: true,
       })
       .eq('id', user.id);
-    if (writeErr) console.error('DB write failed: users.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
+    // Fatal: a "verified!" page for an account still flagged unverified sends
+    // the user away believing they are done, and the token is single-use from
+    // their point of view. Fail so the link can be retried.
+    if (writeErr) {
+      console.error('DB write failed: users.update (email verification)', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
+      return errorResponse('We could not verify your email just now. Please try the link again.', 500);
+    }
 
     const { NextResponse } = await import('next/server');
     return NextResponse.redirect(new URL('/login?verified=true', request.url));

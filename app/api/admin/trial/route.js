@@ -21,7 +21,12 @@ export async function POST(request) {
         trial_ends_at: newEnd.toISOString(),
         is_on_trial: true,
       }).eq('id', userId);
-      if (writeErr) console.error('DB write failed: users.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
+      // Fatal: "Trial extended" is what the admin acts on. A silent no-op here
+      // leaves them believing a user has access that the user does not have.
+      if (writeErr) {
+        console.error('ADMIN_TRIAL_EXTEND_FAILED:', { targetUserId: userId, code: writeErr.code, message: writeErr.message, details: writeErr.details });
+        return errorResponse('Could not extend the trial. Nothing was changed.', 500);
+      }
 
       const { error: writeErr2 } = await supabase.from('admin_actions').insert({
         admin_email: payload.email,
@@ -39,7 +44,12 @@ export async function POST(request) {
         trial_ends_at: new Date().toISOString(),
         is_on_trial: false,
       }).eq('id', userId);
-      if (writeErr3) console.error('DB write failed: users.update', { code: writeErr3.code, message: writeErr3.message, details: writeErr3.details });
+      // Fatal: a revoke that silently no-ops leaves access in place while the
+      // admin is told it is gone — the worst direction for this to fail in.
+      if (writeErr3) {
+        console.error('ADMIN_TRIAL_REVOKE_FAILED:', { targetUserId: userId, code: writeErr3.code, message: writeErr3.message, details: writeErr3.details });
+        return errorResponse('Could not revoke the trial. Nothing was changed.', 500);
+      }
 
       const { error: writeErr4 } = await supabase.from('admin_actions').insert({
         admin_email: payload.email,
@@ -59,7 +69,11 @@ export async function POST(request) {
       const { error: writeErr5 } = await supabase.from('users').update({
         subscription_plan: plan,
       }).eq('id', userId);
-      if (writeErr5) console.error('DB write failed: users.update', { code: writeErr5.code, message: writeErr5.message, details: writeErr5.details });
+      // Fatal: same reasoning — the reported plan must match the stored plan.
+      if (writeErr5) {
+        console.error('ADMIN_SET_PLAN_FAILED:', { targetUserId: userId, plan, code: writeErr5.code, message: writeErr5.message, details: writeErr5.details });
+        return errorResponse('Could not set the plan. Nothing was changed.', 500);
+      }
 
       const { error: writeErr6 } = await supabase.from('admin_actions').insert({
         admin_email: payload.email,

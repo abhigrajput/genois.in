@@ -53,7 +53,14 @@ export async function POST(request) {
       reset_token: null,
       reset_token_expires: null,
     }).eq('id', user.id);
-    if (writeErr) console.error('DB write failed: users.update', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
+    // Fatal: reporting success here would tell the user their password was
+    // changed when it was not — they would be locked out of both the old and
+    // the new one, and the reset token stays live. Failing is recoverable;
+    // the link still works for a retry.
+    if (writeErr) {
+      console.error('DB write failed: users.update (password reset)', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
+      return errorResponse('We could not reset your password just now. Please try the link again.', 500);
+    }
 
     return successResponse({ message: 'Password reset successfully. You can now login.' });
   } catch (error) {

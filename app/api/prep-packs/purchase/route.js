@@ -72,7 +72,14 @@ export async function POST(request) {
       payment_id: paymentId,
       amount: PREP_PACK_PRICE_RUPEES,
     });
-    if (writeErr) console.error('DB write failed: prep_packs.insert', { code: writeErr.code, message: writeErr.message, details: writeErr.details });
+    // Fatal: money has already changed hands. "Pack unlocked successfully" with
+    // no prep_packs row means the user paid for nothing and has no record to
+    // point at. Safe to fail — no row was written, so the replay guard above
+    // still lets the same paymentId through on a retry.
+    if (writeErr) {
+      console.error('PREP_PACK_INSERT_FAILED:', { paymentId, userId: payload.userId, code: writeErr.code, message: writeErr.message, details: writeErr.details });
+      return errorResponse('Payment received but we could not unlock the pack. Contact support with your payment id.', 500);
+    }
 
     return successResponse({ message: 'Pack unlocked successfully' });
   } catch (error) {
