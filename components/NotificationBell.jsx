@@ -12,9 +12,24 @@ export default function NotificationBell({ token }) {
 
   useEffect(() => {
     if (!token) return;
-    load();
-    const interval = setInterval(load, 60000);
-    return () => clearInterval(interval);
+
+    // Poll only while the tab is actually being looked at. The previous flat
+    // 60s interval kept firing in backgrounded tabs for as long as they stayed
+    // open — a request a minute, indefinitely, for a badge nobody can see.
+    // Hidden tabs now poll not at all and catch up the moment they are focused,
+    // so what the user sees is unchanged (arguably fresher on return).
+    let interval = null;
+    const start = () => { if (interval === null) interval = setInterval(load, 60000); };
+    const stop = () => { if (interval !== null) { clearInterval(interval); interval = null; } };
+
+    function onVisibility() {
+      if (document.hidden) stop();
+      else { load(); start(); }
+    }
+
+    if (!document.hidden) { load(); start(); }
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => { stop(); document.removeEventListener('visibilitychange', onVisibility); };
   }, [token]);
 
   useEffect(() => {
