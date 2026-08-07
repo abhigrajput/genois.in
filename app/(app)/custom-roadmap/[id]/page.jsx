@@ -3,6 +3,8 @@ import { useState, useEffect } from 'react';
 import { useToken, apiFetch } from '@/lib/useApi';
 import { useRouter, useParams } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { videoForTopic } from '@/lib/curatedVideos';
+import VideoPlayer from '@/components/VideoPlayer';
 
 const TASK_TYPES = ['video', 'resource', 'coding', 'test', 'notes'];
 const TASK_LABELS = { video: '▶ Watch Video', resource: '📖 Read Resource', coding: '⌨️ Coding Task', test: '🎯 Take Test', notes: '📝 Generate Notes' };
@@ -149,13 +151,22 @@ export default function CustomRoadmapDetailPage() {
         {activeTask === 'video' && dayData && (
           <div>
             <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-accent)', letterSpacing: 2, marginBottom: 12 }}>WATCH VIDEO</div>
-            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--gx-text)', marginBottom: 8 }}>Search on YouTube:</div>
-            <div style={{ padding: '12px 16px', background: 'var(--gx-accent-soft)', borderRadius: 10, fontSize: 14, color: 'var(--gx-accent)', fontFamily: 'var(--font-mono)', marginBottom: 20 }}>
-              {dayData.video_search}
+            <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--gx-text)', marginBottom: 12 }}>
+              {dayData.topic || dayData.video_search}
             </div>
-            <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(dayData.video_search)}`} target="_blank" rel="noreferrer" style={{ display: 'inline-block', padding: '12px 24px', borderRadius: 10, background: '#FF0000', color: 'var(--gx-text)', textDecoration: 'none', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700, marginBottom: 20 }}>
-              🎥 Search on YouTube →
-            </a>
+            {/* Was: a red "Search on YouTube →" button pointing at
+                youtube.com/results, which dumped the student on a search page in
+                a new tab. Now the curated video for the day's topic plays here. */}
+            <div style={{ marginBottom: 20 }}>
+              <VideoPlayer
+                video={videoForTopic(dayData.topic || dayData.video_search)}
+                empty={
+                  <div style={{ padding: '12px 16px', background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', borderRadius: 10, fontSize: 13, color: 'var(--gx-text-muted)' }}>
+                    No curated video for this topic yet — mark it done once you have covered it.
+                  </div>
+                }
+              />
+            </div>
             {!isTaskDone('video') && (
               <div>
                 <button onClick={() => completeTask('video')} disabled={completing} style={{ width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 14, fontWeight: 700 }}>

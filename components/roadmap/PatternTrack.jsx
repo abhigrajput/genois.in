@@ -18,6 +18,8 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { roadmapAPI } from '@/lib/api';
+import { videoForPattern } from '@/lib/curatedVideos';
+import VideoPlayer from '@/components/VideoPlayer';
 
 const STATE_STYLE = {
   mastered: { label: 'Mastered', cls: 'border-success/25 bg-success/10 text-success', dot: 'bg-success' },
@@ -102,6 +104,7 @@ export default function PatternTrack({ plan, onChanged }) {
   }
 
   const ev = c.evidence || { correct: 0, total: 0, accuracy: null };
+  const patternVideo = videoForPattern(c.id);
 
   return (
     <div className="relative overflow-hidden rounded-2xl border border-primary/10 bg-[var(--gx-surface)] p-5">
@@ -132,6 +135,16 @@ export default function PatternTrack({ plan, onChanged }) {
 
       {/* ── The concept, hand-authored ── */}
       <p className="mt-3 text-[13px] leading-relaxed text-[var(--gx-text)]">{c.intro}</p>
+
+      {/* ── The pattern's video, playing in-page ──
+              Curated per pattern in lib/curatedVideos.js. Click-to-play so the
+              board stays light, and absent entirely for a pattern with no
+              curated video rather than degrading to a link off the site. ── */}
+      {patternVideo && (
+        <div className="mt-3.5 max-w-[420px]">
+          <VideoPlayer video={patternVideo} asModal />
+        </div>
+      )}
 
       {/* ── WHY this pattern now. Straight from evidence — no fabrication. ── */}
       <div className="mt-3.5 rounded-xl border border-[var(--gx-accent-border)] bg-[var(--gx-accent-soft)] p-3.5">

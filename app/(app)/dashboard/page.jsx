@@ -8,33 +8,17 @@ import { useToken } from '@/lib/useApi'
 import TrialBanner from '@/components/TrialBanner'
 import OnboardingTour from '@/components/OnboardingTour'
 import { isProfileComplete } from '@/lib/profile'
-import { toEmbedUrl } from '@/lib/youtubeEmbed'
+import VideoPlayer from '@/components/VideoPlayer'
 import { Card, CardBody, SectionLabel, Badge, DifficultyBadge, Button, Input, Progress, Skeleton } from '@/components/ui'
 import {
   Flame, Zap, Trophy, Play, BookOpen, Code2, ClipboardCheck, FileText, Target,
   Bot, Mic, Lightbulb, Rocket, Check, Sparkles, Mail, AlertTriangle, Settings, Brain,
 } from 'lucide-react'
 
-function YouTubeEmbed({ url, title }) {
-  const embedUrl = toEmbedUrl(url);
-  if (!embedUrl) return (
-    <Button href={url} variant="outline" size="sm">
-      <Play size={14} strokeWidth={2} /> Watch on YouTube
-    </Button>
-  );
-  return (
-    <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, borderRadius: 'var(--gx-radius)', overflow: 'hidden', border: '1px solid var(--gx-border)' }}>
-      <iframe
-        src={embedUrl}
-        title={title || 'Video'}
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-      />
-    </div>
-  );
-}
+// The local YouTubeEmbed helper is gone: its no-embed branch rendered a
+// "Watch on YouTube" button that sent the student off the site, and that branch
+// was the one that always fired because the API supplied a search URL. Videos
+// are curated (lib/curatedVideos.js) and play in-page via <VideoPlayer>.
 
 // Token references — resolved from app/design-tokens.css so the page never
 // hard-codes a palette value of its own.
@@ -200,7 +184,9 @@ export default function DashboardPage() {
         keyConcepts: rd.keyConcepts || ri.key_concepts || [],
         isProjectDay: rd.isProjectDay ?? ri.is_project_day ?? false,
         project: rd.project || ri.project || {},
-        video: ri.video_url ? { url: ri.video_url, title: ri.topic, description: ri.description } : {},
+        // Curated entry resolved server-side ({slug,id,title,channel}) or null.
+        // `video_url` is deliberately not read — see /api/roadmap/daily.
+        video: ri.video || rd.video || null,
         resource: ri.resource_url ? { url: ri.resource_url, title: 'Learning Resource' } : {},
         coding: {
           title: (rd.codingProblem || ri.coding_problem) ? "Today's Challenge" : undefined,
@@ -354,7 +340,7 @@ export default function DashboardPage() {
   const isProjectDay = rm?.isProjectDay || false
   const concepts = rm?.keyConceptss || rm?.keyConcepts || rm?.key_concepts || []
   const objectives = rm?.objectives || []
-  const video = rm?.video || {}
+  const video = rm?.video || null
   const resource = rm?.resource || {}
   const coding = rm?.coding || {}
   const project = rm?.project || {}
@@ -467,11 +453,12 @@ export default function DashboardPage() {
 
     if (activeTask === 'video') return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {video?.title && <div style={{ fontFamily: 'var(--gx-font-display)', fontSize: 15, fontWeight: 600, color: TEXT }}>{video.title}</div>}
-        {video?.description && <div style={{ fontSize: 13, color: TEXT_MUTED, lineHeight: 1.6 }}>{video.description}</div>}
-        {video?.url
-          ? <YouTubeEmbed url={video.url} title={video.title} />
-          : <div style={{ fontSize: 13, color: TEXT_SUBTLE }}>No video available for today.</div>}
+        {topic && <div style={{ fontFamily: 'var(--gx-font-display)', fontSize: 15, fontWeight: 600, color: TEXT }}>{topic}</div>}
+        {rm?.description && <div style={{ fontSize: 13, color: TEXT_MUTED, lineHeight: 1.6 }}>{rm.description}</div>}
+        <VideoPlayer
+          video={video}
+          empty={<div style={{ fontSize: 13, color: TEXT_SUBTLE }}>No curated video for today&apos;s topic yet — the other tasks still count.</div>}
+        />
         {!done && (
           <Button
             block

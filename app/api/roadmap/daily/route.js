@@ -4,7 +4,7 @@ import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { successResponse, errorResponse } from '@/lib/response';
 import { generateDayContent, buildDayMeta, isDsaTrack } from '@/lib/curriculumGenerator';
 import { roadmapTotalDays } from '@/lib/roadmapCache';
-import { youtubeSearchUrl } from '@/lib/youtubeEmbed';
+import { curatedVideoForDay } from '@/lib/curatedVideos';
 import { getRoadmapTargeting, isFocusStale, targetingForClient } from '@/lib/roadmapTargeting';
 import { getPatternPlan } from '@/lib/dsaPatternProgress';
 
@@ -186,7 +186,9 @@ export async function GET(request) {
       dayContent = {
         topic: roadmapItem.topic,
         description: roadmapItem.description,
-        video_url: roadmapItem.video_url,
+        // Never the stored column — see the read-time note further down.
+        video_url: null,
+        video: curatedVideoForDay(roadmapItem.topic),
         resource_url: roadmapItem.resource_url,
         article_url: roadmapItem.article_url,
         coding_problem_url: roadmapItem.coding_problem_url || roadmapItem.doc_url,
@@ -206,9 +208,11 @@ export async function GET(request) {
       dayContent.meta = buildDayMeta(dayContent);
 
       // The model is asked for a "best YouTube URL" but hallucinates video ids
-      // that embed as "Video unavailable". Never trust an AI-produced video URL:
-      // store a topic search link instead, which always resolves to real videos.
-      dayContent.video_url = youtubeSearchUrl(dayContent.topic);
+      // that embed as "Video unavailable". Never persist an AI-produced video
+      // URL — store nothing. The video shown is resolved from the curated map
+      // on read, so this column stays empty for good.
+      dayContent.video_url = null;
+      dayContent.video = curatedVideoForDay(dayContent.topic);
 
       const cachePayload = {
         user_id: payload.userId,
@@ -327,9 +331,14 @@ export async function GET(request) {
       roadmapItem.topic
     );
 
-    // Neutralize any hallucinated/stale video URL persisted in older cache rows.
-    // Every read returns a guaranteed-working topic search link (see helper).
-    if (roadmapItem) roadmapItem.video_url = youtubeSearchUrl(roadmapItem.topic);
+    // Resolve the day's video from the curated map at READ time.
+    //
+    // Nothing persisted in `roadmap.video_url` is trusted: old rows hold either
+    // a model-hallucinated watch URL or (from the interim fix) a YouTube search
+    // link, and neither may reach the UI. Resolving on read means the whole
+    // cache is corrected by editing lib/curatedVideos.js — no migration, no
+    // backfill. An uncurated topic resolves to null and the page shows no video.
+    if (roadmapItem) roadmapItem.video = curatedVideoForDay(roadmapItem.topic);
 
     const completedCount = tasks.filter(t => t.status === 'completed').length;
     const isCompleteDay = completedCount >= TOTAL_TASKS;

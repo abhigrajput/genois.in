@@ -1,7 +1,9 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useToken, apiFetch } from '@/lib/useApi';
 import { DSA_LEVELS } from '@/lib/dsaCurriculumLevels';
+import { videoForTopic } from '@/lib/curatedVideos';
+import VideoPlayer from '@/components/VideoPlayer';
 import toast from 'react-hot-toast';
 import { usePermission } from '@/lib/usePermission';
 import { useRouter } from 'next/navigation';
@@ -18,10 +20,8 @@ export default function DSARoadmapPage() {
   const [showNotes, setShowNotes] = useState(false);
   const [aiNotes, setAiNotes] = useState('');
   const [loadingNotes, setLoadingNotes] = useState(false);
-  // Dynamic video URL state — keyed by topic to avoid redundant fetches
-  const [videoUrl, setVideoUrl] = useState(null);
-  const [videoLoading, setVideoLoading] = useState(false);
-  const videoCacheRef = useRef({});
+  // Video resolution is a synchronous lookup in a static map now — no state,
+  // no fetch, no loading shimmer. See the effect that used to live below.
 
   async function loadNotes() {
     setLoadingNotes(true);
@@ -44,29 +44,10 @@ export default function DSARoadmapPage() {
     load();
   }, [ready, token]);
 
-  // Fetch video URL whenever the viewed day changes
-  useEffect(() => {
-    if (!data) return;
-    const curriculum = DSA_LEVELS[data?.progress?.level || 'beginner'] || DSA_LEVELS.beginner;
-    const dayObj = curriculum.find(d => d.day === viewDay) || curriculum[0];
-    if (!dayObj) return;
-    const cacheKey = dayObj.topic;
-    if (videoCacheRef.current[cacheKey]) {
-      setVideoUrl(videoCacheRef.current[cacheKey]);
-      return;
-    }
-    setVideoUrl(null);
-    setVideoLoading(true);
-    fetch(`/api/dsa-video?topic=${encodeURIComponent(dayObj.topic)}`)
-      .then(r => r.json())
-      .then(res => {
-        const url = res.url || null;
-        videoCacheRef.current[cacheKey] = url;
-        setVideoUrl(url);
-      })
-      .catch(() => setVideoUrl(null))
-      .finally(() => setVideoLoading(false));
-  }, [viewDay, data]);
+  // The per-day `fetch('/api/dsa-video?topic=…')` that used to live here is
+  // gone. It existed to ask the YouTube Data API for a video and, with no API
+  // key configured, always came back with a search link. lib/curatedVideos.js
+  // answers the same question synchronously and correctly.
 
   async function load() {
     try {
@@ -190,12 +171,9 @@ export default function DSARoadmapPage() {
       key: 'video',
       icon: '📺',
       label: 'Watch Video',
-      desc: videoLoading
-        ? 'Finding the best video for this topic...'
-        : (dayData.videoTitle || dayData.topic),
-      link: videoUrl || undefined,
-      type: 'external',
-      loading: videoLoading,
+      desc: dayData.videoTitle || dayData.topic,
+      // Plays inside this page — no link, no new tab.
+      video: videoForTopic(dayData.topic),
     },
     { key: 'resource', icon: '📖', label: 'Read Resource', desc: dayData.resourceTitle, link: dayData.resource, type: 'external' },
     { key: 'coding', icon: '💻', label: 'Coding Problem (C++)', desc: dayData.codingProblem, stlNote: 'Solve this in C++. Focus on STL: vector, map, set, pair, priority_queue, stack, queue.', type: 'internal', action: () => window.open(dayData.problemLink || '#', '_blank') },
@@ -254,23 +232,29 @@ export default function DSARoadmapPage() {
                 <div style={{ fontSize: 24, flexShrink: 0 }}>{t.icon}</div>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--gx-text)', marginBottom: 3 }}>{t.label}</div>
-                  {t.loading ? (
-                    <div style={{ height: 12, width: 180, borderRadius: 6, background: 'var(--gx-accent-soft)', backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite' }} />
-                  ) : (
-                    <>
-                      <div style={{ fontSize: 12, color: 'var(--gx-text-muted)', lineHeight: 1.5 }}>{t.desc}</div>
-                      {t.stlNote && (
-                        <div style={{ marginTop: 5, fontSize: 11, color: 'var(--gx-warning)', fontFamily: 'var(--font-mono)', background: 'var(--gx-warning-soft)', borderRadius: 6, padding: '4px 8px', display: 'inline-block' }}>
-                          ⚡ {t.stlNote}
-                        </div>
-                      )}
-                    </>
+                  <div style={{ fontSize: 12, color: 'var(--gx-text-muted)', lineHeight: 1.5 }}>{t.desc}</div>
+                  {t.stlNote && (
+                    <div style={{ marginTop: 5, fontSize: 11, color: 'var(--gx-warning)', fontFamily: 'var(--font-mono)', background: 'var(--gx-warning-soft)', borderRadius: 6, padding: '4px 8px', display: 'inline-block' }}>
+                      ⚡ {t.stlNote}
+                    </div>
+                  )}
+                  {/* The watch task carries its player inline: a poster that
+                      opens the video in a dialog, still inside the app. */}
+                  {t.key === 'video' && (
+                    <div style={{ marginTop: 10, maxWidth: 420 }}>
+                      <VideoPlayer
+                        video={t.video}
+                        asModal
+                        empty={
+                          <div style={{ fontSize: 11.5, color: 'var(--gx-text-subtle)' }}>
+                            No curated video for this topic yet.
+                          </div>
+                        }
+                      />
+                    </div>
                   )}
                 </div>
-                {t.loading && (
-                  <span style={{ fontSize: 11, color: 'var(--gx-text-muted)', fontFamily: 'var(--font-mono)' }}>searching...</span>
-                )}
-                {!t.loading && t.link && (
+                {t.link && (
                   <a href={t.link} target="_blank" rel="noreferrer" style={{ padding: '6px 12px', borderRadius: 8, border: '1px solid var(--gx-accent-border)', background: 'transparent', color: 'var(--gx-accent)', textDecoration: 'none', fontSize: 11, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
                     Open →
                   </a>

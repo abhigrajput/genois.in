@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { roadmapAPI, taskAPI, testAPI, codingAPI, notesAPI } from '@/lib/api';
 import useAuthStore from '@/store/authStore';
 import CodeEditor from '@/components/CodeEditor';
-import { toEmbedUrl } from '@/lib/youtubeEmbed';
+import VideoPlayer from '@/components/VideoPlayer';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 import ErrorCard, { friendlyError } from '@/components/ui/ErrorCard';
 import PatternTrack from '@/components/roadmap/PatternTrack';
@@ -17,32 +17,10 @@ const ACTION_BTN =
 const EYEBROW =
   'font-mono text-[11px] font-extrabold uppercase tracking-[1px] text-muted';
 
-function YouTubeEmbed({ url, title }) {
-  const embedUrl = toEmbedUrl(url);
-  if (!embedUrl)
-    return (
-      <a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 rounded-[10px] border border-[var(--gx-accent)]/30 bg-[var(--gx-accent)]/10 px-5 py-3 text-sm font-semibold text-[var(--gx-accent)] no-underline transition-all hover:bg-[var(--gx-accent)]/20 focus-visible:outline-none"
-      >
-        ▶ Watch on YouTube →
-      </a>
-    );
-  return (
-    <div className="relative h-0 overflow-hidden rounded-xl border border-primary/15 pb-[56.25%]">
-      <iframe
-        src={embedUrl}
-        title={title || 'Daily Roadmap Video'}
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        className="absolute left-0 top-0 h-full w-full"
-      />
-    </div>
-  );
-}
+// The local YouTubeEmbed helper is gone. It took a URL and, whenever that URL
+// was not embeddable — which it never was, because the API handed it a search
+// link — rendered a "Watch on YouTube →" anchor that left the site. Videos now
+// come from the curated map and play in-page via <VideoPlayer>.
 
 const STEPS = ['video', 'resource', 'coding', 'test', 'notes'];
 const STEP_LABELS = {
@@ -769,13 +747,17 @@ export default function DailyRoadmapPage() {
               <div className="space-y-4">
                 <h3 className="section-title">▶ Watch Video — {roadmapItem?.topic}</h3>
                 <p className="text-sm text-muted">
-                  Watch the full video below. The completion button unlocks after 30 seconds.
+                  Watch the full video below — it plays right here. The completion button unlocks
+                  after 30 seconds.
                 </p>
-                {roadmapItem?.video_url ? (
-                  <YouTubeEmbed url={roadmapItem.video_url} title={roadmapItem?.topic} />
-                ) : (
-                  <p className="text-sm text-gray-400">No video available for this day.</p>
-                )}
+                <VideoPlayer
+                  video={roadmapItem?.video}
+                  empty={
+                    <p className="text-sm text-muted">
+                      No curated video for this topic yet — the rest of the day still counts.
+                    </p>
+                  }
+                />
                 {!isTaskDone('video') ? (
                   <button
                     onClick={() => videoEligible && completeTask('video')}

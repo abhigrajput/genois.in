@@ -16,6 +16,7 @@ import { apiFetch } from '@/lib/useApi';
 import toast from 'react-hot-toast';
 import Badge, { DifficultyBadge } from '@/components/ui/Badge';
 import FlashcardDrill from './FlashcardDrill';
+import VideoPlayer from '@/components/VideoPlayer';
 
 function Section({ label, children }) {
   return (
@@ -169,6 +170,17 @@ export default function SheetReader({ sheetId, token, onBack, onSaved }) {
           <p style={{ fontSize: 12.5, color: 'var(--gx-text-subtle)', marginTop: 12 }}>
             Builds on: {sheet.prerequisites.map(p => p.name).join(', ')}
           </p>
+        )}
+
+        {/* One curated video per sheet, playing in-page. Click-to-play so
+            opening a sheet does not boot a YouTube player you never asked for.
+            A sheet with no curated video simply has no Watch section. */}
+        {sheet.video && (
+          <Section label="Watch">
+            <div style={{ maxWidth: 520 }}>
+              <VideoPlayer video={sheet.video} asModal />
+            </div>
+          </Section>
         )}
 
         {sheet.recognise.length > 0 && (
