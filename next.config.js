@@ -49,9 +49,30 @@ const nextConfig = {
             key: 'X-DNS-Prefetch-Control',
             value: 'off',
           },
+          // COEP is deliberately OFF (`unsafe-none` is the browser default; it is
+          // stated explicitly so this reads as a decision, not an omission).
+          //
+          // COEP exists for exactly one purpose: to opt the document into
+          // cross-origin isolation, which is the prerequisite for
+          // `SharedArrayBuffer`, `Atomics.wait` and high-resolution timers. This
+          // app uses none of those (grep: no SharedArrayBuffer, no Atomics, no
+          // crossOriginIsolated), so COEP bought us zero protection.
+          //
+          // What it did buy us was broken video. Under COEP, a cross-origin
+          // iframe must itself assert a COEP header; `Cross-Origin-Resource-Policy`
+          // is NOT sufficient for a nested document. YouTube's /embed sends only
+          // `Cross-Origin-Embedder-Policy-Report-Only: require-corp`, and
+          // report-only does not count — so Chrome refused to load the player and
+          // rendered "refused to connect". The block happens at the network layer,
+          // which is why it never appeared as a CSP violation.
+          //
+          // Framing protection is unaffected: `frame-ancestors 'none'` (CSP) and
+          // `X-Frame-Options: DENY` still stop anyone embedding US, and COOP
+          // `same-origin` still isolates our browsing context. Only the inbound
+          // embed restriction is lifted, which is the one we could not keep.
           {
             key: 'Cross-Origin-Embedder-Policy',
-            value: 'credentialless',
+            value: 'unsafe-none',
           },
           {
             key: 'Cross-Origin-Opener-Policy',
