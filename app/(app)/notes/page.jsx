@@ -44,6 +44,19 @@ export default function NotesPage() {
   // Bumped when a sheet is saved into notes, so the editor reloads and selects it.
   const [focusNoteId, setFocusNoteId] = useState(null);
 
+  // `/notes?sheet=<id>` opens straight into one sheet. The guided build path on
+  // /projects links here per phase, and a link that dumped the student on the
+  // full library would make them hunt for the sheet we already picked.
+  //
+  // Read from window rather than useSearchParams: the hook forces this client
+  // page under a Suspense boundary at build time, and a one-off read on mount
+  // is all a deep link needs. An unknown id is harmless — SheetReader's fetch
+  // 404s and it shows its own error, same as any stale link.
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get('sheet');
+    if (id) { setTab('study'); setOpenSheet(id); }
+  }, []);
+
   useEffect(() => {
     if (!ready || !token) return;
     let cancelled = false;
