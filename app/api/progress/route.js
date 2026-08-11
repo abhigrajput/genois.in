@@ -58,7 +58,6 @@ export async function GET(request) {
       lastCompletedDate: progress?.last_completed_date || null,
       score: score || {},
       skillLevel: skill?.skill_level || 'beginner',
-      jobReadyScore: Math.round(skill?.job_ready_score || 0),
     });
   } catch (error) {
     return errorResponse('Internal server error', 500);

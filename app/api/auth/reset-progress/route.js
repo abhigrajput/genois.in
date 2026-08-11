@@ -26,7 +26,7 @@ export async function POST(request) {
         week_progress: 0, month_progress: 0, weekly_score: 0, monthly_score: 0,
       }).eq('user_id', userId),
       supabase.from('skill_identity').update({
-        skill_level: 'beginner', progress_percent: 0, job_ready_score: 0,
+        skill_level: 'beginner', progress_percent: 0,
       }).eq('user_id', userId),
       supabase.from('tasks').delete().eq('user_id', userId),
       supabase.from('tests').delete().eq('user_id', userId),

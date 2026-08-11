@@ -50,7 +50,6 @@ export async function GET(request) {
       },
       skill: {
         skillLevel: skill?.skill_level || 'beginner',
-        jobReadyScore: Math.round(skill?.job_ready_score || 0),
         progressPercent: Math.round(skill?.progress_percent || 0),
       },
       today: {

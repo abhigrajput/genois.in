@@ -45,7 +45,7 @@ export async function GET(request, context) {
     ] = await Promise.all([
       supabase.from('scores').select('total_score').eq('user_id', userId).single(),
       supabase.from('progress').select('current_day, streak, progress_percent').eq('user_id', userId).single(),
-      supabase.from('skill_identity').select('skill_level, job_ready_score').eq('user_id', userId).single(),
+      supabase.from('skill_identity').select('skill_level').eq('user_id', userId).single(),
       supabase.from('strong_topics').select('topic, avg_score').eq('user_id', userId).order('avg_score', { ascending: false }).limit(5),
       supabase.from('weak_topics').select('topic, avg_score').eq('user_id', userId).order('avg_score', { ascending: true }).limit(5),
       supabase.from('analytics').select('date, daily_score, tasks_completed').eq('user_id', userId).order('date', { ascending: false }).limit(30),
@@ -60,7 +60,6 @@ export async function GET(request, context) {
     const rank = (allScores || []).findIndex(s => s.total_score <= myScore) + 1;
     const total = allScores?.length || 1;
     const percentile = Math.round(((total - rank) / total) * 100);
-    const isJobReady = (skill?.job_ready_score || 0) >= 70;
 
     return successResponse({
       user: {
@@ -80,8 +79,6 @@ export async function GET(request, context) {
         streak: progress?.streak || 0,
         progressPercent: Math.round(progress?.progress_percent || 0),
         skillLevel: skill?.skill_level || 'beginner',
-        jobReadyScore: Math.round(skill?.job_ready_score || 0),
-        isJobReady,
       },
       strongTopics: strongTopics || [],
       weakTopics: weakTopics || [],

@@ -50,6 +50,10 @@ export async function GET(request) {
 
       const rank = (allScores || []).findIndex(sc => sc.total_score <= s.total_score) + 1;
 
+      // Explicit pick, not a spread: the tier object is a leaderboard label, and
+      // only the badge fields belong in a payload sent to a hiring company.
+      const t = getSkillTierData(s.total_score);
+
       return {
         userId: user.id,
         name: user.name,
@@ -60,7 +64,7 @@ export async function GET(request) {
         streak: progress?.streak || 0,
         currentDay: progress?.current_day || 1,
         linkedinUrl: user.linkedin_url,
-        skillTier: getSkillTierData(s.total_score),
+        skillTier: { tier: t.tier, color: t.color, icon: t.icon, label: t.label },
       };
     }));
 

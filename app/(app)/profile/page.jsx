@@ -77,6 +77,11 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(false);
   const [myBadges, setMyBadges] = useState([]);
 
+  // Public-profile opt-in. Default OFF — /u/<name> stays 404 until turned on.
+  // Seeded from the user the auth store already loaded; no extra fetch.
+  const [profilePublic, setProfilePublic] = useState(!!user?.profile_public);
+  const [visibilitySaving, setVisibilitySaving] = useState(false);
+
   // Skill analytics — the 6-axis identity, loaded dynamically from real performance.
   const [skill, setSkill] = useState(null);
   const [skillLoading, setSkillLoading] = useState(true);
@@ -94,6 +99,7 @@ export default function ProfilePage() {
   useEffect(() => {
     if (!user) return;
     setForm({ name: user.name||'', college: user.college||'', year: user.year||'' });
+    setProfilePublic(!!user.profile_public);
     setPlacementForm({
       target_companies: user.target_companies || [],
       cgpa: user.cgpa ?? '',
@@ -129,6 +135,31 @@ export default function ProfilePage() {
       toast.success('Profile updated!');
     } catch (e) { toast.error('Update failed'); }
     setLoading(false);
+  }
+
+  // Optimistic toggle — flip immediately, roll back if the PATCH fails.
+  async function toggleVisibility(next) {
+    const prev = profilePublic;
+    setProfilePublic(next);
+    setVisibilitySaving(true);
+    try {
+      const res = await fetch('/api/profile/visibility', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({ profile_public: next }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success || json.data?.available === false) {
+        throw new Error(json.message || 'Update failed');
+      }
+      setProfilePublic(!!json.data.profile_public);
+      updateUser({ ...user, profile_public: !!json.data.profile_public });
+      toast.success(json.data.profile_public ? 'Profile is now public' : 'Profile is now private');
+    } catch (e) {
+      setProfilePublic(prev);
+      toast.error(e.message || 'Could not update visibility');
+    }
+    setVisibilitySaving(false);
   }
 
   async function savePlacementProfile() {
@@ -272,7 +303,6 @@ export default function ProfilePage() {
   // the axes and the job-ready number stay hidden instead of being invented.
   const areas = skill?.readinessAvailable ? skill?.skillAreas : null;
   const hasSkillData = !!areas && SKILL_AXES.some(a => (areas[a.key] || 0) > 0);
-  const jobReady = Math.round(skill?.jobReadyScore || 0);
 
   return (
     <div style={{ fontFamily: 'var(--font-body)', width: '100%', paddingBottom: 60 }}>
@@ -285,6 +315,24 @@ export default function ProfilePage() {
           <div style={{ fontSize: 14, color: 'var(--gx-accent)', marginBottom: 14, wordBreak: 'break-word' }}>
             genois.in/u/{user?.name?.toLowerCase().replace(/\s+/g,'-') || 'you'}
           </div>
+          <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 14, cursor: visibilitySaving ? 'wait' : 'pointer' }}>
+            <input
+              type="checkbox"
+              checked={profilePublic}
+              disabled={visibilitySaving}
+              onChange={e => toggleVisibility(e.target.checked)}
+              style={{ marginTop: 3, accentColor: 'var(--gx-accent)', cursor: 'inherit' }}
+            />
+            <span>
+              <span style={{ display: 'block', fontSize: 13, color: 'var(--gx-text)', fontWeight: 600 }}>
+                Show my profile at genois.in/u/{user?.name?.toLowerCase().replace(/\s+/g,'-') || 'you'}
+              </span>
+              <span style={{ display: 'block', fontSize: 12, color: 'var(--gx-text-muted)', marginTop: 3, lineHeight: 1.6 }}>
+                Off by default. Only shows name, college, LinkedIn, GitHub, rank, streak. No score, no ranking claim.
+              </span>
+            </span>
+          </label>
+
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             <button onClick={() => { navigator.clipboard.writeText('https://genois.in/u/'+(user?.name?.toLowerCase().replace(/\s+/g,'-')||'')); toast.success('Copied!'); }} style={btnSecondary}>
               Copy Link
@@ -365,12 +413,6 @@ export default function ProfilePage() {
         <div style={{ gridColumn: '1 / -1', background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 14, padding: 24 }}>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:10, marginBottom: 4 }}>
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 16, fontWeight: 700, color: 'var(--gx-text)' }}>📈 Skill Analytics</div>
-            {!skillLoading && hasSkillData && (
-              <div style={{ display:'flex', alignItems:'baseline', gap:6 }}>
-                <span style={{ fontFamily:'var(--font-heading)', fontSize:22, fontWeight:800, color:'var(--gx-accent)' }}>{jobReady}</span>
-                <span style={{ fontFamily:'var(--font-mono)', fontSize:10, color:'var(--gx-text-muted)' }}>/100 JOB-READY</span>
-              </div>
-            )}
           </div>
           <div style={{ fontSize: 12, color: 'var(--gx-text-muted)', marginBottom: 20 }}>Your 6-axis skill identity — shown only once it can be computed from real tests, coding and projects.</div>
 
