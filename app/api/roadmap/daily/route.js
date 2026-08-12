@@ -47,15 +47,19 @@ async function ensureTasksExist(supabase, userId, dayNumber, roadmapId, domainSl
   return tasks || [];
 }
 
-// A cached roadmap row is complete when it has topic, video URL, and at least
-// one objective. Rows that predate the enrichment migration will have
-// objectives = null and will be regenerated once to backfill.
+// A cached row is usable if it has a topic and objectives.
+// video_url is deliberately NOT required — the write path nulls it to prevent
+// hallucinated YouTube IDs from being persisted, and the read path resolves the
+// video from lib/curatedVideos.js at render time. Requiring it here meant every
+// row this route wrote failed its own completeness check, so the cache never hit
+// and each page load paid for a full generation.
+// Rows that predate the enrichment migration have objectives = null and are
+// regenerated once to backfill.
 function isComplete(row) {
   return !!(
     row &&
-    row.topic &&
-    row.video_url &&
-    row.objectives &&
+    typeof row.topic === 'string' &&
+    row.topic.trim().length > 0 &&
     Array.isArray(row.objectives) &&
     row.objectives.length > 0
   );
@@ -180,9 +184,18 @@ export async function GET(request) {
     let dayContent;
     let cacheHit = false;
 
+    // Why a load did or didn't pay for a generation. `incomplete` is a sentinel:
+    // after the isComplete() fix it should not appear for rows this route wrote.
+    const missReason = !roadmapItem
+      ? 'no_row'
+      : (!domainMatches || focusStale || patternStale)
+        ? 'stale'
+        : 'incomplete';
+
     if (domainMatches && !focusStale && !patternStale && isComplete(roadmapItem)) {
       // Hydrate dayContent shape from the cached row — no AI call.
       cacheHit = true;
+      console.log('ROADMAP_CACHE_HIT', { userId: payload.userId, day: displayDay });
       dayContent = {
         topic: roadmapItem.topic,
         description: roadmapItem.description,
@@ -204,6 +217,7 @@ export async function GET(request) {
       };
     } else {
       // ── 2. Cache miss — call AI then persist for next time ──────────────
+      console.log('ROADMAP_CACHE_MISS', { userId: payload.userId, day: displayDay, reason: missReason });
       dayContent = await generateDayContent(user.domain_slug, displayDay, level, user, { targeting, patternPlan });
       dayContent.meta = buildDayMeta(dayContent);
 

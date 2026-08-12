@@ -46,8 +46,18 @@ async function ensureTasksExist(supabase, userId, dayNumber, roadmapId, domainSl
   return tasks || [];
 }
 
+// Same rule as /api/roadmap/daily: a cached row is usable on topic + objectives.
+// video_url is deliberately NOT required — generateDayContent nulls it (see
+// withSafeVideo in lib/curriculumGenerator.js) so hallucinated YouTube ids are
+// never persisted, and the video is resolved from lib/curatedVideos.js on read.
 function isComplete(row) {
-  return !!(row && row.topic && row.video_url && Array.isArray(row.objectives) && row.objectives.length > 0);
+  return !!(
+    row &&
+    typeof row.topic === 'string' &&
+    row.topic.trim().length > 0 &&
+    Array.isArray(row.objectives) &&
+    row.objectives.length > 0
+  );
 }
 
 // View ANY day of the roadmap without advancing the user's official progress.
@@ -121,7 +131,12 @@ export async function GET(request, { params }) {
     }
 
     let dayContent;
+    // This route deliberately has no staleness invalidation (see the note on the
+    // miss branch), so a miss is only ever a missing or unusable row.
+    const missReason = !roadmapItem ? 'no_row' : !domainMatches ? 'stale' : 'incomplete';
+
     if (domainMatches && isComplete(roadmapItem)) {
+      console.log('ROADMAP_CACHE_HIT', { userId: payload.userId, day: dayNumber });
       dayContent = {
         topic: roadmapItem.topic,
         description: roadmapItem.description,
@@ -140,6 +155,7 @@ export async function GET(request, { params }) {
         meta: roadmapItem.meta || null,
       };
     } else {
+      console.log('ROADMAP_CACHE_MISS', { userId: payload.userId, day: dayNumber, reason: missReason });
       // Evidence-driven targeting on a miss, same as the daily route. What this
       // route deliberately does NOT do is the gap-staleness invalidation: this
       // endpoint serves arbitrary past and preview days, and rewriting a day the
