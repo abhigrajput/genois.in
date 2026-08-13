@@ -1,15 +1,32 @@
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { getUserFromRequest } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
-import { askClaudeChat } from '@/lib/claude';
+import { askClaudeChat, AiFormatError } from '@/lib/claude';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { sanitizeChatHistory, sanitizeUserMessage } from '@/lib/security';
 import { updateStreak, getStreakDay, getStreakDayStart } from '@/lib/streak';
 import { buildFullStudentContext, buildMentorPrompt } from '@/lib/contextBuilder';
 import { searchKnowledgeBase, formatRagContext } from '@/lib/ragSearch';
 import { getMentorEvidence, buildEvidenceBlock, buildActionInstructions } from '@/lib/mentorEvidence';
+import {
+  getJourneySignals,
+  deriveMentorFocus,
+  buildJourneyBlock,
+  buildFocusBlock,
+  buildMentorToneBlock,
+} from '@/lib/mentorJourney';
 
-function buildChatbotSystem(mentorPrompt, domain, mode, ragContext = '', evidenceBlock = '', actionInstructions = '') {
+function buildChatbotSystem(
+  mentorPrompt,
+  domain,
+  mode,
+  ragContext = '',
+  evidenceBlock = '',
+  actionInstructions = '',
+  journeyBlock = '',
+  focusBlock = '',
+  toneBlock = '',
+) {
   const modeInstructions = {
     general: 'Answer general CS and engineering questions clearly.',
     coding: 'Focus on clean working code with clear explanations. Always use code blocks.',
@@ -18,10 +35,19 @@ function buildChatbotSystem(mentorPrompt, domain, mode, ragContext = '', evidenc
     career: 'Give India-specific tech career advice. Focus on placement, internships, skills for Indian companies.',
   };
 
+  // Order matters. The evidence block declares the facts and the
+  // anti-fabrication rules; the journey block adds two more signals under those
+  // same rules; the focus block names the ONE priority derived from all four;
+  // the tone block says how to deliver it. Every one of them is '' when its
+  // source is unavailable, so the prompt degrades to exactly what it was before
+  // Feature D rather than to a gap the model would fill in.
   return `${mentorPrompt}
 ${ragContext}
 ${evidenceBlock}
+${journeyBlock}
+${focusBlock}
 ${actionInstructions}
+${toneBlock}
 
 === THIS CONVERSATION ===
 Mode: ${mode}. ${modeInstructions[mode] || modeInstructions.general}
@@ -65,22 +91,38 @@ export async function POST(request) {
     // "Trees, 31% over 16 questions" instead of generic advice. Never fatal:
     // if any of it is unavailable the mentor falls back to exactly the prompt
     // it used before this existed, which claims nothing it can't back up.
+    //
+    // Feature D widens this from two signals to four: the guided build
+    // (project_phase_progress) and the application tracker (job_applications)
+    // join readiness and the pattern roadmap, and the FOCUS derived from all
+    // four is handed to the model already computed. The model never works out
+    // the priority itself — see lib/mentorJourney.js for why.
     let evidenceBlock = '';
     let actionInstructions = '';
+    let journeyBlock = '';
+    let focusBlock = '';
     try {
-      const evidence = await getMentorEvidence(payload.userId, {
-        // Shaped from the context we already loaded — no extra users read.
-        user: {
-          domain_slug: ctx.domain,
-          level: ctx.selfReportedLevel,
-          target_companies: ctx.targetCompanies,
-          weak_subjects: ctx.weakSubjects,
-          months_to_placement: ctx.monthsToPlacement,
-        },
-        currentDay: ctx.currentDay,
-      });
+      const [evidence, journey] = await Promise.all([
+        getMentorEvidence(payload.userId, {
+          // Shaped from the context we already loaded — no extra users read.
+          user: {
+            domain_slug: ctx.domain,
+            level: ctx.selfReportedLevel,
+            target_companies: ctx.targetCompanies,
+            weak_subjects: ctx.weakSubjects,
+            months_to_placement: ctx.monthsToPlacement,
+          },
+          currentDay: ctx.currentDay,
+        }),
+        getJourneySignals(payload.userId, { domain: ctx.domain }).catch((e) => {
+          console.warn('[chatbot] journey signals unavailable:', e.message);
+          return null;
+        }),
+      ]);
       evidenceBlock = buildEvidenceBlock(evidence);
       actionInstructions = buildActionInstructions(evidence, cleanMessage);
+      journeyBlock = buildJourneyBlock(journey);
+      focusBlock = buildFocusBlock(deriveMentorFocus({ ev: evidence, journey }));
     } catch (e) {
       console.warn('[chatbot] evidence context unavailable:', e.message);
     }
@@ -94,7 +136,10 @@ export async function POST(request) {
       selectedMode,
       ragContext,
       evidenceBlock,
-      actionInstructions
+      actionInstructions,
+      journeyBlock,
+      focusBlock,
+      buildMentorToneBlock()
     );
 
     const messages = [
@@ -126,6 +171,18 @@ export async function POST(request) {
 
     return successResponse({ response, mode: selectedMode });
   } catch (error) {
+    // askClaudeChat throws AiFormatError when the model answered with no usable
+    // text — a refusal, an empty content array, or a stop before any text block.
+    // Nothing is broken here, so a 500 both misdescribes it and gives the
+    // student nothing to do. Answer 503 with something actionable instead.
+    // (Deferred from Phase 4: this file was mid-Feature-D at the time.)
+    if (error instanceof AiFormatError) {
+      console.warn('Chatbot: model returned no usable text —', error.message);
+      return errorResponse(
+        'The mentor could not answer that just now. Try rephrasing it, or ask again in a moment.',
+        503,
+      );
+    }
     console.error('Chatbot error:', error);
     return errorResponse('Internal server error', 500);
   }

@@ -1,7 +1,8 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import toast from 'react-hot-toast';
-import { chatbotAPI } from '@/lib/api';
+import { chatbotAPI, mentorAPI } from '@/lib/api';
 
 const MODES = ['general','coding','domain','project','career'];
 const QUICK = [
@@ -11,15 +12,143 @@ const QUICK = [
 
 const STORAGE_KEY = 'genois_chat_history';
 
+/**
+ * Feature D — the mentor's proactive nudge.
+ *
+ * Everything rendered here comes from GET /api/mentor/focus, which derives the
+ * focus in code from the student's real signals (skill evidence, readiness, the
+ * pattern roadmap, build progress, applications). No model runs behind it, so
+ * there is no path by which a number on this card was invented — the "grounded
+ * in" list IS the data the derivation used, shown so the student can check it.
+ *
+ * Three states, all distinct on purpose:
+ *   · a focus, with its facts and one next action;
+ *   · not enough data — says exactly that, and never fills the gap;
+ *   · unreachable — renders nothing, so the chat is unchanged.
+ */
+function FocusCard({ focus, signals, onAsk }) {
+  if (!focus) return null;
+
+  const shell = {
+    border: '1px solid var(--gx-accent-border)',
+    background: 'var(--gx-accent-soft)',
+    borderRadius: 14,
+    padding: 14,
+  };
+  const label = {
+    fontSize: 'var(--gx-text-2xs)',
+    letterSpacing: '0.08em',
+    textTransform: 'uppercase',
+    color: 'var(--gx-accent-hover)',
+    fontWeight: 700,
+  };
+
+  // The one-line journey strip: only signals that actually reported.
+  const strip = [];
+  if (signals?.readiness?.hasTargets) {
+    const scored = (signals.readiness.companies || []).filter(c => c.scored);
+    if (scored.length) strip.push(`${scored[0].company} readiness ${scored[0].overall}/100`);
+  }
+  if (signals?.pattern) strip.push(`Pattern: ${signals.pattern.name}`);
+  if (signals?.projects?.available) {
+    strip.push(signals.projects.current
+      ? `Build: ${signals.projects.current.phasesDone}/${signals.projects.current.phaseCount} phases`
+      : `Builds finished: ${signals.projects.completedCount}`);
+  }
+  if (signals?.applications?.available) {
+    strip.push(`${signals.applications.total} application${signals.applications.total === 1 ? '' : 's'} logged`);
+  }
+
+  return (
+    <div style={shell} className="mb-4">
+      <div style={label}>Your mentor · what to focus on now</div>
+      <div style={{ fontWeight: 600, fontSize: 'var(--gx-text-md)', color: 'var(--gx-text)', marginTop: 6 }}>
+        {focus.title}
+      </div>
+      <div style={{ fontSize: 'var(--gx-text-sm)', color: 'var(--gx-text-muted)', lineHeight: 1.6, marginTop: 6 }}>
+        {focus.because}
+      </div>
+
+      {focus.facts?.length > 0 && (
+        <ul style={{ margin: '10px 0 0', padding: 0, listStyle: 'none', display: 'grid', gap: 4 }}>
+          {focus.facts.map((f, i) => (
+            <li key={i} style={{
+              fontSize: 'var(--gx-text-xs)',
+              color: 'var(--gx-text)',
+              fontFamily: 'var(--gx-font-mono)',
+            }}>· {f}</li>
+          ))}
+        </ul>
+      )}
+
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 12 }}>
+        <Link
+          href={focus.action.href}
+          style={{
+            fontSize: 'var(--gx-text-xs)', fontWeight: 600, padding: '7px 14px',
+            borderRadius: 999, background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)',
+          }}
+        >
+          {focus.action.label}
+        </Link>
+        {focus.ask && (
+          <button
+            onClick={() => onAsk(focus.ask)}
+            style={{
+              fontSize: 'var(--gx-text-xs)', fontWeight: 600, padding: '7px 14px',
+              borderRadius: 999, background: 'var(--gx-bg)',
+              border: '1px solid var(--gx-accent-border)', color: 'var(--gx-accent-hover)',
+            }}
+          >
+            Ask about this
+          </button>
+        )}
+      </div>
+
+      {strip.length > 0 && (
+        <div style={{
+          marginTop: 12, paddingTop: 10, borderTop: '1px solid var(--gx-accent-border)',
+          fontSize: 'var(--gx-text-2xs)', color: 'var(--gx-text-subtle)',
+        }}>
+          {strip.join('  ·  ')}
+        </div>
+      )}
+
+      {focus.unknowns?.length > 0 && (
+        <div style={{ marginTop: 8, fontSize: 'var(--gx-text-2xs)', color: 'var(--gx-text-subtle)', lineHeight: 1.6 }}>
+          I still don&apos;t know: {focus.unknowns.join('; ')}.
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ChatbotPage() {
   const [mode, setMode] = useState('general');
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [restored, setRestored] = useState(false);
+  const [focus, setFocus] = useState(null);
+  const [signals, setSignals] = useState(null);
   const bottomRef = useRef(null);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior:'smooth' }); }, [messages]);
+
+  // The proactive focus. Failing to load it is silent by design — the chat is
+  // the product, the nudge is additive, and a toast about a nudge would be
+  // noise. Nothing here blocks or delays sending a message.
+  useEffect(() => {
+    let alive = true;
+    mentorAPI.getFocus()
+      .then(res => {
+        if (!alive) return;
+        setFocus(res.data?.focus || null);
+        setSignals(res.data?.signals || null);
+      })
+      .catch(() => { /* focus unavailable — render the chat exactly as before */ });
+    return () => { alive = false; };
+  }, []);
 
   // Restore conversation on mount so navigating away and back keeps history.
   useEffect(() => {
@@ -82,7 +211,12 @@ export default function ChatbotPage() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto space-y-3 mb-4" style={{ width: '100%' }}>
+      <div className="flex-1 overflow-y-auto mb-4" style={{ width: '100%' }}>
+        {/* Proactive first — the mentor speaks before being asked. It scrolls
+            away with the conversation rather than permanently eating height. */}
+        <FocusCard focus={focus} signals={signals} onAsk={send} />
+
+        <div className="space-y-3">
         {messages.length === 0 && (
           <div className="text-center py-8 space-y-4">
             <div className="text-sm text-gray-400">Ask anything — coding, career, domain, projects</div>
@@ -107,6 +241,7 @@ export default function ChatbotPage() {
           </div>
         ))}
         <div ref={bottomRef} />
+        </div>
       </div>
 
       <div className="flex gap-2 flex-shrink-0" style={{ width: '100%' }}>
