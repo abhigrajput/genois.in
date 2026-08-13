@@ -46,9 +46,12 @@ export async function GET(request) {
         .eq('user_id', userId)
         .order('taken_at', { ascending: false }).limit(50),
       supabase.from('coding_submissions')
-        .select('status, submitted_at, coding_tests(title)')
+        // created_at, not submitted_at — see the note in coding/history.
+        // Selecting an unresolvable column failed this query on every load, so
+        // coding never contributed to topic mastery.
+        .select('status, created_at, coding_tests(title)')
         .eq('user_id', userId)
-        .order('submitted_at', { ascending: false }).limit(200),
+        .order('created_at', { ascending: false }).limit(200),
       supabase.from('scores')
         .select('total_score')
         .eq('user_id', userId).maybeSingle(),

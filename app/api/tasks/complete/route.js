@@ -1,7 +1,7 @@
 import { getUserFromRequest } from '@/lib/auth';
 import { getAdminClient, logWriteError } from '@/lib/supabaseAdmin';
 import { successResponse, errorResponse } from '@/lib/response';
-import { updateStreak } from '@/lib/streak';
+import { updateStreak, getStreakDay, getStreakDayStart } from '@/lib/streak';
 
 const TASK_TYPES = ['video', 'resource', 'coding', 'test', 'notes'];
 const TOTAL_TASKS = 5;
@@ -48,18 +48,32 @@ export async function POST(request) {
 
     if (completed && !wasCompleted) {
       // ── Enforce completion criteria server-side (Fix: "Mark as Completed" bypass) ──
+      // Both activity gates counted ALL-TIME evidence, so one submission ever
+      // made every future coding task tick instantly — the exact bypass these
+      // gates exist to stop. Scope them to the current day.
+      //
+      // "Today" here is the app's streak day (resets 5AM IST), reused from
+      // lib/streak.js rather than a second, conflicting definition of a day:
+      // the student's day already means this everywhere else in the product.
+      // Note the two tables stamp time under different names — coding_submissions
+      // uses created_at, tests uses taken_at — verified against the live schema,
+      // which lib/database.sql no longer matches.
+      const dayStart = getStreakDayStart(getStreakDay()).toISOString();
+
       if (taskType === 'coding') {
         const { count } = await supabase
           .from('coding_submissions')
           .select('id', { count: 'exact', head: true })
-          .eq('user_id', userId);
-        if (!count) return errorResponse('Submit your solution before completing the coding task', 400);
+          .eq('user_id', userId)
+          .gte('created_at', dayStart);
+        if (!count) return errorResponse('Submit your solution today before completing the coding task', 400);
       } else if (taskType === 'test') {
         const { count } = await supabase
           .from('tests')
           .select('id', { count: 'exact', head: true })
-          .eq('user_id', userId).neq('result', 'pending');
-        if (!count) return errorResponse('Take the daily test before completing it', 400);
+          .eq('user_id', userId).neq('result', 'pending')
+          .gte('taken_at', dayStart);
+        if (!count) return errorResponse('Take today\'s test before completing it', 400);
       } else if (taskType === 'video' || taskType === 'resource') {
         // Passive read/watch — enforce a minimum dwell (notes are gated by the
         // AI generation itself, which cannot be faked instantly).

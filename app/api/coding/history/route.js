@@ -12,7 +12,10 @@ export async function GET(request) {
       .from('coding_submissions')
       .select('*, coding_tests(title, topic, difficulty)')
       .eq('user_id', payload.userId)
-      .order('submitted_at', { ascending: false })
+      // coding_submissions has created_at, not submitted_at (lib/database.sql
+      // still says otherwise — it is stale). Ordering by a column PostgREST
+      // cannot resolve fails the whole query, so this silently returned nothing.
+      .order('created_at', { ascending: false })
       .limit(20);
 
     return successResponse({ submissions: submissions || [] });

@@ -186,7 +186,18 @@ export default function AptitudePage() {
   const [genError, setGenError] = useState(null);     // { timedOut, message } — generation failed
 
   useEffect(() => {
-    if (!ready || !token) return;
+    if (!ready) return;
+    // A session can be authenticated by the httpOnly genois_token cookie while
+    // localStorage holds no copy of it (JS cannot read an httpOnly cookie, so
+    // useToken() reports null). The old guard returned here before loadData(),
+    // which meant the `finally` that clears `loading` never ran and the page
+    // sat on "Loading your aptitude dashboard…" forever, with no error, no
+    // retry, and no network request. Fail loudly instead of hanging.
+    if (!token) {
+      setLoadError('Your sign-in token is not available in this browser.');
+      setLoading(false);
+      return;
+    }
     loadData();
   }, [ready, token]);
 
