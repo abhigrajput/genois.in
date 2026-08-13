@@ -6,22 +6,61 @@ import { APTITUDE_CATEGORIES } from '@/lib/aptitudeConfig';
 import { getCached, setCached, buildCacheKey } from '@/lib/aiCache';
 import { saveAttemptReview, getRecentSeenQuestions, seenOverlap, shuffle } from '@/lib/attemptReview';
 
+// Returns { available: true, text } or { available: false, reason }.
+//
+// This helper calls the Anthropic HTTP API directly rather than going through
+// lib/claude.js, and so had none of that module's hardening:
+//
+//   1. The key was passed raw. The Vercel value has been seen carrying a
+//      literal "\r\n", which makes Anthropic 401 — see the note in
+//      lib/claude.js. Same strip applied here.
+//   2. There was no res.ok check, so a 401/429/500 fell through to the JSON
+//      body and died on the next line reading `.content`.
+//   3. `data.content[0].text` was unguarded, so a refusal or an empty content
+//      array threw a TypeError.
+//   4. No timeout, so a hung connection held the request open indefinitely.
+//
+// It reports failure as a value rather than throwing so the single caller can
+// tell "the model would not answer" apart from "we could not parse what it
+// said" — those deserve different status codes.
 async function callClaude(prompt) {
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': process.env.ANTHROPIC_API_KEY,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5',
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  });
-  const data = await res.json();
-  return data.content[0].text;
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30000);
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': (process.env.ANTHROPIC_API_KEY || '').replace(/\\[rnt]/g, '').replace(/\s/g, ''),
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5',
+        max_tokens: 4000,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+      signal: controller.signal,
+    });
+
+    if (!res.ok) {
+      console.error('aptitude/session callClaude non-ok:', res.status);
+      return { available: false, reason: `model_http_${res.status}` };
+    }
+
+    const data = await res.json().catch(() => null);
+    const block = (data?.content || []).find(c => c?.type === 'text' && typeof c.text === 'string');
+    if (!block) {
+      console.error('aptitude/session callClaude no text block:', data?.stop_reason || 'unknown');
+      return { available: false, reason: 'model_no_text_response' };
+    }
+    return { available: true, text: block.text };
+  } catch (e) {
+    // AbortError included — a timeout is an unavailable model, not a crash.
+    console.error('aptitude/session callClaude failed:', e?.name || 'Error', e?.message || '');
+    return { available: false, reason: e?.name === 'AbortError' ? 'model_timeout' : 'model_unreachable' };
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export async function GET(request) {
@@ -106,7 +145,14 @@ Make sure all 10 questions are included and JSON is valid.`;
       ? `${prompt}\n\nIMPORTANT: Do NOT repeat or lightly rephrase any of these questions the student already saw:\n${avoidList.map((q, i) => `${i + 1}. ${q}`).join('\n')}`
       : prompt;
 
-    const text = await callClaude(genPrompt);
+    const generated = await callClaude(genPrompt);
+    // The model was unreachable, refused, or timed out. That is not the same
+    // failure as "it answered with unusable JSON" below, and it is not the
+    // student's fault — say so with a 503 instead of a blanket 500.
+    if (!generated.available) {
+      return errorResponse('Question generation is unavailable right now. Please try again in a minute.', 503);
+    }
+    const text = generated.text;
     let questions = [];
     try {
       questions = JSON.parse(text.replace(/```json|```/g, '').trim());
