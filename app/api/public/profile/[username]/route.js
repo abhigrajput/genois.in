@@ -48,8 +48,16 @@ export async function GET(request, context) {
       supabase.from('progress').select('streak').eq('user_id', user.id).maybeSingle(),
     ]);
 
-    const myScore = score?.total_score || 0;
-    const rank = (allScores || []).findIndex(s => s.total_score <= myScore) + 1 || 1;
+    // A rank only exists if this user actually has a score row. The previous
+    // `findIndex(...) + 1 || 1` published anyone unscored as rank 1: findIndex
+    // returns -1 when no row satisfies `<= 0`, and -1 + 1 = 0 is falsy, so the
+    // `|| 1` fired. A brand-new account with zero activity was rendered as
+    // "#1 Global Rank" under a "verified, not self-reported" badge.
+    const scored = typeof score?.total_score === 'number';
+    const myScore = score?.total_score ?? 0;
+    const rank = scored
+      ? (allScores || []).filter(s => s.total_score > myScore).length + 1
+      : null;
 
     return successResponse({
       name: user.name,
@@ -57,6 +65,9 @@ export async function GET(request, context) {
       linkedinUrl: user.linkedin_url,
       githubUrl: user.github_url,
       rank,
+      // Send the denominator too. Ranking first out of a handful of beta users
+      // is not a global ranking, and the page should not imply that it is.
+      rankTotal: scored ? (allScores || []).length : null,
       streak: progress?.streak || 0,
     });
   } catch (error) {

@@ -55,7 +55,11 @@ export async function POST(request) {
     const supabase = getAdminClient();
 
     let saved = false;
-    let percentile = clampPct(totalScore * 0.9); // score-based estimate by default
+    // Null until a real peer sample supports it. This used to default to
+    // clampPct(totalScore * 0.9) — a number derived from the user's own score
+    // and then shown as "Beat X% of students", which compared them to nobody.
+    // The results screen already hides the line when this is null.
+    let percentile = null;
 
     // Persist the full Q&A transcript for the review page. `turns` is
     // [{ question, type, answer, evaluation }] from the voice-interview page;

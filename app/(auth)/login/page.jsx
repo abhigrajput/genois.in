@@ -214,12 +214,11 @@ export default function LoginPage() {
               </div>
             ))}
           </div>
-          <div style={{ padding: '16px 18px', borderRadius: 14, background: 'var(--gx-surface)', border: '1px solid var(--gx-border)', maxWidth: 360 }}>
-            <p style={{ color: 'var(--gx-text-muted)', fontSize: 13.5, lineHeight: 1.6, margin: '0 0 8px', fontStyle: 'italic' }}>
-              “Got placed at Infosys after 3 months on GENOIS.”
-            </p>
-            <div style={{ fontSize: 12, color: MUTED, fontFamily: 'var(--font-mono)' }}>— Priya S. · VTU</div>
-          </div>
+          {/* A testimonial lived here — "Got placed at Infosys after 3 months
+              on GENOIS." — Priya S. · VTU. It was a hardcoded string, not a
+              real student, on a product with no placement outcomes to report
+              yet. Removed rather than replaced: there is nothing truthful to
+              put in its place until a real user says something quotable. */}
         </div>
       </div>
 

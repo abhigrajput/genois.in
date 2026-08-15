@@ -79,7 +79,15 @@ export default function PublicProfilePage() {
           {/* STATS ROW */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(120px,1fr))', gap: 10, marginBottom: 20 }}>
             {[
-              { label: 'Global Rank', value: `#${profile.rank}`, color: 'var(--gx-warning)' },
+              // Rank is omitted entirely when the API sends null (no score row
+              // yet) rather than defaulting to a flattering number. When it is
+              // shown it carries its denominator: placing first among a handful
+              // of beta users is not a global ranking.
+              ...(profile.rank ? [{
+                label: profile.rankTotal ? `of ${profile.rankTotal} on GENOIS` : 'Rank on GENOIS',
+                value: `#${profile.rank}`,
+                color: 'var(--gx-warning)',
+              }] : []),
               { label: 'Streak', value: `🔥${profile.streak}d`, color: 'var(--gx-warning)' },
             ].map(s => (
               <div key={s.label} style={{ background: 'var(--gx-surface)', borderRadius: 10, padding: '12px', textAlign: 'center', border: `1px solid color-mix(in srgb, ${s.color} 7%, transparent)` }}>
@@ -111,7 +119,9 @@ export default function PublicProfilePage() {
         <div style={{ background: 'var(--gx-accent-soft)', border: '1px solid var(--gx-border)', borderRadius: 14, padding: 20, marginBottom: 20, textAlign: 'center' }}>
           <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-accent)', letterSpacing: 2, marginBottom: 10 }}>VERIFIED BY GENOIS</div>
           <div style={{ fontSize: 14, color: 'var(--gx-text-muted)', lineHeight: 1.7 }}>
-            Rank and streak come from real activity on GENOIS — daily coding, timed tests, and actual projects. Not self-reported.
+            {profile.rank
+              ? 'Rank and streak come from real activity on GENOIS — daily coding, timed tests, and actual projects. Not self-reported.'
+              : 'Streak comes from real activity on GENOIS — daily coding, timed tests, and actual projects. Not self-reported.'}
           </div>
           <div style={{ marginTop: 14 }}>
             <Link href="/onboarding" style={{ display: 'inline-block', padding: '10px 24px', borderRadius: 10, background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', textDecoration: 'none', fontFamily: 'var(--font-heading)', fontSize: 13, fontWeight: 700 }}>
