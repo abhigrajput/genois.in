@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import useAuthStore from '@/store/authStore'
-import { useToken } from '@/lib/useApi'
+import { useToken, authHeaders } from '@/lib/useApi'
 import TrialBanner from '@/components/TrialBanner'
 import OnboardingTour from '@/components/OnboardingTour'
 import { isProfileComplete } from '@/lib/profile'
@@ -155,7 +155,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!ready || !token) return
-    const h = { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' }
+    const h = { ...authHeaders(token), 'Content-Type': 'application/json' }
 
     Promise.all([
       fetch('/api/analytics/dashboard', { headers: h }).then(r => r.json()).catch(() => null),
@@ -292,7 +292,7 @@ export default function DashboardPage() {
     try {
       await fetch('/api/tasks/complete', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
         body: JSON.stringify({ day: currentDay, taskType, completed: true }),
       })
       checkAchievements(newMask)
@@ -309,7 +309,7 @@ export default function DashboardPage() {
     try {
       await fetch('/api/notes/generate', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
         body: JSON.stringify({ day: analytics?.progress?.currentDay || 1 }),
       })
       toast.success('Notes generated!', { style: TOAST_STYLE })
@@ -368,7 +368,7 @@ export default function DashboardPage() {
     try {
       const res = await fetch('/api/projects/submit', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
         body: JSON.stringify({
           projectTitle: project.title,
           githubUrl: githubInput,
@@ -557,7 +557,7 @@ export default function DashboardPage() {
             Please verify your email to unlock all features
           </span>
           <Button size="sm" variant="danger" onClick={async () => {
-            try { await fetch('/api/auth/resend-verification', { method: 'POST', headers: { Authorization: 'Bearer ' + token } }); toast.success('Verification email sent!', { style: TOAST_STYLE }) }
+            try { await fetch('/api/auth/resend-verification', { method: 'POST', headers: { ...authHeaders(token) } }); toast.success('Verification email sent!', { style: TOAST_STYLE }) }
             catch { toast.error('Failed to send', { style: TOAST_STYLE }) }
           }}>
             Resend

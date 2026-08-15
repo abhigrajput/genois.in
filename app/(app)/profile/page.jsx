@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import useAuthStore from '@/store/authStore';
 import { authAPI, roadmapAPI } from '@/lib/api';
-import { useToken, apiFetch } from '@/lib/useApi';
+import { useToken, apiFetch, authHeaders } from '@/lib/useApi';
 import Link from 'next/link';
 
 const PLACEMENT_COMPANIES = [
@@ -145,7 +145,7 @@ export default function ProfilePage() {
     try {
       const res = await fetch('/api/profile/visibility', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
         body: JSON.stringify({ profile_public: next }),
       });
       const json = await res.json();
@@ -177,7 +177,7 @@ export default function ProfilePage() {
       }
       const res = await fetch('/api/auth/profile', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
         body: JSON.stringify(payload),
       });
       const d = await res.json();

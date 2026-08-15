@@ -1,8 +1,9 @@
 'use client';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { authHeaders } from '@/lib/useApi';
 
-const LANGUAGES = ['python', 'javascript', 'java', 'cpp', 'c'];
+const LANGUAGES =['python', 'javascript', 'java', 'cpp', 'c'];
 const LANGUAGE_LABELS = { python: 'Python', javascript: 'JavaScript', java: 'Java', cpp: 'C++', c: 'C' };
 
 const STARTERS = {
@@ -37,7 +38,7 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
     let cancelled = false;
     (async () => {
       try {
-        const r = await fetch('/api/code/execute', { headers: { Authorization: 'Bearer ' + token } });
+        const r = await fetch('/api/code/execute', { headers: { ...authHeaders(token) } });
         const d = await r.json();
         if (cancelled) return;
         setExecAvailable(!!d?.data?.configured);
@@ -70,7 +71,7 @@ export default function CodeEditor({ token, taskDescription, expectedOutput, onC
     try {
       const r = await fetch('/api/code/execute', {
         method: 'POST',
-        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
         body: JSON.stringify({ code, language, stdin, expectedOutput }),
       });
       const d = await r.json();

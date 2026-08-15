@@ -1,9 +1,13 @@
 'use client';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import { useToken, authHeaders } from '@/lib/useApi';
 
 export default function TestsPage() {
-  const [token, setToken] = useState(null);
+  // Was an inline copy of useToken() that read localStorage directly. That left
+  // cookie-authenticated users sending `Bearer null` (rejected by extractToken),
+  // so the topic never resolved. Use the shared hook instead.
+  const { token } = useToken();
   const [activeType, setActiveType] = useState(null);
   const [test, setTest] = useState(null);
   const [answers, setAnswers] = useState({});
@@ -18,10 +22,7 @@ export default function TestsPage() {
   const [timeLeft, setTimeLeft] = useState(30);
 
   useEffect(() => {
-    const t = localStorage.getItem('genois_token');
-    setToken(t);
-
-    // Schedule info
+    // Schedule info — no auth needed, so keep it off the token-dependent effect.
     const now = new Date();
     const dow = now.getDay();
     const date = now.getDate();
@@ -29,17 +30,20 @@ export default function TestsPage() {
     const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
     const daysUntilFirst = date === 1 ? 0 : Math.ceil((startOfNextMonth - now) / (1000 * 60 * 60 * 24));
     setScheduleInfo({ dayOfWeek: dow, date, daysUntilMonday, daysUntilFirst });
+  }, []);
 
-    if (!t) return;
-    fetch('/api/roadmap/daily', { headers: { Authorization: 'Bearer ' + t } })
+  useEffect(() => {
+    if (!token) return;
+    const headers = authHeaders(token);
+    fetch('/api/roadmap/daily', { headers })
       .then(r => r.json()).then(d => {
         setTopic(d.data?.roadmapItem?.topic || '');
         setRoadmapId(d.data?.roadmapItem?.id || null);
         setCurrentDay(d.data?.currentDay || 1);
       }).catch(() => {});
-    fetch('/api/tests/history', { headers: { Authorization: 'Bearer ' + t } })
+    fetch('/api/tests/history', { headers })
       .then(r => r.json()).then(d => setHistory(d.data?.tests || [])).catch(() => {});
-  }, []);
+  }, [token]);
 
   // 30-second read gate: counts down from 30 whenever a test loads, resets on new test
   useEffect(() => {
@@ -106,7 +110,7 @@ export default function TestsPage() {
     try {
       const urls = { daily: '/api/tests/daily/generate', weekly: '/api/tests/weekly/generate', monthly: '/api/tests/monthly/generate', revision: '/api/tests/revision/generate' };
       const body = type === 'daily' ? { roadmapId, dayNumber: currentDay } : {};
-      const res = await fetch(urls[type], { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify(body) });
+      const res = await fetch(urls[type], { method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeaders(token) }, body: JSON.stringify(body) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Failed');
       setTest(data.data);
@@ -124,7 +128,7 @@ export default function TestsPage() {
     if (Object.keys(answers).length < test.questions.length) { toast.error('Answer all questions'); return; }
     setLoading(true);
     try {
-      const res = await fetch('/api/tests/submit', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }, body: JSON.stringify({ testId: test.testId, answers: test.questions.map((_, i) => ({ answer: answers[i] || '' })) }) });
+      const res = await fetch('/api/tests/submit', { method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeaders(token) }, body: JSON.stringify({ testId: test.testId, answers: test.questions.map((_, i) => ({ answer: answers[i] || '' })) }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
       setResult(data.data);
