@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useToken } from '@/lib/useApi';
 
 const TOUR_STEPS = [
   {
@@ -34,17 +34,22 @@ const TOUR_STEPS = [
 ];
 
 export default function OnboardingTour() {
-  const router = useRouter();
+  const { token, ready } = useToken();
   const [show, setShow] = useState(false);
   const [step, setStep] = useState(0);
 
+  // The session usually lives in the httpOnly cookie, so a raw
+  // localStorage.getItem('genois_token') read was null for most logged-in users
+  // and the tour never fired for anyone but pre-migration accounts. useToken()
+  // returns the COOKIE_SESSION sentinel in that case — truthy, which is what we
+  // want here. Safe because this component only mounts on /dashboard, behind
+  // AppLayout's auth gate; a logged-out visitor never reaches it.
   useEffect(() => {
-    const seen = localStorage.getItem('onboarding_seen');
-    const token = localStorage.getItem('genois_token');
-    if (token && !seen) {
-      setTimeout(() => setShow(true), 1500);
-    }
-  }, []);
+    if (!ready || !token) return;
+    if (localStorage.getItem('onboarding_seen')) return;
+    const t = setTimeout(() => setShow(true), 1500);
+    return () => clearTimeout(t);
+  }, [ready, token]);
 
   const next = () => {
     if (step >= TOUR_STEPS.length - 1) {

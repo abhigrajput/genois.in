@@ -4,6 +4,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import useAuthStore from '@/store/authStore';
 import { authAPI } from '@/lib/api';
+import { useToken } from '@/lib/useApi';
 import NotificationBell from '@/components/NotificationBell';
 import DailyCheckIn from '@/components/DailyCheckIn';
 import { Progress } from '@/components/ui';
@@ -86,11 +87,15 @@ export default function AppLayout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(true);
   const [checking, setChecking] = useState(!isAuthenticated);
-  const [navToken, setNavToken] = useState(null);
 
-  // Init from localStorage (token + persisted collapse preference).
+  // The header's NotificationBell needs a token. Reading localStorage directly
+  // handed it null for every cookie session, so the bell sent `Bearer null` and
+  // 401'd on every page. useToken() yields the COOKIE_SESSION sentinel instead,
+  // which authHeaders() resolves to "let the cookie do it".
+  const { token: navToken } = useToken();
+
+  // Persisted collapse preference.
   useEffect(() => {
-    setNavToken(localStorage.getItem('genois_token'));
     setCollapsed(localStorage.getItem('genois_sidebar_collapsed') === 'true');
   }, []);
 
@@ -124,6 +129,12 @@ export default function AppLayout({ children }) {
     // (lib/auth.js) — so no server change is needed. The cost is that a genuinely
     // logged-out visitor makes one /api/auth/profile call that 401s before the
     // redirect, the same trade already accepted in usePermission.
+    //
+    // This one stays a raw localStorage read on purpose — it is not a header,
+    // it is the value handed to setAuth(), and setAuth writes any truthy token
+    // straight back to localStorage. Feeding it useToken()'s COOKIE_SESSION
+    // sentinel would persist the sentinel as if it were a real JWT, and every
+    // later authHeaders() call would then send it as a Bearer token and 401.
     const token = typeof window !== 'undefined' ? localStorage.getItem('genois_token') : null;
     authAPI.getProfile()
       .then(res => { setAuth(res.data.user, token, res.data.progress, res.data.score, res.data.skill); setChecking(false); })

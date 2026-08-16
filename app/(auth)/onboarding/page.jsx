@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { trackSignup } from '@/lib/analytics';
 import useAuthStore from '@/store/authStore';
+import { useToken, authHeaders } from '@/lib/useApi';
 
 const DOMAINS = [
   { id: 'fullstack', label: 'Full Stack', icon: '⬡', color: 'var(--gx-accent)', desc: 'HTML CSS React Node.js' },
@@ -52,6 +53,7 @@ const STEPS = ['welcome', 'domain', 'details', 'placement', 'assessment', 'accou
 export default function OnboardingPage() {
   const router = useRouter();
   const { user, updateUser } = useAuthStore();
+  const { token, ready } = useToken();
   const [step, setStep] = useState(0);
   const [selectedDomain, setSelectedDomain] = useState(null);
   const [form, setForm] = useState({ name: '', email: '', password: '', college: '', year: '2' });
@@ -69,6 +71,10 @@ export default function OnboardingPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
 
+    // Deliberately a raw localStorage read, NOT useToken(): the sentinel is
+    // truthy for everyone, so useToken() here would put a brand-new visitor
+    // into authed mode and skip the account-creation steps entirely. A stale
+    // localStorage token is the only signal that is false for a fresh signup.
     const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('genois_token');
     if (params.get('from') === 'google' || hasToken) {
       setAuthedMode(true);
@@ -108,9 +114,14 @@ export default function OnboardingPage() {
     setLoading(true);
     setError('');
     try {
-      const token = localStorage.getItem('genois_token');
+      // Google OAuth lands here with the session in the httpOnly cookie and
+      // nothing in localStorage, so the old raw read was null and bounced the
+      // user straight back to /login — the one path that most needs to work.
+      // useToken() gives the COOKIE_SESSION sentinel there, and authHeaders()
+      // omits the Authorization header so the cookie authenticates instead.
+      if (!ready) { setLoading(false); return; }
       if (!token) { router.push('/login'); return; }
-      const headers = { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token };
+      const headers = { 'Content-Type': 'application/json', ...authHeaders(token) };
 
       // 1. Domain — sets domain_slug and resets progress + roadmap cache.
       await fetch('/api/auth/change-domain', {
@@ -182,8 +193,12 @@ export default function OnboardingPage() {
       const d = await r.json();
       if (!d.success) { setError(d.message || 'Signup failed'); setLoading(false); return; }
 
-      const token = d.data.token;
-      localStorage.setItem('genois_token', token);
+      // Named apart from the outer useToken() value, which is still the
+      // pre-signup state at this point. This is the freshly minted JWT from the
+      // signup response, so it goes on the header verbatim — no sentinel is
+      // possible here and authHeaders() would be a no-op.
+      const newToken = d.data.token;
+      localStorage.setItem('genois_token', newToken);
       localStorage.setItem('genois_user', JSON.stringify(d.data.user));
       trackSignup('email');
 
@@ -198,7 +213,7 @@ export default function OnboardingPage() {
 
         const pr = await fetch('/api/auth/profile', {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + newToken },
           body: JSON.stringify(profilePayload),
         });
         const pd = await pr.json();

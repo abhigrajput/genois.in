@@ -2,7 +2,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { createPortal } from 'react-dom';
+import { authHeaders } from '@/lib/useApi';
 
+// `token` comes from AppLayout's useToken(), so for a cookie session it is the
+// COOKIE_SESSION sentinel — truthy enough to start polling, and authHeaders()
+// turns it into no Authorization header so the same-origin cookie authenticates
+// instead. Before this, a cookie session sent literally `Bearer null`, the API
+// 401'd, and the bell sat permanently empty on every page.
 export default function NotificationBell({ token }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -42,7 +48,7 @@ export default function NotificationBell({ token }) {
 
   async function load() {
     try {
-      const r = await fetch('/api/notifications-v2', { headers: { Authorization: 'Bearer ' + token } });
+      const r = await fetch('/api/notifications-v2', { headers: authHeaders(token) });
       const d = await r.json();
       if (d.success) {
         setNotifs(d.data.notifications || []);
@@ -54,7 +60,7 @@ export default function NotificationBell({ token }) {
   async function markAllRead() {
     await fetch('/api/notifications-v2', {
       method: 'POST',
-      headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+      headers: { ...authHeaders(token), 'Content-Type': 'application/json' },
       body: JSON.stringify({ action: 'mark_all_read' }),
     });
     load();
