@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import useAuthStore from '@/store/authStore';
 
 export default function PublicNav() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -9,9 +10,32 @@ export default function PublicNav() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const pathname = usePathname();
 
+  // Two bugs here, and the token read was only the smaller one.
+  //
+  // 1. isLoggedIn was computed and then never read — the Login / Sign Up pair
+  //    below rendered unconditionally, so a signed-in user browsing a public
+  //    page was invited to log in again. The bare fragments are the fossil of
+  //    a conditional that got deleted.
+  // 2. The signal itself was localStorage.getItem('genois_token'), which is
+  //    null for a cookie session, so it would have been wrong for most
+  //    logged-in users even once it was wired up.
+  //
+  // The fix reads the persisted auth store instead. useToken() is NOT usable
+  // here: its COOKIE_SESSION sentinel is truthy for everyone, and on a public
+  // page "everyone" includes anonymous visitors, who would then be shown a
+  // Dashboard link they cannot use. The store's isAuthenticated is written by
+  // every login path (login, signup, google-callback) and cleared by logout,
+  // survives in localStorage under `genois_auth` independently of the httpOnly
+  // token, and costs no network round-trip on a page anonymous visitors hit.
+  //
+  // Read via getState() inside the effect rather than subscribing, so the
+  // server-rendered markup (always logged-out) matches the first client render
+  // and there is no hydration mismatch. Worst case is a stale true after the
+  // cookie expires: the user sees a Dashboard link and AppLayout's auth gate
+  // redirects them to /login on arrival, which is where the old code sent them
+  // anyway.
   useEffect(() => {
-    const token = localStorage.getItem('genois_token');
-    if (token) setIsLoggedIn(true);
+    setIsLoggedIn(useAuthStore.getState().isAuthenticated);
   }, []);
 
   return (
@@ -74,14 +98,20 @@ export default function PublicNav() {
           )}
         </div>
 
-        <>
-          <Link href="/login" style={{ padding: '8px 18px', borderRadius: 8, border: '1px solid var(--gx-border)', color: 'var(--gx-text)', textDecoration: 'none', fontSize: 14, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
-            Login
+        {isLoggedIn ? (
+          <Link href="/dashboard" style={{ padding: '8px 18px', borderRadius: 8, background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', textDecoration: 'none', fontSize: 14, fontFamily: 'var(--font-heading)', fontWeight: 700 }}>
+            Dashboard →
           </Link>
-          <Link href="/onboarding" style={{ padding: '8px 18px', borderRadius: 8, background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', textDecoration: 'none', fontSize: 14, fontFamily: 'var(--font-heading)', fontWeight: 700 }}>
-            Sign Up Free →
-          </Link>
-        </>
+        ) : (
+          <>
+            <Link href="/login" style={{ padding: '8px 18px', borderRadius: 8, border: '1px solid var(--gx-border)', color: 'var(--gx-text)', textDecoration: 'none', fontSize: 14, fontFamily: 'var(--font-heading)', fontWeight: 600 }}>
+              Login
+            </Link>
+            <Link href="/onboarding" style={{ padding: '8px 18px', borderRadius: 8, background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', textDecoration: 'none', fontSize: 14, fontFamily: 'var(--font-heading)', fontWeight: 700 }}>
+              Sign Up Free →
+            </Link>
+          </>
+        )}
 
         <button
           onClick={() => setMenuOpen(!menuOpen)}
@@ -107,14 +137,20 @@ export default function PublicNav() {
               {n.label}
             </Link>
           ))}
-          <>
-            <Link href="/login" onClick={() => setMenuOpen(false)} style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid var(--gx-border)', color: 'var(--gx-text)', textDecoration: 'none', fontSize: 15, fontFamily: 'var(--font-heading)', fontWeight: 600, textAlign: 'center' }}>
-              Login
+          {isLoggedIn ? (
+            <Link href="/dashboard" onClick={() => setMenuOpen(false)} style={{ padding: '11px 14px', borderRadius: 8, background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', textDecoration: 'none', fontSize: 15, fontFamily: 'var(--font-heading)', fontWeight: 700, textAlign: 'center' }}>
+              Dashboard →
             </Link>
-            <Link href="/onboarding" onClick={() => setMenuOpen(false)} style={{ padding: '11px 14px', borderRadius: 8, background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', textDecoration: 'none', fontSize: 15, fontFamily: 'var(--font-heading)', fontWeight: 700, textAlign: 'center' }}>
-              Sign Up Free →
-            </Link>
-          </>
+          ) : (
+            <>
+              <Link href="/login" onClick={() => setMenuOpen(false)} style={{ padding: '10px 14px', borderRadius: 8, border: '1px solid var(--gx-border)', color: 'var(--gx-text)', textDecoration: 'none', fontSize: 15, fontFamily: 'var(--font-heading)', fontWeight: 600, textAlign: 'center' }}>
+                Login
+              </Link>
+              <Link href="/onboarding" onClick={() => setMenuOpen(false)} style={{ padding: '11px 14px', borderRadius: 8, background: 'var(--gx-accent)', color: 'var(--gx-text-inverse)', textDecoration: 'none', fontSize: 15, fontFamily: 'var(--font-heading)', fontWeight: 700, textAlign: 'center' }}>
+                Sign Up Free →
+              </Link>
+            </>
+          )}
         </div>
       )}
 
