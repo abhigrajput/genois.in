@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 const TOUR_STEPS = [
   {
     title: 'Welcome to GENOIS! 🎉',
-    description: 'Your 30-day Dominator trial is active. All features unlocked. Let me show you around.',
+    description: 'You are in the placement beta — every feature is unlocked, free, with no card and no countdown. Let me show you around.',
     cta: 'Start Tour',
   },
   {
@@ -20,17 +20,15 @@ const TOUR_STEPS = [
   },
   {
     title: '🎯 Mentor',
-    description: '5 modes: Explain, Quiz, Roast, Career Path, Mock Interview. Use them when stuck.',
+    description: '5 modes: General, Coding, Domain, Project, Career. Use them when stuck.',
     cta: 'Continue',
   },
+  // A Leaderboard step lived here, promising "global rankings across every
+  // domain". /leaderboard is a Coming Soon stub, so the tour was selling a
+  // screen that does not exist. Removed until it does.
   {
-    title: '🏆 Leaderboard',
-    description: 'Global rankings across every domain. Climb up. Stay consistent. Get noticed.',
-    cta: 'Continue',
-  },
-  {
-    title: '🎁 Trial Tip',
-    description: 'You have 30 days of all features. Use them. After trial ends auto-downgrade to free Spectator unless you upgrade.',
+    title: '🎁 While you are in the beta',
+    description: 'Everything is unlocked and free — no card, no trial clock, nothing to downgrade to. Paid plans may return later, and beta testers keep founder pricing.',
     cta: 'I am ready',
   },
 ];

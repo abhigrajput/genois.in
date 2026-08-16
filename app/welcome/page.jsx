@@ -19,8 +19,8 @@ export default function WelcomePage() {
 
   const STEPS = [
     { icon: '👋', title: `Welcome to GENOIS!`, desc: 'You just made a decision that most engineers never make — to prove your skill instead of just claiming it.' },
-    { icon: '📅', title: 'Your 30-day journey starts today', desc: 'Every morning you get 5 tasks. Video, Resource, Coding Challenge, Daily Test, Notes. Complete all 5 and your day advances.' },
-    { icon: '🏆', title: 'You will be ranked', desc: 'After each daily test your GENOIS score updates and you get ranked against students from across India. This rank is real. You cannot fake it.' },
+    { icon: '📅', title: 'Your daily journey starts today', desc: 'Every morning you get 5 tasks. Video, Resource, Coding Challenge, Daily Test, Notes. Complete all 5 and your day advances.' },
+    { icon: '🏆', title: 'You will be ranked', desc: 'After each daily test your GENOIS score updates and you get ranked against other GENOIS users. The rank comes from real activity — you cannot fake it.' },
     { icon: '🎯', title: 'One rule', desc: 'Show up every day. Miss a day and your streak breaks. Miss too many days and you fall in rank. The grind is the point.' },
   ];
 
@@ -61,7 +61,7 @@ export default function WelcomePage() {
         )}
 
         <p style={{ marginTop: 16, color: 'var(--gx-text-subtle)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
-          {user?.name ? `${user.name} · ` : ''}{user?.domain_slug?.toUpperCase()} · 30 days free
+          {user?.name ? `${user.name} · ` : ''}{user?.domain_slug?.toUpperCase()} · free during the beta
         </p>
       </div>
     </div>

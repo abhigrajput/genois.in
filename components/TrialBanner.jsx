@@ -1,8 +1,14 @@
 'use client';
 import { usePermission } from '@/lib/usePermission';
+import { BETA_MODE } from '@/lib/permissions';
 
 export default function TrialBanner() {
   const { isInTrial, trialDaysLeft, planLoaded } = usePermission();
+  // During the beta nothing is gated and there is nothing to downgrade to, so a
+  // "trial ending soon" countdown would contradict every other surface. Some
+  // accounts still carry trial_ends_at from before BETA_MODE; ignore it until
+  // the gates come back on, at which point this banner returns untouched.
+  if (BETA_MODE) return null;
   if (!planLoaded || !isInTrial) return null;
   const isUrgent = trialDaysLeft <= 5;
   const color = isUrgent ? 'var(--gx-danger)' : 'var(--gx-success)';

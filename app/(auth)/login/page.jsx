@@ -14,7 +14,10 @@ const BG = 'var(--gx-surface)';
 const CARD = 'var(--gx-bg)';
 const MUTED = 'var(--gx-text-muted)';
 
-const BRAND_BULLETS = ['Free 30-day trial', 'No credit card needed', '10 career domains'];
+// Matches the landing page and /pricing: BETA_MODE unlocks everything for
+// everyone, so there is no trial running and nothing to downgrade to. The
+// domain count is lib/constants.js DOMAINS (10).
+const BRAND_BULLETS = ['Free during the placement beta', 'No credit card needed', '10 career domains'];
 
 // RFC-lite email check — enough to catch typos client-side before we hit the
 // network. The server re-validates with Zod, so this is a UX guard, not the

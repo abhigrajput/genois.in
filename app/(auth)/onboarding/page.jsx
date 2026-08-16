@@ -263,11 +263,11 @@ export default function OnboardingPage() {
             <div style={{ background: 'var(--gx-bg)', border: '1px solid var(--gx-border)', borderRadius: 14, padding: 20, marginBottom: 28, textAlign: 'left' }}>
               <div style={{ fontFamily: 'var(--font-body)', fontSize: 10, color: 'var(--gx-text-muted)', letterSpacing: 2, marginBottom: 14 }}>WHAT YOU GET</div>
               {[
-                { icon: '📅', text: '30-day AI-powered daily roadmap' },
+                { icon: '📅', text: '365-day AI-powered daily roadmap' },
                 { icon: '🎯', text: 'Daily tests, coding challenges, AI notes' },
-                { icon: '🏆', text: 'Real rank among engineers across India' },
+                { icon: '🏆', text: 'Your rank among GENOIS users, from real activity' },
                 { icon: '💼', text: 'Public profile recruiters actually trust' },
-                { icon: '🆓', text: '30 days completely free — no credit card' },
+                { icon: '🆓', text: 'Free during the placement beta — no credit card' },
               ].map((f, i) => (
                 <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 10 }}>
                   <span style={{ fontSize: 18, flexShrink: 0 }}>{f.icon}</span>
@@ -292,7 +292,7 @@ export default function OnboardingPage() {
                 Pick your battlefield
               </h2>
               <p style={{ color: 'var(--gx-text-muted)', fontSize: 14 }}>
-                Choose one domain. Master it in 30 days. Switch anytime.
+                Choose one domain. Your roadmap is built around it. Switch anytime.
               </p>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(150px,1fr))', gap: 10, marginBottom: 24 }}>
@@ -508,11 +508,11 @@ export default function OnboardingPage() {
             <div style={{ display: 'flex', gap: 10 }}>
               <button onClick={() => setStep(4)} style={backBtn}>← Back</button>
               <button onClick={signup} disabled={loading} style={{ flex: 2, padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer', background: loading ? 'var(--gx-accent-soft)' : 'var(--gx-accent)', color: 'var(--gx-text-inverse)', fontFamily: 'var(--font-heading)', fontSize: 15, fontWeight: 700, boxShadow: 'var(--gx-shadow-sm)' }}>
-                {loading ? 'Creating account...' : 'Start Free — 30 Days →'}
+                {loading ? 'Creating account...' : 'Start Free — No Card Needed →'}
               </button>
             </div>
             <p style={{ textAlign: 'center', color: 'var(--gx-text-subtle)', fontSize: 11, fontFamily: 'var(--font-mono)', marginTop: 10 }}>
-              No credit card · Cancel anytime · Free for 30 days
+              No credit card · Cancel anytime · Free during the beta
             </p>
           </div>
         )}

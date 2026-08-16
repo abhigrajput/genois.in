@@ -357,7 +357,7 @@ export default function SignupPage() {
             <div style={{ width: 72, height: 72, borderRadius: '50%', margin: '0 auto 20px', background: PURPLE, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-heading)', fontWeight: 800, fontSize: 34, color: 'var(--gx-text-inverse)', boxShadow: 'var(--gx-shadow-sm)' }}>G</div>
             <h1 style={{ fontFamily: 'var(--font-heading)', fontSize: 26, fontWeight: 800, color: 'var(--gx-text)', margin: '0 0 10px' }}>Let&apos;s set you up</h1>
             <p style={{ color: MUTED, fontSize: 15, lineHeight: 1.6, margin: '0 0 28px' }}>
-              No boring forms. Just a quick chat and your free Dominator account is ready. Shall we begin?
+              No boring forms. Just a quick chat and your free beta account is ready. Shall we begin?
             </p>
 
             <button onClick={beginChat} style={{
