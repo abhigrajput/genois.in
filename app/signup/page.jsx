@@ -316,7 +316,8 @@ export default function SignupPage() {
         localStorage.setItem('genois_token', token);
         localStorage.setItem('genois_user', JSON.stringify(user));
         localStorage.setItem('genois_plan', user?.subscription_plan || 'spectator');
-        document.cookie = `genois_token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
+        // No document.cookie write: /api/auth/signup already set genois_token as
+        // an httpOnly cookie on this same-origin response.
       }
 
       // Hydrate the auth store so the dashboard sees the session immediately.

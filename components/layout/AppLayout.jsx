@@ -2,6 +2,7 @@
 import { useState, useEffect, memo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import useAuthStore from '@/store/authStore';
 import { authAPI } from '@/lib/api';
 import { useToken } from '@/lib/useApi';
@@ -149,10 +150,20 @@ export default function AppLayout({ children }) {
     });
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // The session is an httpOnly cookie page JS cannot clear, so only the
+    // server can end it: the route blacklists the token and expires the cookie.
+    let serverLoggedOut = false;
+    try {
+      const res = await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+      serverLoggedOut = res.ok;
+    } catch { /* network failure — reported below */ }
+
     logout();
     localStorage.removeItem('genois_plan');
-    document.cookie = 'genois_token=; path=/; max-age=0';
+    if (!serverLoggedOut) {
+      toast.error("Couldn't reach the server to end your session. Close this browser to make sure you're signed out.", { duration: 8000 });
+    }
     router.push('/login');
   };
 

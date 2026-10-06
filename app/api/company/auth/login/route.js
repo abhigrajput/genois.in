@@ -61,7 +61,7 @@ export async function POST(request) {
     const token = jwt.sign(
       { companyId: company.id, email: company.email, type: 'company' },
       process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET,
-      { expiresIn: '7d' }
+      { algorithm: 'HS256', expiresIn: '7d' }
     );
 
     return successResponse({

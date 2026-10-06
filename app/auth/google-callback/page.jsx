@@ -37,38 +37,48 @@ export default function GoogleCallbackPage() {
 
       didRedirect.current = true;
 
-      // 1. Set cookie for middleware
-      document.cookie = `genois_token=${token}; path=/; max-age=${7 * 24 * 60 * 60}; SameSite=Lax`;
-
-      // 2. Set localStorage
-      localStorage.setItem('genois_token', token);
-      if (session.plan) localStorage.setItem('genois_plan', session.plan);
-
-      setMessage('Loading your profile...');
-
-      // 3. Fetch the FULL profile — /api/auth/profile returns the complete user
-      // row (college, target_companies, …) plus progress/score/skill. /api/user/me
-      // omits college & target_companies, so isProfileComplete() could never see
-      // them and every OAuth user was misrouted.
-      apiFetch('/api/auth/profile', token)
+      // 1. Have the server set the httpOnly session cookie (middleware gating).
+      // It reads the token from the NextAuth session itself, so nothing is sent.
+      fetch('/api/auth/google-session', { method: 'POST' })
         .then(r => {
-          const { user, progress, score, skill } = r.data;
-          setAuth(user, token, progress, score, skill);
+          if (!r.ok) throw new Error(`google-session ${r.status}`);
+        })
+        .then(() => {
+          // 2. Set localStorage
+          localStorage.setItem('genois_token', token);
+          if (session.plan) localStorage.setItem('genois_plan', session.plan);
 
-          // 4. Redirect: any incomplete profile → onboarding (college, domain,
-          // target company, timeline, weak areas). Only fully-set-up returning
-          // users go straight to the dashboard.
-          if (!isProfileComplete(user)) {
-            router.replace('/onboarding?from=google');
-          } else {
-            router.replace('/dashboard');
-          }
+          setMessage('Loading your profile...');
+
+          // 3. Fetch the FULL profile — /api/auth/profile returns the complete user
+          // row (college, target_companies, …) plus progress/score/skill. /api/user/me
+          // omits college & target_companies, so isProfileComplete() could never see
+          // them and every OAuth user was misrouted.
+          return apiFetch('/api/auth/profile', token)
+            .then(r => {
+              const { user, progress, score, skill } = r.data;
+              setAuth(user, token, progress, score, skill);
+
+              // 4. Redirect: any incomplete profile → onboarding (college, domain,
+              // target company, timeline, weak areas). Only fully-set-up returning
+              // users go straight to the dashboard.
+              if (!isProfileComplete(user)) {
+                router.replace('/onboarding?from=google');
+              } else {
+                router.replace('/dashboard');
+              }
+            })
+            .catch(() => {
+              // Partial hydration — we couldn't confirm the profile, so send new
+              // sign-ins through onboarding; returning users hit the dashboard guard.
+              setAuth({ email: session.userEmail, name: session.userName }, token, null, null, null);
+              router.replace(session.isNewUser ? '/onboarding?from=google' : '/dashboard');
+            });
         })
         .catch(() => {
-          // Partial hydration — we couldn't confirm the profile, so send new
-          // sign-ins through onboarding; returning users hit the dashboard guard.
-          setAuth({ email: session.userEmail, name: session.userName }, token, null, null, null);
-          router.replace(session.isNewUser ? '/onboarding?from=google' : '/dashboard');
+          // No server-set session cookie means the proxy would bounce every
+          // protected page to /login anyway — fail the sign-in visibly instead.
+          router.replace('/login?error=OAuthSignIn');
         });
     }
   }, [status, session]);

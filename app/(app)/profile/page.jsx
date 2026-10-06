@@ -247,10 +247,19 @@ export default function ProfilePage() {
     setLoading(false);
   }
 
-  function signOut() {
+  async function signOut() {
+    // Same as the sidebar logout: only the server can end an httpOnly session.
+    let serverLoggedOut = false;
+    try {
+      const res = await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+      serverLoggedOut = res.ok;
+    } catch { /* network failure — reported below */ }
+
     logout();
-    document.cookie = 'genois_token=; path=/; max-age=0';
     localStorage.clear();
+    if (!serverLoggedOut) {
+      toast.error("Couldn't reach the server to end your session. Close this browser to make sure you're signed out.", { duration: 8000 });
+    }
     router.push('/login');
   }
 

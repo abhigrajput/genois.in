@@ -35,7 +35,7 @@ const body = await res.json().catch(() => null);
 if (!res.ok) {
   console.error(`✘ Seed failed (${res.status})`, body?.message || '');
   if (res.status === 404 || /relation .* does not exist|knowledge_base/i.test(body?.message || '')) {
-    console.error('  → The knowledge_base table may not exist yet. Run the v3-migrate endpoint first, then retry.');
+    console.error('  → The knowledge_base table may not exist yet. Apply supabase/migrations/20260607_rag_schema.sql first, then retry.');
   }
   process.exit(1);
 }

@@ -51,7 +51,7 @@ export async function POST(request) {
 
     // Success — clear this IP's failure counter and mint a short-lived token.
     await clearFailedLogins(ip);
-    const token = jwt.sign({ role: 'placement_admin' }, JWT_SECRET, { expiresIn: '24h' });
+    const token = jwt.sign({ role: 'placement_admin' }, JWT_SECRET, { algorithm: 'HS256', expiresIn: '24h' });
     return NextResponse.json({ success: true, token });
   } catch (e) {
     console.error('PLACEMENT_AUTH_ERROR:', e);

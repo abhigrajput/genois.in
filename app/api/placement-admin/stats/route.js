@@ -9,7 +9,7 @@ function verifyPlacementToken(request) {
   const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
   if (!token || !JWT_SECRET) return false;
   try {
-    const payload = jwt.verify(token, JWT_SECRET);
+    const payload = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
     return payload.role === 'placement_admin';
   } catch {
     return false;

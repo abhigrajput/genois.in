@@ -1,4 +1,4 @@
-import { getUserFromRequest, verifyToken } from '@/lib/auth';
+import { getUserFromRequest, verifyToken, sessionCookie } from '@/lib/auth';
 import { blacklistToken } from '@/lib/jwtBlacklist';
 import { successResponse, errorResponse } from '@/lib/response';
 import { csrfCheck } from '@/lib/security';
@@ -32,12 +32,11 @@ export async function POST(request) {
       }
     }
 
-    // Clear the httpOnly cookie as well
+    // Clear the httpOnly cookie with the same attributes it was set with. A
+    // hand-written `Secure` here also broke clearing over plain http in dev:
+    // browsers that refuse Secure cookies on http dropped the deletion.
     const response = successResponse({ loggedOut: true }, 'Logged out successfully');
-    response.headers.set(
-      'Set-Cookie',
-      'genois_token=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0'
-    );
+    response.headers.set('Set-Cookie', sessionCookie('', 0));
     return response;
   } catch (error) {
     console.error('Logout error:', error);
