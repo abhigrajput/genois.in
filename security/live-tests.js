@@ -221,24 +221,41 @@ async function main() {
   }
 
   // ── 12. Spoofed X-Forwarded-For doesn't bypass rate limit (M4) ───────────
-  // We send several login attempts with different fake XFF values; ratelimit
-  // should still cap because we now read x-real-ip / last XFF hop. On
-  // localhost there's no x-real-ip header, so this confirms the "last entry"
-  // path picks up the consistent real IP from the dev server.
-  {
-    // First, drain any existing lockout state by waiting a beat — we just used
-    // our token for chatbot, didn't touch login. Cleared.
-    let saw429 = false;
-    for (let i = 0; i < 8; i++) {
+  // getClientIp() (lib/security.js) keys limits on `x-real-ip`, else the LAST
+  // X-Forwarded-For hop — the values the edge controls, not the client. In
+  // production Vercel sets both. The Next dev server sets neither and passes a
+  // client-supplied XFF through untouched, so on localhost we play the edge's
+  // part: a fixed "real" hop plus a rotating attacker-controlled XFF[0]. The
+  // lockout must still trigger. Real hops are TEST-NET-3 (203.0.113.0/24), so
+  // the lockout lands on those, never on the tester's own IP.
+  //
+  // What this proves is that the server ignores the spoofable part. That the
+  // edge in front of production really sets x-real-ip is a platform property
+  // this script cannot check from localhost.
+  for (const { label, realIp, headersFor } of [
+    {
+      label: 'edge-set x-real-ip',
+      realIp: '203.0.113.10',
+      headersFor: (i, ip) => ({ 'X-Real-IP': ip, 'X-Forwarded-For': `9.9.9.${i}` }),
+    },
+    {
+      label: 'proxy-appended XFF hop',
+      realIp: '203.0.113.20',
+      headersFor: (i, ip) => ({ 'X-Forwarded-For': `9.9.9.${i}, ${ip}` }),
+    },
+  ]) {
+    let saw429At = 0;
+    for (let i = 1; i <= 8; i++) {
       const r = await req('/api/auth/login', {
         method: 'POST',
-        headers: { 'X-Forwarded-For': `9.9.9.${i}` },
+        headers: headersFor(i, realIp),
         body: { email: 'nonexistent-' + i + '@genois.in', password: 'wrong' },
       });
-      if (r.status === 429) { saw429 = true; break; }
+      if (r.status === 429) { saw429At = i; break; }
     }
-    record('Spoofed X-Forwarded-For cannot bypass per-IP lockout (M4)', 'M', saw429,
-      saw429 ? 'lockout triggered despite rotated XFF[0]' : 'lockout did not trigger — XFF spoof may still work');
+    record(`Spoofed X-Forwarded-For cannot bypass per-IP lockout (M4, ${label})`, 'M', saw429At > 0,
+      saw429At ? `429 on attempt ${saw429At} despite rotating XFF[0] (real hop ${realIp})`
+               : `no 429 in 8 attempts — limits keyed on the spoofable XFF[0]`);
   }
 
   // ── 13. /api/dsa-video is still open (we did not fix this; flag) ─────────
