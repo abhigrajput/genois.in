@@ -9,7 +9,6 @@ const DOMAIN_COLORS = { cloud: 'var(--gx-info)', fullstack: 'var(--gx-info)', ds
 export default function CompanyDashboardPage() {
   const router = useRouter();
   const [company, setCompany] = useState(null);
-  const [token, setToken] = useState(null);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ domain: '', minScore: 0, college: '', tier: '' });
@@ -17,16 +16,23 @@ export default function CompanyDashboardPage() {
   const [contactModal, setContactModal] = useState(null);
   const [message, setMessage] = useState('');
 
+  // Auth is the httpOnly company cookie, sent automatically to /api/company/*.
+  // The stored profile is only a UI hint for "signed in"; a 401 from the API is
+  // the real answer and sends the user back to login.
   useEffect(() => {
-    const t = localStorage.getItem('genois_company_token');
+    localStorage.removeItem('genois_company_token'); // legacy script-readable copy
     const c = localStorage.getItem('genois_company');
-    if (!t || !c) { router.push('/company/login'); return; }
-    setToken(t);
+    if (!c) { router.push('/company/login'); return; }
     setCompany(JSON.parse(c));
-    loadStudents(t, {});
+    loadStudents({});
   }, []);
 
-  async function loadStudents(t, f) {
+  function sessionExpired() {
+    localStorage.removeItem('genois_company');
+    router.push('/company/login');
+  }
+
+  async function loadStudents(f) {
     setLoading(true);
     try {
       const params = new URLSearchParams();
@@ -36,9 +42,8 @@ export default function CompanyDashboardPage() {
       if (f.tier) params.set('tier', f.tier);
       params.set('limit', '50');
 
-      const r = await fetch('/api/company/students?' + params.toString(), {
-        headers: { Authorization: 'Bearer ' + t },
-      });
+      const r = await fetch('/api/company/students?' + params.toString());
+      if (r.status === 401) { sessionExpired(); return; }
       const d = await r.json();
       setStudents(d.data?.students || []);
     } catch {}
@@ -51,9 +56,10 @@ export default function CompanyDashboardPage() {
     try {
       const r = await fetch('/api/company/contact', {
         method: 'POST',
-        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ studentUserId: contactModal.userId, message }),
       });
+      if (r.status === 401) { sessionExpired(); return; }
       const d = await r.json();
       if (d.success) {
         toast.success('Contact request sent! Student will be emailed.');
@@ -67,11 +73,12 @@ export default function CompanyDashboardPage() {
   }
 
   function applyFilters() {
-    loadStudents(token, filters);
+    loadStudents(filters);
   }
 
-  function logout() {
-    localStorage.removeItem('genois_company_token');
+  // The cookie is httpOnly, so only the server can revoke and clear it.
+  async function logout() {
+    try { await fetch('/api/company/auth/logout', { method: 'POST' }); } catch {}
     localStorage.removeItem('genois_company');
     router.push('/company/login');
   }

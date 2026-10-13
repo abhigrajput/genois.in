@@ -8,24 +8,30 @@ const DIFFICULTIES = ['easy', 'medium', 'hard'];
 
 export default function CompanyChallengesPage() {
   const router = useRouter();
-  const [token, setToken] = useState(null);
   const [challenges, setChallenges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [form, setForm] = useState({ title: '', description: '', domain: 'fullstack', difficulty: 'medium', deadline: '' });
 
+  // Auth is the httpOnly company cookie, sent automatically to /api/company/*.
+  // The stored profile is only a UI hint; a 401 sends the user back to login.
   useEffect(() => {
-    const t = localStorage.getItem('genois_company_token');
-    if (!t) { router.push('/company/login'); return; }
-    setToken(t);
-    loadChallenges(t);
+    localStorage.removeItem('genois_company_token'); // legacy script-readable copy
+    if (!localStorage.getItem('genois_company')) { router.push('/company/login'); return; }
+    loadChallenges();
   }, []);
 
-  async function loadChallenges(t) {
+  function sessionExpired() {
+    localStorage.removeItem('genois_company');
+    router.push('/company/login');
+  }
+
+  async function loadChallenges() {
     setLoading(true);
     try {
-      const r = await fetch('/api/company/challenges', { headers: { Authorization: 'Bearer ' + t } });
+      const r = await fetch('/api/company/challenges');
+      if (r.status === 401) { sessionExpired(); return; }
       const d = await r.json();
       setChallenges(d.data?.challenges || []);
     } catch {}
@@ -38,15 +44,16 @@ export default function CompanyChallengesPage() {
     try {
       const r = await fetch('/api/company/challenges', {
         method: 'POST',
-        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       });
+      if (r.status === 401) { sessionExpired(); return; }
       const d = await r.json();
       if (d.success) {
         toast.success('Challenge created with AI questions!');
         setShowForm(false);
         setForm({ title: '', description: '', domain: 'fullstack', difficulty: 'medium', deadline: '' });
-        loadChallenges(token);
+        loadChallenges();
       } else {
         toast.error(d.message);
       }

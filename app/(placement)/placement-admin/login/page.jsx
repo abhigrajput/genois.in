@@ -22,7 +22,10 @@ export default function PlacementLoginPage() {
       });
       const d = await r.json();
       if (!d.success) { setError(d.message || 'Invalid PIN'); setLoading(false); return; }
-      localStorage.setItem('placement_admin_token', d.token);
+      // The token is in the httpOnly placement cookie the response just set.
+      // Keep only a non-secret "signed in" hint for the layout's redirect.
+      localStorage.removeItem('placement_admin_token');
+      localStorage.setItem('placement_admin_session', '1');
       router.push('/placement-admin');
     } catch {
       setError('Something went wrong. Try again.');

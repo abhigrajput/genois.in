@@ -22,7 +22,9 @@ export default function CompanyLoginPage() {
       });
       const d = await r.json();
       if (!d.success) { setError(d.message); setLoading(false); return; }
-      localStorage.setItem('genois_company_token', d.data.token);
+      // The token is in the httpOnly company cookie the response just set; only
+      // the non-secret profile is kept client-side. Drop any legacy token copy.
+      localStorage.removeItem('genois_company_token');
       localStorage.setItem('genois_company', JSON.stringify(d.data.company));
       router.push('/company/dashboard');
     } catch { setError('Something went wrong'); }

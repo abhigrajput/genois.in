@@ -1,20 +1,6 @@
-import jwt from 'jsonwebtoken';
 import { getAdminClient } from '@/lib/supabaseAdmin';
 import { NextResponse } from 'next/server';
-
-const JWT_SECRET = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET;
-
-function verifyPlacementToken(request) {
-  const auth = request.headers.get('authorization') || '';
-  const token = auth.startsWith('Bearer ') ? auth.slice(7) : null;
-  if (!token || !JWT_SECRET) return false;
-  try {
-    const payload = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
-    return payload.role === 'placement_admin';
-  } catch {
-    return false;
-  }
-}
+import { getPlacementAdminFromRequest } from '@/lib/placementAuth';
 
 function readinessScore(user, progress, score, testCount) {
   const dayPoints  = Math.min((progress.current_day || 1) / 365 * 30, 30);
@@ -33,7 +19,7 @@ function readinessLevel(score) {
 }
 
 export async function GET(request) {
-  if (!verifyPlacementToken(request)) {
+  if (!await getPlacementAdminFromRequest(request)) {
     return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
   }
 

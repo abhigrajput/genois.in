@@ -1,5 +1,5 @@
-import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
+import { placementCookie, signPlacementToken } from '@/lib/placementAuth';
 import {
   rateLimit, rateLimitResponse,
   isLockedOut, recordFailedLogin, clearFailedLogins, lockoutResponse,
@@ -50,9 +50,11 @@ export async function POST(request) {
     }
 
     // Success — clear this IP's failure counter and mint a short-lived token.
+    // It goes only into the httpOnly placement cookie, never the body.
     await clearFailedLogins(ip);
-    const token = jwt.sign({ role: 'placement_admin' }, JWT_SECRET, { algorithm: 'HS256', expiresIn: '24h' });
-    return NextResponse.json({ success: true, token });
+    const res = NextResponse.json({ success: true });
+    res.headers.set('Set-Cookie', placementCookie(signPlacementToken()));
+    return res;
   } catch (e) {
     console.error('PLACEMENT_AUTH_ERROR:', e);
     return NextResponse.json({ success: false, message: 'Internal server error' }, { status: 500 });

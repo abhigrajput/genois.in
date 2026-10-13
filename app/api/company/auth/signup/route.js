@@ -5,6 +5,7 @@ import { getAdminClient } from '@/lib/supabaseAdmin';
 import { successResponse, errorResponse } from '@/lib/response';
 import { rateLimit, rateLimitResponse } from '@/lib/rateLimit';
 import { csrfCheck, checkPasswordStrength, getClientIp } from '@/lib/security';
+import { companyCookie } from '@/lib/companyAuth';
 
 const SignupSchema = z.object({
   name:         z.string().trim().min(2, 'Name must be at least 2 characters').max(100),
@@ -73,10 +74,12 @@ export async function POST(request) {
       { algorithm: 'HS256', expiresIn: '7d' }
     );
 
-    return successResponse({
-      token,
+    // The token goes only into the httpOnly company cookie — not the body.
+    const res = successResponse({
       company: { id: company.id, name: company.name, email: company.email },
     }, 'Account created successfully', 201);
+    res.headers.set('Set-Cookie', companyCookie(token));
+    return res;
   } catch (error) {
     console.error('Company signup error:', error);
     return errorResponse('Internal server error', 500);

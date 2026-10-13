@@ -54,18 +54,24 @@ export default function PlacementDashboard() {
   const [expandedRow, setExpandedRow] = useState(null);
   const [activeSegment, setActiveSegment] = useState('');
 
+  // Auth is the httpOnly placement cookie, sent automatically to
+  // /api/placement-admin/*. A 401 (expired, revoked or missing) clears the
+  // layout's "signed in" hint and returns to login.
   useEffect(() => {
-    const token = localStorage.getItem('placement_admin_token');
-    if (!token) { router.replace('/placement-admin/login'); return; }
-    fetchStats(token);
-    const interval = setInterval(() => fetchStats(token), 5 * 60 * 1000);
+    if (!localStorage.getItem('placement_admin_session')) { router.replace('/placement-admin/login'); return; }
+    fetchStats();
+    const interval = setInterval(() => fetchStats(), 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, [router]);
 
-  async function fetchStats(token) {
+  async function fetchStats() {
     try {
-      const r = await fetch('/api/placement-admin/stats', { headers: { Authorization: `Bearer ${token}` } });
-      if (r.status === 401) { router.replace('/placement-admin/login'); return; }
+      const r = await fetch('/api/placement-admin/stats');
+      if (r.status === 401) {
+        localStorage.removeItem('placement_admin_session');
+        router.replace('/placement-admin/login');
+        return;
+      }
       const d = await r.json();
       if (d.success) setData(d.data);
       else setError(d.message || 'Failed to load data');
@@ -75,8 +81,10 @@ export default function PlacementDashboard() {
     setLoading(false);
   }
 
-  function logout() {
-    localStorage.removeItem('placement_admin_token');
+  // The cookie is httpOnly, so only the server can revoke and clear it.
+  async function logout() {
+    try { await fetch('/api/placement-admin/auth/logout', { method: 'POST' }); } catch {}
+    localStorage.removeItem('placement_admin_session');
     router.push('/placement-admin/login');
   }
 

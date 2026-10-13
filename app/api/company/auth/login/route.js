@@ -9,6 +9,7 @@ import {
   LIMITS,
 } from '@/lib/rateLimit';
 import { csrfCheck, getClientIp } from '@/lib/security';
+import { companyCookie } from '@/lib/companyAuth';
 
 const LoginSchema = z.object({
   email: z.string().email('Invalid email format').max(255),
@@ -64,10 +65,13 @@ export async function POST(request) {
       { algorithm: 'HS256', expiresIn: '7d' }
     );
 
-    return successResponse({
-      token,
+    // The token goes only into the httpOnly company cookie — not the body, so no
+    // script on the page can read it.
+    const res = successResponse({
       company: { id: company.id, name: company.name, email: company.email },
     });
+    res.headers.set('Set-Cookie', companyCookie(token));
+    return res;
   } catch (error) {
     console.error('Company login error:', error);
     return errorResponse('Internal server error', 500);

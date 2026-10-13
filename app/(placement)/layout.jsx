@@ -6,10 +6,12 @@ export default function PlacementLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
 
+  // The session is an httpOnly cookie JS cannot see, so this checks only the
+  // non-secret hint set at login. The stats API's 401 is the real check.
   useEffect(() => {
+    localStorage.removeItem('placement_admin_token'); // legacy script-readable copy
     if (pathname === '/placement-admin/login') return;
-    const token = localStorage.getItem('placement_admin_token');
-    if (!token) router.replace('/placement-admin/login');
+    if (!localStorage.getItem('placement_admin_session')) router.replace('/placement-admin/login');
   }, [pathname, router]);
 
   return (
