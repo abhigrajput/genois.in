@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { roadmapAPI, taskAPI, testAPI, codingAPI, notesAPI } from '@/lib/api';
-import { COOKIE_SESSION, authHeaders } from '@/lib/useApi';
+import { COOKIE_SESSION } from '@/lib/useApi';
 import useAuthStore from '@/store/authStore';
 import CodeEditor from '@/components/CodeEditor';
 import VideoPlayer from '@/components/VideoPlayer';
@@ -374,13 +374,10 @@ export default function DailyRoadmapPage() {
     }
     setSubmittingProject(true);
     try {
-      const token = localStorage.getItem('genois_token') || COOKIE_SESSION;
+      // The httpOnly session cookie authenticates this same-origin request.
       const res = await fetch('/api/projects/submit', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...authHeaders(token),
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           projectTitle: daily.project.title,
           githubUrl: projectUrl,
@@ -831,7 +828,7 @@ export default function DailyRoadmapPage() {
                     </div>
                     <CodeEditor
                       key={codingTest.id}
-                      token={localStorage.getItem('genois_token') || COOKIE_SESSION}
+                      token={COOKIE_SESSION}
                       taskDescription={codingTest?.problem || 'Complete the coding challenge'}
                       expectedOutput={codingTest?.example_output || null}
                       onComplete={submitCode}
