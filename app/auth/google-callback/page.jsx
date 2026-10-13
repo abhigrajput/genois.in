@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import useAuthStore from '@/store/authStore';
-import { apiFetch } from '@/lib/useApi';
+import { apiFetch, COOKIE_SESSION } from '@/lib/useApi';
 import { isProfileComplete } from '@/lib/profile';
 
 export default function GoogleCallbackPage() {
@@ -26,26 +26,18 @@ export default function GoogleCallbackPage() {
     }
 
     if (status === 'authenticated') {
-      const token = session?.genoisToken;
-
-      if (!token) {
-        // JWT callback ran but failed to attach genoisToken (Supabase error etc.)
-        didRedirect.current = true;
-        router.replace('/login?error=OAuthSignIn');
-        return;
-      }
-
       didRedirect.current = true;
 
-      // 1. Have the server set the httpOnly session cookie (middleware gating).
-      // It reads the token from the NextAuth session itself, so nothing is sent.
+      // 1. Have the server set the httpOnly session cookie. It reads the genois
+      // token from the NextAuth JWT with getToken(), so the token never reaches
+      // this page — and a JWT callback that failed to attach one (Supabase
+      // error etc.) surfaces here as a 401, which fails the sign-in below.
       fetch('/api/auth/google-session', { method: 'POST' })
         .then(r => {
           if (!r.ok) throw new Error(`google-session ${r.status}`);
         })
         .then(() => {
-          // 2. Set localStorage
-          localStorage.setItem('genois_token', token);
+          // 2. Non-secret preferences only — the token stays in the cookie.
           if (session.plan) localStorage.setItem('genois_plan', session.plan);
 
           setMessage('Loading your profile...');
@@ -54,10 +46,12 @@ export default function GoogleCallbackPage() {
           // row (college, target_companies, …) plus progress/score/skill. /api/user/me
           // omits college & target_companies, so isProfileComplete() could never see
           // them and every OAuth user was misrouted.
-          return apiFetch('/api/auth/profile', token)
+          // COOKIE_SESSION makes apiFetch send no Authorization header, so the
+          // cookie set in step 1 authenticates. It is passed, never stored.
+          return apiFetch('/api/auth/profile', COOKIE_SESSION)
             .then(r => {
               const { user, progress, score, skill } = r.data;
-              setAuth(user, token, progress, score, skill);
+              setAuth(user, null, progress, score, skill);
 
               // 4. Redirect: any incomplete profile → onboarding (college, domain,
               // target company, timeline, weak areas). Only fully-set-up returning
@@ -71,7 +65,7 @@ export default function GoogleCallbackPage() {
             .catch(() => {
               // Partial hydration — we couldn't confirm the profile, so send new
               // sign-ins through onboarding; returning users hit the dashboard guard.
-              setAuth({ email: session.userEmail, name: session.userName }, token, null, null, null);
+              setAuth({ email: session.userEmail, name: session.userName }, null, null, null, null);
               router.replace(session.isNewUser ? '/onboarding?from=google' : '/dashboard');
             });
         })

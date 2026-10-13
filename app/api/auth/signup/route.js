@@ -196,10 +196,9 @@ export async function POST(request) {
     const token = await generateToken({ userId: user.id });
     const { password_hash: _drop, ...safeUser } = user;
 
-    // FIX P4: set the httpOnly session cookie so post-signup requests and
-    // middleware gating ride the XSS-inaccessible cookie, not just the body
-    // token the client copies into localStorage.
-    const res = successResponse({ user: safeUser, token }, 'Account created successfully', 201);
+    // FIX P4: the httpOnly session cookie is the only place the token goes —
+    // post-signup requests and middleware gating ride it. Not in the body.
+    const res = successResponse({ user: safeUser }, 'Account created successfully', 201);
     res.headers.set('Set-Cookie', sessionCookie(token));
     return res;
   } catch (error) {

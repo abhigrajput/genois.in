@@ -304,8 +304,9 @@ export default function SignupPage() {
         return;
       }
 
-      const { user, token } = d.data || {};
-      if (!token) {
+      // No token in the body: /api/auth/signup set it as the httpOnly cookie.
+      const { user } = d.data || {};
+      if (!user) {
         setStep('password');
         setRetryPassword(true);
         pushAI('Your account was created but sign-in failed. Please try again.');
@@ -313,17 +314,17 @@ export default function SignupPage() {
       }
 
       if (typeof window !== 'undefined') {
-        localStorage.setItem('genois_token', token);
         localStorage.setItem('genois_user', JSON.stringify(user));
         localStorage.setItem('genois_plan', user?.subscription_plan || 'spectator');
-        // No document.cookie write: /api/auth/signup already set genois_token as
-        // an httpOnly cookie on this same-origin response.
+        // No token write to localStorage or document.cookie: /api/auth/signup
+        // already set genois_token as an httpOnly cookie on this same-origin
+        // response, and that cookie alone authenticates.
       }
 
       // Hydrate the auth store so the dashboard sees the session immediately.
       try {
         const { default: useAuthStore } = await import('@/store/authStore');
-        useAuthStore.getState().setAuth(user, token);
+        useAuthStore.getState().setAuth(user, null);
       } catch {}
 
       trackSignup('email');

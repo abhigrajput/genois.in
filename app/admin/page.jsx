@@ -16,14 +16,17 @@ export default function AdminPage() {
   const [userDetail, setUserDetail] = useState(null);
   const [error, setError] = useState(null);
 
+  // Auth is the httpOnly genois_token cookie, sent automatically on these
+  // same-origin fetches. There is no client-side "has a token" check: JS
+  // cannot see the cookie, and /api/admin answers 403 both for no session and
+  // for a non-admin one, which lands on the error screen's login button below.
   useEffect(() => {
-    const token = localStorage.getItem('genois_token');
-    if (!token) { router.push('/login?redirect=/admin'); return; }
-    fetch('/api/admin', { headers: { Authorization: 'Bearer ' + token } })
+    fetch('/api/admin')
       .then(async r => {
         const d = await r.json();
         if (r.status === 401 || r.status === 403) {
-          // Stale or revoked token — clear and re-login
+          // No session, stale session, or not an admin — drop any legacy
+          // localStorage token and offer re-login.
           localStorage.removeItem('genois_token');
           setError('Session expired or insufficient privileges. Please log in as admin.');
         } else if (!d.success) {
@@ -37,18 +40,16 @@ export default function AdminPage() {
   }, []);
 
   async function loadUser(userId) {
-    const token = localStorage.getItem('genois_token');
-    const r = await fetch(`/api/admin/user?userId=${userId}`, { headers: { Authorization: 'Bearer ' + token } });
+    const r = await fetch(`/api/admin/user?userId=${userId}`);
     const d = await r.json();
     setUserDetail(d.data);
     setTab('user_detail');
   }
 
   async function extendTrial(userId, days) {
-    const token = localStorage.getItem('genois_token');
     const r = await fetch('/api/admin/trial', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId, action: 'extend', days })
     });
     const d = await r.json();
@@ -59,10 +60,9 @@ export default function AdminPage() {
 
   async function revokeTrial(userId) {
     if (!confirm('Revoke trial for this user?')) return;
-    const token = localStorage.getItem('genois_token');
     const r = await fetch('/api/admin/trial', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId, action: 'revoke' })
     });
     const d = await r.json();
@@ -73,10 +73,9 @@ export default function AdminPage() {
 
   async function setPlan(userId, plan) {
     if (!plan) return;
-    const token = localStorage.getItem('genois_token');
     const r = await fetch('/api/admin/trial', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId, action: 'set_plan', plan })
     });
     const d = await r.json();

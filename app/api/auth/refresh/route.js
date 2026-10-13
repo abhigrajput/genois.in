@@ -22,8 +22,9 @@ export async function POST(request) {
     if (!user) return errorResponse('User not found', 401);
 
     const newToken = generateToken({ userId: user.id });
-    // FIX P4: rotate the httpOnly cookie alongside the body token.
-    const res = successResponse({ token: newToken });
+    // FIX P4: rotate the httpOnly cookie. The new token is not returned in the
+    // body — the cookie is the only copy.
+    const res = successResponse({ ok: true });
     res.headers.set('Set-Cookie', sessionCookie(newToken));
     return res;
   } catch (error) {

@@ -105,17 +105,15 @@ export async function POST(request) {
       } catch {}
     }, 0);
 
-    // FIX 03: Set httpOnly secure cookie in addition to returning the token in
-    // the body. The body token is what the client persists to localStorage +
-    // the (non-httpOnly) middleware cookie; this httpOnly cookie is the
-    // tamper-resistant server-trusted copy.
+    // FIX 03: the httpOnly cookie is the only place the token goes. It is not
+    // returned in the body — a script-readable copy is what the cookie exists
+    // to avoid, and no client reads one any more.
     const res = successResponse({
       user: {
         ...safeUser,
         plan: user.subscription_plan || 'spectator',
         planExpiresAt: user.plan_expires_at || null,
       },
-      token,
     }, 'Login successful');
 
     res.headers.set('Set-Cookie', sessionCookie(token));

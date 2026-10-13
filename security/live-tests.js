@@ -28,7 +28,8 @@ async function req(pathname, opts = {}) {
     headers: {
       'Content-Type': 'application/json',
       ...(opts.origin === false ? {} : { Origin: opts.origin || ORIGIN }),
-      ...(opts.token ? { Authorization: `Bearer ${opts.token}` } : {}),
+      // Sent the way a browser sends it: the session cookie, not a Bearer header.
+      ...(opts.token ? { Cookie: `genois_token=${opts.token}` } : {}),
       ...(opts.headers || {}),
     },
   };
@@ -40,13 +41,23 @@ async function req(pathname, opts = {}) {
   return { status: res.status, headers: res.headers, json, text };
 }
 
+// The token travels only in the httpOnly Set-Cookie header — act as the
+// cookie jar and pull it out of there.
+function sessionTokenFrom(headers) {
+  for (const c of headers.getSetCookie?.() || []) {
+    const m = c.match(/^genois_token=([^;]+)/);
+    if (m) return decodeURIComponent(m[1]);
+  }
+  return null;
+}
+
 async function loginTestUser() {
   const r = await req('/api/auth/login', {
     method: 'POST',
     body: { email: TEST_EMAIL, password: TEST_PASSWORD },
   });
   if (r.status !== 200) throw new Error(`test-user login failed: ${r.status} ${r.text.slice(0, 200)}`);
-  return r.json.data?.token || r.json.token;
+  return sessionTokenFrom(r.headers);
 }
 
 async function main() {
@@ -74,17 +85,19 @@ async function main() {
       `expected 403, got ${r.status}`);
   }
 
-  // ── 3. Login with valid creds → 200 + token ──────────────────────────────
+  // ── 3. Login with valid creds → 200 + session cookie, no token in body ───
   let token = null;
   {
     const r = await req('/api/auth/login', {
       method: 'POST',
       body: { email: TEST_EMAIL, password: TEST_PASSWORD },
     });
-    const ok = r.status === 200 && (r.json?.data?.token || r.json?.token);
-    if (ok) token = r.json.data?.token || r.json.token;
-    record('Login with valid credentials returns token', 'C',
-      !!ok, `status=${r.status} hasToken=${!!ok}`);
+    const cookieToken = sessionTokenFrom(r.headers);
+    const bodyToken = r.json?.data?.token || r.json?.token;
+    const ok = r.status === 200 && !!cookieToken && !bodyToken;
+    if (cookieToken) token = cookieToken;
+    record('Login sets session cookie and keeps token out of body', 'C',
+      ok, `status=${r.status} hasCookie=${!!cookieToken} tokenInBody=${!!bodyToken}`);
   }
   if (!token) {
     console.error('Cannot continue without a valid token. Aborting.');

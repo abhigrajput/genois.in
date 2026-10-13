@@ -124,21 +124,17 @@ export default function AppLayout({ children }) {
     // /login before the page mounted — ahead of usePermission's own cookie-first
     // fetch, which then never got the chance to run.
     //
-    // Ask the server instead. authAPI sends the cookie with credentials:
-    // 'include' and attaches the Bearer header only while a pre-migration token
-    // still exists (lib/api.js), and getUserFromRequest accepts either
-    // (lib/auth.js) — so no server change is needed. The cost is that a genuinely
+    // Ask the server instead. authAPI sends only the cookie (credentials:
+    // 'include', no Bearer header — lib/api.js). The cost is that a genuinely
     // logged-out visitor makes one /api/auth/profile call that 401s before the
     // redirect, the same trade already accepted in usePermission.
     //
-    // This one stays a raw localStorage read on purpose — it is not a header,
-    // it is the value handed to setAuth(), and setAuth writes any truthy token
-    // straight back to localStorage. Feeding it useToken()'s COOKIE_SESSION
-    // sentinel would persist the sentinel as if it were a real JWT, and every
-    // later authHeaders() call would then send it as a Bearer token and 401.
-    const token = typeof window !== 'undefined' ? localStorage.getItem('genois_token') : null;
+    // setAuth() gets null, not a token: it writes any truthy token to
+    // localStorage, and this path has no business re-persisting one. Never pass
+    // useToken()'s COOKIE_SESSION sentinel here — stored, it would be read back
+    // by anything still building a Bearer header and 401.
     authAPI.getProfile()
-      .then(res => { setAuth(res.data.user, token, res.data.progress, res.data.score, res.data.skill); setChecking(false); })
+      .then(res => { setAuth(res.data.user, null, res.data.progress, res.data.score, res.data.skill); setChecking(false); })
       .catch(() => { localStorage.removeItem('genois_token'); router.push('/login'); });
   }, []);
 

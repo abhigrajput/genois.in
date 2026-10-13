@@ -1,15 +1,16 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import useAuthStore from '@/store/authStore';
 
 export default function PublicPageSidebar({ currentPath }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [checked, setChecked] = useState(false);
   const [open, setOpen] = useState(true);
 
+  // The persisted store, not localStorage.genois_token — see PublicNav.jsx.
   useEffect(() => {
-    const token = localStorage.getItem('genois_token');
-    setIsLoggedIn(!!token);
+    setIsLoggedIn(useAuthStore.getState().isAuthenticated);
     setChecked(true);
   }, []);
 

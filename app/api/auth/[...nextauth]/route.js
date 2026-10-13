@@ -103,7 +103,10 @@ const authOptions = {
 
     async session({ session, token }) {
       session.userId = token.userId;
-      session.genoisToken = token.genoisToken;
+      // genoisToken is deliberately NOT copied here: the session object is
+      // served as JSON by GET /api/auth/session to any script on the page.
+      // jwt() still keeps it in the encrypted JWT, where google-session reads
+      // it with getToken().
       session.isNewUser = token.isNewUser;
       session.userName = token.userName;
       session.userEmail = token.userEmail;

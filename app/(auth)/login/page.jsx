@@ -140,25 +140,24 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const res = await authAPI.login({ email: form.email.trim().toLowerCase(), password: form.password });
-      const { user, token, progress, score, skill } = res.data || {};
+      // No token in the body: /api/auth/login set it as the httpOnly cookie.
+      const { user, progress, score, skill } = res.data || {};
 
-      if (!token || !user) {
+      if (!user) {
         setError('We could not sign you in right now. Please try again in a moment.');
         return;
       }
 
       // ── State & routing synchronization ──
-      // 1. Persist the token for the localStorage-based Bearer path. The
-      //    middleware/edge cookie is now the httpOnly `genois_token` set by the
-      //    /api/auth/login response (FIX P4), so we no longer write a
-      //    JS-readable duplicate cookie here — that copy was XSS-exfiltratable
-      //    and, being shadowed by the httpOnly cookie, was already a no-op.
+      // 1. The session is the httpOnly `genois_token` cookie set by the
+      //    /api/auth/login response (FIX P4). The token is NOT copied to
+      //    localStorage or document.cookie — any script-readable copy is
+      //    XSS-exfiltratable, and the cookie alone authenticates.
       if (typeof window !== 'undefined') {
-        localStorage.setItem('genois_token', token);
         localStorage.setItem('genois_plan', user.plan || 'spectator');
       }
       // 2. Hydrate the global store so any client subscriber sees the session.
-      setAuth(user, token, progress, score, skill);
+      setAuth(user, null, progress, score, skill);
 
       trackLogin('email');
       const first = (user.name || '').trim().split(/\s+/)[0];

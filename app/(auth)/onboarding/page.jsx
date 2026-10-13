@@ -71,12 +71,13 @@ export default function OnboardingPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
 
-    // Deliberately a raw localStorage read, NOT useToken(): the sentinel is
-    // truthy for everyone, so useToken() here would put a brand-new visitor
-    // into authed mode and skip the account-creation steps entirely. A stale
-    // localStorage token is the only signal that is false for a fresh signup.
-    const hasToken = typeof window !== 'undefined' && !!localStorage.getItem('genois_token');
-    if (params.get('from') === 'google' || hasToken) {
+    // NOT useToken(): the sentinel is truthy for everyone, so useToken() here
+    // would put a brand-new visitor into authed mode and skip the
+    // account-creation steps entirely. The persisted store's isAuthenticated
+    // is false for a fresh signup and, unlike localStorage.genois_token, is
+    // also true for cookie-only sessions (see PublicNav.jsx).
+    const isAuthed = useAuthStore.getState().isAuthenticated;
+    if (params.get('from') === 'google' || isAuthed) {
       setAuthedMode(true);
       setStep(1); // skip the marketing welcome — go straight to picking a domain
     }
@@ -193,12 +194,8 @@ export default function OnboardingPage() {
       const d = await r.json();
       if (!d.success) { setError(d.message || 'Signup failed'); setLoading(false); return; }
 
-      // Named apart from the outer useToken() value, which is still the
-      // pre-signup state at this point. This is the freshly minted JWT from the
-      // signup response, so it goes on the header verbatim — no sentinel is
-      // possible here and authHeaders() would be a no-op.
-      const newToken = d.data.token;
-      localStorage.setItem('genois_token', newToken);
+      // The signup response set the httpOnly genois_token cookie; the token in
+      // its body is deliberately not copied anywhere script-readable.
       localStorage.setItem('genois_user', JSON.stringify(d.data.user));
       trackSignup('email');
 
@@ -211,9 +208,11 @@ export default function OnboardingPage() {
         };
         if (cgpa && !isNaN(parseFloat(cgpa))) profilePayload.cgpa = parseFloat(cgpa);
 
+        // No Bearer header: the signup response above already set the httpOnly
+        // genois_token cookie, which this same-origin request sends.
         const pr = await fetch('/api/auth/profile', {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + newToken },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(profilePayload),
         });
         const pd = await pr.json();
