@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth';
+import { getToken } from 'next-auth/jwt';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { verifyToken, sessionCookie } from '@/lib/auth';
 import { successResponse, errorResponse } from '@/lib/response';
@@ -8,12 +8,15 @@ export const dynamic = 'force-dynamic';
 // Google sign-in hands back a genois token inside the NextAuth session. The
 // callback page used to copy it into `document.cookie`, which cannot be
 // httpOnly. This route moves that step server-side: the token is read from the
-// server session (never from the request body) and set with the same
+// NextAuth JWT cookie (never from the request body) and set with the same
 // sessionCookie() options login/signup/refresh use.
-export async function POST() {
+//
+// getToken() decodes the JWT itself rather than going through the session()
+// callback, so genoisToken never has to be exposed via /api/auth/session.
+export async function POST(req) {
   try {
-    const session = await getServerSession(authOptions);
-    const token = session?.genoisToken;
+    const jwt = await getToken({ req, secret: authOptions.secret });
+    const token = jwt?.genoisToken;
     if (!token) return errorResponse('Not signed in', 401);
 
     // Signature, expiry and blacklist in one check.
